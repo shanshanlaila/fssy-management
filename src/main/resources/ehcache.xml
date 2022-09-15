@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+	updateCheck="false">
+
+	<!-- diskStore：为缓存路径，ehcache分为内存和磁盘两级，此属性定义磁盘的缓存位置 -->
+	<!-- 默认缓存策略，当ehcache找不到定义的缓存时，则使用这个缓存策略 -->
+	<!-- name:缓存名称 -->
+	<!-- maxElementsInMemory:缓存最大数目 -->
+	<!-- maxElementsOnDisk：硬盘最大缓存个数 -->
+	<!-- eternal:对象是否永久有效，一但设置了，timeout将不起作用 -->
+	<!-- overflowToDisk:是否保存到磁盘，当系统当机时 -->
+	<!-- timeToIdleSeconds:设置对象在失效前的允许闲置时间（单位：秒）。仅当eternal=false对象不是永久有效时使用，可选属性，默认值是0，也就是可闲置时间无穷大 -->
+	<!-- timeToLiveSeconds:设置对象在失效前允许存活时间（单位：秒）。最大时间介于创建时间和失效时间之间。仅当eternal=false对象不是永久有效时使用，默认是0.，也就是对象存活时间无穷大 -->
+	<!-- diskPersistent：是否缓存虚拟机重启期数据 -->
+	<!-- diskExpiryThreadIntervalSeconds：磁盘失效线程运行时间间隔，默认是120秒 -->
+	<!-- memoryStoreEvictionPolicy：当达到maxElementsInMemory限制时，Ehcache将会根据指定的策略去清理内存。默认策略是LRU（最近最少使用）。你可以设置为FIFO（先进先出）或是LFU（较少使用） -->
+	<defaultCache eternal="false" maxElementsInMemory="1000"
+		overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU" />
+
+	<!-- session缓存方式 -->
+	<!-- maxEntriesLocalHeap 内存中不限制数量 -->
+	<!-- eternal 永久 -->
+	<!-- timeToIdleSeconds 空闲时间为永久 -->
+	<!-- timeToLiveSeconds 存活时间为永久 -->
+	<!-- overflowToDisk 如果内存不够则写到磁盘，持久化以防止session丢失 -->
+	<!-- statistics 重启jvm，session不丢失 -->
+	<cache name="shiro-activeSessionCache" maxEntriesLocalHeap="0"
+		eternal="true" timeToIdleSeconds="0" timeToLiveSeconds="0"
+		overflowToDisk="true" statistics="true" />
+
+	<!-- 权限鉴权缓存块缓存方式 -->
+	<cache name="authorizationCache" maxEntriesLocalHeap="0"
+		eternal="true" timeToIdleSeconds="0" timeToLiveSeconds="0"
+		overflowToDisk="true" statistics="true" />
+
+	<!-- 用户认证缓存块缓存方式 -->
+	<cache name="authenticationCache" maxEntriesLocalHeap="0"
+		eternal="true" timeToIdleSeconds="0" timeToLiveSeconds="0"
+		overflowToDisk="true" statistics="true" />
+		
+	<!-- 用户重复登录控制缓存块缓存方式 -->
+	<cache name="shiro-kickout-session" maxEntriesLocalHeap="0"
+		eternal="false" timeToIdleSeconds="3600" timeToLiveSeconds="0"
+		overflowToDisk="false" statistics="true" />
+
+	<!-- 用户数据缓存方式 -->
+	<cache name="users" eternal="false" maxElementsInMemory="100"
+		overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
+		
+	<!-- 组织结构数据缓存方式 -->
+	<cache name="departments" eternal="false" maxElementsInMemory="100"
+		overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
+	
+	<!-- 颜色数据缓存方式 -->
+	<cache name="colors" eternal="false" maxElementsInMemory="100"
+		overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
+
+	<!-- 物料数据缓存方式 -->
+	<cache name="materialDatas" eternal="false" maxElementsInMemory="100"
+		overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
+
+	<cache name="planTypes" eternal="false" maxElementsInMemory="100"
+	   overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+	   timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
+
+	<!-- 合作公司数据缓存方式 -->
+	<cache name="cooperateCompany" eternal="false" maxElementsInMemory="100"
+		   overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		   timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
+
+	<!-- 合作公司-工厂数据缓存方式 -->
+	<cache name="cooperateCompanyPlant" eternal="false" maxElementsInMemory="100"
+		   overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		   timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
+</ehcache>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>修改角色</title>
+</head>
+<body>
+	<!-- 引入layui -->
+	<div th:replace="~{common/layui :: layui}"></div>
+	<style type="text/css">
+#head .layui-form-label {
+	width: 120px;
+}
+
+#head .layui-input-block {
+	margin-left: 150px;
+}
+</style>
+	<form id="head" class='layui-form' style="margin: 20px;"
+		lay-filter="data">
+		<div class="layui-form-item">
+			<label class="layui-form-label"><span
+				style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;名称</label>
+			<div class="layui-input-inline">
+				<input type="hidden" name="id" th:value="${role['id']}" /> <input
+					type="text" class="layui-input" name="name" placeholder="名称"
+					autocomplete="off" lay-verify="required" lay-reqText="名称为必填项"
+					th:value="${role['name']}">
+			</div>
+		</div>
+		<div class="layui-input-block">
+			<button shiro:hasPermission="manage:role:update" class="layui-btn" lay-submit lay-filter="roleForm">提交</button>
+		</div>
+
+	</form>
+	<script>
+
+    layui.use(['layer', 'form', 'laydate'], function () {
+      var $ = layui.$
+          , layer = layui.layer
+          , laydate = layui.laydate
+          , form = layui.form;
+
+      // 每个标签加一个class，名为laydate
+      $(".laydate").each(function () {
+        laydate.render({
+          elem: this,
+          //更换触发方式
+          trigger: 'click',
+          type: 'month'
+        });
+      });
+
+      form.on('submit(roleForm)', function (data) {
+        var elem = data.elem;
+        $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+        $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+        $.ajax({
+          url: '/manage/role/update',
+          type: 'PUT',
+          data: data.field,
+          success: function (result) {
+            if (result.status == 200) {
+              layer.msg(result.msg, {icon: 6, time: 2000});
+              setTimeout(function () {
+                parent.layui.table.reload('dataTable');
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+              }, 2000)
+            } else {
+              $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+              $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+              layer.msg(result.msg, {icon: 5, time: 4000});
+            }
+          }
+        });
+        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+      });
+    });
+  </script>
+</body>
+</html>

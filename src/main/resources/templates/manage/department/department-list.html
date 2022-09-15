@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>组织结构管理</title>
+</head>
+<body>
+	<!-- 引入xadmin -->
+	<div th:replace="~{common/xadmin :: xadmin}"></div>
+	<!-- 引入treeTable -->
+	<div th:replace="~{common/treeTable :: treeTable}"></div>
+	<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">管理员管理</a>
+			<a> <cite>部门管理</cite></a>
+		</span> <a class="layui-btn layui-btn-small"
+			style="line-height: 1.6em; margin-top: 3px; float: right"
+			onclick="location.reload()" title="刷新"> <i
+			class="layui-icon layui-icon-refresh" style="line-height: 30px"></i></a>
+	</div>
+	<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+			<div class="layui-col-md12">
+				<div class="layui-card">
+					<form class="layui-form layui-col-space5">
+						<div class="layui-card-header">
+							<button shiro:hasPermission="manage:department:create" class="layui-btn" lay-submit lay-filter="create">
+								<i class="layui-icon"></i>添加
+							</button>
+						</div>
+					</form>
+					<div class="layui-card-body ">
+						<table class="layui-table layui-form" id="departmentTable"
+							lay-filter="departmentTable"></table>
+						<script type="text/html" id="tool">
+              <a shiro:hasPermission="manage:department:edit" lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+            </script>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+    layui.config({
+      base: '/plugin/treetable/'
+    });
+    layui.use(['layer', 'table', 'form', "treeTable"], function () {
+      var $ = layui.$
+          , table = layui.table
+          , layer = layui.layer
+          , form = layui.form
+          , treeTable = layui.treeTable;
+
+      // 实例表格
+      treeTable = treeTable.render({
+        elem: '#departmentTable'
+        , url: "/manage/department/getObjects"
+        , primary_key: 'id'
+        , parent_key: 'parent'
+        , icon_key: 'name'
+        , is_checkbox: false
+        , icon: {
+          open: 'layui-icon layui-icon-tread',
+          close: 'layui-icon layui-icon-praise',
+          left: 16
+        }
+        , end: function (e) {
+          form.render();
+        }
+        , cols: [
+          {key: 'id', title: '组织编号', width: '80px'}
+          , {key: 'name', title: '名称', width: '120px'}
+          , {
+            key: 'desc', title: '组织描述', template: function (item) {
+              return item.desc ? item.desc : '';
+            }
+          }
+          ,
+          {
+            title: '操作',
+            align: 'center',
+            width: '80px',
+            template: function (item) {
+              return '<a shiro:hasPermission="manage:department:edit" title="编辑"  onclick="xadmin.open(\'修改组织\',\'/manage/department/edit?id=' + item.id + '\')" href="javascript:;">\n' +
+                  '                <i class="layui-icon">&#xe642;</i>\n' +
+                  '              </a>\n' +
+                  '              <a shiro:hasPermission="manage:department:destroy" title="删除" onclick="member_del(this,' + item.id + ')" href="javascript:;">\n' +
+                  '                <i class="layui-icon">&#xe640;</i>\n' +
+                  '              </a>' +
+                  '<a shiro:hasPermission="manage:changeUser:edit" title="组织用户定岗"  onclick="xadmin.open(\'组织用户定岗\',\'/manage/changeUser/edit?departmentId=' + item.id + '\')" href="javascript:;">\n' +
+                  '                <i class="layui-icon">&#xe61f;</i>\n' +
+                  '              </a>\n' +
+                  '<a shiro:hasPermission="manage:changePermission:edit" title="组织岗位定责"  onclick="xadmin.open(\'组织岗位定责\',\'/manage/changePermission/edit?departmentId=' + item.id + '\')" href="javascript:;">\n' +
+                  '                <i class="layui-icon">&#xe673;</i>\n' +
+                  '              </a>\n';
+            }
+          }
+        ]
+      });
+
+      // 监听添加按钮
+      form.on('submit(create)', function (data) {
+        // 弹出添加页面
+        layer.open({
+          type: 2,
+          title: '添加组织',
+          area: [$(window).width()*0.9 + 'px', $(window).height() - 50 +'px'],
+          content: '/manage/department/create',
+          maxmin: true
+        });
+        return false;
+      });
+
+    });
+
+    /** 删除组织 */
+    function member_del(obj, id) {
+      layer.confirm('确认要删除吗？', function () {
+        $.ajax({
+          type: 'DELETE',
+          url: '/manage/department/' + id,
+          headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+          success: function (result) {
+            layer.msg(result.msg);
+            if (result.status == 200) {
+              $(obj).parents("tr").remove();
+            }
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>

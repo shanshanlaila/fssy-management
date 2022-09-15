@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>权限管理</title>
+</head>
+<body>
+	<!-- 引入xadmin -->
+	<div th:replace="~{common/xadmin :: xadmin}"></div>
+	<!-- 引入treeTable -->
+	<div th:replace="~{common/treeTable :: treeTable}"></div>
+	<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">管理员管理</a>
+			<a> <cite>权限管理</cite></a>
+		</span> <a class="layui-btn layui-btn-small"
+			style="line-height: 1.6em; margin-top: 3px; float: right"
+			onclick="location.reload()" title="刷新"> <i
+			class="layui-icon layui-icon-refresh" style="line-height: 30px"></i></a>
+	</div>
+	<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+			<div class="layui-col-md12">
+				<div class="layui-card">
+					<form class="layui-form layui-col-space5" method="get"
+						action="/manage/permission/index">
+						<div class="layui-card-body ">
+							<div class="layui-inline layui-show-xs-block">
+								<select name="system" id="system"> 
+									<option th:each="systemData : ${systems}" th:attr="value=${systemData['id']},selected= ${systemData['id']} == ${system} ? true : false" th:text="${systemData['name']}">
+									</option>
+								</select>
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<button class="layui-btn" lay-submit lay-filter="search">
+									<i class="layui-icon">&#xe615;</i>
+								</button>
+							</div>
+						</div>
+						<div shiro:hasPermission="manage:permission:create" class="layui-card-header">
+							<button class="layui-btn" lay-submit lay-filter="create">
+								<i class="layui-icon"></i>添加
+							</button>
+						</div>
+					</form>
+					<div class="layui-card-body ">
+						<table class="layui-table layui-form" id="permissionTable"
+							lay-filter="permissionTable"></table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+    layui.config({
+      base: '/plugin/treetable/'
+    });
+    layui.use(['layer', 'table', 'form', "treeTable"], function () {
+      var $ = layui.$
+          , table = layui.table
+          , layer = layui.layer
+          , form = layui.form
+          , treeTable = layui.treeTable;
+
+      // 实例表格
+      treeTable = treeTable.render({
+        elem: '#permissionTable'
+        , url: "/manage/permission/getObjects?system=[[${system}]]"
+        // , page: true
+        // , height: 500 // 设置高度，使数据置于滚动条控制下
+        // , limit: 10
+        // , limits: [10, 20, 30, 50]
+        // , skin: 'line'
+        , primary_key: 'id'
+        , parent_key: 'parent'
+        , icon_key: 'name'
+        , is_checkbox: false
+        , icon: {
+          open: 'layui-icon layui-icon-tread',
+          close: 'layui-icon layui-icon-praise',
+          left: 16
+        }
+        , end: function (e) {
+          form.render();
+        }
+        , cols: [
+          {key: 'id', title: '权限编号', width: 80}
+          , {key: 'name', title: '权限名称', width: 120}
+          , {
+            key: 'route', title: '权限路由', width: 250, template: function (item) {
+              return item.route ? item.route : '';
+            }
+          }
+          , {
+            key: 'authorizationName', title: '鉴权名称', width: 220, template: function (item) {
+              return item.authorizationName ? item.authorizationName : '';
+            }
+          }
+          , {
+            key: 'isNormal', title: '是否通用', width: 80, template: function (item) {
+              switch (item.isNormal) {
+                case 1:
+                  return '是';
+                default:
+                  return '否';
+              }
+            }
+          }
+          , {
+            key: 'leaf', title: '叶子节点', width: 80, template: function (item) {
+              switch (item.leaf) {
+                case 1:
+                  return '是';
+                default:
+                  return '否';
+              }
+            }
+          }
+          , {
+            key: 'sort', title: '排序号', width: 80, template: function (item) {
+              return item.sort ? item.sort : '';
+            }
+          }
+          ,
+          {
+            key: 'type',
+            title: '类型',
+            width: 80,
+            template: function (item) {
+              if (item.type == 0) {
+                return '<span class="layui-badge layui-bg-green">菜单</span>';
+              } else {
+                return '<span class="layui-badge layui-bg-orange">按钮</span>';
+              }
+            }
+          }
+          ,
+          {
+            title: '操作',
+            align: 'center',
+            width: 90,
+            template: function (item) {
+              return '<a  shiro:hasPermission="manage:permission:edit" title="编辑"  onclick="xadmin.open(\'修改权限\',\'/manage/permission/edit?id=' + item.id + '\')" href="javascript:;">\n' +
+                  '                <i class="layui-icon">&#xe642;</i>\n' +
+                  '              </a>\n' +
+                  '              <a shiro:hasPermission="manage:permission:destroy" title="删除" onclick="member_del(this,' + item.id + ')" href="javascript:;">\n' +
+                  '                <i class="layui-icon">&#xe640;</i>\n' +
+                  '              </a>';
+            }
+          }
+        ]
+      });
+
+      // 监听添加按钮
+      form.on('submit(create)', function (data) {
+        // 弹出添加页面
+        layer.open({
+          type: 2,
+          title: '添加权限',
+          area: [$(window).width()*0.9 + 'px', $(window).height() - 50 +'px'],
+          content: '/manage/permission/create' + '?system=' + $("#system").val(),
+          scrollbar: true,
+          maxmin: true
+          // 设置点击遮盖关闭
+          // shadeClose: true,
+        });
+        return false;
+      });
+
+    });
+
+    /** 删除权限 */
+    function member_del(obj, id) {
+      layer.confirm('确认要删除吗？', function () {
+        $.ajax({
+          type: 'DELETE',
+          url: '/manage/permission/' + id,
+          headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+          success: function (result) {
+            layer.msg(result.msg);
+            if (result.status == 200) {
+              $(obj).parents("tr").remove();
+            }
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>

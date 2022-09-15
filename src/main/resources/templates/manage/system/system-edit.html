@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>修改系统功能</title>
+</head>
+<body>
+	<!-- 引入jquery -->
+	<div th:replace="~{common/jquery :: jquery}"></div>
+	<!-- 引入xadmin -->
+	<div th:replace="~{common/xadmin :: xadmin}"></div>
+	<!-- 引入zTree -->
+	<div th:replace="~{common/zTree :: zTree}"></div>
+	<style type="text/css">
+#head .layui-form-label {
+	width: 120px;
+}
+
+#head .layui-input-block {
+	margin-left: 150px;
+}
+
+#head .layui-textarea {
+	width: 100%;
+}
+</style>
+	<form id="head" class='layui-form' style="margin: 20px;"
+		lay-filter="data">
+		<div class="layui-form-item">
+			<label class="layui-form-label"><span
+				style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;名称</label>
+			<div class="layui-input-inline">
+				<input type="hidden" id="id" name="id"
+					th:attr="value=${system['id']}" /> <input type="text"
+					class="layui-input" name="name" placeholder="功能系统名称"
+					autocomplete="off" lay-reqText="功能系统名称为必填项" lay-verify="required"
+					th:attr="value=${system['name']}" />
+			</div>
+			<label class="layui-form-label"><span
+				style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;路由名称</label>
+			<div class="layui-input-inline">
+				<input type="text" class="layui-input" name="route"
+					placeholder="如：manageHomepage,父级路由不会生效" autocomplete="on"
+					lay-reqText="路由名称为必填项" lay-verify="required"
+					th:attr="value=${system['route']}">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label"><span
+				style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;父级</label>
+			<div class="layui-input-inline">
+				<input type="hidden" id="parent" name="parent"
+					th:attr="value=${system['parent']}"> <input type="text"
+					class="layui-input load-sys-menu" readonly id="parentName"
+					placeholder="组织机构名称" lay-reqText="父级功能系统为必填项" lay-verify="required"
+					th:attr="value=${parentSystem != null ? parentSystem['name'] : '根目录'}">
+			</div>
+		</div>
+		<div class="layui-form-item layui-form-text">
+			<label for="desciption" class="layui-form-label">功能描述</label>
+			<div class="layui-input-block">
+				<textarea placeholder="请输入功能描述" id="desciption" name="desciption"
+					class="layui-textarea" th:text="${system['desciption']}"></textarea>
+			</div>
+		</div>
+
+		<div class="layui-input-block">
+			<button shiro:hasPermission="manage:system:update" class="layui-btn" lay-submit lay-filter="systemForm">提交</button>
+		</div>
+
+	</form>
+	<!-- 选择菜单 -->
+	<div class="layui-layer layui-layer-page layui-layer-molv layer-anim"
+		id="menuLayer" type="page" times="2" showtime="0" contype="object"
+		style="z-index: 19891016; width: 300px; height: 450px; top: 100px; left: 300px; display: none">
+		<div class="layui-layer-title" style="cursor: move;">选择父级功能系统</div>
+		<div class="layui-layer-content" style="height: 358px;">
+			<div style="padding: 10px;" class="layui-layer-wrap">
+				<ul id="menuTree" class="ztree"></ul>
+				<!-- 动态加载树 -->
+			</div>
+		</div>
+		<span class="layui-layer-setwin"> <a
+			class="layui-layer-ico layui-layer-close layui-layer-close1 btn-cancle"></a></span>
+		<div class="layui-layer-btn layui-layer-btn-">
+			<a class="layui-layer-btn0 btn-confirm">确定</a> <a
+				class="layui-layer-btn1 btn-cancle">取消</a>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		// ztree配置
+		var zTree;
+		var setting =
+		{
+			view :
+			{
+				dblClickExpand : false,// 双击节点时，是否自动展开父节点的标识
+				showLine : true,// 是否显示节点之间的连线
+				fontCss :
+				{
+					'color' : 'black',
+					'font-weight' : 'bold'
+				},// 字体样式函数
+				selectedMulti : true
+			// 设置是否允许同时选中多个节点
+			},
+			data :
+			{
+				simpleData :
+				{
+					enable : true,
+					idKey : "id", //节点数据中保存唯一标识的属性名称
+					pIdKey : "parent", //节点数据中保存其父节点唯一标识的属性名称
+					rootPId : 0
+				//根节点id
+				}
+			}
+		};
+
+		layui.use(
+		[
+				'layer', 'form', 'laydate'
+		], function()
+		{
+			var $ = layui.$, layer = layui.layer, laydate = layui.laydate, form =
+					layui.form;
+
+			// 监听父亲元素框单击事件
+			$('#head').on('click', '.load-sys-menu', function()
+			{
+				doLoadZTreeNodes();
+			});
+			// 监听ztree中的提交按钮
+			$('#menuLayer').on('click', '.btn-confirm', doSetFatherNode);
+			// 监听ztree中的取消按钮
+			$('#menuLayer').on('click', '.btn-cancle', doHideZtree);
+
+			form.on('submit(systemForm)', function(data)
+			{
+				var elem = data.elem;
+				$(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+				$(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+				$.ajax(
+				{
+					url : '/manage/system/update',
+					type : 'PUT',
+					headers :
+					{
+						'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+					},
+					data : data.field,
+					success : function(result)
+					{
+						if (result.status == 200)
+						{
+							layer.msg(result.msg,
+							{
+								icon : 6,
+								time : 2000
+							});
+							setTimeout(function()
+							{
+								//关闭当前frame
+								xadmin.close();
+
+								// 可以对父窗口进行刷新
+								xadmin.father_reload();
+							}, 2000);
+						}
+						else
+						{
+							$(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+							$(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+							layer.msg(result.msg,
+							{
+								icon : 5,
+								time : 4000
+							});
+						}
+					}
+				});
+				return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+			});
+
+			function doSetFatherNode()
+			{
+				// 获取ztree的值
+				var selectedNodes = zTree.getSelectedNodes();
+				if (selectedNodes.length == 0)
+				{
+					alert("请选择一个父级资源");
+					return;
+				}
+				var node = selectedNodes[0];
+				// 隐藏ztree
+				$('#menuLayer').css('display', 'none');
+				// 父级文本框赋值
+				$('#parentName').val(node.name);
+				// 父级id隐藏域赋值
+				$('#parent').val(node.id);
+			}
+
+			//显示选择菜单
+			function doLoadZTreeNodes()
+			{
+				$('#menuLayer').css('display', 'block');
+				var url = '/manage/system/getObjects';
+				$.getJSON(url, function(result)
+				{
+					result.push(
+					{
+						'id' : 0,
+						'name' : '根节点'
+					});
+					zTree = $.fn.zTree.init($("#menuTree"), setting, result);
+				})
+			}
+
+			//获取选择菜单选中项
+			function doSetSelectedNode()
+			{
+				var selectedNodes = zTree.getSelectedNodes();
+				var node = selectedNodes[0];
+				$('#menuLayer').css('display', 'none');
+				$('#parentName').val(node.name);
+				$('#editMenuForm').data('parentId', node.id);
+			}
+
+			//隐藏选择菜单
+			function doHideZtree()
+			{
+				$('#menuLayer').css('display', 'none');
+			}
+		});
+	</script>
+</body>
+</html>

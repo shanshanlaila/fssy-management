@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>供应商账户管理</title>
+</head>
+<body>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<!-- 引入soul-table会报错，原因不详Invalid or unexpected token -->
+<!-- <div th:replace="~{common/layui-soul-table :: layui-soul-table}"></div> -->
+<div class="x-nav">
+		<span class="layui-breadcrumb">
+      <a href="">首页</a>
+      <a href="">管理员管理</a>
+			<a> <cite>供应商工厂账号管理</cite></a>
+		</span>
+  <a class="layui-btn layui-btn-small"
+               style="line-height: 1.6em; margin-top: 3px; float: right"
+               onclick="location.reload()" title="刷新">
+    <i class="layui-icon layui-icon-refresh" style="line-height: 30px"></i>
+  </a>
+</div>
+<div class="layui-fluid">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md12">
+      <div class="layui-card">
+        <form class="layui-form layui-col-space5">
+          <div class="layui-card-body ">
+            <div class="layui-inline layui-show-xs-block">
+              <input type="text" name="plantName" placeholder="工厂名称查询"
+                     autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+              <select name="plantStatus">
+                <option value="启用" selected>启用</option>
+                <option value="停用">停用</option>
+              </select>
+            </div>
+            
+            <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+              <select name="passwordExist">
+                <option value="">请选择账号创建状态</option>
+                <option value="未创建">未创建</option>
+                <option value="已创建">已创建</option>
+              </select>
+            </div>
+            <div class="layui-inline layui-show-xs-block">
+              <button class="layui-btn" lay-submit lay-filter="search">
+                <i class="layui-icon">&#xe615;</i>
+              </button>
+            </div>
+          </div>
+        </form>
+        <div class="layui-card-body ">
+          <table class="layui-table layui-form" id="dataTable"
+                 lay-filter="dataTable"></table>
+          <script type="text/html" id="tool">
+            <a shiro:hasPermission="supplier:edit" lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+<!--            {{# if(d.active == 1) { }}-->
+<!--            <a shiro:hasPermission="supplier:activate" lay-event="inactive" title="停用"><i-->
+<!--                class="layui-icon">&#x1007;</i></a>-->
+<!--            {{# } else { }}-->
+<!--            <a shiro:hasPermission="supplier:activate" lay-event="active" title="启用"><i class="layui-icon">&#x1005;</i></a>-->
+<!--            {{# } }}-->
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:inline="none">
+  layui.use(
+    [
+      'laydate', 'layer', 'table', 'form'
+    ], function () {
+      var $ = layui.$, laydate = layui.laydate, table = layui.table, layer =
+        layui.layer, form = layui.form;
+
+      // 实例表格
+      table.render(
+        {
+          elem: '#dataTable',
+          id: 'dataTable',
+          url: "/manage/supplier/getObjects",
+          page: true,
+          height: 'full-100' // 设置高度，使数据置于滚动条控制下
+          ,
+          toolbar: '#toolbar',
+          limit: 10,
+          limits:
+            [
+              10, 20, 30, 50
+            ],
+          size: 'sm',
+          cols:
+            [
+              [
+                {
+                  field: 'id',
+                  title: '供应商ID',
+                  fixed: true,
+                  width: 80
+                },
+                {
+                  field: 'plantCode',
+                  title: '供应商编码',
+                  fixed: true,
+                  width: 100
+                },
+                {
+                  field: 'plantCode',
+                  title: '供应商账号',
+                  fixed: true,
+                  width: 100
+                },
+                {
+                  field: 'plantName',
+                  title: '工厂名称',
+                  fixed: true,
+                  width: 200
+                },
+                {
+                  field: 'companyName',
+                  title: '公司名称',
+                  width: 200
+                },
+                {
+                  field: 'plantStatus',
+                  title: '工厂状态',
+                  width: 100,
+                  templet: function (d) {
+                    switch (d.plantStatus) {
+                      case "启用":
+                        return '<span class="layui-badge layui-bg-green">启用</span>';
+                      case "停用":
+                        return '<span class="layui-badge layui-bg-orange">停用</span>';
+                      default:
+                        return '没有状态';
+                    }
+                  }
+                },
+                {
+                  field: 'password',
+                  title: '账号状态',
+                  width: 100,
+                  templet: function (d) {
+                    if (d.password) {
+                      return '<span class="layui-badge layui-bg-green">已创建</span>';
+                    } else {
+                      return '<span class="layui-badge layui-bg-orange">未创建</span>';
+                    }
+                  }
+                },
+                {
+                  fixed: 'right',
+                  title: '操作',
+                  width: 120,
+                  align: 'center',
+                  toolbar: '#tool'
+                }
+              ]
+            ]
+        });
+
+      // 监听搜索按钮
+      form.on('submit(search)', function (data) {
+        // 重新加载表格
+        table.reload('dataTable',
+          {
+            where: data.field,
+            page:
+              {
+                curr: 1
+              }
+          });
+        return false;
+      });
+
+      // 监听头工具栏事件
+      // table.on('toolbar(dataTable)', function (obj) {
+      //   if (obj.event === 'create') {
+      //     // 弹出添加页面
+      //     layer.open(
+      //       {
+      //         type: 2,
+      //         title: '添加供应商账号',
+      //         area:
+      //           [
+      //             $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+      //           ],
+      //         content: '/manage/supplier/create',
+      //         scrollbar: true,
+      //         maxmin: true
+      //       });
+      //     return;
+      //   }
+      // });
+
+      // 监听行工具事件,取消table的id监听，子表格的id是不知道的
+      table.on('tool(dataTable)', function (obj) {
+        var data = obj.data;
+        if (obj.event === 'edit') { // 修改
+          layer.open(
+            {
+              type: 2,
+              title: data.plantName + '供应商信息修改',
+              area:
+                [
+                  $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                ],
+              content: '/manage/supplier/edit?id=' + data.id,
+              // shadeClose: true,
+              maxmin: true
+            });
+        }
+        // else if (obj.event === 'active') { // 启用
+        //   layer.confirm('真的启用用户' + data.name + '吗？', function () {
+        //     $.ajax(
+        //       {
+        //         type: 'GET',
+        //         url: '/manage/manage/activate?id=' + data.id + '&active=1&msg=启用',
+        //         headers:
+        //           {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //           },
+        //         success: function (result) {
+        //           layer.msg(result.msg);
+        //           if (result.status == 200) {
+        //             table.reload('dataTable');
+        //           }
+        //         }
+        //       })
+        //   });
+        // } else if (obj.event === 'inactive') { // 停用
+        //   layer.confirm('真的停用用户' + data.name + '吗？', function () {
+        //     $.ajax(
+        //       {
+        //         type: 'GET',
+        //         url: '/manage/supplier/activate?id=' + data.id + '&active=0&msg=停用',
+        //         headers:
+        //           {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //           },
+        //         success: function (result) {
+        //           layer.msg(result.msg);
+        //           if (result.status == 200) {
+        //             table.reload('dataTable');
+        //           }
+        //         }
+        //       })
+        //   });
+        // }
+      });
+    });
+</script>
+</body>
+</html>

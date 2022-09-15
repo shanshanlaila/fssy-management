@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>组织员工定岗</title>
+<script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+</head>
+<body>
+	<!-- 引入layui -->
+	<div th:replace="~{common/layui :: layui}"></div>
+	<style type="text/css">
+#head .layui-form-label {
+	width: 120px;
+}
+
+#head .layui-input-block {
+	margin-left: 150px;
+}
+</style>
+	<form id="head" class='layui-form' style="margin: 20px;"
+		lay-filter="data">
+		<input type="hidden" name="departmentId" id="departmentId" th:value="${departmentId}">
+		<div class="layui-form-item">
+			<label class="layui-form-label"><span
+				style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;职务</label>
+			<div class="layui-input-inline" style="width: 250px;">
+				<div id="roleSelect"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">用户</label>
+			<div class="layui-input-inline" style="width: 250px;">
+				<div id="userSelect"></div>
+			</div>
+		</div>
+		<div class="layui-input-block">
+			<button shiro:hasPermission="manage:changeUser:store" class="layui-btn" lay-submit
+				lay-filter="departmentRelationForm">提交</button>
+		</div>
+	</form>
+
+	<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+      var $ = layui.$
+          , layer = layui.layer
+          , laydate = layui.laydate
+          , form = layui.form;
+
+      // 每个标签加一个class，名为laydate
+      $(".laydate").each(function () {
+        laydate.render({
+          elem: this,
+          // 更换触发方式
+          trigger: 'click',
+          type: 'month'
+        });
+      });
+
+      form.on('submit(departmentRelationForm)', function (data) {
+        var elem = data.elem;
+        $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+        $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+        $.ajax({
+          url: '/manage/changeUser/store',
+          type: 'POST',
+          headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+          data: data.field,
+          success: function (result) {
+            if (result.status == 200) {
+              layer.msg(result.msg, {icon: 6, time: 2000});
+              setTimeout(function () {
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+              }, 2000)
+            } else {
+              $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+              $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+              layer.msg(result.msg, {icon: 5, time: 4000});
+            }
+          }
+        });
+        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+      });
+
+      var userSelect = xmSelect.render({
+        el: '#userSelect',
+        language: 'zn',
+        data: [[${userList}]],
+        filterable: true,
+        tips: '该组织中的用户',
+        toolbar: {
+          show: true
+        },
+        layVerify: '',
+        layVerType: '用户不能为空',
+        name: 'userIds'
+      });
+
+      var roleSelect = xmSelect.render({
+        el: '#roleSelect',
+        language: 'zn',
+        data: [[${roleList}]],
+        filterable: true,
+        radio: true,
+        tips: '请选择职务',
+        toolbar: {
+          show: true
+        },
+        layVerify: 'required',
+        layVerType: '职务不能为空',
+        name: 'roleId',
+        on: function(data){
+        	var departmentId = $("#departmentId").val();
+          var changeItem = data.change[0];
+          var roleId = changeItem['id'];
+          var url = '/manage/changeUser/getObjects?roleId=' + roleId + '&departmentId=' + departmentId;
+          $.get(url, function (result) {
+            // 初始化多选组件
+            userSelect.update({
+              data: result.data
+            })
+          })
+        }.bind(roleSelect)
+      });
+    });
+  </script>
+</body>
+</html>

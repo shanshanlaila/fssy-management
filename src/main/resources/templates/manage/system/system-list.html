@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>功能系统管理</title>
+</head>
+<body>
+	<!-- 引入xadmin -->
+	<div th:replace="~{common/xadmin :: xadmin}"></div>
+	<!-- 引入treeTable -->
+	<div th:replace="~{common/treeTable :: treeTable}"></div>
+	<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">管理员管理</a>
+			<a> <cite>功能系统管理</cite></a>
+		</span> <a class="layui-btn layui-btn-small"
+			style="line-height: 1.6em; margin-top: 3px; float: right"
+			onclick="location.reload()" title="刷新"> <i
+			class="layui-icon layui-icon-refresh" style="line-height: 30px"></i></a>
+	</div>
+	<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+			<div class="layui-col-md12">
+				<div class="layui-card">
+					<form class="layui-form layui-col-space5">
+						<div class="layui-card-header">
+							<button shiro:hasPermission="manage:system:create" class="layui-btn" lay-submit lay-filter="create">
+								<i class="layui-icon"></i>添加
+							</button>
+						</div>
+					</form>
+					<div class="layui-card-body ">
+						<table class="layui-table layui-form" id="systemTable"
+							lay-filter="systemTable"></table>
+						<script type="text/html" id="tool">
+              <a shiro:hasPermission="manage:system:edit" lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+            </script>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:inline="javascript">
+    layui.config({
+      base: '/plugin/treetable/'
+    });
+    layui.use(['layer', 'table', 'form', "treeTable"], function () {
+      var $ = layui.$
+          , table = layui.table
+          , layer = layui.layer
+          , form = layui.form
+          , treeTable = layui.treeTable;
+
+      // 实例表格
+      treeTable = treeTable.render({
+        elem: '#systemTable'
+        , url: "/manage/system/getObjects"
+        // , page: true
+        // , height: 500 // 设置高度，使数据置于滚动条控制下
+        // , limit: 10
+        // , limits: [10, 20, 30, 50]
+        // , skin: 'line'
+        , primary_key: 'id'
+        , parent_key: 'parent'
+        , icon_key: 'name'
+        , is_checkbox: false
+        , icon: {
+          open: 'layui-icon layui-icon-tread',
+          close: 'layui-icon layui-icon-praise',
+          left: 16
+        }
+        , end: function (e) {
+          form.render();
+        }
+        , cols: [
+          {key: 'id', title: '系统编号', width: '80px'}
+          , {key: 'name', title: '名称', width: '120px'}
+          , {
+            key: 'route', title: '系统首页路由', width: '200px', template: function (item) {
+              return item.route ? item.route : '';
+            }
+          }
+          , {
+            key: 'desciption', title: '系统描述', template: function (item) {
+              return item.desciption ? item.desciption : '';
+            }
+          }
+          ,
+          {
+            title: '操作',
+            align: 'center',
+            width: '80px',
+            template: function (item) {
+              return '<a shiro:hasPermission="manage:system:edit" title="编辑"  onclick="xadmin.open(\'修改功能系统\',\'/manage/system/edit?id=' + item.id + '\')">\n' +
+                  '                <i class="layui-icon">&#xe642;</i>\n' +
+                  '              </a>\n' +
+                  '              <a shiro:hasPermission="manage:system:destroy" title="删除" onclick="member_del(this,' + item.id + ')" href="javascript:;">\n' +
+                  '                <i class="layui-icon">&#xe640;</i>\n' +
+                  '              </a>';
+            }
+          }
+        ]
+      });
+
+      // 监听搜索按钮
+      // form.on('submit(search)', function (data) {
+      //   // 重新加载表格
+      //   treeTable.reload('systemTable', {
+      //     where: data.field
+      //   });
+      //   return false;
+      // });
+
+      // 监听添加按钮
+      form.on('submit(create)', function (data) {
+        // 弹出添加页面
+        layer.open({
+          type: 2,
+          title: '添加功能系统',
+          area: [$(window).width()*0.9 + 'px', $(window).height() - 50 +'px'],
+          content: '/manage/system/create',
+          scrollbar: true,
+          // 设置点击遮盖关闭
+          // shadeClose: true,
+          maxmin: true
+        });
+        return false;
+      });
+
+    });
+
+    /** 删除系统 */
+    function member_del(obj, id) {
+      layer.confirm('确认要删除吗？', function () {
+        $.ajax({
+          type: 'DELETE',
+          url: '/manage/system/' + id,
+          headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+          success: function (result) {
+            layer.msg(result.msg);
+            if (result.status == 200) {
+              $(obj).parents("tr").remove();
+            }
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<div class="left-nav" th:fragment="aside">
+		<div id="side-nav">
+			<ul id="nav">
+				<li th:each="grandFather : ${menus}"><a href="javascript:;"
+					th:if="${not #lists.isEmpty(grandFather['children'])}"> <cite
+						th:text="${grandFather['name']}">一级菜单</cite> <i
+						class="iconfont nav_right">&#xe697;</i></a>
+					<ul class="sub-menu">
+						<li th:each="father : ${grandFather['children']}"><a
+							href="javascript:;"
+							th:if="${not #lists.isEmpty(father['children'])}"> <cite
+								th:text="${father['name']}">二级菜单</cite> <i
+								class="iconfont nav_right">&#xe697;</i></a>
+							<ul class="sub-menu">
+								<li th:each="child : ${father['children']}"><a
+									class="navigate"
+									th:attr="data-url=${child['route']},data-text=${child['name']}">
+										<i class="iconfont">&#xe6a7;</i> <cite
+										th:text="${child['name']}">三级菜单</cite>
+								</a></li>
+							</ul> <a class="navigate"
+							th:unless="${not #lists.isEmpty(father['children'])}"
+							th:attr="data-url=${father['route']},data-text=${father['name']}">
+								<i class="iconfont">&#xe6a7;</i> <cite
+								th:text="${father['name']}">二级菜单</cite>
+						</a></li>
+					</ul> <a class="navigate"
+					th:unless="${not #lists.isEmpty(grandFather['children'])}"
+					th:attr="data-url=${grandFather['route']},data-text=${grandFather['name']}">
+						<i class="iconfont">&#xe6a7;</i> <cite
+						th:text="${grandFather['name']}">一级菜单</cite>
+				</a></li>
+			</ul>
+		</div>
+
+		<script type="text/javascript">
+			layui.use(
+			[
+				'layer'
+			], function()
+			{
+				var $ = layui.$, layer = layui.layer;
+
+				var menuHeight = document.getElementById('nav');// menu 菜单ul的id名称
+				var screenHeight = window.innerHeight; // 浏览器窗口的内部高度
+				menuHeight.style.height = screenHeight - 60 + "px"; // （取消）2021.3.2修改最低高度与浏览器高度一直
+				$("#nav").css(
+				{
+					"overflow-y" : "auto",
+					"height" : menuHeight
+				});// 添加滚动条并设置滚动条高度（根据屏幕自适应）
+
+				// 监听navigate，打开xadmin页签
+				$(".navigate").click(function(obj)
+				{
+					if ($(obj.target).attr('data-url'))
+					{
+						target = $(obj.target);
+					}
+					else
+					{
+						target = $(obj.target).parent();
+					}
+					var url = target.attr('data-url');
+					var name = target.attr('data-text');
+					// 打开页面标签
+					xadmin.add_tab(name, url);
+				});
+			});
+		</script>
+	</div>
+</body>
+</html>

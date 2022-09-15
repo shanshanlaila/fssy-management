@@ -1,0 +1,167 @@
+<div class="container" th:fragment="supplier-nav">
+  <div class="logo">
+    <a href="#">裕信供应商系统</a>
+  </div>
+  <div class="left_open">
+    <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
+  </div>
+  <ul class="layui-nav left fast-add" lay-filter=""></ul>
+  <ul class="layui-nav right" lay-filter="">
+    <li class="layui-nav-item">
+      <a href="javascript:;"><shiro:principal property="name"></a>
+      <dl class="layui-nav-child">
+        <!-- 二级菜单 -->
+        <dd>
+<!--          <a onclick="xadmin.open('个人信息','#')">个人信息</a>-->
+          <a id="changePassword" href="javascript:;">修改密码</a>
+        </dd>
+        <dd class="close-all" data-type="closeall">
+          <a href="/logout">退出</a>
+        </dd>
+      </dl>
+    </li>
+    <li class="layui-nav-item to-index"><a href="#">裕信供应商系统首页</a></li>
+  </ul>
+  
+  <script>
+    layui.use(['element','layer'],function(){
+      var $ = layui.$,
+        element = layui.element,
+        layer = layui.layer;
+
+      var active = {
+        tabDeleteAll : function (ids) {
+          $.each(ids,function (i,item) {
+            element.tabDelete("xbs_tab",item);
+          });
+        }
+      };
+      $('#changePassword').click(function () {
+        layer.open({
+          type: 2,
+          title: '修改密码',
+          area: ['800px', '500px'],
+          content: '/manage/supplier/editPassword?id='+[[${currentUser.id}]]+'&supplier=1',
+          scrollbar: true,
+          maxmin: true
+        });
+      });
+
+      $(".close-all").click(function () {
+        if($(this).attr("data-type") == "closeall"){
+          let tabTitle = $(".layui-tab-title li");
+          let ids = [];
+          $.each(tabTitle,function (i) {
+            ids[i] = $(this).attr("lay-id");
+          });
+          active.tabDeleteAll(ids);
+        }
+      });
+
+      // 监听窗口关闭事件，关闭所有页签
+      window.onbeforeunload = function()
+      {
+        var tabtitle = $(".layui-tab-title li");
+        var ids =
+          [];
+        $.each(tabtitle, function(i)
+        {
+          ids[i] = $(this).attr("lay-id");
+        });
+        active.tabDeleteAll(ids);
+      }
+
+      var websocket = null;
+
+			//判断当前浏览器是否支持WebSocket, 主要此处要更换为自己的地址
+			if ('WebSocket' in window) {
+				websocket = new WebSocket("ws://124.226.194.135:18090/test/one/[[${currentUser['id']}]]");
+			}
+			else {
+				alert('Not support websocket')
+			}
+
+			//连接发生错误的回调方法
+			websocket.onerror = function() {
+				console.log("user socket error");
+			};
+
+			//连接成功建立的回调方法
+			websocket.onopen = function(event) {
+				//setMessageInnerHTML("open");
+			}
+
+			//接收到消息的回调方法
+			websocket.onmessage = function(event) {
+				console.log(event.data);
+			}
+
+			//连接关闭的回调方法
+			websocket.onclose = function() {
+				console.log("user socket close");
+				closeWebSocket();
+			}
+
+			//监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+			window.onbeforeunload = function() {
+				closeWebSocket();
+			}
+
+			//关闭连接
+			function closeWebSocket() {
+				websocket.close();
+			}
+
+			//发送消息
+			function send() {
+				var message = document.getElementById('text').value;
+				websocket.send(message);
+			}
+			
+			var shiroWebsocket = null;
+
+			//判断当前浏览器是否支持WebSocket, 主要此处要更换为自己的地址
+			if ('WebSocket' in window) {
+				shiroWebsocket = new WebSocket("ws://124.226.194.135:18090/kickout/[[${shiroSessionId}]]");
+			}
+			else {
+				alert('Not support shiroWebsocket')
+			}
+
+			//连接发生错误的回调方法
+			shiroWebsocket.onerror = function() {
+				console.log("shiro socket error");
+			};
+
+			//连接成功建立的回调方法
+			shiroWebsocket.onopen = function(event) {
+				//setMessageInnerHTML("open");
+			}
+
+			//接收到消息的回调方法
+			shiroWebsocket.onmessage = function(event) {
+				console.log(event.data);
+				alert(event.data);
+				location.reload();
+			}
+
+			//连接关闭的回调方法
+			shiroWebsocket.onclose = function() {
+				console.log("shiro socket close");
+				closeWebSocket();
+			}
+
+			//监听窗口关闭事件，当窗口关闭时，主动去关闭shiroWebsocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+			window.onbeforeunload = function() {
+				closeWebSocket();
+			}
+
+			//关闭连接
+			function closeWebSocket() {
+				shiroWebsocket.close();
+			}
+
+    });
+  </script>
+
+</div>

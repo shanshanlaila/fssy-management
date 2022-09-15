@@ -1,0 +1,82 @@
+server:
+  port: 8081
+#  ssl:
+#    key-store-password: PatYQkO8
+#    key-store-type: PKCS12
+#    key-store: classpath:8003086_www.lzyxfs.com.pfx
+#    enabled: true
+#http:
+#  # http的访问端口
+#  port : 8081
+spring:
+  # jdbc datasource
+  datasource:
+    # 使用druid数据源，引用druid依赖
+    type: com.alibaba.druid.pool.DruidDataSource
+    # JDBC数据库驱动
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # mysql连接字符串
+    url: jdbc:mysql://127.0.0.1:3306/fs-business?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    username: ENC(TDYLJAaQfgP54EehX6XjbQ==)
+    password: ENC(6AcVP2wi2zCkZ+unsW5sYg==)
+  devtools:
+    restart:
+      enabled: true #设置开启热部署
+      additional-paths: src/main/java
+      exclude: static/**,templates/**
+    freemarker:
+      cache: false # 页面不加载缓存，修改即时生效
+  profiles:
+    active: dev
+  # MULTIPART配置
+  servlet:
+    multipart:
+      # 开启 multipart 上传功能
+      enabled: true
+      # 文件写入磁盘的阈值      
+      file-size-threshold: 2KB
+      # 最大文件大小
+      max-file-size: 200MB
+      # 最大请求大小
+      max-request-size: 215MB
+## 文件存储所需参数
+# 所有通过 REST APIs 上传的文件都将存储在此目录下
+file.upload-dir: ./uploads
+# kickout开关（重复用户名登录是否踢掉，false或不加配置则打开）
+business.kickout: true
+      
+#mybatis-plus配置
+mybatis-plus:
+  configuration:
+    # 开启自动驼峰命名规则映射,默认是不开启，userId会映射为user_id
+    mapUnderscoreToCamelCase: false
+    # MyBatis 自动映射时未知列或未知属性处理策略:NONE不做任何处理 (默认值),WARNING以日志的形式打印相关警告信息,FAILING当作映射失败处理，并抛出异常和详细信息
+    autoMappingUnknownColumnBehavior: none
+    # 指定当结果集中值为 null 的时候是否调用映射对象的 Setter（Map 对象时为 put）方法
+    callSettersOnNulls: true
+    
+# logback配置
+#logging:  
+  # 设置日志文件
+  #file: log/springboot.log
+  # 设置日志级别
+  #level:
+    #root: INFO
+    #org.springframework.web: INFO
+  # 指定log-back-spring.xml的配置路径,不用指向，有默认
+  #config: classpath:logback-spring.xml
+
+# enterprise wechat配置
+wechat:
+  # 微信企业号的appid
+  corpId: ENC(tW4tjVKQcubJPJx2ic+gBU5+7PB/TTqWJggoMtQjCik=)
+  # 微信企业号的app corpSecret
+  corpSecret: ENC(qit1ORpJGMVCSm78CMEWsTeoiE7XUxw5zbGAYIq39OjPGzfhLUgXVwsRorzzey0cVLmRrfE4080=)
+  
+jasypt:
+  encryptor:
+    password: ilovebaby
+    # 不加此配置，会报错转不到string类型
+    algorithm: PBEWithMD5AndDES
+    # 3.0.3 版本之后加了这个配置项
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator

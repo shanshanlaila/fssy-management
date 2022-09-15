@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>引入zTree</title>
+</head>
+<body>
+	<div th:fragment="zTree">
+		<!-- 加载ztree树形插件的样式和js -->
+		<link rel="stylesheet"
+			th:href="@{/plugin/ztree/css/zTreeStyle/zTreeStyle.css}">
+		<script type="text/javascript"
+			th:src="@{/plugin/ztree/jquery.ztree.all.min.js}"></script>
+		<!-- 引入ztree.js框拖动js -->
+		<script type="text/javascript" th:src="@{/js/ztreeUtils.js}"></script>
+	</div>
+</body>
+</html>

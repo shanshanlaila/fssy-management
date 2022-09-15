@@ -1,0 +1,51 @@
+@charset "UTF-8";
+
+.login-bg{
+	background:url(../image/fssy-login.png) no-repeat center;
+	background-size: cover;
+	overflow: hidden;
+	background-size: 100% 100%;
+}
+
+.search-laydate {
+	width: 90px !important;
+}
+
+.layui-card-body {
+	padding: 5px 10px 5px 10px !important;
+}
+
+.layui-fluid {
+	padding: 5px !important;
+}
+
+.x-nav {
+	line-height: 30px !important;
+	height: 30px !important;
+}
+
+.layui-card-body .layui-table {
+    margin: 0px 0px !important;
+}
+
+.layui-table-view {
+    margin: 5px 0 !important;
+}
+
+/* 修改菜单的间距 */
+.left-nav #nav li a {
+    padding: 5px 15px 5px 10px !important;
+}
+
+.left-nav #nav li .sub-menu li a {
+    padding: 5px 15px 5px 23px !important;
+}
+
+.left-nav #nav li .sub-menu li .sub-menu li a {
+    padding-left: 35px !important;
+}
+
+/* 设置表格单元格 */
+.layui-table-box .layui-table-cell {
+	padding: 0px 5px !important;
+}

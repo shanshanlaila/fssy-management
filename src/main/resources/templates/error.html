@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<title>方盛实业信息系统</title>
+<!-- Font Awesome -->
+<link th:href="@{/plugin/font-awesome/css/font-awesome.min.css}" rel="stylesheet">
+<!-- jQuery 3 -->
+<script th:src="@{/plugin/jquery/jquery-3.4.1.min.js}" charset="utf-8"></script>
+<style type="text/css">
+/* 错误页面 */
+body.error_page {
+	background-color: #00629f;
+	background-image: url(/image/error.png);
+	background-position: center top;
+	background-repeat: no-repeat;
+}
+
+#error {
+	color: yellow;
+	text-align: center;
+}
+</style>
+</head>
+<body class="error_page" onload="startTimes();">
+	<!-- 引入layui -->
+	<div th:replace="~{common/layui :: layui}"></div>
+	<h1 id="error">
+		遇到错误，&nbsp;<span id="secondes">15</span>&nbsp;秒后将自动跳转，立即跳转请点击&nbsp; <a style="color: green;"
+			href="javascript:resetTimer();">返回</a>
+	</h1>
+	<h1 id="error">
+		错误描述： <span th:text="${msg}"></span>
+	</h1>
+	<script language="javascript" type="text/javascript" th:inline="javascript">
+  
+	  layui.use(['element','layer'],function(){
+	    var $ = layui.$,
+	      element = layui.element,
+	      layer = layui.layer;
+	    
+			var timer;
+	    
+	    var judgeSystem = [[${judgeSystem}]];
+	    
+	    // 启动跳转的定时器
+	    window.startTimes = function() {
+	      timer = window.setInterval(showSecondes,1000);
+	    }
+	
+	    var i = 15;
+	    window.showSecondes = function() {
+	      if (i > 0) {
+	        i--;
+	        document.getElementById("secondes").innerHTML = i;
+	      }
+	      else {
+	        window.clearInterval(timer);
+	        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+	        if (index) {
+		        parent.layer.close(index); //再执行关闭
+	        }
+	        else {
+	        	forwardIndex();
+	       	}
+	      }
+	    }
+	
+	    //取消跳转
+	    window.resetTimer = function() {
+	      if (timer != null && timer != undefined) {
+	        window.clearInterval(timer);
+	        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+	        if (index) {
+		        parent.layer.close(index); //再执行关闭
+	        }
+	        else {
+	        	forwardIndex();
+	       	}
+	      }
+	    }
+	    
+	    function forwardIndex () {
+	    	if (judgeSystem == 1) {
+	    		location.href = '/manage/manageIndex';
+	      } else if (judgeSystem == 2) {
+	      	location.href = '/system/businessIndex';
+	      } else if (judgeSystem == 3) {
+	      	location.href = "/system/supplierIndex";
+	      }
+	    }
+	  });
+    
+  </script>
+</body>
+</html>

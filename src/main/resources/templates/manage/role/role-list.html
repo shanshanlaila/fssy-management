@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>角色管理</title>
+</head>
+<body>
+	<!-- 引入xadmin -->
+	<div th:replace="~{common/xadmin :: xadmin}"></div>
+	<div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">管理员管理</a>
+            <a>
+              <cite>角色管理</cite></a>
+          </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       onclick="location.reload()"
+       title="刷新">
+      <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+  </div>
+  <div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+      <div class="layui-col-md12">
+        <div class="layui-card">
+          <form class="layui-form layui-col-space5">
+            <div class="layui-card-body ">
+              <div class="layui-inline layui-show-xs-block">
+                <input type="text" name="name" placeholder="名称查询" autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-inline layui-show-xs-block">
+                <button class="layui-btn" lay-submit lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+              </div>
+            </div>
+          </form>
+          <div class="layui-card-body ">
+            <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+            <script type="text/html" id="tool">
+              <a shiro:hasPermission="manage:role:edit" lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+              <a shiro:hasPermission="manage:role:destroy" lay-event="delete" title="删除"><i class="layui-icon">&#xe640;</i></a>
+            </script>
+            <script type="text/html" id="toolbar">
+            	<div shiro:hasPermission="manage:role:create" class="layui-btn-container">
+              	<button class="layui-btn layui-btn-sm" lay-event="create">添加</button>
+            	</div>
+          	</script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script th:inline="none">
+    layui.use(['laydate', 'layer', 'table', 'form'], function () {
+      var $ = layui.$
+          , laydate = layui.laydate
+          , table = layui.table
+          , layer = layui.layer
+          , form = layui.form;
+
+      // 实例表格
+      table.render({
+        elem: '#dataTable'
+        , id: 'dataTable'
+        , url: "/manage/role/getObjects"
+        , page: true
+        , height: 'full-100' // 设置高度，使数据置于滚动条控制下
+        , limit: 50
+        , limits: [30, 50, 100]
+      	, toolbar: '#toolbar'
+      	, size: 'sm'
+        , cols: [[
+          {field: 'id', title: '角色编号', width: 120}
+          , {field: 'name', title: '角色名称'}
+          , {fixed: 'right', title: '操作', width: 100, align: 'center', toolbar: '#tool'}
+        ]]
+      });
+
+      // 监听搜索按钮
+      form.on('submit(search)', function (data) {
+        // 重新加载表格
+        table.reload('dataTable', {
+          where: data.field,
+          page: {
+            curr: 1
+          }
+        });
+        return false;
+      });
+
+   		// 监听头工具栏事件
+      table.on('toolbar(dataTable)', function (obj) {
+        if(obj.event ==='create'){
+     		// 弹出添加页面
+        layer.open({
+          type: 2,
+          title: '添加角色',
+          area: [$(window).width()*0.9 + 'px', $(window).height() - 50 +'px'],
+          content: '/manage/role/create',
+          scrollbar: true,
+          // 设置点击遮盖关闭
+          // shadeClose: true
+          maxmin: true
+        });
+        }
+      });
+
+      // 监听行工具事件
+      table.on('tool(dataTable)', function (obj) {
+        var data = obj.data;
+        if (obj.event === 'edit') { // 修改
+          layer.open({
+            type: 2,
+            title: data.name + '角色信息修改',
+            area: [$(window).width()*0.9 + 'px', $(window).height() - 50 +'px'],
+            content: '/manage/role/edit?id=' + data.id,
+            maxmin: true
+          });
+        } else if (obj.event === 'delete') { // 删除
+          layer.confirm('真的删除角色' + data.name + '吗？', function () {
+            $.ajax({
+              type: 'DELETE',
+              url: '/manage/role/' + data.id,
+              success: function (result) {
+                layer.msg(result.msg);
+                if (result.status == 200) {
+                  table.reload('dataTable');
+                }
+              }
+            })
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

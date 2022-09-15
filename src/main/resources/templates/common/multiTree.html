@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>多树结构引入</title>
+</head>
+<body>
+<div th:fragment="multiTree">
+    <!-- 加载ztree树形插件的样式和js -->
+    <link rel="stylesheet"
+          th:href="@{/plugin/ztree/css/zTreeStyle/zTreeStyle.css}">
+
+    <script type="text/javascript" th:src="@{/js/jquery.ztree.core.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.ztree.excheck.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.ztree.exedit.js}"></script>
+</div>
+</body>
+</html>
