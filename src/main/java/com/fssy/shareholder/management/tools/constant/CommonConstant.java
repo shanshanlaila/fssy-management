@@ -34,11 +34,11 @@ public interface CommonConstant
      */
     int SUPPLIER_SYSTEM = 3;
 
-
     /**
      * 角色：供应商
      */
     int ROLE_SUPPLIER = 63;
+    
     /**
      * 否
      */
@@ -76,5 +76,12 @@ public interface CommonConstant
      */
     String NO = "否";
 
-
+	/** 组织结构分类：部门 */
+	Integer DEPARTMENT_TYPE_DEPARTMENT = 1;
+	
+	/** 组织结构分类：课室 */
+	Integer DEPARTMENT_TYPE_OFFICE = 2;
+	
+	/** 组织结构分类：班/课室的细分 */
+	Integer DEPARTMENT_TYPE_CLASS = 3;
 }
