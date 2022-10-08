@@ -14,13 +14,15 @@ import com.baomidou.mybatisplus.extension.injector.methods.InsertBatchSomeColumn
 public class MySqlInjector extends DefaultSqlInjector
 {
 
-	@Override
-	public List<AbstractMethod> getMethodList(Class<?> mapperClass)
-	{
-		List<AbstractMethod> methodList = super.getMethodList(mapperClass);
-		// 批量添加
-		methodList.add(new InsertBatchSomeColumn());
-		return methodList;
-	}
-	
+//	@Override
+//	public List<AbstractMethod> getMethodList(Class<?> mapperClass)
+//	{
+//		List<AbstractMethod> methodList = super.getMethodList(mapperClass);
+//		// 批量添加
+//		methodList.add(new InsertBatchSomeColumn());
+//		return methodList;
+//	}
+
 }
+
+
