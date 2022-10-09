@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>事件列表</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="x-nav">
+		<span class="layui-breadcrumb">
+		</span>
+    <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+       onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height: 30px"></i>
+    </a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body">
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="eventsType" placeholder="事件类别查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="jobName" placeholder="工作职责查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <input type="text" name="supportFunctions" placeholder="支持职能查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                            <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
+                                    lay-filter="downloadForCharge">导出
+                            </button>
+                            <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
+                                    lay-filter="showImport">导入事件标准
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use([
+        'table', 'form', 'layer', 'laydate'
+    ], function () {
+        var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+
+        // 监听搜索按钮
+        form.on('submit(search)', function (data) {
+            console.log(data.field)
+            // 重新加载表格
+            table.reload('dataTable', {
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false
+        });
+
+        // 监听导出按钮
+        form.on('submit(downloadForCharge)', function (data) {
+            var field = data.field;
+            field.url = "/system/performance/employee/eventsList/downloadForCharge";
+            var url = createUrl(field);
+            layer.msg("正在导出事件列表，请稍候");
+            window.open(url, true);
+            return false;
+        });
+
+        // 实例表格
+        var dataTable = table.render({
+            elem: '#dataTable',
+            id: 'dataTable',
+            url: "/system/performance/employee/eventsList/getObjects",
+            page: true,
+            totalRow: true,
+            size: 'sm',
+            height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            limit: 50,
+            limits: [50, 100, 200, 500],
+            toolbar: '#toolbar',
+            cols: [
+                [
+                    {
+                        type: 'checkbox',
+                        fixed: 'left',
+                        width: 60
+                    },
+                    {
+                        field: 'id',
+                        title: '序号',
+                        width: 50
+                    },
+                    {
+                        field: 'eventsType',
+                        title: '事件类别',
+                        width: 80
+                    },
+                    {
+                        field: 'jobName',
+                        title: '工作职责',
+                        width: 120
+                    },
+                    {
+                        field: 'workEvents',
+                        title: '流程（工作事件）',
+                        width: 200,
+                    },
+                    {
+                        field: 'delowStandard',
+                        title: '不合格',
+                        width: 80
+                    },
+                    {
+                        field: 'middleStandard',
+                        title: '中',
+                        width: 130
+                    },
+                    {
+                        field: 'fineStandard',
+                        title: '良',
+                        width: 130
+                    },
+                    {
+                        field: 'excellentStandard',
+                        title: '优',
+                        width: 130
+                    },
+                ]
+            ]
+        });
+
+        // 导入按钮
+        form.on('submit(showImport)', function (data) {
+            var createLayer = layer.open({
+                type: 2,
+                title: "上传事件清单附件",
+                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                content: '/system/performance/employee/eventsListAttachment/import',
+                scrollbar: true,
+                maxmin: true,
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

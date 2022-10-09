@@ -38,7 +38,7 @@ public interface CommonConstant
      * 角色：供应商
      */
     int ROLE_SUPPLIER = 63;
-    
+
     /**
      * 否
      */
@@ -65,6 +65,11 @@ public interface CommonConstant
      */
     Integer IMPORT_RESULT_SUCCESS = 1;
 
+    /**
+     * 导入结果：读取失败
+     */
+    Integer IMPORT_RESULT_FAILED = 2;
+
 
     /**
      * 数据状态：是
@@ -78,10 +83,10 @@ public interface CommonConstant
 
 	/** 组织结构分类：部门 */
 	Integer DEPARTMENT_TYPE_DEPARTMENT = 1;
-	
+
 	/** 组织结构分类：课室 */
 	Integer DEPARTMENT_TYPE_OFFICE = 2;
-	
+
 	/** 组织结构分类：班/课室的细分 */
 	Integer DEPARTMENT_TYPE_CLASS = 3;
 }
