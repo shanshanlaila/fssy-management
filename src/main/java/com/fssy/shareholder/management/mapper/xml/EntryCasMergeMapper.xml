@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge">
+        <id column="id" property="id" />
+        <result column="createdAt" property="createdAt" />
+        <result column="createdId" property="createdId" />
+        <result column="createdName" property="createdName" />
+        <result column="updatedAt" property="updatedAt" />
+        <result column="updatedId" property="updatedId" />
+        <result column="updatedName" property="updatedName" />
+        <result column="departmentName" property="departmentName" />
+        <result column="departmentId" property="departmentId" />
+        <result column="roleName" property="roleName" />
+        <result column="roleId" property="roleId" />
+        <result column="userName" property="userName" />
+        <result column="userId" property="userId" />
+        <result column="applyDate" property="applyDate" />
+        <result column="year" property="year" />
+        <result column="month" property="month" />
+        <result column="createDate" property="createDate" />
+        <result column="createName" property="createName" />
+        <result column="createId" property="createId" />
+        <result column="auditName" property="auditName" />
+        <result column="auditId" property="auditId" />
+        <result column="auditDate" property="auditDate" />
+        <result column="auditNote" property="auditNote" />
+        <result column="status" property="status" />
+        <result column="mergeNo" property="mergeNo" />
+        <result column="serial" property="serial" />
+        <result column="note" property="note" />
+    </resultMap>
+
+</mapper>
