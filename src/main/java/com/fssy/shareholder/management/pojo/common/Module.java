@@ -15,7 +15,11 @@ package com.fssy.shareholder.management.pojo.common;
 public enum Module {
 
     PERFORMANCE_HANDLERS_ITEM(1, "handler_item"),
-    PERFORMANCE_EVENT_LIST(2, "event_list");
+    PERFORMANCE_EVENT_LIST(2, "event_list"),
+    IKUN(78,"ikun"),
+    TEACHER(79,"teacher"),
+    PERFORMANCE_HANDLERSITEM_LIST(80,"performance_handlersitem_list"),
+    PERFORMANCE_EVENTS_LIST(81,"performance_events_list");
 
 
     private final Integer value;
