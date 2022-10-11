@@ -84,7 +84,7 @@
         table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/config/attachment/getObjects?module=2",
+            url: "/system/config/attachment/getObjects?module=[[${module}]]",
             page: true,
             size: 'sm',
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
@@ -182,7 +182,7 @@
                 trigger: 'click',
                 type: 'date'
             });
-        
+
      		// 重新重置日期控件
         laydate.render(
             {
@@ -211,7 +211,7 @@
                     type: 'date',
                     value: moment().format("YYYY-MM-DD")
                 });
-            
+
             upload.render({
 	              elem : '#chooseFile',
 	              url : "/system/performance/employee/eventsListAttachment/uploadFile",
@@ -260,7 +260,7 @@
           	});
             return false;
         });
-        
+
         // 重新重置日期控件
         upload.render({
             elem : '#chooseFile',

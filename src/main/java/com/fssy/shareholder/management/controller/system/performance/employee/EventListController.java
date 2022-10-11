@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -48,7 +48,10 @@ public class EventListController {
 	@GetMapping("index")
 	@RequiredLog("无标准事件管理")
 	@RequiresPermissions("system:performance:event")
-	public String showEventList() {
+	public String showEventList(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
 		return "/system/performance/employee/performance-event-list";
 	}
 
@@ -275,7 +278,9 @@ public class EventListController {
         if (!ObjectUtils.isEmpty(request.getParameter("officeId"))) {
             params.put("officeId", request.getParameter("officeId"));
         }
-
+        if (!ObjectUtils.isEmpty(request.getParameter("statusWait"))){
+            params.put("statusWait",request.getParameter("statusWait"));
+        }
         return params;
     }
 
