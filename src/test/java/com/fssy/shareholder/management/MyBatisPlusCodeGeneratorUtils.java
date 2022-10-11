@@ -1,14 +1,12 @@
 package com.fssy.shareholder.management;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import java.util.Collections;
+
+import com.baomidou.mybatisplus.generator.FastAutoGenerator;
+import com.baomidou.mybatisplus.generator.config.OutputFile;
+import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import com.fssy.shareholder.management.mapper.manage.common.MyBaseMapper;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-import com.baomidou.mybatisplus.generator.FastAutoGenerator;
-import com.baomidou.mybatisplus.generator.config.*;
-import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
-
-
-import java.util.Collections;
 
 /**
  * MyBatisPlus代码生成器（新），基本满足使用了。
@@ -26,16 +24,16 @@ public class MyBatisPlusCodeGeneratorUtils {
 
     private static final String url = "jdbc:mysql://localhost:3306/fs-business?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8";
     private static final String username = "root";
-    private static final String password = "123123123";
+    private static final String password = "12lanYu";
     //文件夹、数据库配置项、路径配置项
-    private static final String outputDir="D://MyBatisPlusCodeGeneratorUtils";
-    private static final String packageName="employee";
-    private static final String mysqlTableName="bs_performance_events_list";
+    private static final String outputDir="D://develop/eclipse_workspace/fssy-management/src/main/java";
+    private static final String packageName="performance.employee";
+    private static final String mysqlTableName="bs_performance_employee_entry_cas_plan_detail";
 
     public static void main(String[] args) {
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
-                    builder.author("TerryZeng")               //作者
+                    builder.author("Solomon")               //作者
                             .outputDir(outputDir)    //输出路径(写到java目录)
 //                            .enableSwagger()           //开启swagger
                             .commentDate("yyyy-MM-dd")
@@ -49,15 +47,15 @@ public class MyBatisPlusCodeGeneratorUtils {
                             .service("service.system."+packageName)
                             .serviceImpl("service.system.impl."+packageName)
                             .controller("controller.system."+packageName)
-                            .mapper("mapper.system."+packageName)
+                            .mapper("mapper.system."+packageName);
 //                            .xml("mapper.xml")
-                            .pathInfo(Collections.singletonMap(OutputFile.mapperXml, outputDir+"//main//resources//templates//mapper//system//"+packageName));
+//                            .pathInfo(Collections.singletonMap(OutputFile.mapperXml, outputDir+"//main//resources//templates//mapper//system//"+packageName));
                 })
 
                 .strategyConfig(builder -> {
                     //数据表名
                     builder.addInclude(mysqlTableName)
-                            .addTablePrefix("bs_")
+                            .addTablePrefix("bs_performance_employee")
                             .serviceBuilder()
                             .formatServiceFileName("%sService")
                             .formatServiceImplFileName("%sServiceImpl")
@@ -71,14 +69,15 @@ public class MyBatisPlusCodeGeneratorUtils {
                             //控制器配置
                             .controllerBuilder()
                             .formatFileName("%sController")
-                            .enableRestStyle()
+                            .enableHyphenStyle()
+//                            .enableRestStyle()
                             //数据接口Mapper配置
                             .mapperBuilder()
                             .enableBaseResultMap()  //生成通用的resultMap
                             .superClass(MyBaseMapper.class)
                             .formatMapperFileName("%sMapper")
-                            .enableMapperAnnotation()
-                            .formatXmlFileName("%sMapper");
+                            .enableMapperAnnotation();
+//                            .formatXmlFileName("%sMapper");
                 })
                 .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
                 .execute();

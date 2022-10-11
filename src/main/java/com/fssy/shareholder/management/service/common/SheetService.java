@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import com.fssy.shareholder.management.pojo.properties.FileProperties;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -34,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import com.fssy.shareholder.management.pojo.properties.FileProperties;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 
 /**
@@ -86,7 +86,7 @@ public class SheetService
 	 * @param filePath 文件存储路径
 	 * @param fileName 文件名字
 	 */
-	public void load(String filePath, String fileName)
+	public synchronized void load(String filePath, String fileName)
 	{
 		// 这里需要转化成绝对路径
 		Path fileStoragePath = this.fileStorageLocation.resolve(filePath)
@@ -426,7 +426,7 @@ public class SheetService
 	 * @param filePath 文件存储路径
 	 * @param fileName 文件名字
 	 */
-	public void write(String filePath, String fileName)
+	public synchronized void write(String filePath, String fileName)
 	{
 		// 这里需要转化成绝对路径
 		Path fileStoragePath = this.fileStorageLocation.resolve(filePath).normalize();
