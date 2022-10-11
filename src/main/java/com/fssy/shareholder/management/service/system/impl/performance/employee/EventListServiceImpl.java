@@ -1,9 +1,8 @@
-/*
- * @Title: fssy-management
- * @Description: TODO
- * @author MI
- * @date 2022/10/8 10:33
- * @version
+/**
+ * ------------------------修改日志---------------------------------
+ * 修改人       修改日期         修改内容
+ * 农浩         2022-10-11     新增无标准事件清单导入
+ * 伍坚山       2022-10-11     新增事件清单评判标准管理
  */
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
@@ -171,6 +170,9 @@ public class EventListServiceImpl implements EventListService {
         if (params.containsKey("officeId")) {
             queryWrapper.eq("officeId", params.get("officeId"));
         }
+        if (params.containsKey("statusWait")) {
+            queryWrapper.eq("status", PerformanceConstant.EVENT_LIST_STATUS_WAIT);
+        }
         return queryWrapper;
     }
 
@@ -261,7 +263,7 @@ public class EventListServiceImpl implements EventListService {
             eventList.setStandardCreateUserId(user.getId());
             eventList.setStandardCreateDate(new Date());
             eventList.setStandardAttachmentId(attachment.getId());
-            eventList.setStatus(PerformanceConstant.PERFORMANCE_EVENT_LIST_STATUS);
+            eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
             // 更新
             eventListMapper.updateById(eventList);
             cell.setCellValue("导入成功");// 写在upload目录下的excel表格
@@ -466,7 +468,7 @@ public class EventListServiceImpl implements EventListService {
             eventList.setDepartmentId(department.getId());
 
             eventList.setOffice(office);
-            eventList.setStatus("待填报标准");
+            eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_WAIT);
 
             //eventLists.add(eventList);
             eventListMapper.insert(eventList);
