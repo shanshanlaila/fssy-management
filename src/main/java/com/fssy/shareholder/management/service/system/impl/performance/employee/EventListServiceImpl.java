@@ -11,24 +11,25 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author MI
@@ -132,8 +133,9 @@ public class EventListServiceImpl implements EventListService {
         if (params.containsKey("valueCreateDate")) {
             queryWrapper.like("valueCreateDate", params.get("valueCreateDate"));
         }
+        // 状态：完结
         if (params.containsKey("status")) {
-            queryWrapper.like("status", params.get("status"));
+            queryWrapper.eq("status", params.get("status"));
         }
         if (params.containsKey("listAttachmentId")) {
             queryWrapper.eq("listAttachmentId", params.get("listAttachmentId"));
@@ -152,6 +154,9 @@ public class EventListServiceImpl implements EventListService {
         }
         if (params.containsKey("standardAttachmentId")) {
             queryWrapper.eq("standardAttachmentId", params.get("standardAttachmentId"));
+        }
+        if (params.containsKey("departmentIdList")) {
+            queryWrapper.in("departmentId", (List<String>) params.get("departmentIdList"));
         }
         return queryWrapper;
     }
@@ -173,6 +178,7 @@ public class EventListServiceImpl implements EventListService {
     }
 
     @Override
+    @Transactional
     public Map<String, Object> readEventListDataSource(Attachment attachment) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
@@ -217,7 +223,7 @@ public class EventListServiceImpl implements EventListService {
                 cells.add(res);// 将单元格的值写入行
             }
             // 导入结果写入列
-            Cell cell = row.createCell(SheetService.columnToIndex("I"));// 报错信息上传到S列
+            Cell cell = row.createCell(SheetService.columnToIndex("I"));// 每一行的结果信息上传到S列
             // 检查必填项
             String id = cells.get(SheetService.columnToIndex("A"));// 根据id去更新
             String eventsType = cells.get(SheetService.columnToIndex("B"));
@@ -229,6 +235,7 @@ public class EventListServiceImpl implements EventListService {
             String excellentStandard = cells.get(SheetService.columnToIndex("H"));
             // 构建实体类
             EventList eventList = new EventList();
+            User user = (User) SecurityUtils.getSubject().getPrincipal();
             eventList.setId(Long.valueOf(id));// 要更新的数据id
             eventList.setEventsType(eventsType);
             eventList.setJobName(jobName);
@@ -237,6 +244,11 @@ public class EventListServiceImpl implements EventListService {
             eventList.setMiddleStandard(middleStandard);
             eventList.setFineStandard(fineStandard);
             eventList.setExcellentStandard(excellentStandard);
+            eventList.setStandardCreateUser(user.getName());
+            eventList.setStandardCreateUserId(user.getId());
+            eventList.setStandardCreateDate(new Date());
+            eventList.setStandardAttachmentId(attachment.getId());
+            eventList.setStatus(PerformanceConstant.PERFORMANCE_EVENT_LIST_STATUS);
             // 更新
             eventListMapper.updateById(eventList);
             cell.setCellValue("导入成功");// 写在upload目录下的excel表格

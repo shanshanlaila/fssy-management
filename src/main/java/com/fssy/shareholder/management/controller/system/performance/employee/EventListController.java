@@ -11,11 +11,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
+import com.fssy.shareholder.management.service.common.override.InventoryCheckingSheetOutPutService;
+import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
+import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.common.StringTool;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -37,6 +44,9 @@ public class EventListController {
     @Autowired
     private EventListService eventListService;
 
+    @Autowired
+    private DepartmentService departmentService;
+
     /**
      * 事件评价标准管理页面
      *
@@ -45,10 +55,20 @@ public class EventListController {
     @GetMapping("index")
     @RequiredLog("事件评价标准管理")
     @RequiresPermissions("system:performance:event")
-    public String showHandlersList() {
+    public String showEventList() {
         return "/system/performance/employee/performance-event-list";
     }
 
+    /**
+     * “事件清单评判标准管理”菜单
+     */
+    @GetMapping("manage")
+    public String showEventStatus(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        return "/system/performance/employee/performance-event-manage-list";
+    }
 
     /**
      * 返回 对象列表
@@ -77,7 +97,6 @@ public class EventListController {
 
         return result;
     }
-
 
 
     /**
@@ -109,6 +128,41 @@ public class EventListController {
             throw new ServiceException("未查出数据");
         }
         sheetOutputService.exportNum("事件清单评价表", eventLists, fieldMap, response, strList, null);
+    }
+
+    @GetMapping("downloadObjects")
+    public void downloadObjects(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> params = getParams(request);
+        params.put("select",
+                "id,eventsType,jobName,workEvents,delowStandard,middleStandard,fineStandard,excellentStandard,performanceForm,departmentName");
+        List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
+
+        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+
+        fieldMap.put("id", "序号");
+        fieldMap.put("eventsType", "事务类别");
+        fieldMap.put("jobName", "工作职责");
+        fieldMap.put("workEvents", "流程（工作事件）");
+        fieldMap.put("delowStandard", "不合格");
+        fieldMap.put("middleStandard", "中");
+        fieldMap.put("fineStandard", "良");
+        fieldMap.put("excellentStandard", "优");
+        fieldMap.put("jixiaoleixing", "绩效类型");
+        fieldMap.put("shijianjiazhibiazhunfen", "事件价值标准分");
+        fieldMap.put("dan", "主/次担");
+        fieldMap.put("duiyingjihuaneirong", "对应工作事件的计划内容");
+        fieldMap.put("pinci", "频次");
+        fieldMap.put("biaodan", "表单（输出内容）");
+        fieldMap.put("jihuakaishishijian", "计划开始时间");
+        fieldMap.put("jihuawanchengshijian", "计划完成时间");
+        fieldMap.put("departmentName", "部门");
+        fieldMap.put("gangweimingcheng", "岗位名称");
+        fieldMap.put("gangweirenyuanxingming", "岗位人员姓名");
+        fieldMap.put("shengbaoyuefen", "申报月份");
+
+        // 创建导出服务
+        SheetOutputService sheetOutputService = new SheetOutputService();
+        sheetOutputService.exportNum("事件清单标准评价表状态", eventLists, fieldMap, response, Arrays.asList(1, 2, 3, 4, 5, 6,7,8), null);
     }
 
     private Map<String, Object> getParams(HttpServletRequest request) {
@@ -214,6 +268,11 @@ public class EventListController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("standardAttachmentId"))) {
             params.put("standardAttachmentId", request.getParameter("standardAttachmentId"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("departmentIds"))) {
+            String departmentIds = request.getParameter("departmentIds");
+            List<String> departmentIdList = Arrays.asList(departmentIds.split(","));
+            params.put("departmentIdList", departmentIdList);
         }
 
         return params;
