@@ -44,4 +44,21 @@ public interface EventListService {
      * @return 实时库存凭证关系数据列表
      */
     List<Map<String, Object>> findEventListMapDataByParams(Map<String, Object> params);
+
+    /**
+     * 读取附件数据到数据库表
+     *
+     * @param attachment 附件
+     * @return 附件
+     */
+    Map<String, Object> readEventListWithoutStandardDataSource(Attachment attachment);
+
+
+    /**
+     * 通过条件查询分页数据表
+     *
+     * @param params 参数
+     * @return 分页数据
+     */
+    Page<EventList> findEventListDataPerPageByParams(Map<String, Object> params);
 }

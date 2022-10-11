@@ -11,12 +11,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
-import com.fssy.shareholder.management.service.common.override.InventoryCheckingSheetOutPutService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
-import com.fssy.shareholder.management.tools.common.InstandTool;
-import com.fssy.shareholder.management.tools.common.StringTool;
-import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,8 +270,37 @@ public class EventListController {
             List<String> departmentIdList = Arrays.asList(departmentIds.split(","));
             params.put("departmentIdList", departmentIdList);
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("office"))) {
+            params.put("office", request.getParameter("office"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("officeId"))) {
+            params.put("officeId", request.getParameter("officeId"));
+        }
 
         return params;
     }
 
+    /**
+     * 返回附件上传页面
+     *
+     * @param model
+     * @return 页面
+     */
+
+    @RequiredLog("附件上传")
+    @GetMapping("withoutStandardIndex")
+    public String withoutStandardIndex(Model model) {
+        SimpleDateFormat ssad = new SimpleDateFormat();
+        ssad.applyPattern("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        String importDateStart = ssad.format(date);
+        model.addAttribute("importDateStart", importDateStart);
+        return "system/performance/events-list-list";
+    }
+
+    @GetMapping("withoutStandardImport")
+    public String showImportPage() {
+        return "system/performance/events-list-attachment-list";
+    }
 }

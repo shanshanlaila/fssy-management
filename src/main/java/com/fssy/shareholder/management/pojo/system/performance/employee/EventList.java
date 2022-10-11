@@ -230,6 +230,16 @@ public class EventList extends BaseModel implements Serializable {
      */
     private Long standardAttachmentId;
 
+    /**
+     * 科室
+     */
+    private String office;
+
+    /**
+     * 科室id
+     */
+    private Long officeId;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

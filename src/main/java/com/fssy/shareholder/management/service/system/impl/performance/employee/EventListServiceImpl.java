@@ -10,7 +10,9 @@ package com.fssy.shareholder.management.service.system.impl.performance.employee
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
+import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -45,6 +49,9 @@ public class EventListServiceImpl implements EventListService {
 
     @Autowired
     private SheetService sheetService;
+
+    @Autowired
+    private DepartmentMapper departmentMapper;
 
     @Override
     public Page<EventList> findDataListByParams(Map<String, Object> params) {
@@ -158,6 +165,12 @@ public class EventListServiceImpl implements EventListService {
         if (params.containsKey("departmentIdList")) {
             queryWrapper.in("departmentId", (List<String>) params.get("departmentIdList"));
         }
+        if (params.containsKey("office")) {
+            queryWrapper.like("office", params.get("office"));
+        }
+        if (params.containsKey("officeId")) {
+            queryWrapper.eq("officeId", params.get("officeId"));
+        }
         return queryWrapper;
     }
 
@@ -261,5 +274,216 @@ public class EventListServiceImpl implements EventListService {
     public List<Map<String, Object>> findEventListMapDataByParams(Map<String, Object> params) {
         QueryWrapper<EventList> queryWrapper = getQueryWrapper(params);
         return eventListMapper.selectMaps(queryWrapper);
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Object> readEventListWithoutStandardDataSource(Attachment attachment) {
+        // 返回消息
+        Map<String, Object> result = new HashMap<>();
+        result.put("content", "");
+        result.put("failed", false);
+        //读取附件
+        sheetService.load(attachment.getPath(), attachment.getFilename());//根据路径和名称读取附件
+        //读取表单
+        sheetService.readByName("Sheet1");//根据表单名称获取该工作表单
+        //获取表单数据
+        Sheet sheet = sheetService.getSheet();
+        if (ObjectUtils.isEmpty(sheet)) {
+            throw new ServiceException("表单【经理绩效表单】不存在，无法读取数据，请检查");
+        }
+        //处理导入日期
+        Date importDate = attachment.getImportDate();
+        //获取列表数据
+        Row row;
+        //实体类集合，用于后面的批量写入数据库
+        // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
+        short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
+        // 循环总行数(不读表的标题，从第4行开始读)
+        for (int j = 1; j <= sheet.getLastRowNum(); j++) {
+            // getPhysicalNumberOfRows()此方法不会将空白行计入行数
+            //if (j==3)continue;// 跳过第三行，因为2，3行合并为一行
+            List<String> cells = new ArrayList<>();//每一行的数据用一个list接收
+            row = sheet.getRow(j);//获取第j行
+            // 获取一行中有多少列 Row：行，cell：列
+            // short lastCellNum = row.getLastCellNum();
+            // 循环row行中的每一个单元格
+            for (int k = 0; k < maxSize + 2; k++) {
+                // 如果这单元格为空，就写入空
+                if (row.getCell(k) == null) {
+                    cells.add("");
+                    continue;
+                }
+                // 处理单元格读取到公式的问题
+                if (row.getCell(k).getCellType() == CellType.FORMULA) {
+                    row.getCell(k).setCellType(CellType.STRING);
+                    String res = row.getCell(k).getStringCellValue();
+                    cells.add(res);
+                    continue;
+                }
+                //Cannot get a STRING value from a NUMERIC cell 无法从单元格获取数值
+                Cell cell = row.getCell(k);
+                String res = sheetService.getValue(cell).trim();//获取单元格的值
+                cells.add(res);// 将单元格的值写入行
+            }
+            // 导入结果写入列
+            Cell cell = row.createCell(SheetService.columnToIndex("R"));//报错信息上传到excel D列（暂未实现）
+            String strategyFunctions = cells.get(SheetService.columnToIndex("A"));
+            //检查必填项
+            if (ObjectUtils.isEmpty(strategyFunctions)) {
+                setFailedContent(result, String.format("第%s行的战略职能是空的", j + 1));
+                cell.setCellValue("战略职能是空的");
+                continue;
+            }
+            String supportFunctions = cells.get(SheetService.columnToIndex("B"));
+            if (ObjectUtils.isEmpty(supportFunctions)) {
+                setFailedContent(result, String.format("第%s行的支持职能是空的", j + 1));
+                cell.setCellValue("支持职能是空的");
+                continue;
+            }
+
+            String jobName = cells.get(SheetService.columnToIndex("C"));
+            if (ObjectUtils.isEmpty(jobName)) {
+                setFailedContent(result, String.format("第%s行的工作职责是空的", j + 1));
+                cell.setCellValue("工作职责是空的");
+                continue;
+            }
+            String workEvents = cells.get(SheetService.columnToIndex("D"));
+            if (ObjectUtils.isEmpty(workEvents)) {
+                setFailedContent(result, String.format("第%s行的流程（工作事件）是空的", j + 1));
+                cell.setCellValue("流程（工作事件)是空的");
+                continue;
+            }
+            String workOutput = cells.get(SheetService.columnToIndex("E"));
+            if (ObjectUtils.isEmpty(workOutput)) {
+                setFailedContent(result, String.format("第%s行的表单（输出内容）是空的", j + 1));
+                cell.setCellValue("表单（输出内容）是空的");
+                continue;
+            }
+            String eventsType = cells.get(SheetService.columnToIndex("F"));
+            if (ObjectUtils.isEmpty(eventsType)) {
+                setFailedContent(result, String.format("第%s行的事件类别是空的", j + 1));
+                cell.setCellValue("事件类别是空的");
+                continue;
+            }
+            String duration = cells.get(SheetService.columnToIndex("G"));
+            if (ObjectUtils.isEmpty(duration)) {
+                setFailedContent(result, String.format("第%s行的月工作标准时长（分）是空的", j + 1));
+                cell.setCellValue("月工作标准时长（分）是空的");
+                continue;
+            }
+            String level = cells.get(SheetService.columnToIndex("H"));
+            if (ObjectUtils.isEmpty(level)) {
+                setFailedContent(result, String.format("第%s行的评价等级是空的", j + 1));
+                cell.setCellValue("评价等级是空的");
+                continue;
+            }
+            String standardValue = cells.get(SheetService.columnToIndex("I"));
+            if (ObjectUtils.isEmpty(standardValue)) {
+                setFailedContent(result, String.format("第%s行的事件标准价值是空的", j + 1));
+                cell.setCellValue("事件标准价值是空的");
+                continue;
+            }
+            String delow = cells.get(SheetService.columnToIndex("J"));
+            String middle = cells.get(SheetService.columnToIndex("K"));
+            String fine = cells.get(SheetService.columnToIndex("L"));
+            String excellent = cells.get(SheetService.columnToIndex("M"));
+
+            String note = cells.get(SheetService.columnToIndex("N"));
+            if (ObjectUtils.isEmpty(note)) {
+                setFailedContent(result, String.format("第%s行的备注是空的", j + 1));
+                cell.setCellValue("备注是空的");
+                continue;
+            }
+            String departmentName = cells.get(SheetService.columnToIndex("O"));
+            if (ObjectUtils.isEmpty(departmentName)) {
+                setFailedContent(result, String.format("第%s行的部门名称是空的", j + 1));
+                cell.setCellValue("部门名称是空的");
+                continue;
+            }
+            String office = cells.get(SheetService.columnToIndex("P"));
+            if (ObjectUtils.isEmpty(office)) {
+                setFailedContent(result, String.format("第%s行的科室是空的", j + 1));
+                cell.setCellValue("科室是空的");
+                continue;
+            }
+
+
+            //构建实体类
+            EventList eventList = new EventList();
+            User user = (User) SecurityUtils.getSubject().getPrincipal();
+            eventList.setStrategyFunctions(strategyFunctions);
+            eventList.setSupportFunctions(supportFunctions);
+            eventList.setJobName(jobName);
+            eventList.setWorkEvents(workEvents);
+            eventList.setWorkOutput(workOutput);
+            eventList.setEventsType(eventsType);
+
+            Date date = new Date();
+            String format = new SimpleDateFormat("yyyy-MM-dd").format(date);
+            String year = Arrays.asList(format.split("-")).get(0);
+            eventList.setYear(InstandTool.stringToInteger(year));
+
+            eventList.setDuration(new BigDecimal(duration));
+            eventList.setLevel(level);
+            eventList.setStandardValue(new BigDecimal(standardValue));
+            eventList.setNote(note);
+            eventList.setDepartmentName(departmentName);
+            eventList.setDelow(new BigDecimal(delow));
+            eventList.setMiddle(new BigDecimal(middle));
+            eventList.setFine(new BigDecimal(fine));
+            eventList.setExcellent(new BigDecimal(excellent));
+            String month = Arrays.asList(format.split("-")).get(1);
+            eventList.setMonth(Integer.valueOf(month));
+            eventList.setCreateDate(new Date());
+            eventList.setActiveDate(new Date());
+            eventList.setPerformanceForm("拓展事件绩效");
+            eventList.setListCreateUser(user.getName());
+            eventList.setListcreateUserId(user.getId());
+            eventList.setValueCreateUser(user.getName());
+            eventList.setValueCreateUserId(user.getId());
+            eventList.setValueCreateDate(new Date());
+            eventList.setListAttachmentId(attachment.getId());
+            eventList.setValueAttachmentId(attachment.getId());
+            eventList.setStandardCreateUser(user.getCreatedName());
+            eventList.setStandardCreateUserId(user.getId());
+            eventList.setStandardCreateDate(new Date());
+            eventList.setStandardAttachmentId(attachment.getId());
+
+            // 查询 部门 表主键
+            // 创建条件构造器
+            QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+            // 设置条件
+            departmentQueryWrapper.eq("name", eventList.getDepartmentName());
+            // 查询
+            List<Department> departments = departmentMapper.selectList(departmentQueryWrapper);
+            if (ObjectUtils.isEmpty(departments)) {
+                setFailedContent(result, String.format("第%s行的【%s】未在系统维护", j + 1, departmentName));
+                cell.setCellValue(String.format("【%s】未在系统维护", departmentName));
+                continue;
+            }
+            Department department = departments.get(0);
+            eventList.setDepartmentId(department.getId());
+
+            eventList.setOffice(office);
+            eventList.setStatus("待填报标准");
+
+            //eventLists.add(eventList);
+            eventListMapper.insert(eventList);
+            cell.setCellValue("导入成功");
+
+        }
+
+        sheetService.write(attachment.getPath(), attachment.getFilename());//写入excel表
+        return result;
+    }
+
+    @Override
+    public Page<EventList> findEventListDataPerPageByParams(Map<String, Object> params) {
+        QueryWrapper<EventList> queryWrapper = getQueryWrapper(params);
+        int limit = (int) params.get("limit");
+        int page = (int) params.get("page");
+        Page<EventList> myPage = new Page<>(page, limit);
+        return eventListMapper.selectPage(myPage, queryWrapper);
     }
 }
