@@ -703,7 +703,7 @@ CREATE TABLE `bs_common_import_module`  (
   `updatedId` int(8) NULL DEFAULT NULL COMMENT '修改人Id',
   `updatedName` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '修改人姓名',
   `note` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
-  `name` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '导入模块名称',
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '导入模块名称',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uni_name`(`name`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '*****业务部门：\r\nIT科\r\n\r\n*****数据表中文名：\r\n导入场景表\r\n\r\n*****数据表名：\r\nbs_common_import_module\r\n\r\n*****数据表作用：\r\n各导入模块（场景）记录\r\n\r\n*****变更记录：\r\n时间         	变更人		变更内容\r\n20220915	兰宇铧           	初始设计' ROW_FORMAT = Dynamic;

@@ -45,7 +45,8 @@
                             <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
                                     lay-filter="downloadForCharge">导出
                             </button>
-                            <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
+                            <button shiro:hasPermission="system:performance:employee:event:attachment:import"
+                            		class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
                                     lay-filter="showImport">导入事件标准
                             </button>
                         </div>

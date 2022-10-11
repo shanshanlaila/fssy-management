@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>事件清单管理系统</title>
+    <title>无标准事件管理</title>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
 </head>
 <body>
@@ -12,8 +12,8 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <!-- 引入zTree -->
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">测试</a> <a href="">事件清单管理</a><a>
-				<cite>事件清单管理</cite>
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">绩效系统</a> <a href="">员工绩效管理</a><a>
+				<cite>无标准事件管理</cite>
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
@@ -63,7 +63,8 @@
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <button lay-submit lay-filter="import" class="layui-btn">导入</button>
+                            <button shiro:hasPermission="system:performance:employee:event:attachment:withoutStandardImport" 
+                            		lay-submit lay-filter="import" class="layui-btn">导入</button>
                             <a class="layui-btn" lay-submit th:href="@{/export/eventList.xlsx}">
                                 <i class="layui-icon">&#xe601</i>下载模板
                             </a>

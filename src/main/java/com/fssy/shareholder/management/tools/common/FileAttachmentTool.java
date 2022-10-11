@@ -18,6 +18,7 @@ import com.fssy.shareholder.management.mapper.system.config.AttachmentSecretMapp
 import com.fssy.shareholder.management.pojo.properties.FileProperties;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.AttachmentSecret;
+import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.common.Module;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -121,7 +122,7 @@ public class FileAttachmentTool
 	 * @return
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public synchronized Attachment storeFileToModule(MultipartFile file, Module module,
+	public synchronized Attachment storeFileToModule(MultipartFile file, ImportModule module,
                                                      Attachment attachment)
 	{
 		// 2022-05-07 现场问题，上传库位和生产计划时，由于库位上传时间久，导致文件被覆盖问题，需要加锁
@@ -170,7 +171,7 @@ public class FileAttachmentTool
 			attachment.setFilename(fileName);
 			// 默认就是正在导入
 			attachment.setMd5Path(queryPath);
-			attachment.setModule(module.getValue());
+			attachment.setModule(module.getId());
 			attachment.setPath(relativePathStr);
 			// 默认就是上载成功
 			attachmentMapper.insert(attachment);

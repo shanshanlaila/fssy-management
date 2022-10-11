@@ -1,32 +1,41 @@
-/*
- * @Title: fssy-management
- * @Description: TODO
- * @author MI
- * @date 2022/10/9 9:32
- * @version
+/**   
+ * ------------------------修改日志---------------------------------
+ * 修改人			修改日期			修改内容
  */
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
-import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.pojo.common.Module;
-import com.fssy.shareholder.management.pojo.common.SysResult;
-import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.service.system.config.AttachmentService;
-import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
-import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
-import com.fssy.shareholder.management.tools.constant.CommonConstant;
-import com.fssy.shareholder.management.tools.exception.ServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.config.ImportModule;
+import com.fssy.shareholder.management.service.system.config.AttachmentService;
+import com.fssy.shareholder.management.service.system.config.ImportModuleService;
+import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
+import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
+import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
+import com.fssy.shareholder.management.tools.exception.ServiceException;
 
 /**
  * @author MI
@@ -47,10 +56,18 @@ public class EventListAttachmentController {
     @Autowired
     private FileAttachmentTool fileAttachmentTool;
 
+	/**
+	 * 导入场景服务实现类
+	 */
+	@Autowired
+	private ImportModuleService importModuleService;
+
     /**
      * @return 事件列表展示路径
      */
+	@RequiredLog("事件清单附件列表")
     @GetMapping("import")
+    @RequiresPermissions("system:performance:employee:event:attachment:import")
     public String showImportPage(Model model) {
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
@@ -59,6 +76,17 @@ public class EventListAttachmentController {
         String importDateStart = sdf.format(date);
 
         model.addAttribute("importDateStart", importDateStart);
+        
+		// 查询导入场景
+		Map<String, Object> params = new HashMap<>();
+		params.put("noteEq", "完整事件清单");
+		List<ImportModule> importModules = importModuleService
+				.findImportModuleDataListByParams(params);
+		if (ObjectUtils.isEmpty(importModules))
+		{
+			throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "完整事件清单"));
+		}
+		model.addAttribute("module", importModules.get(0).getId());
         return "system/performance/employee/events-attachment-list";
     }
 
@@ -75,11 +103,19 @@ public class EventListAttachmentController {
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                 HttpServletRequest request) {
-        // 保存附件
-        Calendar calendar = Calendar.getInstance();
-        attachment.setImportDate(calendar.getTime());//设置时间
-        Attachment result = fileAttachmentTool.storeFileToModule(file, Module.PERFORMANCE_EVENT_LIST,//上传文件至数据库的类别，主要目的是分类展示
-                attachment);
+		// 保存附件
+		Calendar calendar = Calendar.getInstance();
+		attachment.setImportDate(calendar.getTime());// 设置时间
+		// 查询导入场景对象
+		ImportModule module = importModuleService
+				.findById(InstandTool.integerToLong(attachment.getModule()));
+		if (ObjectUtils.isEmpty(module))
+		{
+			throw new ServiceException(
+					String.format("序号为【%s】的导入场景未维护，不允许导入", attachment.getModule()));
+		}
+		Attachment result = fileAttachmentTool.storeFileToModule(file, module, // 上传文件至数据库的类别，主要目的是分类展示
+				attachment);
 
         try {
             // 读取附件并保存数据
@@ -108,13 +144,44 @@ public class EventListAttachmentController {
         }
     }
 
+	/**
+	 * 返回无标准事件清单附件页面
+	 * 
+	 * @param model model对象
+	 * @return
+	 */
+    @RequiredLog("无标准事件附件管理")
+	@GetMapping("withoutStandardImport")
+	@RequiresPermissions("system:performance:employee:event:attachment:withoutStandardImport")
+	public String showWithoutStandardImportPage(Model model)
+	{
+		// 查询导入场景
+		Map<String, Object> params = new HashMap<>();
+		params.put("noteEq", "无标准事件清单");
+		List<ImportModule> importModules = importModuleService
+				.findImportModuleDataListByParams(params);
+		if (ObjectUtils.isEmpty(importModules))
+		{
+			throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "完整事件清单"));
+		}
+		model.addAttribute("module", importModules.get(0).getId());
+		return "system/performance/events-list-attachment-list";
+	}
+
     @PostMapping("withoutStandardUploadFile")
     @RequiredLog("无标准事件清单附件上传")
     @ResponseBody
     public SysResult withoutStandardUploadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request) {
-        //保存附件
-        //上传文件至数据库的类别，主要目的是分类展示
-        Attachment result = fileAttachmentTool.storeFileToModule(file, Module.PERFORMANCE_EVENTS_LIST, attachment);
+		// 保存附件
+		// 查询导入场景对象
+		ImportModule module = importModuleService
+				.findById(InstandTool.integerToLong(attachment.getModule()));
+		if (ObjectUtils.isEmpty(module))
+		{
+			throw new ServiceException(
+					String.format("序号为【%s】的导入场景未维护，不允许导入", attachment.getModule()));
+		}
+		Attachment result = fileAttachmentTool.storeFileToModule(file, module, attachment);
         try {
             //读取附件并保存数据
             Map<String, Object> resultMap = eventListService.readEventListWithoutStandardDataSource(result);

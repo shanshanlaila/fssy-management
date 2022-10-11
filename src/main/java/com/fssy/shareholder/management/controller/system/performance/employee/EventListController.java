@@ -1,9 +1,6 @@
-/*
- * @Title: fssy-management
- * @Description: TODO
- * @author MI
- * @date 2022/9/27 10:08
- * @version
+/**   
+ * ------------------------修改日志---------------------------------
+ * 修改人			修改日期			修改内容
  */
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
@@ -43,22 +40,24 @@ public class EventListController {
     @Autowired
     private DepartmentService departmentService;
 
-    /**
-     * 事件评价标准管理页面
-     *
-     * @return 事件评价标准管理页面
-     */
-    @GetMapping("index")
-    @RequiredLog("事件评价标准管理")
-    @RequiresPermissions("system:performance:event")
-    public String showEventList() {
-        return "/system/performance/employee/performance-event-list";
-    }
+	/**
+	 * 无标准事件管理页面
+	 *
+	 * @return 事件评价标准管理页面
+	 */
+	@GetMapping("index")
+	@RequiredLog("无标准事件管理")
+	@RequiresPermissions("system:performance:event")
+	public String showEventList() {
+		return "/system/performance/employee/performance-event-list";
+	}
 
     /**
      * “事件清单评判标准管理”菜单
      */
+    @RequiredLog("事件清单评判标准管理")
     @GetMapping("manage")
+    @RequiresPermissions("system:performance:employee:manage")
     public String showEventStatus(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -286,9 +285,9 @@ public class EventListController {
      * @param model
      * @return 页面
      */
-
-    @RequiredLog("附件上传")
+    @RequiredLog("无标准事件管理")
     @GetMapping("withoutStandardIndex")
+    @RequiresPermissions("performance:employee:event:without:standard:index")
     public String withoutStandardIndex(Model model) {
         SimpleDateFormat ssad = new SimpleDateFormat();
         ssad.applyPattern("yyyy-MM-dd");
@@ -297,10 +296,5 @@ public class EventListController {
         String importDateStart = ssad.format(date);
         model.addAttribute("importDateStart", importDateStart);
         return "system/performance/events-list-list";
-    }
-
-    @GetMapping("withoutStandardImport")
-    public String showImportPage() {
-        return "system/performance/events-list-attachment-list";
     }
 }
