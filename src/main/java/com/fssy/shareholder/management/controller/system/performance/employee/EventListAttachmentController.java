@@ -18,11 +18,14 @@ import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -48,7 +51,14 @@ public class EventListAttachmentController {
      * @return 事件列表展示路径
      */
     @GetMapping("import")
-    public String showImportPage() {
+    public String showImportPage(Model model) {
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        String importDateStart = sdf.format(date);
+
+        model.addAttribute("importDateStart", importDateStart);
         return "system/performance/employee/events-attachment-list";
     }
 

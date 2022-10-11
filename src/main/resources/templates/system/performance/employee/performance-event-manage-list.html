@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>事件清单评判标准管理</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="x-nav">
+		<span class="layui-breadcrumb">
+            <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
+            <a> <cite>事件清单评判标准管理</cite></a>
+		</span>
+    <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+       onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height: 30px"></i>
+    </a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body">
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="departmentSelect"></div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="year" placeholder="编制年份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <!--<input type="text" name="status" placeholder="事件清单状态查询" autocomplete="off"
+                                   class="layui-input">-->
+                            <label>
+                                <select name="status" pla>
+                                    <option style="display: none" value="">请选择状态</option>
+                                    <option value="完结">完结</option>
+                                    <option value="待填报价值">待填报价值</option>
+                                    <option value="待填报标准">待填报标准</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                            <div class="layui-inline layui-show-xs-block">
+                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
+                                        title="请选择查询条件进行导出">
+                                    导出
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use([
+        'table', 'form', 'layer', 'laydate'
+    ], function () {
+        var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+
+        // 监听搜索按钮
+        form.on('submit(search)', function (data) {
+            console.log(data.field)
+            // 重新加载表格
+            table.reload('dataTable', {
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false
+        });
+
+        // 导出
+        form.on('submit(import)', function (data) {
+            var field = data.field;
+            field.url = "/system/performance/employee/eventsList/downloadObjects";
+            var url = createUrl(field);
+            layer.msg("正在导出事件列表，请稍候");
+            window.open(url, true);
+            return false;
+        });
+
+        // 实例表格
+        var dataTable = table.render({
+            elem: '#dataTable',
+            id: 'dataTable',
+            url: "/system/performance/employee/eventsList/getObjects",
+            page: true,
+            totalRow: true,
+            size: 'sm',
+            height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            limit: 50,
+            limits: [50, 100, 200, 500],
+            toolbar: '#toolbar',
+            cols: [
+                [
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                        fixed: 'left'
+                    },
+                    {
+                        field: 'year',
+                        title: '编制年份',
+                        width: 70,
+                        fixed: 'left'
+                    },
+                    {
+                        field: 'workEvents',
+                        title: '流程（工作事件）',
+                        width: 200,
+                        fixed: 'left'
+                    },
+                    {
+                        field: 'workOutput',
+                        title: '表单',
+                        width: 130
+                    },
+
+                    {
+                        field: 'status',
+                        title: '状态',
+                        width: 90
+                    },
+                    {
+                        field: 'delowStandard',
+                        title: '不合格',
+                        width: 80
+                    },
+                    {
+                        field: 'middleStandard',
+                        title: '中',
+                        width: 130
+                    },
+                    {
+                        field: 'fineStandard',
+                        title: '良',
+                        width: 130
+                    },
+                    {
+                        field: 'excellentStandard',
+                        title: '优',
+                        width: 130
+                    },
+                    {
+                        field: 'id',
+                        title: '序号',
+                        width: 50
+                    },
+                    {
+                        field: 'eventsType',
+                        title: '事件类别',
+                        width: 80
+                    },
+                    {
+                        field: 'jobName',
+                        title: '工作职责',
+                        width: 120
+                    },
+                    {
+                        field: 'strategyFunctions',
+                        title: '战略职能',
+                        width: 130
+                    },
+                    {
+                        field: 'supportFunctions',
+                        title: '支持职能',
+                        width: 130
+                    },
+
+                    {
+                        field: 'note',
+                        title: '备注',
+                        width: 130
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 130
+                    },
+                    {
+                        field: 'duration',
+                        title: '月工作标准时长（分）',
+                        width: 130
+                    },
+                    {
+                        field: 'level',
+                        title: '评价等级',
+                        width: 130
+                    },
+                    {
+                        field: 'standardValue',
+                        title: '事件标准价值',
+                        width: 130
+                    },
+                    {
+                        field: 'delow',
+                        title: '不合格价值',
+                        width: 130
+                    },
+                    {
+                        field: 'middle',
+                        title: '中价值',
+                        width: 130
+                    },
+                    {
+                        field: 'fine',
+                        title: '良价值',
+                        width: 130
+                    },
+                    {
+                        field: 'excellent',
+                        title: '优价值',
+                        width: 130
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 130
+                    },
+                    {
+                        field: 'activeDate',
+                        title: '生效日期',
+                        width: 130
+                    },
+                    {
+                        field: 'performanceForm',
+                        title: '绩效类型',
+                        width: 130
+                    },
+                    {
+                        field: 'listCreateUser',
+                        title: '事件清单创建人',
+                        width: 130
+                    },
+                    {
+                        field: 'valueCreateUser',
+                        title: '事件价值创建人',
+                        width: 130
+                    },
+                    {
+                        field: 'valueCreateDate',
+                        title: '事件价值创建日期',
+                        width: 130
+                    },
+                    {
+                        field: 'standardCreateUser',
+                        title: '事件标准创建人',
+                        width: 130
+                    },
+                    {
+                        field: 'standardCreateDate',
+                        title: '事件标准创建日期',
+                        width: 130
+                    },
+                ]
+            ]
+        });
+    });
+
+    // 部门查询下拉列表
+    let departmentSelect = xmSelect.render({
+        el: '#departmentSelect',
+        language: 'zn',
+        data: [[${departmentNameList}]],
+        filterable: true,
+        // radio: true,
+        tips: '部门查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 20,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+    });
+</script>
+</body>
+</html>
