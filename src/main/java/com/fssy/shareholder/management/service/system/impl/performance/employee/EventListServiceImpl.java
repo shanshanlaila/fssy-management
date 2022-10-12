@@ -171,7 +171,7 @@ public class EventListServiceImpl implements EventListService {
             queryWrapper.eq("officeId", params.get("officeId"));
         }
         if (params.containsKey("statusWait")) {
-            queryWrapper.eq("status", PerformanceConstant.EVENT_LIST_STATUS_WAIT);
+            queryWrapper.eq("status", "待填报标准");
         }
         return queryWrapper;
     }
@@ -487,5 +487,23 @@ public class EventListServiceImpl implements EventListService {
         int page = (int) params.get("page");
         Page<EventList> myPage = new Page<>(page, limit);
         return eventListMapper.selectPage(myPage, queryWrapper);
+    }
+
+    @Override
+    public boolean updateEventList(EventList eventList)
+    {
+        int result = eventListMapper.updateById(eventList);
+        return result > 0;
+    }
+
+    @Override
+    public boolean deleteEventListById(int id) {
+        int result = eventListMapper.deleteById(id);
+        return result > 0;
+    }
+
+    @Override
+    public EventList getById(Long id) {
+       return eventListMapper.selectById(id);
     }
 }

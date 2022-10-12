@@ -6,6 +6,7 @@ package com.fssy.shareholder.management.controller.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
@@ -16,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -300,6 +299,42 @@ public class EventListController {
         Date date = calendar.getTime();
         String importDateStart = ssad.format(date);
         model.addAttribute("importDateStart", importDateStart);
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
         return "system/performance/events-list-list";
     }
+
+    /**
+     * 返回修改页面
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("edit")
+    //@RequiresPermissions("performance:employee:event:edit")
+    public String edit(HttpServletRequest request,Model model) {
+        //获取无标准事件内容和清单Id
+        String id = request.getParameter("id");
+        EventList eventList = eventListService.getById(Long.valueOf(id));
+        model.addAttribute("eventList",eventList);//发送数据到前端，eventList对应
+       return "/system/performance/events-list-edit";
+    }
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(EventList eventList) {
+        boolean result = eventListService.updateEventList(eventList);
+        if (result)
+            return SysResult.ok();
+        return SysResult.build(500,"更新失败，请检查数据后重新提交");
+    }
+    @DeleteMapping("{id}")
+    @ResponseBody
+    public SysResult destroy(@PathVariable(value = "id") Integer id) {
+        boolean res = eventListService.deleteEventListById(id);
+        if (res)
+            return SysResult.ok();
+        return SysResult.build(500,"无标准事件内容未删除成功，请确认操作后重新尝试");
+    }
+
 }

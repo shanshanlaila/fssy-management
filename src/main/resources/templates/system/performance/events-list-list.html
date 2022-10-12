@@ -25,9 +25,8 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body ">
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="departmentName" placeholder="部门名称"
-                                   autocomplete="off" class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="departmentSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="strategyFunctions" placeholder="战略职能"
@@ -73,6 +72,10 @@
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="tool">
+                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+                        <a lay-event="delete" title="删除"><i class="layui-icon">&#xe640;</i></a>
+                    </script>
                     <script type="text/html" id="toolbar">
 
                     </script>
@@ -81,7 +84,7 @@
         </div>
     </div>
 </div>
-<script>
+<script th:inline="javascript">
     layui
         .use(
             [
@@ -122,22 +125,156 @@
                             cols:
                                 [
                                     [
-                                        {field: 'strategyFunctions', title: '战略职能', width: 180},
-                                        {field: 'supportFunctions', title: '支持职能', width: 120},
-                                        {field: 'jobName', title: '工作职责', width: 120},
-                                        {field: 'workEvents', title: '流程（工作事件）', width: 120},
-                                        {field: 'workOutput', title: '表单（输出内容））', width: 120},
-                                        {field: 'eventsType', title: '事件类别', width: 120},
-                                        {field: 'duration', title: '月工作标准时长（分））', width: 120},
-                                        {field: 'level', title: '评价等级', width: 120},
-                                        {field: 'standardValue', title: '事件标准价值', width: 120},
-                                        {field: 'delow', title: '事件价值：不合格', width: 120},
-                                        {field: 'middle', title: '事件价值：中', width: 120},
-                                        {field: 'fine', title: '事件价值：良', width: 120},
-                                        {field: 'excellent', title: '事件价值：优（事务类为合格）', width: 120},
-                                        {field: 'note', title: '备注', width: 120},
-                                        {field: 'departmentName', title: '部门', width: 120},
-                                        {field: 'office', title: '科室', width: 120},
+                                        {
+                                            field: 'departmentName',
+                                            title: '部门名称',
+                                            width: 90,
+                                            fixed: 'left'
+                                        },
+                                        {
+                                            field: 'year',
+                                            title: '编制年份',
+                                            width: 70,
+                                            fixed: 'left'
+                                        },
+                                        {
+                                            field: 'workEvents',
+                                            title: '流程（工作事件）',
+                                            width: 200,
+                                            fixed: 'left'
+                                        },
+                                        {
+                                            field: 'workOutput',
+                                            title: '表单',
+                                            width: 130
+                                        },
+
+                                        {
+                                            field: 'status',
+                                            title: '状态',
+                                            width: 90
+                                        },
+                                        {
+                                            field: 'standardValue',
+                                            title: '事件标准价值',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'delow',
+                                            title: '不合格价值',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'middle',
+                                            title: '中价值',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'fine',
+                                            title: '良价值',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'excellent',
+                                            title: '优价值',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'id',
+                                            title: '序号',
+                                            width: 50
+                                        },
+                                        {
+                                            field: 'eventsType',
+                                            title: '事件类别',
+                                            width: 80
+                                        },
+                                        {
+                                            field: 'jobName',
+                                            title: '工作职责',
+                                            width: 120
+                                        },
+                                        {
+                                            field: 'strategyFunctions',
+                                            title: '战略职能',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'supportFunctions',
+                                            title: '支持职能',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'note',
+                                            title: '备注',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'eventsFirstType',
+                                            title: '事件类型',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'duration',
+                                            title: '月工作标准时长（分）',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'level',
+                                            title: '评价等级',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'createDate',
+                                            title: '编制日期',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'activeDate',
+                                            title: '生效日期',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'performanceForm',
+                                            title: '绩效类型',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'office',
+                                            title: '科室',
+                                            width: 120},
+                                        {
+                                            field: 'listCreateUser',
+                                            title: '事件清单创建人',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'valueCreateUser',
+                                            title: '事件价值创建人',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'valueCreateDate',
+                                            title: '事件价值创建日期',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'standardCreateUser',
+                                            title: '事件标准创建人',
+                                            width: 130
+                                        },
+                                        {
+                                            field: 'standardCreateDate',
+                                            title: '事件标准创建日期',
+                                            width: 130
+                                        },
+                                        {
+                                            fixed : 'right',
+                                            title : '操作',
+                                            width : 100,
+                                            align : 'center',
+                                            toolbar : '#tool'
+                                        }
                                     ]
                                 ]
                         });
@@ -162,11 +299,119 @@
                         type: 2,
                         title: "上传事件清单附件",
                         area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                        content: '/system/config/performance/import',
+                        content: '/system/performance/employee/eventsListAttachment/withoutStandardImport',
                         scrollbar: true,
                         maxmin: true,
                     });
                     return false;
+                });
+
+                // 部门查询下拉列表
+                let departmentSelect = xmSelect.render({
+                    el: '#departmentSelect',
+                    language: 'zn',
+                    data: [[${departmentNameList}]],
+                    filterable: true,
+                    // radio: true,
+                    tips: '部门查询',
+                    toolbar: {
+                        show: true
+                    },
+                    paging: true, // 分页
+                    pageSize: 20,
+                    style: {
+                        width: '160px', 'min-height': '28px', 'line-height': '28px',
+                    },
+                    name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+                });
+                // 监听行工具事件
+                table.on('tool(dataTable)', function(obj)
+                {
+                    var data = obj.data;
+                    if (obj.event === 'edit')
+                    { // 修改
+                        layer.open(
+                            {
+                                type : 2,
+                                title : data.id + ':无标准事件信息修改',
+                                area :
+                                    [
+                                        $(window).width() * 0.9 + 'px',
+                                        $(window).height() - 50 + 'px'
+                                    ],
+                                content : '/system/performance/employee/eventsList/edit?id=' + data.id,
+                                maxmin : true
+                            });
+                    }
+                    else if (obj.event === 'delete')
+                    { // 删除
+                        layer.confirm('真的删除：' + data.name + '吗？', function()
+                        {
+                            $.ajax(
+                                {
+                                    type : 'DELETE',
+                                    url : '/system/performance/employee/eventsList/' + data.id,
+                                    success : function(result)
+                                    {
+                                        layer.msg(result.msg);
+                                        if (result.status == 200)
+                                        {
+                                            table.reload('dataTable');
+                                        }
+                                    }
+                                })
+                        });
+                    }
+                    else if (obj.event === 'active')
+                    { // 启用
+                        layer.confirm('真的启用颜色' + data.name + '吗？', function()
+                        {
+                            $.ajax(
+                                {
+                                    type : 'GET',
+                                    url : '/system/config/color/activate?id='
+                                        + data.id + '&status=1&msg=启用',
+                                    headers :
+                                        {
+                                            'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr(
+                                                'content')
+                                        },
+                                    success : function(result)
+                                    {
+                                        layer.msg(result.msg);
+                                        if (result.status == 200)
+                                        {
+                                            table.reload('dataTable');
+                                        }
+                                    }
+                                })
+                        });
+                    }
+                    else if (obj.event === 'inactive')
+                    { // 停用
+                        layer.confirm('真的停用颜色' + data.name + '吗？', function()
+                        {
+                            $.ajax(
+                                {
+                                    type : 'GET',
+                                    url : '/system/config/color/activate?id='
+                                        + data.id + '&status=0&msg=停用',
+                                    headers :
+                                        {
+                                            'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr(
+                                                'content')
+                                        },
+                                    success : function(result)
+                                    {
+                                        layer.msg(result.msg);
+                                        if (result.status == 200)
+                                        {
+                                            table.reload('dataTable');
+                                        }
+                                    }
+                                })
+                        });
+                    }
                 });
 
 
