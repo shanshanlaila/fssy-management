@@ -61,4 +61,26 @@ public interface EventListService {
      * @return 分页数据
      */
     Page<EventList> findEventListDataPerPageByParams(Map<String, Object> params);
+
+    /**
+     * 修改无标准事件内容数据
+     * @param eventList 无标准事件实体
+     * @return true/false
+     */
+    boolean updateEventList(EventList eventList);
+
+    /**
+     * 删除无标准事件内容数据
+     * @param id 事件清单表主键
+     * @return true/false
+     */
+
+    boolean deleteEventListById(int id);
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    EventList getById(Long id);
 }
