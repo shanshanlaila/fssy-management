@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>无标准事件管理</title>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
 </head>
 <body>
 <!-- 引入jquery -->
@@ -76,6 +77,8 @@
                             </button>
                             <button shiro:hasPermission="system:performance:employee:event:attachment:withoutStandardImport" 
                             		lay-submit lay-filter="import" class="layui-btn">导入</button>
+                            <button shiro:hasPermission="system:performance:employee:event:attachment:importToCompleteRole" 
+                            		lay-submit lay-filter="importToCompleteRole" class="layui-btn" title="请在系统自动打分前完成事件岗位分配情况，否则系统无法计算得分">导出事件清单维护事件岗位配比</button>
                             <a class="layui-btn" lay-submit th:href="@{/export/eventList.xlsx}">
                                 <i class="layui-icon">&#xe601</i>下载模板
                             </a>
@@ -131,9 +134,9 @@
                                 ],
                             toolbar: '#toolbar',
                             size: 'sm',
-                            where: {
+                            /* where: {
                                 statusCancel:true
-                            },
+                            }, */
                             cols:
                                 [
                                     [
@@ -377,7 +380,21 @@
                     }
                 });
 
-
+                // 监听导出按钮
+                form.on('submit(importToCompleteRole)', function (data) {
+                    var field = data.field;
+                    // 必填项控制
+                    var year = data.field.year;
+                    if (!year) {
+                    	layer.msg("编制年份为必须项，请选择编制年份", {icon: 5, time: 4000});
+                    	return false;
+                    }
+                    field.url = "/system/performance/employee/eventsList/downloadToCompleteRole";
+                    var url = createUrl(field);
+                    layer.msg("正在导出事件列表，请稍候");
+                    window.open(url, true);
+                    return false;
+                });
             });
 </script>
 </body>

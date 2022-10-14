@@ -18,7 +18,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @author Solomon
  * @since 2022-10-10
  */
-@Mapper
 public interface PerformanceEventsRelationRoleMapper extends MyBaseMapper<PerformanceEventsRelationRole> {
 
 }

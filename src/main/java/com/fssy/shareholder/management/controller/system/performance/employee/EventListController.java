@@ -357,4 +357,42 @@ public class EventListController {
             return SysResult.ok();
         return SysResult.build(500,"更新失败，请检查数据后重新提交");
     }
+    
+	/**
+	 * 导出事件清单维护事件岗位配比
+	 *
+	 * @param request  请求
+	 * @param response 响应
+	 */
+	@RequiredLog("导出事件清单维护事件岗位配比")
+	@RequiresPermissions("system:performance:employee:event:attachment:importToCompleteRole")
+	@GetMapping("downloadToCompleteRole")
+	public void downloadToCompleteRole(HttpServletRequest request, HttpServletResponse response)
+	{
+		Map<String, Object> params = getParams(request);
+		params.put("select", "id,eventsType,jobName,workEvents");
+		List<Map<String, Object>> eventLists = eventListService
+				.findEventListMapDataByParams(params);
+
+		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+		// 需要改背景色的格子
+		fieldMap.put("id", "清单表序号");
+		fieldMap.put("jobName", "工作职责");
+		fieldMap.put("workEvents", "流程（工作事件）");
+		fieldMap.put("departmentName", "*部门名称");
+		fieldMap.put("roleName", "*岗位名称");
+		fieldMap.put("proportion", "*占比");
+		fieldMap.put("isMainOrNext", "*是否主担");
+		fieldMap.put("userName", "*职员名称");
+		fieldMap.put("score", "*价值分");
+		fieldMap.put("activeDate", "*生效日期");
+		// 标识字符串的列
+		List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
+		SheetOutputService sheetOutputService = new SheetOutputService();
+		if (ObjectUtils.isEmpty(eventLists))
+		{
+			throw new ServiceException("未查出数据");
+		}
+		sheetOutputService.exportNum("事件分配岗位表", eventLists, fieldMap, response, strList, null);
+	}
 }

@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -300,7 +301,16 @@ public class SheetService
 //				result = sdf.format(d);
 				// 2021-11-15 Qinhui修改，修改读取不到日期时间的问题
 				LocalDateTime d = cell.getLocalDateTimeCellValue();
-				result = d.toString();
+				if (d.getHour() > 0 || d.getMinute() > 0 || d.getSecond() > 0)
+				{
+					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					result = d.format(dtf);
+				}
+				else
+				{
+					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					result = d.format(dtf);
+				}
 			}
 			else if (format == 14 || format == 31 || format == 57
 					|| format == 58)

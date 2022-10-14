@@ -4,6 +4,7 @@
  */
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.system.performance.employee.PerformanceEventsRelationRole;
+import com.fssy.shareholder.management.service.manage.department.DepartmentService;
+import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.system.performance.employee.PerformanceEventsRelationRoleService;
 
 /**
@@ -36,7 +39,7 @@ import com.fssy.shareholder.management.service.system.performance.employee.Perfo
  * @since 2022-10-10
  */
 @Controller
-@RequestMapping("/system/performance-events-relation-role")
+@RequestMapping("/system/performance/employee/events-relation-role/")
 public class PerformanceEventsRelationRoleController
 {
 	/**
@@ -46,17 +49,39 @@ public class PerformanceEventsRelationRoleController
 	private PerformanceEventsRelationRoleService performanceEventsRelationRoleService;
 
 	/**
+	 * 组织结构功能业务实现类
+	 */
+	@Autowired
+	private DepartmentService departmentService;
+	
+	/**
+	 * 角色功能业务实现类
+	 */
+	@Autowired
+	private RoleService roleService;
+
+	/**
 	 * 返回事件清单岗位关系管理页面
 	 * 
 	 * @param model model对象
 	 * @return
 	 */
 	@RequiredLog("事件清单岗位关系管理")
-	@RequiresPermissions("system:config:material:type:index")
+	@RequiresPermissions("performance:employee:event:relation:role:index")
 	@GetMapping("index")
 	public String index(Model model)
 	{
-		return "system/config/material/performanceEventsRelationRole-list";
+		Map<String, Object> params = new HashMap<>();
+		List<String> selectedIds = new ArrayList<>();
+		List<Map<String, Object>> departmentList = departmentService
+				.findDepartmentsSelectedDataListByParams(params, selectedIds);
+		model.addAttribute("departmentList", departmentList);
+		params = new HashMap<>();
+		List<Long> longSelectedIds = new ArrayList<>();
+		List<Map<String, Object>> roleList = roleService.findRoleSelectedDataListByParams(params,
+				longSelectedIds);
+		model.addAttribute("roleList", roleList);
+		return "system/performance/employee/performance-event-relation-role-list";
 	}
 
 	/**
@@ -117,7 +142,7 @@ public class PerformanceEventsRelationRoleController
 		// 事件表主键主键列表查询
 		if (!ObjectUtils.isEmpty(request.getParameter("eventsIds")))
 		{
-			String eventsIdStr = request.getParameter("ids");
+			String eventsIdStr = request.getParameter("eventsIds");
 			List<String> eventsId = Arrays.asList(eventsIdStr.split(","));
 			params.put("eventsId", eventsId);
 		}
@@ -217,6 +242,18 @@ public class PerformanceEventsRelationRoleController
 		if (!ObjectUtils.isEmpty(request.getParameter("select")))
 		{
 			params.put("select", request.getParameter("select"));
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("departmentIds")))
+		{
+			String departmentIdsStr = request.getParameter("departmentIds");
+			List<String> departmentIds = Arrays.asList(departmentIdsStr.split(","));
+			params.put("departmentIds", departmentIds);
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("roleIds")))
+		{
+			String roleIdsStr = request.getParameter("roleIds");
+			List<String> roleIds = Arrays.asList(roleIdsStr.split(","));
+			params.put("roleIds", roleIds);
 		}
 		return params;
 	}

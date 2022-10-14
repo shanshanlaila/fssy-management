@@ -5,10 +5,16 @@
 package com.fssy.shareholder.management.tools.common;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.stereotype.Component;
+
 
 /**
  * @Title: DateTool.java
@@ -85,5 +91,65 @@ public class DateTool
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		return sdf.format(calendar.getTime());
+	}
+	
+	/**
+	 * 转换字符串为日期（格式为yyyy-MM-dd)
+	 * 
+	 * @param dateString 日期字符串
+	 * @return
+	 */
+	public static Date transferToDate(String dateString)
+	{
+		LocalDate localDate = LocalDate.parse(dateString);
+		ZoneId zone = ZoneId.systemDefault();
+		Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
+		Date date = Date.from(instant);
+		return date;
+	}
+	
+	/**
+	 * 转换字符串为日期（格式为yyyy-MM-dd HH:mm:ss)
+	 * 
+	 * @param dateString 日期字符串
+	 * @return
+	 */
+	public static Date transferTimeToDate(String timeString)
+	{
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDate localDate = LocalDate.parse(timeString, dtf);
+		ZoneId zone = ZoneId.systemDefault();
+		Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
+		Date date = Date.from(instant);
+		return date;
+	}
+
+	/**
+	 * 将 Date 转为 LocalDate
+	 * 
+	 * @param date
+	 * @return java.time.LocalDate;
+	 */
+	public static LocalDate dateToLocalDate(Date date)
+	{
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+
+	/**
+	 * 获取两个日期的天数的差别：后-前
+	 * @param dateStart 前
+	 * @param dateStop 后
+	 * @return
+	 */
+	public static Integer computeDiffDays(Date dateStart, Date dateStop)
+	{
+		try {
+			long diff = dateStop.getTime() - dateStart.getTime();
+			long diffDays = diff / (24 * 60 * 60 * 1000);
+			return InstandTool.longToInteger(diffDays);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

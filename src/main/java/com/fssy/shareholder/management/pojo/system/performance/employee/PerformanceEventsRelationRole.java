@@ -4,14 +4,15 @@
  */
 package com.fssy.shareholder.management.pojo.system.performance.employee;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDate;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,9 +31,12 @@ import lombok.Setter;
 @TableName("bs_performance_events_relation_role")
 public class PerformanceEventsRelationRole extends BaseModel {
 
-    private static final long serialVersionUID = 1L;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6026015938943568306L;
 
-    @TableId(value = "id", type = IdType.AUTO)
+	@TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
@@ -137,5 +141,9 @@ public class PerformanceEventsRelationRole extends BaseModel {
     @TableField("userId")
     private Long userId;
 
-
+    /**
+     * 20220930添加，事件岗位关联附件主键
+     */
+    @TableField("attachmentId")
+    private Long attachmentId;
 }

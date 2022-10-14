@@ -242,4 +242,10 @@ public class EventList extends BaseModel implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+    
+	/**
+	 * 岗位配比完成标识
+	 */
+	@TableField("roleComplete")
+	private Integer roleComplete;
 }

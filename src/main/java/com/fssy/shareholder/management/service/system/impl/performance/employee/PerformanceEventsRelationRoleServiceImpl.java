@@ -227,6 +227,16 @@ public class PerformanceEventsRelationRoleServiceImpl
 		{
 			queryWrapper.eq("userId", params.get("userId"));
 		}
+		// 部门表主键列表查询
+		if (params.containsKey("departmentIds"))
+		{
+			queryWrapper.in("departmentId", (List<String>) params.get("departmentIds"));
+		}
+		// 角色表主键列表查询
+		if (params.containsKey("roleIds"))
+		{
+			queryWrapper.in("roleId", (List<String>) params.get("roleIds"));
+		}
 		// 岗位名称查询
 		if (params.containsKey("roleName"))
 		{

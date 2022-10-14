@@ -173,6 +173,7 @@ public class FileAttachmentTool
 			attachment.setMd5Path(queryPath);
 			attachment.setModule(module.getId());
 			attachment.setPath(relativePathStr);
+			attachment.setModuleName(module.getName());
 			// 默认就是上载成功
 			attachmentMapper.insert(attachment);
 			return attachment;

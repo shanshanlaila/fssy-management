@@ -26,16 +26,46 @@
 				<div class="layui-card">
 					<form class="layui-form layui-col-space5">
 						<div class="layui-card-body">
+							<div class="layui-inline layui-show-xs-block">
+								<label class="layui-form-label"
+									style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label> <input
+									type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
+									autocomplete="off" class="layui-input laydate search-laydate">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="createDateEnd" placeholder="编制日期止" id="createDateEnd"
+									autocomplete="off" class="layui-input laydate search-laydate">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<label class="layui-form-label"
+									style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">生效日期</label> <input
+									type="text" name="activeDateStart" placeholder="生效日期起" id="activeDateStart"
+									autocomplete="off" class="layui-input laydate search-laydate">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
+									autocomplete="off" class="layui-input laydate search-laydate">
+							</div>
+							<div class="layui-inline layui-show-xs-block" style="width: 160px;">
+								<div id="departmentSelect"></div>
+							</div>
+							<div class="layui-inline layui-show-xs-block" style="width: 160px;">
+								<div id="roleSelect"></div>
+							</div>
+							<div class="layui-inline layui-show-xs-block" style="width: 150px;">
+								<input type="text" name="year" placeholder="编制年份查询" autocomplete="off"
+									class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block" style="width: 150px;">
+								<input type="text" name="month" placeholder="编制月份查询" autocomplete="off"
+									class="layui-input">
+							</div>
 							<div class="layui-inline layui-show-xs-block" style="width: 150px;">
 								<input type="text" name="eventsType" placeholder="事件类别查询" autocomplete="off"
 									class="layui-input">
 							</div>
 							<div class="layui-inline layui-show-xs-block" style="width: 120px;">
-								<input type="text" name="jobName" placeholder="工作职责查询" autocomplete="off"
-									class="layui-input">
-							</div>
-							<div class="layui-inline layui-show-xs-block" style="width: 160px;">
-								<input type="text" name="supportFunctions" placeholder="支持职能查询" autocomplete="off"
+								<input type="text" name="userName" placeholder="用户查询" autocomplete="off"
 									class="layui-input">
 							</div>
 
@@ -43,10 +73,9 @@
 								<button class="layui-btn" lay-submit lay-filter="search">
 									<i class="layui-icon">&#xe615;</i>
 								</button>
-								<button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
-									lay-filter="downloadForCharge">导出</button>
-								<button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
-									lay-filter="showImport">导入事件标准</button>
+								<button shiro:hasPermission="system:performance:employee:event:role:attachment:show"
+									class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit lay-filter="showImport">导入事件岗位关系
+								</button>
 							</div>
 						</div>
 					</form>
@@ -66,7 +95,6 @@
 
 			// 监听搜索按钮
 			form.on('submit(search)', function(data) {
-				console.log(data.field)
 				// 重新加载表格
 				table.reload('dataTable', {
 					where : data.field,
@@ -77,21 +105,11 @@
 				return false
 			});
 
-			// 监听导出按钮
-			form.on('submit(downloadForCharge)', function(data) {
-				var field = data.field;
-				field.url = "/system/performance/employee/eventsList/downloadForCharge";
-				var url = createUrl(field);
-				layer.msg("正在导出事件列表，请稍候");
-				window.open(url, true);
-				return false;
-			});
-
 			// 实例表格
 			var dataTable = table.render({
 				elem : '#dataTable',
 				id : 'dataTable',
-				url : "/system/performance/employee/eventsList/getObjects",
+				url : "/system/performance/employee/events-relation-role/getObjects",
 				page : true,
 				totalRow : true,
 				size : 'sm',
@@ -101,6 +119,9 @@
 					50, 100, 200, 500
 				],
 				toolbar : '#toolbar',
+				where : {
+					idDesc : true
+				},
 				cols : [
 					[
 						{
@@ -177,21 +198,69 @@
 					]
 				]
 			});
-
-			// 导入按钮
-			form.on('submit(showImport)', function(data) {
-				var createLayer = layer.open({
-					type : 2,
-					title : "上传事件清单岗位关系附件",
-					area : [
-						$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
-					],
-					content : '/system/performance/employee/eventsListAttachment/import',
-					scrollbar : true,
-					maxmin : true,
+			
+			// 每个标签加一个class，名为laydate
+			$(".laydate").each(function()
+			{
+				laydate.render(
+				{
+					elem : this,
+					//更换触发方式
+					trigger : 'click',
+					type : 'date'
 				});
-				return false;
 			});
+			
+			// 导入按钮
+      form.on('submit(showImport)', function (data) {
+        var createLayer = layer.open({
+          type: 2,
+          title: "事件岗位关系附件管理",
+          area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+          content: '/system/performance/employee/events-role-attachment/show',
+          scrollbar: true,
+          maxmin: true,
+        });
+        return false;
+      });
+			
+			// 部门查询下拉列表
+	    let departmentSelect = xmSelect.render({
+        el: '#departmentSelect',
+        language: 'zn',
+        data: [[${departmentList}]],
+        filterable: true,
+        // radio: true,
+        tips: '部门查询',
+        toolbar: {
+          show: true
+        },
+        paging: true, // 分页
+        pageSize: 20,
+        style: {
+          width: '160px', 'min-height': '28px', 'line-height': '28px'
+        },
+        name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+	    });
+			
+			// 岗位查询下拉列表
+	    let roleSelect = xmSelect.render({
+        el: '#roleSelect',
+        language: 'zn',
+        data: [[${roleList}]],
+        filterable: true,
+        // radio: true,
+        tips: '岗位查询',
+        toolbar: {
+          show: true
+        },
+        paging: true, // 分页
+        pageSize: 20,
+        style: {
+          width: '160px', 'min-height': '28px', 'line-height': '28px'
+        },
+        name: 'roleIds',// 传到后端选择的departmentId集合字符串
+	    });
 		});
 	</script>
 </body>
