@@ -105,7 +105,7 @@
         table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/config/attachment/getObjects?module=81",
+            url: "/system/config/attachment/getObjects?module=[[${module}]]",
             page: true,
             size: 'sm',
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
@@ -219,6 +219,7 @@
                     this.data.customerOrderType = $('#customerOrderType').find("option:selected").val();
                     // this.data.contractId = $('input[name=contractId]').val();
                     this.data.importDate = $('input[name=importDate]').val();
+                    this.data.module = [[${module}]];
                 },
                 done : function(result) {
                     layer.closeAll();
@@ -269,6 +270,7 @@
                 this.data.customerOrderType = $('#customerOrderType').find("option:selected").val();
                 // this.data.contractId = $('input[name=contractId]').val();
                 this.data.importDate = $('input[name=importDate]').val();
+                this.data.module = [[${module}]];
             },
             done : function(result) {
                 layer.closeAll();

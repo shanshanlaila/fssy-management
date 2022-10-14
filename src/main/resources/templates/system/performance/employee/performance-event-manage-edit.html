@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改事件清单评判数据</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<!-- 引入zTree -->
+<div th:replace="~{common/zTree :: zTree}"></div>
+<style type="text/css">
+    #head .layui-form-label {
+        width: 120px;
+    }
+
+    #head .layui-input-block {
+        margin-left: 150px;
+    }
+
+    #head td, #head th {
+        padding: 9px 0px;
+        border: 0px;
+    }
+
+    #head .layui-input {
+        height: 28px;
+    }
+
+    #head .layui-input-inline {
+        padding-right: 8px;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+                <colgroup>
+                    <col width="80px">
+                    <col width="160px">
+                    <col width="80px">
+                    <col width="160px">
+                    <col width="80px">
+                    <col width="160px">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th colspan="4">完结状态事件评判信息</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;不合格标准:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%" >
+                            <input type="hidden" name="id" th:value="${eventList.id}">
+                            <input type="text" class="layui-input" name="delowStandard" id="delowStandard"
+                                   placeholder="不合格标准" autocomplete="off"
+                                   lay-verify="required" lay-reqText="不合格标准为必填项"
+                                   th:value="${eventList['delowStandard']}"/>
+
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;中标准:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="middleStandard" id="middleStandard"
+                                   placeholder="中标准" autocomplete="off"
+                                   lay-verify="required" lay-reqText="中标准为必填项"
+                                   th:value="${eventList['middleStandard']}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;良标准:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="fineStandard" id="fineStandard"
+                                   placeholder="良标准" autocomplete="off"
+                                   lay-verify="required" lay-reqText="良标准为必填项"
+                                   th:value="${eventList['fineStandard']}">
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;优标准:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="excellentStandard" id="excellentStandard"
+                                   placeholder="优标准" autocomplete="off"
+                                   lay-verify="required" lay-reqText="优标准为必填项"
+                                   th:value="${eventList['excellentStandard']}">
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<!--laui-->
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/performance/employee/eventsList/update1',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status == 200) {
+                        layer.msg(result.msg, {icon: 6, time: 1000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</body>
+</html>

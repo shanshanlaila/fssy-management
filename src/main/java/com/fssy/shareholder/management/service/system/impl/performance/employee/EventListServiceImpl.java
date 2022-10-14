@@ -7,6 +7,7 @@
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
@@ -54,7 +55,7 @@ public class EventListServiceImpl implements EventListService {
 
     @Override
     public Page<EventList> findDataListByParams(Map<String, Object> params) {
-        QueryWrapper<EventList> queryWrapper = getQueryWrapper(params);
+        QueryWrapper<EventList> queryWrapper = getQueryWrapper(params).orderByDesc("id");
         Page<EventList> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
         return eventListMapper.selectPage(myPage, queryWrapper);
     }
@@ -171,7 +172,10 @@ public class EventListServiceImpl implements EventListService {
             queryWrapper.eq("officeId", params.get("officeId"));
         }
         if (params.containsKey("statusWait")) {
-            queryWrapper.eq("status", "待填报标准");
+            queryWrapper.eq("status", PerformanceConstant.EVENT_LIST_STATUS_WAIT);
+        }
+        if (params.containsKey("statusCancel")) {
+            queryWrapper.ne("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
         }
         return queryWrapper;
     }
@@ -451,7 +455,6 @@ public class EventListServiceImpl implements EventListService {
             eventList.setStandardCreateUserId(user.getId());
             eventList.setStandardCreateDate(new Date());
             eventList.setStandardAttachmentId(attachment.getId());
-
             // 查询 部门 表主键
             // 创建条件构造器
             QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
@@ -490,8 +493,7 @@ public class EventListServiceImpl implements EventListService {
     }
 
     @Override
-    public boolean updateEventList(EventList eventList)
-    {
+    public boolean updateEventList(EventList eventList) {
         int result = eventListMapper.updateById(eventList);
         return result > 0;
     }
@@ -504,6 +506,14 @@ public class EventListServiceImpl implements EventListService {
 
     @Override
     public EventList getById(Long id) {
-       return eventListMapper.selectById(id);
+        return eventListMapper.selectById(id);
+    }
+
+    @Override
+    public boolean changeStatus(Integer id) {
+        UpdateWrapper<EventList> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id).set("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+        int update = eventListMapper.update(null, updateWrapper);
+        return update == 1;
     }
 }

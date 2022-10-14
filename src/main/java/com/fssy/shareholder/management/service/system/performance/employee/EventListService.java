@@ -64,6 +64,7 @@ public interface EventListService {
 
     /**
      * 修改无标准事件内容数据
+     *
      * @param eventList 无标准事件实体
      * @return true/false
      */
@@ -71,6 +72,7 @@ public interface EventListService {
 
     /**
      * 删除无标准事件内容数据
+     *
      * @param id 事件清单表主键
      * @return true/false
      */
@@ -79,8 +81,17 @@ public interface EventListService {
 
     /**
      * 根据id查询
+     *
      * @param id
      * @return
      */
     EventList getById(Long id);
+
+    /**
+     * 取消无标准事件清单状态为取消
+     *
+     * @param id
+     * @return
+     */
+    boolean changeStatus(Integer id);
 }
