@@ -162,6 +162,7 @@ public class EventListController {
         sheetOutputService.exportNum("事件清单标准评价表状态", eventLists, fieldMap, response, Arrays.asList(1, 2, 3, 4, 5, 6,7,8), null);
     }
 
+
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
@@ -280,6 +281,9 @@ public class EventListController {
         if (!ObjectUtils.isEmpty(request.getParameter("statusWait"))){
             params.put("statusWait",request.getParameter("statusWait"));
         }
+        if(!ObjectUtils.isEmpty(request.getParameter("statusCancel"))){
+            params.put("statusCancel",request.getParameter("statusCancel"));
+        }
         return params;
     }
 
@@ -331,10 +335,26 @@ public class EventListController {
     @DeleteMapping("{id}")
     @ResponseBody
     public SysResult destroy(@PathVariable(value = "id") Integer id) {
-        boolean res = eventListService.deleteEventListById(id);
+        boolean res = eventListService.changeStatus(id);
         if (res)
             return SysResult.ok();
         return SysResult.build(500,"无标准事件内容未删除成功，请确认操作后重新尝试");
     }
-
+    @GetMapping("edit1")
+    //@RequiresPermissions("performance:employee:event:edit")
+    public String edit1(HttpServletRequest request,Model model) {
+        //获取无标准事件内容和清单Id
+        String id = request.getParameter("id");
+        EventList eventList = eventListService.getById(Long.valueOf(id));
+        model.addAttribute("eventList",eventList);//发送数据到前端，eventList对应
+        return "/system/performance/employee/performance-event-manage-edit";
+    }
+    @PostMapping("update1")
+    @ResponseBody
+    public SysResult update1(EventList eventList) {
+        boolean result = eventListService.updateEventList(eventList);
+        if (result)
+            return SysResult.ok();
+        return SysResult.build(500,"更新失败，请检查数据后重新提交");
+    }
 }

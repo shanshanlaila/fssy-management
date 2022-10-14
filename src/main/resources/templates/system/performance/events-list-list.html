@@ -56,6 +56,18 @@
                             <input type="text" name="office" placeholder="科室"
                                    autocomplete="off" class="layui-input">
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <!--<input type="text" name="status" placeholder="事件清单状态查询" autocomplete="off"
+                                   class="layui-input">-->
+                            <label>
+                                <select name="status" pla>
+                                    <option style="display: none" value="">请选择状态</option>
+                                    <option value="完结">完结</option>
+                                    <option value="待填报价值">待填报价值</option>
+                                    <option value="待填报标准">待填报标准</option>
+                                </select>
+                            </label>
+                        </div>
 
 
                         <div class="layui-inline layui-show-xs-block">
@@ -74,10 +86,9 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除"><i class="layui-icon">&#xe640;</i></a>
+                        <a lay-event="delete" title="取消"><i class="layui-icon">&#x1007;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
-
                     </script>
                 </div>
             </div>
@@ -91,8 +102,7 @@
                 'laydate', 'layer', 'table', 'form'
             ],
             function () {
-                var $ = layui.$, laydate = layui.laydate, table = layui.table, layer =
-                    layui.layer, form = layui.form;
+                var $ = layui.$, laydate = layui.laydate, table = layui.table, layer = layui.layer, form = layui.form;
 
                 // 每个标签加一个class，名为laydate
                 $(".laydate").each(function () {
@@ -104,7 +114,6 @@
                             type: 'date'
                         });
                 });
-
                 // 实例表格
                 table
                     .render(
@@ -122,6 +131,9 @@
                                 ],
                             toolbar: '#toolbar',
                             size: 'sm',
+                            where: {
+                                statusCancel:true
+                            },
                             cols:
                                 [
                                     [
@@ -227,12 +239,12 @@
                                         {
                                             field: 'createDate',
                                             title: '编制日期',
-                                            width: 130
+                                            width: 80,
                                         },
                                         {
                                             field: 'activeDate',
                                             title: '生效日期',
-                                            width: 130
+                                            width: 80,
                                         },
                                         {
                                             field: 'performanceForm',
@@ -324,6 +336,7 @@
                     },
                     name: 'departmentIds',// 传到后端选择的departmentId集合字符串
                 });
+
                 // 监听行工具事件
                 table.on('tool(dataTable)', function(obj)
                 {
@@ -344,63 +357,13 @@
                             });
                     }
                     else if (obj.event === 'delete')
-                    { // 删除
-                        layer.confirm('真的删除：' + data.name + '吗？', function()
+                    { // 删除/取消
+                        layer.confirm('真的取消：' + data.id + '吗？', function()
                         {
                             $.ajax(
                                 {
                                     type : 'DELETE',
                                     url : '/system/performance/employee/eventsList/' + data.id,
-                                    success : function(result)
-                                    {
-                                        layer.msg(result.msg);
-                                        if (result.status == 200)
-                                        {
-                                            table.reload('dataTable');
-                                        }
-                                    }
-                                })
-                        });
-                    }
-                    else if (obj.event === 'active')
-                    { // 启用
-                        layer.confirm('真的启用颜色' + data.name + '吗？', function()
-                        {
-                            $.ajax(
-                                {
-                                    type : 'GET',
-                                    url : '/system/config/color/activate?id='
-                                        + data.id + '&status=1&msg=启用',
-                                    headers :
-                                        {
-                                            'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr(
-                                                'content')
-                                        },
-                                    success : function(result)
-                                    {
-                                        layer.msg(result.msg);
-                                        if (result.status == 200)
-                                        {
-                                            table.reload('dataTable');
-                                        }
-                                    }
-                                })
-                        });
-                    }
-                    else if (obj.event === 'inactive')
-                    { // 停用
-                        layer.confirm('真的停用颜色' + data.name + '吗？', function()
-                        {
-                            $.ajax(
-                                {
-                                    type : 'GET',
-                                    url : '/system/config/color/activate?id='
-                                        + data.id + '&status=0&msg=停用',
-                                    headers :
-                                        {
-                                            'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr(
-                                                'content')
-                                        },
                                     success : function(result)
                                     {
                                         layer.msg(result.msg);

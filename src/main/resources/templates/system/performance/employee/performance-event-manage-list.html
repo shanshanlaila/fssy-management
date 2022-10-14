@@ -38,7 +38,7 @@
                             <!--<input type="text" name="status" placeholder="事件清单状态查询" autocomplete="off"
                                    class="layui-input">-->
                             <label>
-                                <select name="status" pla>
+                                <select name="status" >
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="完结">完结</option>
                                     <option value="待填报价值">待填报价值</option>
@@ -51,7 +51,7 @@
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
+                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="export"
                                         title="请选择查询条件进行导出">
                                     导出
                                 </button>
@@ -61,7 +61,13 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="tool">
+                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+                    </script>
+                    <script type="text/html" id="toolbar">
+                    </script>
                 </div>
+
             </div>
         </div>
     </div>
@@ -87,7 +93,7 @@
         });
 
         // 导出
-        form.on('submit(import)', function (data) {
+        form.on('submit(export)', function (data) {
             var field = data.field;
             field.url = "/system/performance/employee/eventsList/downloadObjects";
             var url = createUrl(field);
@@ -233,12 +239,18 @@
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 130
+                        width: 80,
+                        templet:function (d) {
+                            return moment(d.createDate).format('Y-MM-DD')
+                        }
                     },
                     {
                         field: 'activeDate',
                         title: '生效日期',
-                        width: 130
+                        width: 80,
+                        templet:function (d) {
+                            return moment(d.activeDate).format('Y-MM-DD')
+                        }
                     },
                     {
                         field: 'performanceForm',
@@ -270,8 +282,33 @@
                         title: '事件标准创建日期',
                         width: 130
                     },
+                    {
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    }
                 ]
             ]
+        });
+        // 监听行工具事件
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') { // 修改
+                layer.open(
+                    {
+                        type: 2,
+                        title: data.id + ':事件评价数据修改',
+                        area:
+                            [
+                                $(window).width() * 0.9 + 'px',
+                                $(window).height() - 50 + 'px'
+                            ],
+                        content: '/system/performance/employee/eventsList/edit1?id=' + data.id,
+                        maxmin: true
+                    });
+            }
         });
     });
 
@@ -293,6 +330,8 @@
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
     });
+
 </script>
+
 </body>
 </html>

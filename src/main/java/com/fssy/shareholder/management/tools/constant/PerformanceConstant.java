@@ -13,6 +13,7 @@ package com.fssy.shareholder.management.tools.constant;
  */
 public interface PerformanceConstant {
     String EVENT_LIST_STATUS_FINAL = "完结";
-    String EVENT_LIST_STATUS_WAIT="待填报标准";
-    String EVENT_LIST_STATUS_VALUE="待填报价值";
+    String EVENT_LIST_STATUS_WAIT = "待填报标准";
+    String EVENT_LIST_STATUS_VALUE = "待填报价值";
+    String EVENT_LIST_STATUS_CANCEL = "取消";
 }
