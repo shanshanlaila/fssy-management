@@ -39,20 +39,20 @@ public class EventListController {
     @Autowired
     private DepartmentService departmentService;
 
-	/**
-	 * 无标准事件管理页面
-	 *
-	 * @return 事件评价标准管理页面
-	 */
-	@GetMapping("index")
-	@RequiredLog("无标准事件管理")
-	@RequiresPermissions("system:performance:event")
-	public String showEventList(Model model) {
+    /**
+     * 无标准事件管理页面
+     *
+     * @return 事件评价标准管理页面
+     */
+    @GetMapping("index")
+    @RequiredLog("无标准事件管理")
+    @RequiresPermissions("system:performance:event")
+    public String showEventList(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
-		return "/system/performance/employee/performance-event-list";
-	}
+        return "/system/performance/employee/performance-event-list";
+    }
 
     /**
      * “事件清单评判标准管理”菜单
@@ -97,7 +97,7 @@ public class EventListController {
 
 
     /**
-     * excel导出
+     * excel导出(按钮：导出事件清单填报履职计划)
      *
      * @param request  请求
      * @param response 响应
@@ -105,41 +105,29 @@ public class EventListController {
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
-        params.put("select", "id,eventsType,jobName,workEvents,delowStandard,middleStandard,fineStandard,excellentStandard");
+        params.put("select",
+                "id," +
+                "eventsType," +
+                "jobName," +
+                "workEvents," +
+                "delowStandard," +
+                "middleStandard," +
+                "fineStandard," +
+                "excellentStandard," +
+                "performanceForm," +
+                "departmentName,"+
+                "status"
+        );
         List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
 
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         // 需要改背景色的格子
-        fieldMap.put("id", "清单表序号");
-        fieldMap.put("eventsType", "事件类别");
-        fieldMap.put("jobName", "工作职责");
-        fieldMap.put("workEvents", "流程（工作事件）");
-        fieldMap.put("delowStandard", "不合格");
-        fieldMap.put("middleStandard", "中");
-        fieldMap.put("fineStandard", "良");
-        fieldMap.put("excellentStandard", "优");
-        // 标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
-        SheetOutputService sheetOutputService = new SheetOutputService();
-        if (ObjectUtils.isEmpty(eventLists)) {
-            throw new ServiceException("未查出数据");
-        }
-        sheetOutputService.exportNum("事件清单评价表", eventLists, fieldMap, response, strList, null);
-    }
-
-    @GetMapping("downloadObjects")
-    public void downloadObjects(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> params = getParams(request);
-        params.put("select",
-                "id,eventsType,jobName,workEvents,delowStandard,middleStandard,fineStandard,excellentStandard,performanceForm,departmentName");
-        List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
-
-        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
-
-        fieldMap.put("id", "序号");
+        fieldMap.put("id", "事件清单序号");
         fieldMap.put("eventsType", "事务类别");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
+        fieldMap.put("status","状态");
+        fieldMap.put("departmentName", "部门");
         fieldMap.put("delowStandard", "不合格");
         fieldMap.put("middleStandard", "中");
         fieldMap.put("fineStandard", "良");
@@ -152,14 +140,57 @@ public class EventListController {
         fieldMap.put("biaodan", "表单（输出内容）");
         fieldMap.put("jihuakaishishijian", "计划开始时间");
         fieldMap.put("jihuawanchengshijian", "计划完成时间");
-        fieldMap.put("departmentName", "部门");
         fieldMap.put("gangweimingcheng", "岗位名称");
         fieldMap.put("gangweirenyuanxingming", "岗位人员姓名");
-        fieldMap.put("shengbaoyuefen", "申报月份");
+        fieldMap.put("shengbaoyuefen", "申报日期");
+        // 标识字符串的列
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16,17,18,19,20,21);
+        SheetOutputService sheetOutputService = new SheetOutputService();
+        if (ObjectUtils.isEmpty(eventLists)) {
+            throw new ServiceException("未查出数据");
+        }
+        sheetOutputService.exportNum("履职管控表", eventLists, fieldMap, response, strList, null);
+    }
+
+    /**
+     * 事件清单评判标准管理-按钮：导出
+     *
+     * @param request  请求
+     * @param response 响应
+     */
+    @GetMapping("downloadObjects")
+    public void downloadObjects(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> params = getParams(request);
+        params.put("select",
+                "id," +
+                "eventsType," +
+                "jobName," +
+                "workEvents," +
+                "delowStandard," +
+                "middleStandard," +
+                "fineStandard," +
+                "excellentStandard," +
+                "status"
+        );
+        List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
+
+        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+        fieldMap.put("id", "事件清单序号");
+        fieldMap.put("eventsType", "事件类别");
+        fieldMap.put("jobName", "工作职责");
+        fieldMap.put("workEvents", "流程（工作事件）");
+        fieldMap.put("status", "状态");
+        fieldMap.put("delowStandard", "不合格");
+        fieldMap.put("middleStandard", "中");
+        fieldMap.put("fineStandard", "良");
+        fieldMap.put("excellentStandard", "优");
 
         // 创建导出服务
         SheetOutputService sheetOutputService = new SheetOutputService();
-        sheetOutputService.exportNum("事件清单标准评价表状态", eventLists, fieldMap, response, Arrays.asList(1, 2, 3, 4, 5, 6,7,8), null);
+        if (ObjectUtils.isEmpty(eventLists)) {
+            throw new ServiceException("未查出数据");
+        }
+        sheetOutputService.exportNum("事件清单标准评价表", eventLists, fieldMap, response, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), null);
     }
 
 
@@ -278,11 +309,11 @@ public class EventListController {
         if (!ObjectUtils.isEmpty(request.getParameter("officeId"))) {
             params.put("officeId", request.getParameter("officeId"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("statusWait"))){
-            params.put("statusWait",request.getParameter("statusWait"));
+        if (!ObjectUtils.isEmpty(request.getParameter("statusWait"))) {
+            params.put("statusWait", request.getParameter("statusWait"));
         }
-        if(!ObjectUtils.isEmpty(request.getParameter("statusCancel"))){
-            params.put("statusCancel",request.getParameter("statusCancel"));
+        if (!ObjectUtils.isEmpty(request.getParameter("statusCancel"))) {
+            params.put("statusCancel", request.getParameter("statusCancel"));
         }
         return params;
     }
@@ -311,88 +342,91 @@ public class EventListController {
 
     /**
      * 返回修改页面
+     *
      * @param request
      * @param model
      * @return
      */
     @GetMapping("edit")
     //@RequiresPermissions("performance:employee:event:edit")
-    public String edit(HttpServletRequest request,Model model) {
+    public String edit(HttpServletRequest request, Model model) {
         //获取无标准事件内容和清单Id
         String id = request.getParameter("id");
         EventList eventList = eventListService.getById(Long.valueOf(id));
-        model.addAttribute("eventList",eventList);//发送数据到前端，eventList对应
-       return "/system/performance/events-list-edit";
+        model.addAttribute("eventList", eventList);//发送数据到前端，eventList对应
+        return "/system/performance/events-list-edit";
     }
+
     @PostMapping("update")
     @ResponseBody
     public SysResult update(EventList eventList) {
         boolean result = eventListService.updateEventList(eventList);
         if (result)
             return SysResult.ok();
-        return SysResult.build(500,"更新失败，请检查数据后重新提交");
+        return SysResult.build(500, "更新失败，请检查数据后重新提交");
     }
+
     @DeleteMapping("{id}")
     @ResponseBody
     public SysResult destroy(@PathVariable(value = "id") Integer id) {
         boolean res = eventListService.changeStatus(id);
         if (res)
             return SysResult.ok();
-        return SysResult.build(500,"无标准事件内容未删除成功，请确认操作后重新尝试");
+        return SysResult.build(500, "无标准事件内容未删除成功，请确认操作后重新尝试");
     }
+
     @GetMapping("edit1")
     //@RequiresPermissions("performance:employee:event:edit")
-    public String edit1(HttpServletRequest request,Model model) {
+    public String edit1(HttpServletRequest request, Model model) {
         //获取无标准事件内容和清单Id
         String id = request.getParameter("id");
         EventList eventList = eventListService.getById(Long.valueOf(id));
-        model.addAttribute("eventList",eventList);//发送数据到前端，eventList对应
+        model.addAttribute("eventList", eventList);//发送数据到前端，eventList对应
         return "/system/performance/employee/performance-event-manage-edit";
     }
+
     @PostMapping("update1")
     @ResponseBody
     public SysResult update1(EventList eventList) {
         boolean result = eventListService.updateEventList(eventList);
         if (result)
             return SysResult.ok();
-        return SysResult.build(500,"更新失败，请检查数据后重新提交");
+        return SysResult.build(500, "更新失败，请检查数据后重新提交");
     }
-    
-	/**
-	 * 导出事件清单维护事件岗位配比
-	 *
-	 * @param request  请求
-	 * @param response 响应
-	 */
-	@RequiredLog("导出事件清单维护事件岗位配比")
-	@RequiresPermissions("system:performance:employee:event:attachment:importToCompleteRole")
-	@GetMapping("downloadToCompleteRole")
-	public void downloadToCompleteRole(HttpServletRequest request, HttpServletResponse response)
-	{
-		Map<String, Object> params = getParams(request);
-		params.put("select", "id,eventsType,jobName,workEvents");
-		List<Map<String, Object>> eventLists = eventListService
-				.findEventListMapDataByParams(params);
 
-		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
-		// 需要改背景色的格子
-		fieldMap.put("id", "清单表序号");
-		fieldMap.put("jobName", "工作职责");
-		fieldMap.put("workEvents", "流程（工作事件）");
-		fieldMap.put("departmentName", "*部门名称");
-		fieldMap.put("roleName", "*岗位名称");
-		fieldMap.put("proportion", "*占比");
-		fieldMap.put("isMainOrNext", "*是否主担");
-		fieldMap.put("userName", "*职员名称");
-		fieldMap.put("score", "*价值分");
-		fieldMap.put("activeDate", "*生效日期");
-		// 标识字符串的列
-		List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
-		SheetOutputService sheetOutputService = new SheetOutputService();
-		if (ObjectUtils.isEmpty(eventLists))
-		{
-			throw new ServiceException("未查出数据");
-		}
-		sheetOutputService.exportNum("事件分配岗位表", eventLists, fieldMap, response, strList, null);
-	}
+    /**
+     * 导出事件清单维护事件岗位配比
+     *
+     * @param request  请求
+     * @param response 响应
+     */
+    @RequiredLog("导出事件清单维护事件岗位配比")
+    @RequiresPermissions("system:performance:employee:event:attachment:importToCompleteRole")
+    @GetMapping("downloadToCompleteRole")
+    public void downloadToCompleteRole(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> params = getParams(request);
+        params.put("select", "id,eventsType,jobName,workEvents");
+        List<Map<String, Object>> eventLists = eventListService
+                .findEventListMapDataByParams(params);
+
+        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+        // 需要改背景色的格子
+        fieldMap.put("id", "清单表序号");
+        fieldMap.put("jobName", "工作职责");
+        fieldMap.put("workEvents", "流程（工作事件）");
+        fieldMap.put("departmentName", "*部门名称");
+        fieldMap.put("roleName", "*岗位名称");
+        fieldMap.put("proportion", "*占比");
+        fieldMap.put("isMainOrNext", "*是否主担");
+        fieldMap.put("userName", "*职员名称");
+        fieldMap.put("score", "*价值分");
+        fieldMap.put("activeDate", "*生效日期");
+        // 标识字符串的列
+        List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
+        SheetOutputService sheetOutputService = new SheetOutputService();
+        if (ObjectUtils.isEmpty(eventLists)) {
+            throw new ServiceException("未查出数据");
+        }
+        sheetOutputService.exportNum("事件分配岗位表", eventLists, fieldMap, response, strList, null);
+    }
 }

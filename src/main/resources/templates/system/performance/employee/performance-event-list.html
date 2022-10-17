@@ -42,13 +42,12 @@
                             <input type="text" name="supportFunctions" placeholder="支持职能查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                             <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
-                                    lay-filter="downloadForCharge">导出
+                                    lay-filter="downloadForCharge" title="状态‘完结’事件清单，可以导出">导出事件清单填报履职计划
                             </button>
                             <button shiro:hasPermission="system:performance:employee:event:attachment:import"
                                     class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
@@ -87,6 +86,8 @@
         // 监听导出按钮
         form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
+            // 导出参数设置
+            data.field.status = '完结';
             field.url = "/system/performance/employee/eventsList/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");
@@ -106,33 +107,37 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
-            where: {statusWait: true},
+            where: {status: "完结"},
             cols: [
                 [
                     {
-                        type: 'checkbox',
-                        fixed: 'left',
-                        width: 60
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                        fixed: 'left'
                     },
                     {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
-                    },
-                    {
-                        field: 'eventsType',
-                        title: '事件类别',
-                        width: 80
-                    },
-                    {
-                        field: 'jobName',
-                        title: '工作职责',
-                        width: 120
+                        field: 'year',
+                        title: '编制年份',
+                        width: 70,
+                        fixed: 'left'
                     },
                     {
                         field: 'workEvents',
                         title: '流程（工作事件）',
                         width: 200,
+                        fixed: 'left'
+                    },
+                    {
+                        field: 'workOutput',
+                        title: '表单',
+                        width: 130
+                    },
+
+                    {
+                        field: 'status',
+                        title: '状态',
+                        width: 90
                     },
                     {
                         field: 'delowStandard',
@@ -152,6 +157,123 @@
                     {
                         field: 'excellentStandard',
                         title: '优',
+                        width: 130
+                    },
+                    {
+                        field: 'id',
+                        title: '序号',
+                        width: 50
+                    },
+                    {
+                        field: 'eventsType',
+                        title: '事件类别',
+                        width: 80
+                    },
+                    {
+                        field: 'jobName',
+                        title: '工作职责',
+                        width: 120
+                    },
+                    {
+                        field: 'strategyFunctions',
+                        title: '战略职能',
+                        width: 130
+                    },
+                    {
+                        field: 'supportFunctions',
+                        title: '支持职能',
+                        width: 130
+                    },
+
+                    {
+                        field: 'note',
+                        title: '备注',
+                        width: 130
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 130
+                    },
+                    {
+                        field: 'duration',
+                        title: '月工作标准时长（分）',
+                        width: 130
+                    },
+                    {
+                        field: 'level',
+                        title: '评价等级',
+                        width: 130
+                    },
+                    {
+                        field: 'standardValue',
+                        title: '事件标准价值',
+                        width: 130
+                    },
+                    {
+                        field: 'delow',
+                        title: '不合格价值',
+                        width: 130
+                    },
+                    {
+                        field: 'middle',
+                        title: '中价值',
+                        width: 130
+                    },
+                    {
+                        field: 'fine',
+                        title: '良价值',
+                        width: 130
+                    },
+                    {
+                        field: 'excellent',
+                        title: '优价值',
+                        width: 130
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 80,
+                        templet:function (d) {
+                            return moment(d.createDate).format('Y-MM-DD')
+                        }
+                    },
+                    {
+                        field: 'activeDate',
+                        title: '生效日期',
+                        width: 80,
+                        templet:function (d) {
+                            return moment(d.activeDate).format('Y-MM-DD')
+                        }
+                    },
+                    {
+                        field: 'performanceForm',
+                        title: '绩效类型',
+                        width: 130
+                    },
+                    {
+                        field: 'listCreateUser',
+                        title: '事件清单创建人',
+                        width: 130
+                    },
+                    {
+                        field: 'valueCreateUser',
+                        title: '事件价值创建人',
+                        width: 130
+                    },
+                    {
+                        field: 'valueCreateDate',
+                        title: '事件价值创建日期',
+                        width: 130
+                    },
+                    {
+                        field: 'standardCreateUser',
+                        title: '事件标准创建人',
+                        width: 130
+                    },
+                    {
+                        field: 'standardCreateDate',
+                        title: '事件标准创建日期',
                         width: 130
                     },
                 ]

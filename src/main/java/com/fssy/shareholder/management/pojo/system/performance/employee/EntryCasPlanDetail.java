@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -41,13 +41,13 @@ public class EntryCasPlanDetail extends BaseModel {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 事件表主键
      */
     @TableField("eventsId")
-    private Integer eventsId;
+    private Long eventsId;
 
     /**
      * 事件类别
@@ -119,7 +119,7 @@ public class EntryCasPlanDetail extends BaseModel {
      * 部门表主键
      */
     @TableField("departmentId")
-    private Integer departmentId;
+    private Long departmentId;
 
     /**
      * 岗位（角色）名称
@@ -131,7 +131,7 @@ public class EntryCasPlanDetail extends BaseModel {
      * 岗位表（角色）主键
      */
     @TableField("roleId")
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 员工姓名
@@ -143,7 +143,7 @@ public class EntryCasPlanDetail extends BaseModel {
      * 员工表主键
      */
     @TableField("userId")
-    private Integer userId;
+    private Long userId;
 
     /**
      * 申报日期
@@ -157,13 +157,13 @@ public class EntryCasPlanDetail extends BaseModel {
      * 申报年份
      */
     @TableField("year")
-    private Integer year;
+    private Long year;
 
     /**
      * 申报月份
      */
     @TableField("month")
-    private Integer month;
+    private Long month;
 
     /**
      * 对应工作事件的计划内容
@@ -223,7 +223,7 @@ public class EntryCasPlanDetail extends BaseModel {
      * 编制人主键
      */
     @TableField("createId")
-    private Integer createId;
+    private Long createId;
 
     /**
      * 审核人
@@ -235,7 +235,7 @@ public class EntryCasPlanDetail extends BaseModel {
      * 审核人主键
      */
     @TableField("auditId")
-    private Integer auditId;
+    private Long auditId;
 
     /**
      * 审核日期
@@ -267,7 +267,7 @@ public class EntryCasPlanDetail extends BaseModel {
      * 员工月度履职计划表主键
      */
     @TableField("mergeId")
-    private Integer mergeId;
+    private Long mergeId;
 
     /**
      * 事件类型(事务类/非事务类/新增工作流)
@@ -291,7 +291,7 @@ public class EntryCasPlanDetail extends BaseModel {
      * 导入时，对应的附件表主键
      */
     @TableField("attachmentId")
-    private Integer attachmentId;
+    private Long attachmentId;
 
 
 }

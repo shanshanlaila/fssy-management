@@ -19,6 +19,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EventLis
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -199,18 +200,20 @@ public class EventListServiceImpl implements EventListService {
     @Override
     @Transactional
     public Map<String, Object> readEventListDataSource(Attachment attachment) {
+        // 按钮：导入事件标准
         // 返回消息
         Map<String, Object> result = new HashMap<>();
+        StringBuffer sb = new StringBuffer();// 用于数据校验
         result.put("content", "");
         result.put("failed", false);
         // 读取附件
         sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
         // 读取表单
-        sheetService.readByName("事件清单评价表"); //根据表单名称获取该工作表单
+        sheetService.readByName("事件清单标准评价表"); //根据表单名称获取该工作表单
         // 获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【事件清单评价表】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【事件清单标准评价表】不存在，无法读取数据，请检查");
         }
 
         // 获取单价列表数据
@@ -242,16 +245,23 @@ public class EventListServiceImpl implements EventListService {
                 cells.add(res);// 将单元格的值写入行
             }
             // 导入结果写入列
-            Cell cell = row.createCell(SheetService.columnToIndex("I"));// 每一行的结果信息上传到S列
+            Cell cell = row.createCell(SheetService.columnToIndex("J"));// 每一行的结果信息上传到S列
             // 检查必填项
             String id = cells.get(SheetService.columnToIndex("A"));// 根据id去更新
             String eventsType = cells.get(SheetService.columnToIndex("B"));
             String jobName = cells.get(SheetService.columnToIndex("C"));
             String workEvents = cells.get(SheetService.columnToIndex("D"));
-            String delowStandard = cells.get(SheetService.columnToIndex("E"));
-            String middleStandard = cells.get(SheetService.columnToIndex("F"));
-            String fineStandard = cells.get(SheetService.columnToIndex("G"));
-            String excellentStandard = cells.get(SheetService.columnToIndex("H"));
+            String status = cells.get(SheetService.columnToIndex("E"));
+            String delowStandard = cells.get(SheetService.columnToIndex("F"));
+            String middleStandard = cells.get(SheetService.columnToIndex("G"));
+            String fineStandard = cells.get(SheetService.columnToIndex("H"));
+            String excellentStandard = cells.get(SheetService.columnToIndex("I"));
+            // 数据校验
+            if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_WAIT)){
+                StringTool.setMsg(sb, String.format("第【%s】行状态为【%s】的事件清单不为待填报标准，不能导入", j + 1, status));
+                cell.setCellValue(String.format("序号为【%s】的事件清单状态不为待填报标准，不能导入", id));
+                continue;
+            }
             // 构建实体类
             EventList eventList = new EventList();
             User user = (User) SecurityUtils.getSubject().getPrincipal();
