@@ -16,4 +16,5 @@ public interface PerformanceConstant {
     String EVENT_LIST_STATUS_WAIT = "待填报标准";
     String EVENT_LIST_STATUS_VALUE = "待填报价值";
     String EVENT_LIST_STATUS_CANCEL = "取消";
+    String ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW="待填报回顾";
 }

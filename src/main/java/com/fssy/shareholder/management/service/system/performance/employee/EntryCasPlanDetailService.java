@@ -1,11 +1,17 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
 package com.fssy.shareholder.management.service.system.performance.employee;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -19,4 +25,27 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> {
 
+    /**
+     * 根据参数分页查询数据
+     *
+     * @param params 查询参数
+     * @return 数据分页
+     */
+    Page<EntryCasPlanDetail> findDataListByParams(Map<String, Object> params);
+
+    /**
+     * 读取附件数据到数据库表
+     *
+     * @param attachment 履职管控计划表附件
+     * @return 履职管控计划表附件map集合
+     */
+    Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment);
+
+    /**
+     * 通过查询条件查询履职计划map数据
+     *
+     * @param params 查询条件
+     * @return 履职计划关系数据列表
+     */
+    List<Map<String, Object>> findEntryCasPlanDetailMapDataByParams(Map<String, Object> params);
 }

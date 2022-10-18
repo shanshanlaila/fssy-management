@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>事件清单评判标准管理</title>
+    <title>履职计划表管理</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>事件清单评判标准管理</cite></a>
+            <a> <cite>履职计划表管理</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -30,19 +30,9 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="编制年份查询" autocomplete="off"
-                                   class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <label>
-                                <select name="status" >
-                                    <option style="display: none" value="">请选择状态</option>
-                                    <option value="完结">完结</option>
-                                    <option value="待填报价值">待填报价值</option>
-                                    <option value="待填报标准">待填报标准</option>
-                                </select>
-                            </label>
+                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
+                            <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
+                                   class="layui-input laydate search-laydate" id="createDate">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
@@ -50,8 +40,14 @@
                             </button>
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="export"
-                                        title="请选择查询条件进行导出">
-                                    导出
+                                        title="请选择查询条件进行导出状态为‘待填报回顾’履职计划">
+                                    导出履职计划填报月底回顾
+                                </button>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <button shiro:haspermission="system:performance:entryCasPlanDetail:import"
+                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
+                                    导入月度履职计划
                                 </button>
                             </div>
                         </div>
@@ -59,13 +55,7 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
-                    <script type="text/html" id="tool">
-                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
-                    </script>
-                    <script type="text/html" id="toolbar">
-                    </script>
                 </div>
-
             </div>
         </div>
     </div>
@@ -76,6 +66,17 @@
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render(
+                {
+                    elem: this,
+                    //更换触发方式
+                    trigger: 'click',
+                    type: 'date'
+                });
+        });
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
@@ -90,10 +91,11 @@
             return false
         });
 
+
         // 导出
         form.on('submit(export)', function (data) {
             var field = data.field;
-            field.url = "/system/performance/employee/eventsList/downloadObjects";
+            field.url = "/system/entry-cas-plan-detail/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");
             window.open(url, true);
@@ -104,7 +106,7 @@
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/performance/employee/eventsList/getObjects",
+            url: "/system/entry-cas-plan-detail/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -115,32 +117,65 @@
             cols: [
                 [
                     {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                        fixed: 'left'
-                    },
-                    {
-                        field: 'year',
-                        title: '编制年份',
-                        width: 70,
-                        fixed: 'left'
-                    },
-                    {
-                        field: 'workEvents',
-                        title: '流程（工作事件）',
-                        width: 200,
-                        fixed: 'left'
+                        field: 'planningWork',
+                        title: '对应工作事件的计划内容',
+                        width: 130
                     },
                     {
                         field: 'workOutput',
                         title: '表单',
                         width: 130
                     },
+                    {
+                        field: 'planStartDate',
+                        title: '计划开始日期',
+                        width: 130
+                    },
+                    {
+                        field: 'times',
+                        title: '频次',
+                        width: 130
+                    },
+                    {
+                        field: 'planEndDate',
+                        title: '计划完成日期',
+                        width: 130
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 130
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '计划内容',
+                        width: 90,
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '完成时间',
+                        width: 90,
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 70,
+                    },
+                    {
+                        field: 'workEvents',
+                        title: '流程（工作事件）',
+                        width: 200,
+                    },
+
 
                     {
                         field: 'status',
-                        title: '状态',
+                        title: '履职计划状态',
                         width: 90
                     },
                     {
@@ -176,38 +211,17 @@
                     {
                         field: 'jobName',
                         title: '工作职责',
-                        width: 120
+                        width: 80
                     },
-                    {
-                        field: 'strategyFunctions',
-                        title: '战略职能',
-                        width: 130
-                    },
-                    {
-                        field: 'supportFunctions',
-                        title: '支持职能',
-                        width: 130
-                    },
-
                     {
                         field: 'note',
                         title: '备注',
-                        width: 130
+                        width: 80
                     },
                     {
                         field: 'eventsFirstType',
                         title: '事件类型',
-                        width: 130
-                    },
-                    {
-                        field: 'duration',
-                        title: '月工作标准时长（分）',
-                        width: 130
-                    },
-                    {
-                        field: 'level',
-                        title: '评价等级',
-                        width: 130
+                        width: 80
                     },
                     {
                         field: 'standardValue',
@@ -215,98 +229,84 @@
                         width: 130
                     },
                     {
-                        field: 'delow',
-                        title: '不合格价值',
+                        field: 'mainOrNext',
+                        title: '主担/次担',
+                        width: 80
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位（角色）名称',
+                        width: 80
+                    },
+                    {
+                        field: 'userName',
+                        title: '员工姓名',
+                        width: 80
+                    },
+                    {
+                        field: 'applyDate',
+                        title: '申报日期',
+                        width: 80
+                    },
+                    {
+                        field: 'year',
+                        title: '申报年份',
+                        width: 80
+                    },
+                    {
+                        field: 'month',
+                        title: '申报月份',
+                        width: 80
+                    },
+                    {
+                        field: 'planOutput',
+                        title: '表单(输出内容)来源自己填写',
                         width: 130
                     },
                     {
-                        field: 'middle',
-                        title: '中价值',
+                        field: 'createName',
+                        title: '编制人',
+                        width: 80
+                    },
+                    {
+                        field: 'auditName',
+                        title: '审核人',
+                        width: 80
+                    },
+                    {
+                        field: 'auditDate',
+                        title: '审核日期',
+                        width: 80
+                    },
+                    {
+                        field: 'auditNote',
+                        title: '审核意见',
                         width: 130
                     },
                     {
-                        field: 'fine',
-                        title: '良价值',
-                        width: 130
+                        field: 'mergeNo',
+                        title: '员工月度履职计划表编号',
+                        width: 80
                     },
                     {
-                        field: 'excellent',
-                        title: '优价值',
-                        width: 130
+                        field: 'auditStatus',
+                        title: '履职计划审核状态',
+                        width: 80
                     },
-                    {
-                        field: 'createDate',
-                        title: '编制日期',
-                        width: 80,
-                        templet:function (d) {
-                            return moment(d.createDate).format('Y-MM-DD')
-                        }
-                    },
-                    {
-                        field: 'activeDate',
-                        title: '生效日期',
-                        width: 80,
-                        templet:function (d) {
-                            return moment(d.activeDate).format('Y-MM-DD')
-                        }
-                    },
-                    {
-                        field: 'performanceForm',
-                        title: '绩效类型',
-                        width: 130
-                    },
-                    {
-                        field: 'listCreateUser',
-                        title: '事件清单创建人',
-                        width: 130
-                    },
-                    {
-                        field: 'valueCreateUser',
-                        title: '事件价值创建人',
-                        width: 130
-                    },
-                    {
-                        field: 'valueCreateDate',
-                        title: '事件价值创建日期',
-                        width: 130
-                    },
-                    {
-                        field: 'standardCreateUser',
-                        title: '事件标准创建人',
-                        width: 130
-                    },
-                    {
-                        field: 'standardCreateDate',
-                        title: '事件标准创建日期',
-                        width: 130
-                    },
-                    {
-                        fixed: 'right',
-                        title: '操作',
-                        width: 100,
-                        align: 'center',
-                        toolbar: '#tool'
-                    }
                 ]
             ]
         });
-        // 监听行工具事件
-        table.on('tool(dataTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'edit') { // 修改
-                layer.open(
-                    {
-                        type: 2,
-                        title: data.id + ':事件评价数据修改',
-                        area:
-                            [
-                                $(window).width() * 0.9 + 'px',
-                                $(window).height() - 50 + 'px'
-                            ],
-                        content: '/system/performance/employee/eventsList/edit1?id=' + data.id,
-                        maxmin: true
-                    });
-            }
+        // 导入按钮
+        form.on('submit(import)', function (data) {
+            var createLayer = layer.open({
+                type: 2,
+                title: "上传履职计划表",
+                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                content: '/system/entry-cas-plan-detail/attachment/import',
+                scrollbar: true,
+                maxmin: true,
+            });
+            return false;
         });
     });
 
@@ -328,8 +328,6 @@
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
     });
-
 </script>
-
 </body>
 </html>
