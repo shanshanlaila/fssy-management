@@ -157,13 +157,13 @@ public class EntryCasPlanDetail extends BaseModel {
      * 申报年份
      */
     @TableField("year")
-    private Long year;
+    private Integer year;
 
     /**
      * 申报月份
      */
     @TableField("month")
-    private Long month;
+    private Integer month;
 
     /**
      * 对应工作事件的计划内容

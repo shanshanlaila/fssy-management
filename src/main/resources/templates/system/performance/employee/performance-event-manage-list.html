@@ -36,7 +36,7 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
-                                <select name="status" >
+                                <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="完结">完结</option>
                                     <option value="待填报价值">待填报价值</option>
@@ -238,7 +238,7 @@
                         field: 'createDate',
                         title: '编制日期',
                         width: 80,
-                        templet:function (d) {
+                        templet: function (d) {
                             return moment(d.createDate).format('Y-MM-DD')
                         }
                     },
@@ -246,7 +246,7 @@
                         field: 'activeDate',
                         title: '生效日期',
                         width: 80,
-                        templet:function (d) {
+                        templet: function (d) {
                             return moment(d.activeDate).format('Y-MM-DD')
                         }
                     },

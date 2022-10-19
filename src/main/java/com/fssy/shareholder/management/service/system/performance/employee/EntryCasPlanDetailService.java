@@ -42,7 +42,7 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
     Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment);
 
     /**
-     * 通过查询条件查询履职计划map数据
+     * 通过查询条件查询履职计划map数据，用于导出
      *
      * @param params 查询条件
      * @return 履职计划关系数据列表
