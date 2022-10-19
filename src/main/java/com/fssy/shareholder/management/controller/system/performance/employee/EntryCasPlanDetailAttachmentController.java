@@ -74,7 +74,7 @@ public class EntryCasPlanDetailAttachmentController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "无标准事件清单"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "system/performance/employee/entry-cas-review-detail-attachment-list";
+        return "system/performance/employee/entry-cas-plan-detail-attachment-list";
     }
 
     /**

@@ -11,17 +11,22 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.role.Role;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fssy.shareholder.management.tools.common.DateTool;
+import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import com.sun.prism.impl.ps.CachingEllipseRep;
@@ -31,6 +36,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -39,6 +45,7 @@ import org.thymeleaf.util.StringUtils;
 import javax.print.DocFlavor;
 import javax.xml.crypto.Data;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -71,6 +78,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private EntryCasMergeMapper entryCasMergeMapper;
 
     @Override
     public Page<EntryCasPlanDetail> findDataListByParams(Map<String, Object> params) {
@@ -118,6 +128,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         Row row;
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
+        // 缓存map
+        Map<String, EntryCasMerge> mergeMap = new HashMap<>();
         // 循环总行数(不读表头，从第2行开始读，索引从0开始，所以j=1)
         for (int j = 1; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
@@ -208,7 +220,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             }
             String planEndDate = planEndDateStr.substring(0, 10);
             // 数据校验
-            if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)){
+            if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
                 StringTool.setMsg(sb, String.format("第【%s】行状态为【%s】的事件清单不为完结，不能导入", j + 1, status));
                 cell.setCellValue(String.format("序号为【%s】的事件清单状态不为完结，不能导入", eventListId));
                 continue;
@@ -243,16 +255,16 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 continue;
             }
             entryCasPlanDetail.setDepartmentId(departments.get(0).getId());
-            entryCasPlanDetail.setRoleName(roleName);
             LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
             roleLambdaQueryWrapper.eq(Role::getName, roleName);
             List<Role> roles = roleMapper.selectList(roleLambdaQueryWrapper);
-            entryCasPlanDetail.setRoleId(roles.get(0).getId());
-            if (ObjectUtils.isEmpty(roles)) {
+            if (ObjectUtils.isEmpty(roleName)) {
                 setFailedContent(result, String.format("第%s行的岗位名称无对应数据", j + 1));
                 cell.setCellValue("表中岗位名称无对应数据");
                 continue;
             }
+            entryCasPlanDetail.setRoleName(roleName);
+            entryCasPlanDetail.setRoleId(roles.get(0).getId());
             entryCasPlanDetail.setUserName(userName);
             List<User> users = userMapper.selectList(new LambdaQueryWrapper<User>().eq(User::getName, userName));
             if (ObjectUtils.isEmpty(users)) {
@@ -262,13 +274,63 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             }
             entryCasPlanDetail.setUserId(users.get(0).getId());
             entryCasPlanDetail.setApplyDate(LocalDate.parse(applyDate));
-            entryCasPlanDetail.setYear(Long.valueOf(year));
-            entryCasPlanDetail.setMonth(Long.valueOf(month));
+            entryCasPlanDetail.setYear(Integer.valueOf(year));
+            entryCasPlanDetail.setMonth(Integer.valueOf(month));
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             entryCasPlanDetail.setCreateName(user.getName());
             entryCasPlanDetail.setCreatedAt(LocalDateTime.now());
             entryCasPlanDetail.setCreateId(user.getId());
             entryCasPlanDetail.setCreateName(user.getName());
+            // 根据条件查询或生成bs_performance_employee_entry_cas_merge表数据
+            LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            entryCasMergeLambdaQueryWrapper
+                    .eq(EntryCasMerge::getDepartmentName, departmentName)
+                    .eq(EntryCasMerge::getYear, year);
+
+            String key = departmentName + ":" + year;
+            EntryCasMerge entryCasMerge;
+            if (mergeMap.containsKey(key)) // 缓存存在则获取
+            {
+                entryCasMerge = mergeMap.get(key);
+            }
+            else
+            {
+                List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
+                // 只查到一条数据
+                if (entryCasMerges.size() >= 1) {
+                    entryCasMerge = entryCasMerges.get(0);
+                }
+                else
+                // 查不到数据
+                {
+                    entryCasMerge = new EntryCasMerge();
+                    entryCasMerge.setCreateDate(LocalDate.now());
+                    entryCasMerge.setCreatedAt(LocalDateTime.now());
+                    entryCasMerge.setCreateId(user.getId());
+                    entryCasMerge.setCreateName(user.getName());
+                    entryCasMerge.setDepartmentName(departmentName);
+                    entryCasMerge.setDepartmentId(departments.get(0).getDepartmentId());
+                    entryCasMerge.setAuditName(null);
+                    entryCasMerge.setAuditId(null);
+                    entryCasMerge.setAuditDate(null);
+                    entryCasMerge.setRoleId(roles.get(0).getId());
+
+                    // mergeNo
+                    entryCasMerge.setApplyDate(LocalDate.parse(applyDate));
+                    entryCasMerge.setYear(Integer.valueOf(year));
+                    entryCasMerge.setMonth(Integer.valueOf(month));
+                    entryCasMerge.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+                    // serial
+                    entryCasMerge = storeNoticeMerge(LocalDate.now(),new HashMap<String,Object>(),entryCasMerge);
+                }
+                // 存入缓存
+                mergeMap.put(key, entryCasMerge);
+            }
+
+            // 添加计划表编号和序号
+            entryCasPlanDetail.setMergeNo(entryCasMerge.getMergeNo());
+            entryCasPlanDetail.setMergeId(entryCasMerge.getId());
+
             // 更新
             entryCasPlanDetailMapper.insert(entryCasPlanDetail);
             cell.setCellValue("导入成功");// 写在upload目录下的excel表格
@@ -327,8 +389,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("departmentName")) {
             queryWrapper.like("departmentName", params.get("departmentName"));
         }
-        if (params.containsKey("departmentIds")) {
-            queryWrapper.in("departmentId", (List<String>) params.get("departmentIds"));
+        if (params.containsKey("departmentIdList")) {
+            queryWrapper.in("departmentId", (List<String>) params.get("departmentIdList"));
         }
         if (params.containsKey("roleName")) {
             queryWrapper.like("roleName", params.get("roleName"));
@@ -391,7 +453,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             queryWrapper.like("auditNote", params.get("auditNote"));
         }
         if (params.containsKey("status")) {
-            queryWrapper.like("status", params.get("status"));
+            queryWrapper.eq("status", params.get("status"));
         }
         if (params.containsKey("mergeNo")) {
             queryWrapper.like("mergeNo", params.get("mergeNo"));
@@ -411,6 +473,40 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("attachmentId")) {
             queryWrapper.eq("attachmentId", params.get("attachmentId"));
         }
+        if (params.containsKey("statusCancel")) {
+            queryWrapper.ne("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+        }
         return queryWrapper;
+    }
+
+    public synchronized EntryCasMerge storeNoticeMerge(LocalDate createDate,
+                                                       Map<String, Object> otherParams, EntryCasMerge entryCasMerge) {
+        // region 创建通知单数据
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+
+        // 生成通知单明细合并序列号
+        int noticeMergeSerial;
+        int year = createDate.getYear();
+        int month = createDate.getMonthValue();
+        QueryWrapper<EntryCasMerge> queryNoticeMergeSerialQueryWrapper = new QueryWrapper<>();
+        queryNoticeMergeSerialQueryWrapper.eq("year", year)
+                .select("max(serial) as serial");
+        EntryCasMerge noticeMergeLastSerialData = entryCasMergeMapper
+                .selectOne(queryNoticeMergeSerialQueryWrapper);
+        noticeMergeSerial = !ObjectUtils.isEmpty(noticeMergeLastSerialData)
+                && !ObjectUtils.isEmpty(noticeMergeLastSerialData.getSerial())
+                ? noticeMergeLastSerialData.getSerial().intValue() + 1
+                : 1;
+        entryCasMerge.setMergeNo(
+                String.format("JH%s%s", year,
+                        new DecimalFormat("000").format(noticeMergeSerial)));
+        entryCasMerge.setSerial(noticeMergeSerial);
+        entryCasMerge.setYear(year);
+        entryCasMerge.setMonth(month);
+        entryCasMerge.setCreateDate(createDate);
+
+        entryCasMergeMapper.insert(entryCasMerge);
+        // endregion
+        return entryCasMerge;
     }
 }

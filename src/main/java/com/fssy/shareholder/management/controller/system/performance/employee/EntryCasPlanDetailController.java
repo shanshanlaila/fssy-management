@@ -5,20 +5,15 @@
  */
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
-import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
-import com.fssy.shareholder.management.service.system.config.AttachmentService;
-import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
-import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
-import com.fssy.shareholder.management.tools.common.InstandTool;
-import com.fssy.shareholder.management.tools.constant.CommonConstant;
+import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +22,9 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -50,15 +43,6 @@ public class EntryCasPlanDetailController {
 
     @Autowired
     private EntryCasPlanDetailService entryCasPlanDetailService;
-
-    @Autowired
-    private ImportModuleService importModuleService;
-
-    @Autowired
-    private AttachmentService attachmentService;
-
-    @Autowired
-    private FileAttachmentTool fileAttachmentTool;
 
     @Autowired
     private DepartmentService departmentService;
@@ -112,11 +96,6 @@ public class EntryCasPlanDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
             params.put("id", request.getParameter("id"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("departmentIds"))) {
-            String departmentNameList = request.getParameter("departmentIds");
-            List<String> departmentIds = Arrays.asList(departmentNameList.split(","));
-            params.put("departmentIds", departmentIds);
-        }
         if (!ObjectUtils.isEmpty(request.getParameter("createDate"))) {
             params.put("createDate", request.getParameter("createDate"));
         }
@@ -154,7 +133,9 @@ public class EntryCasPlanDetailController {
             params.put("departmentName", request.getParameter("departmentName"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("departmentIds"))) {
-            params.put("departmentIds", request.getParameter("departmentIds"));
+            String departmentIds = request.getParameter("departmentIds");
+            List<String> departmentIdList = Arrays.asList(departmentIds.split(","));
+            params.put("departmentIdList", departmentIdList);
         }
         if (!ObjectUtils.isEmpty(request.getParameter("roleName"))) {
             params.put("roleName", request.getParameter("roleName"));
@@ -237,6 +218,9 @@ public class EntryCasPlanDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("attachmentId"))) {
             params.put("attachmentId", request.getParameter("attachmentId"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("statusCancel"))) {
+            params.put("statusCancel", request.getParameter("statusCancel"));
+        }
         return params;
     }
 
@@ -282,10 +266,10 @@ public class EntryCasPlanDetailController {
         fieldMap.put("excellentStandard", "优");
         fieldMap.put("jixiaoleixing", "绩效类型");
         fieldMap.put("shijianjiazhibiaozhunfen", "事件价值标准分");
-        fieldMap.put("departmentName","部门名称");
-        fieldMap.put("roleName","岗位名称");
-        fieldMap.put("userName","员工姓名");
-        fieldMap.put("applyDate","申报日期");
+        fieldMap.put("departmentName", "部门名称");
+        fieldMap.put("roleName", "岗位名称");
+        fieldMap.put("userName", "员工姓名");
+        fieldMap.put("applyDate", "申报日期");
         fieldMap.put("zhudan", "主/次担任");
         fieldMap.put("duiyinggongzuoneirong", "对应工作事件的计划内容");
         fieldMap.put("pinci", "频次");
@@ -301,5 +285,55 @@ public class EntryCasPlanDetailController {
         sheetOutputService.exportNum("履职管控", eventLists, fieldMap, response, strList, null);
     }
 
+    /**
+     * 展示修改页面
+     *
+     * @param id    履职明细id
+     * @param model 数据模型
+     * @return 修改页面
+     */
+    @GetMapping("edit/{id}")
+    public String showEditPage(@PathVariable String id, Model model) {
+        EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
+        if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+            throw new ServiceException("不能修改取消状态下的事件请单");
+        }
+        model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
+        return "system/performance/employee/performance-entry-cas-plan-detail-edit";
+    }
+
+    /**
+     * 更新履职明细
+     *
+     * @param entryCasPlanDetail 履职明细实体
+     * @return 结果
+     */
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(EntryCasPlanDetail entryCasPlanDetail) {
+        boolean result = entryCasPlanDetailService.updateById(entryCasPlanDetail);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "履职明细个更新失败");
+    }
+
+    /**
+     * 取消履职明细
+     *
+     * @param id id
+     * @return 取消结果
+     */
+    @PostMapping("cancel/{id}")
+    @ResponseBody
+    public SysResult cancel(@PathVariable String id) {
+        LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, id).set(EntryCasPlanDetail::getStatus, "取消");
+        boolean result = entryCasPlanDetailService.update(entryCasPlanDetailLambdaUpdateWrapper);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "取消失败");
+    }
 
 }
