@@ -61,7 +61,7 @@
                             <!--<input type="text" name="status" placeholder="事件清单状态查询" autocomplete="off"
                                    class="layui-input">-->
                             <label>
-                                <select name="status" pla>
+                                <select name="status" >
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="完结">完结</option>
                                     <option value="待填报价值">待填报价值</option>
@@ -88,7 +88,9 @@
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
+
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+
                         <a lay-event="delete" title="取消"><i class="layui-icon">&#x1007;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
@@ -134,9 +136,10 @@
                                 ],
                             toolbar: '#toolbar',
                             size: 'sm',
-                            /* where: {
-                                statusCancel:true
-                            }, */
+                             where: {
+                                // 向controller传入额外参数
+                                 statusCancel:true
+                            },
                             cols:
                                 [
                                     [
@@ -346,6 +349,11 @@
                     var data = obj.data;
                     if (obj.event === 'edit')
                     { // 修改
+                        // if (data.status == '取消') {
+                        //     layer.msg('不能修改取消状态的事件清单');
+                        //     return false;
+                        // }
+
                         layer.open(
                             {
                                 type : 2,

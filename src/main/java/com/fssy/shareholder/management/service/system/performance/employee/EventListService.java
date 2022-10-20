@@ -88,7 +88,7 @@ public interface EventListService {
     EventList getById(Long id);
 
     /**
-     * 取消无标准事件清单状态为取消
+     * 取消无标准事件清单状态变为取消
      *
      * @param id
      * @return

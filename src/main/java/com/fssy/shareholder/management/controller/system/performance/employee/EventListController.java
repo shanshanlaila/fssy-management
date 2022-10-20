@@ -11,6 +11,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EventLis
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
+import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -353,10 +354,18 @@ public class EventListController {
         //获取无标准事件内容和清单Id
         String id = request.getParameter("id");
         EventList eventList = eventListService.getById(Long.valueOf(id));
+        if (eventList.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+            throw new ServiceException("不能修改取消状态的事件清单");
+        }
         model.addAttribute("eventList", eventList);//发送数据到前端，eventList对应
         return "/system/performance/events-list-edit";
     }
 
+    /**
+     *更新保存无标准事件清单
+     * @param eventList
+     * @return
+     */
     @PostMapping("update")
     @ResponseBody
     public SysResult update(EventList eventList) {
@@ -366,6 +375,11 @@ public class EventListController {
         return SysResult.build(500, "更新失败，请检查数据后重新提交");
     }
 
+    /**
+     * 取消无标准事件清单状态变为取消
+     * @param id
+     * @return
+     */
     @DeleteMapping("{id}")
     @ResponseBody
     public SysResult destroy(@PathVariable(value = "id") Integer id) {
@@ -375,6 +389,12 @@ public class EventListController {
         return SysResult.build(500, "无标准事件内容未删除成功，请确认操作后重新尝试");
     }
 
+    /**
+     * 修改事件清单评判标准事件清单
+     * @param request
+     * @param model
+     * @return
+     */
     @GetMapping("edit1")
     //@RequiresPermissions("performance:employee:event:edit")
     public String edit1(HttpServletRequest request, Model model) {
@@ -385,6 +405,11 @@ public class EventListController {
         return "/system/performance/employee/performance-event-manage-edit";
     }
 
+    /**
+     * 更新保存修改事件清单评判标准事件清单
+     * @param eventList
+     * @return
+     */
     @PostMapping("update1")
     @ResponseBody
     public SysResult update1(EventList eventList) {

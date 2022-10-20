@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>履职计划表管理</cite></a>
+            <a> <cite>履职计划部长审核管理</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -33,19 +33,6 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 140px;">
                             <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <!--<input type="text" name="status" placeholder="事件清单状态查询" autocomplete="off"
-                                   class="layui-input">-->
-                            <label>
-                                <select name="status">
-                                    <option style="display: none" value="">请选择状态</option>
-                                    <option value="待提交审核">待提交审核</option>
-                                    <option value="待部长审核">待部长审核</option>
-                                    <option value="待科长审核">待科长审核</option>
-                                    <option value="完结">完结</option>
-                                </select>
-                            </label>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
@@ -71,22 +58,11 @@
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="confirm">提交审核
-                                </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit=""
-                                        lay-filter="retreat">撤销审核
+                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="pass">审核通过</button>
+                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="noPass">审核拒绝
                                 </button>
                             </div>
                         </form>
-                    </script>
-                    <!--行工具栏-->
-                    <script type="text/html" id="tool">
-                        {{# if(d.status != '取消') {}}
-                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
-                        {{# } }}
-                        <a lay-event="cancel" title="取消"><i class="layui-icon">&#x1007;</i></a>
                     </script>
                 </div>
             </div>
@@ -99,41 +75,6 @@
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
-
-        // 每个标签加一个class，名为laydate
-        $(".laydate").each(function () {
-            laydate.render(
-                {
-                    elem: this,
-                    //更换触发方式
-                    trigger: 'click',
-                    type: 'date'
-                });
-        });
-
-        // 监听搜索按钮
-        form.on('submit(search)', function (data) {
-            console.log(data.field)
-            // 重新加载表格
-            table.reload('dataTable', {
-                where: data.field,
-                page: {
-                    curr: 1
-                }
-            });
-            return false
-        });
-
-
-        // 导出
-        form.on('submit(export)', function (data) {
-            var field = data.field;
-            field.url = "/system/entry-cas-plan-detail/downloadForCharge";
-            var url = createUrl(field);
-            layer.msg("正在导出事件列表，请稍候");
-            window.open(url, true);
-            return false;
-        });
 
         // 实例表格
         var dataTable = table.render({
@@ -148,7 +89,9 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                statusCancel: true
+                // 向controller传入额外参数
+                eventsFirstType: '非事务类',
+                status: '待部长审核'
             },
             cols: [
                 [
@@ -168,18 +111,13 @@
                         width: 130
                     },
                     {
-                        field: 'planOutput',
-                        title: '表单(输出内容)来源自己填写',
+                        field: 'planStartDate',
+                        title: '计划开始日期',
                         width: 130
                     },
                     {
                         field: 'times',
                         title: '频次',
-                        width: 130
-                    },
-                    {
-                        field: 'planStartDate',
-                        title: '计划开始日期',
                         width: 130
                     },
                     {
@@ -198,9 +136,14 @@
                         width: 90,
                     },
                     {
-                        field: 'status',
-                        title: '履职计划状态',
-                        width: 120
+                        field: 'departmentName',
+                        title: '计划内容',
+                        width: 90,
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '完成时间',
+                        width: 90,
                     },
                     {
                         field: 'createDate',
@@ -211,6 +154,13 @@
                         field: 'workEvents',
                         title: '流程（工作事件）',
                         width: 200,
+                    },
+
+
+                    {
+                        field: 'status',
+                        title: '履职计划状态',
+                        width: 90
                     },
                     {
                         field: 'delowStandard',
@@ -293,6 +243,11 @@
                         width: 80
                     },
                     {
+                        field: 'planOutput',
+                        title: '表单(输出内容)来源自己填写',
+                        width: 130
+                    },
+                    {
                         field: 'createName',
                         title: '编制人',
                         width: 80
@@ -322,101 +277,109 @@
                         title: '履职计划审核状态',
                         width: 80
                     },
-                    {
-                        fixed: 'right',
-                        title: '操作',
-                        width: 100,
-                        align: 'center',
-                        toolbar: '#tool'
-                    }
                 ]
             ]
         });
 
-        form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-            layer.confirm('确定提交审核吗？', {icon: 3, title: '提示'}, function (index) {
-                var planDetailIds = [];// 创建id数组，存放选择的数据id
-                data.forEach(function (item) {// 循环选择的每一行字段数据
-                    planDetailIds.push(item.id);// 放进ids
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render(
+                {
+                    elem: this,
+                    //更换触发方式
+                    trigger: 'click',
+                    type: 'date'
                 });
-                // 携带数据发送异步请求后端处理逻辑
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-plan-detail/indexStatus',
-                    data: {"planDetailIds": planDetailIds},
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
-                        }
-                    }
-                })
+        });
+
+        // 监听搜索按钮
+        form.on('submit(search)', function (data) {
+            // 重新加载表格
+            table.reload('dataTable', {
+                where: data.field,
+                page: {
+                    curr: 1
+                }
             });
+            return false
+        });
+
+
+        // 导出
+        form.on('submit(export)', function (data) {
+            var field = data.field;
+            field.url = "/system/entry-cas-plan-detail/downloadForCharge";
+            var url = createUrl(field);
+            layer.msg("正在导出事件列表，请稍候");
+            window.open(url, true);
             return false;
         });
 
-        form.on('submit(retreat)', function (data) {
+        // 审核通过按钮
+        form.on('submit(pass)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
                 data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
             }
-            let flag = false;
-            let msg = "";
-            var planDetailIds = [];
-            data.forEach(function (item) {
-                if (item.status == 5) {
-                    msg = msg ? msg + ',' + item.noticeNo : item.noticeNo;
-                    flag = true;
-                }
-                planDetailIds.push(item.id);
-            });
 
-            // if (flag) {
-            //     layer.msg("开票通知单号为：" + msg + '的数据状态为财务审核通过不能撤销，请取消选择', {
-            //         icon: 5,
-            //         time: 4000
-            //     });
-            //     return false;
-            // }
+            layer.confirm('确定审核通过吗？', {icon: 3, title: '提示'}, function (index) {
+                var planDetailIds = [];
+                data.forEach(function (item) {
+                    planDetailIds.push(item.id);
+                });
 
-            layer.confirm('确定撤销审核吗？', {icon: 3, title: '提示'}, function (index) {
                 $.ajax({
                     type: 'POST',
-                    url: '/system/entry-cas-plan-detail/retreat',
+                    url: '/system/entry-cas-plan-detail/affirmStore?event=pass',
                     data: {
                         "planDetailIds": planDetailIds,
                     },
                     success: function (result) {
                         layer.msg(result.msg);
-                        if (result.status == 200) {
+                        if (result.status === 200) {
                             table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
                         }
                     }
                 })
+
+
+            });
+            return false;
+        });
+
+        form.on('submit(noPass)', function (data) {
+            var checkStatus = table.checkStatus(dataTable.config.id),
+                data = checkStatus.data;
+
+
+            if (data.length <= 0) {
+                layer.alert("请至少选择一行数据");
+                return false;
+            }
+
+            layer.confirm('确认审核不通过吗？', {icon: 3, title: '提示'}, function (index) {
+                var planDetailIds = [];
+                data.forEach(function (item) {
+                    planDetailIds.push(item.id);
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/system/entry-cas-plan-detail/affirmStore?event=noPass',
+                    data: {
+                        "planDetailIds": planDetailIds,
+                    },
+                    success: function (result) {
+                        layer.msg(result.msg);
+                        if (result.status === 200) {
+                            table.reload('dataTable');
+                        }
+                    }
+                })
+
+
             });
             return false;
         });
@@ -433,52 +396,15 @@
             });
             return false;
         });
-        // 监听行工具事件
-        table.on('tool(dataTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'edit') { // 修改
-                // 不能修改取消状态下的事件请单
-                if (data.status === '取消') {
-                    layer.msg('不能修改取消状态下的事件请单');
-                    return false;
-                }
-                layer.open({
-                    type: 2,
-                    title: '序号为' + data.id + '的履职计划明细信息修改',
-                    area:
-                        [
-                            $(window).width() * 0.9 + 'px',
-                            $(window).height() - 50 + 'px'
-                        ],
-                    content: '/system/entry-cas-plan-detail/edit/' + data.id,
-                    maxmin: true,
-                    scrollbar: true
-                });
-            } else if (obj.event === 'cancel') {
-                layer.confirm('确定要取消序号为' + data.id + '履职计划明细吗？', function () {
-                    $.ajax(
-                        {
-                            type: 'POST',
-                            url: '/system/entry-cas-plan-detail/cancel/' + data.id,
-                            success: function (result) {
-                                layer.msg(result.msg);
-                                if (result.status === 200) {
-                                    table.reload('dataTable');
-                                }
-                            }
-                        })
-                });
-            }
-        });
     });
 
     // 部门查询下拉列表
     let departmentSelect = xmSelect.render({
-        el: '#departmentSelect', // 绑定
+        el: '#departmentSelect',
         language: 'zn',
-        data: [[${departmentNameList}]],// model过来的
+        data: [[${departmentNameList}]],
         filterable: true,
-        // radio: true,// 是否是单选
+        // radio: true,
         tips: '部门查询',
         toolbar: {
             show: true
