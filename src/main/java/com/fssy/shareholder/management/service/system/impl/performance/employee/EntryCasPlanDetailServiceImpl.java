@@ -8,45 +8,36 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.role.Role;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
-import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fssy.shareholder.management.tools.common.DateTool;
-import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
-import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
-import com.sun.prism.impl.ps.CachingEllipseRep;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 
-import javax.print.DocFlavor;
-import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -292,15 +283,12 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             if (mergeMap.containsKey(key)) // 缓存存在则获取
             {
                 entryCasMerge = mergeMap.get(key);
-            }
-            else
-            {
+            } else {
                 List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
                 // 只查到一条数据
                 if (entryCasMerges.size() >= 1) {
                     entryCasMerge = entryCasMerges.get(0);
-                }
-                else
+                } else
                 // 查不到数据
                 {
                     entryCasMerge = new EntryCasMerge();
@@ -321,7 +309,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                     entryCasMerge.setMonth(Integer.valueOf(month));
                     entryCasMerge.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
                     // serial
-                    entryCasMerge = storeNoticeMerge(LocalDate.now(),new HashMap<String,Object>(),entryCasMerge);
+                    entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryCasMerge);
                 }
                 // 存入缓存
                 mergeMap.put(key, entryCasMerge);
@@ -344,6 +332,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         QueryWrapper<EntryCasPlanDetail> queryWrapper = getQueryWrapper(params);
         return entryCasPlanDetailMapper.selectMaps(queryWrapper);
     }
+    
 
     private QueryWrapper<EntryCasPlanDetail> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EntryCasPlanDetail> queryWrapper = new QueryWrapper<>();
@@ -462,7 +451,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             queryWrapper.eq("mergeId", params.get("mergeId"));
         }
         if (params.containsKey("eventsFirstType")) {
-            queryWrapper.like("eventsFirstType", params.get("eventsFirstType"));
+            queryWrapper.eq("eventsFirstType", params.get("eventsFirstType"));
         }
         if (params.containsKey("note")) {
             queryWrapper.like("note", params.get("note"));
@@ -508,5 +497,108 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         entryCasMergeMapper.insert(entryCasMerge);
         // endregion
         return entryCasMerge;
+    }
+
+    /**
+     * 提交审核
+     *
+     * @param planDetailIds
+     * @return
+     */
+    @Override
+    public boolean submitAudit(List<String> planDetailIds) {
+        List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
+        for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
+            // 只能提交 待提交审核 状态的事件清单
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
+                LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+                if (entryCasPlanDetail.getEventsFirstType().equals("事务类")) {
+                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG);
+                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+                    entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
+                } else {
+                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER);
+                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+                    entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
+                }
+            } else return false;
+        }
+        return true;
+    }
+
+    /**
+     * 撤销审核
+     *
+     * @param planDetailIds
+     * @return
+     */
+    @Override
+    public boolean retreat(List<String> planDetailIds) {
+        List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
+        for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
+            LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG) ||
+                    entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
+                entryCasPlanDetail.setStatus("待提交审核");
+                entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+                entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
+                continue;
+            }
+            //校验方法
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)||entryCasPlanDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
+                throw new ServiceException("不能撤销待提交审核状态或完结状态下的的履职明细");
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 审核结果
+     *
+     * @param planDetailIds
+     * @param
+     * @return 通过/拒绝
+     */
+    @Override
+    public boolean affirmStore(List<String> planDetailIds, String event) {
+        List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
+        if (event.equals("pass")) {
+            // 部长、科长审核通过
+            for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
+                LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+                // 部长通过
+                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
+                    entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+                }
+                // 科长通过
+                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG)) {
+                    entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+                }
+                entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
+            }
+        }
+        // 部长、科长审核拒绝
+        else if (event.equals("noPass")) {
+            for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
+                LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+                // 科长审核拒绝
+                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG) && entryCasPlanDetail.getEventsFirstType().equals("事务类")) {
+                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+
+                }
+                // 部长审核拒绝
+                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
+                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+
+                }
+                entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
+            }
+        }
+
+        return true;
     }
 }

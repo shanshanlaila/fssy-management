@@ -336,4 +336,82 @@ public class EntryCasPlanDetailController {
         return SysResult.build(500, "取消失败");
     }
 
+    /**
+     * 筛选状态-提交审核
+     *
+     * @return 结果
+     */
+    @RequiredLog("提交审核")
+    //@RequiresPermissions("system:performance:entryCasPlanDetail:indexStatus")
+    @PostMapping("indexStatus")
+    @ResponseBody
+    public SysResult indexStatus(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds) {
+        boolean result = entryCasPlanDetailService.submitAudit(planDetailIds);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "只能选择待提交审核状态的事件清单，提交审核失败，请重新刷新后选择提交");
+    }
+
+    /**
+     * 撤销审核
+     *
+     * @param planDetailIds
+     * @return
+     */
+    @RequiredLog("撤销审核")
+    @PostMapping("retreat")
+    @ResponseBody
+    public SysResult retreat(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds) {
+        boolean result = entryCasPlanDetailService.retreat(planDetailIds);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "撤销审核失败");
+    }
+
+    /**
+     * 审核结果
+     *
+     * @param planDetailIds
+     * @param
+     * @return 通过/拒绝
+     */
+    @PostMapping("affirmStore")
+    @ResponseBody
+    public SysResult affirm(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds, HttpServletRequest request) {
+        String event = request.getParameter("event");
+        boolean res = entryCasPlanDetailService.affirmStore(planDetailIds, event);
+        if (res) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "提交失败请检查数据后重试");
+    }
+
+    /**
+     * 履职计划部长审核管理页面
+     *
+     * @param model
+     * @return
+     */
+    @GetMapping("MinisterIndex")
+    @RequiredLog("履职计划部长审核管理")
+    @RequiresPermissions("system:performance:entryCasPlanDetail")
+    public String showEntryCasPlanDetailListByMinster(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        return "/system/performance/employee/performance-entry-cas-plan-detail-minister-list";
+    }
+
+    @GetMapping("index1")
+    @RequiredLog("履职计划科长审核管理")
+    @RequiresPermissions("system:performance:entryCasPlanDetail")
+    public String showEntryCasPlanDetailListBySection_chief(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        return "/system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
+    }
+
 }

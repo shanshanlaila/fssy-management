@@ -5,10 +5,9 @@
 package com.fssy.shareholder.management.service.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 
 import java.util.List;
 import java.util.Map;
@@ -48,4 +47,27 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
      * @return 履职计划关系数据列表
      */
     List<Map<String, Object>> findEntryCasPlanDetailMapDataByParams(Map<String, Object> params);
+
+
+    /**
+     * 提交审核
+     * @param planDetailIds
+     * @return 审核成功结果
+     */
+    boolean submitAudit(List<String> planDetailIds);
+
+    /**
+     * 撤销审核
+     * @param planDetailIds
+     * @return 撤销成功结果
+     */
+    boolean retreat(List<String> planDetailIds);
+
+    /**
+     * 审核
+     * @param planDetailIds
+     * @param event
+     * @return 通过/拒绝
+     */
+    boolean affirmStore(List<String> planDetailIds,String event);
 }
