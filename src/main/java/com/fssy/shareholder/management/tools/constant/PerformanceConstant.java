@@ -20,15 +20,7 @@ public interface PerformanceConstant {
     String PLAN_DETAIL_STATUS_SUBMIT_AUDIT="待提交审核";
     String PLAN_DETAIL_STATUS_AUDIT_MINISTER="待部长审核";
     String PLAN_DETAIL_STATUS_AUDIT_KEZHANG="待科长审核";
-    /**
-     * 部长审核非事务类通过
-     */
-    String PLAN_DETAIL_STATUS_AUDIT_MINISTER_SUCCESS ="部长审核通过";
-    /**
-     * 部长审核非事务类拒绝
-     */
-    String PLAN_DETAIL_STATUS_AUDIT_MINISTER_ERROR ="部长审核拒绝";
-
-    String PLAN_DETAIL_STATUS_AUDIT_KEZHANG_SUCCESS = "科长审核通过";
-    String PLAN_DETAIL_STATUS_AUDIT_KEZHANG_ERROR="科长审核拒绝";
+    String PLAN_DETAIL_STATUS_AUDIT_ZHUGUAN="待主管审核";
+    String REVIEW_DETAIL_MINISTER_REVIEW_EXCELLENT="优";
+    String REVIEW_DETAIL_STATUS_AUDIT_A="待经营管理部审核";
 }
