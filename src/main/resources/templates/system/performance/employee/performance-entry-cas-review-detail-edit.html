@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>履职计划明细信息修改</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<!-- 引入zTree -->
+<div th:replace="~{common/zTree :: zTree}"></div>
+<style type="text/css">
+    #head .layui-form-label {
+        width: 120px;
+    }
+
+    #head .layui-input-block {
+        margin-left: 150px;
+    }
+
+    #head td, #head th {
+        padding: 9px 0px;
+        border: 0px;
+    }
+
+    #head .layui-input {
+        height: 28px;
+    }
+
+    #head .layui-input-inline {
+        padding-right: 8px;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+                <colgroup>
+                    <col width="80px">
+                    <col width="160px">
+                    <col width="80px">
+                    <col width="160px">
+                    <col width="80px">
+                    <col width="160px">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th colspan="4">履职明细信息修改</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;对应工作事件的计划内容:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="hidden" name="id" id="id" th:value="${entryCasReviewDetail['id']}">
+                            <input type="text" class="layui-input" name="planningWork" id="planningWork"
+                                   placeholder="对应工作事件的计划内容" autocomplete="off"
+                                   lay-verify="required" lay-reqText="对应工作事件的计划内容为必填项"
+                                   th:value="${entryCasReviewDetail['planningWork']}"/>
+
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;表单:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="workOutput" id="workOutput"
+                                   placeholder="表单" autocomplete="off"
+                                   lay-verify="required" lay-reqText="表单为必填项"
+                                   th:value="${entryCasReviewDetail['workOutput']}"/>
+                        </div>
+                    </td>
+                </tr>
+<!--                <tr>-->
+<!--                    <td style="text-align: right"><span-->
+<!--                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;表单(输出内容)来源自己填写:-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <div class="layui-input-inline" style="width: 100%">-->
+<!--                            <input type="text" class="layui-input" name="planOutput" id="planOutput"-->
+<!--                                   placeholder="表单(输出内容)" autocomplete="off"-->
+<!--                                   lay-verify="required" lay-reqText="表单(输出内容)为必填项"-->
+<!--                                   th:value="${entryCasReviewDetail['planOutput']}">-->
+<!--                        </div>-->
+<!--                    </td>-->
+<!--                    <td style="text-align: right"><span-->
+<!--                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;频次:-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <div class="layui-input-inline" style="width: 100%">-->
+<!--                            <input type="text" class="layui-input" name="times" id="times"-->
+<!--                                   placeholder="频次" autocomplete="off"-->
+<!--                                   lay-verify="required" lay-reqText="频次为必填项"-->
+<!--                                   th:value="${entryCasReviewDetail['times']}">-->
+<!--                        </div>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td style="text-align: right"><span-->
+<!--                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;计划开始日期:-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <div class="layui-input-inline" style="width: 100%">-->
+<!--                                <input type="text" name="planStartDate" placeholder="计划开始日期" autocomplete="off"-->
+<!--                                       class="layui-input laydate search-laydate" id="planStartDate"-->
+<!--                                       th:value="${entryCasReviewDetail.planStartDate}">-->
+<!--                        </div>-->
+<!--                    </td>-->
+<!--                    <td style="text-align: right"><span-->
+<!--                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;计划完成日期:-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <div class="layui-input-inline" style="width: 100%">-->
+<!--                                <input type="text" name="planEndDate" placeholder="计划完成日期" autocomplete="off"-->
+<!--                                       class="layui-input laydate search-laydate" id="planEndDate"-->
+<!--                                       th:value="${entryCasReviewDetail.planEndDate}">-->
+<!--                        </div>-->
+<!--                    </td>-->
+<!--                </tr>-->
+                </tbody>
+            </table>
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<!--laui-->
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render(
+                {
+                    elem: this,
+                    //更换触发方式
+                    trigger: 'click',
+                    type: 'date'
+                });
+        });
+
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/entry-cas-review-detail/update',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status === 200) {
+                        layer.msg(result.msg, {icon: 6, time: 1000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</body>
+</html>

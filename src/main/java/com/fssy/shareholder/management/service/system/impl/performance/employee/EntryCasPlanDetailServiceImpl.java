@@ -332,7 +332,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         QueryWrapper<EntryCasPlanDetail> queryWrapper = getQueryWrapper(params);
         return entryCasPlanDetailMapper.selectMaps(queryWrapper);
     }
-    
+
 
     private QueryWrapper<EntryCasPlanDetail> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EntryCasPlanDetail> queryWrapper = new QueryWrapper<>();
@@ -513,7 +513,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
                 LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
                 if (entryCasPlanDetail.getEventsFirstType().equals("事务类")) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG);
+                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_ZHUGUAN);
                     entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
                     entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
                 } else {
@@ -537,7 +537,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
             LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG) ||
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_ZHUGUAN) ||
                     entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
                 entryCasPlanDetail.setStatus("待提交审核");
                 entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
