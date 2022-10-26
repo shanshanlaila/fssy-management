@@ -1,6 +1,5 @@
 package com.fssy.shareholder.management.controller.system.manage;
 
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
