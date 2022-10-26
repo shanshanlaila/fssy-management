@@ -86,7 +86,7 @@
         // 监听导出按钮
         form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
-            // 导出参数设置
+            // 导出参数设置-只导出完结状态下的数据-status=“完结”
             data.field.status = '完结';
             field.url = "/system/performance/employee/eventsList/downloadForCharge";
             var url = createUrl(field);

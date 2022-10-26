@@ -38,18 +38,6 @@
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="export"
-                                        title="请选择查询条件进行导出状态为‘待填报回顾’履职计划">
-                                    导出履职计划填报月底回顾
-                                </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button shiro:haspermission="system:performance:entryCasPlanDetail:import"
-                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
-                                    导入月度履职计划
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </form>
@@ -59,7 +47,7 @@
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="pass">审核通过</button>
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="noPass">审核拒绝
+                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="noPass" style="background-color: coral">审核拒绝
                                 </button>
                             </div>
                         </form>
@@ -304,17 +292,6 @@
             return false
         });
 
-
-        // 导出
-        form.on('submit(export)', function (data) {
-            var field = data.field;
-            field.url = "/system/entry-cas-plan-detail/downloadForCharge";
-            var url = createUrl(field);
-            layer.msg("正在导出事件列表，请稍候");
-            window.open(url, true);
-            return false;
-        });
-
         // 审核通过按钮
         form.on('submit(pass)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
@@ -343,8 +320,6 @@
                         }
                     }
                 })
-
-
             });
             return false;
         });
@@ -352,7 +327,6 @@
         form.on('submit(noPass)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
                 data = checkStatus.data;
-
 
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
@@ -378,21 +352,6 @@
                         }
                     }
                 })
-
-
-            });
-            return false;
-        });
-
-        // 导入按钮
-        form.on('submit(import)', function (data) {
-            var createLayer = layer.open({
-                type: 2,
-                title: "上传履职计划表",
-                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/entry-cas-plan-detail/attachment/import',
-                scrollbar: true,
-                maxmin: true,
             });
             return false;
         });

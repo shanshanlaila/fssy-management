@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
  * @since 2022-10-11
  */
 @Controller
-@RequestMapping("/fssy.shareholder.management/entry-cas-merge")
+@RequestMapping("/system/entry-cas-merge")
 public class EntryCasMergeController {
 
 }

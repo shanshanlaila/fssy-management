@@ -62,25 +62,10 @@
                             <input type="hidden" name="id" id="id" th:value="${entryCasReviewDetail['id']}">
                             <select name="ministerReview" lay-verify="required"
                                     lay-reqText="部长复核为必填项">
-                                <option value="不合格" th:selected="${entryCasReviewDetail.ministerReview} == 不合格">不合格</option>
                                 <option value="合格" th:selected="${entryCasReviewDetail.ministerReview} == 合格">合格</option>
                                 <option value="中" th:selected="${entryCasReviewDetail.ministerReview} == 中">中</option>
                                 <option value="良" th:selected="${entryCasReviewDetail.ministerReview} == 良">良</option>
                                 <option value="优" th:selected="${entryCasReviewDetail.ministerReview} == 优">优</option>
-                            </select>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span
-                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;最终非事务类评价等级:
-                    </td>
-                    <td>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <select name="finalNontransactionEvaluateLevel" lay-verify="required"
-                                    lay-reqText="最终非事务类评价等级为必填项">
-                                <option value="不合格" th:selected="${entryCasReviewDetail.finalNontransactionEvaluateLevel} == 不合格">不合格</option>
-                                <option value="中" th:selected="${entryCasReviewDetail.finalNontransactionEvaluateLevel} == 中">中</option>
-                                <option value="良" th:selected="${entryCasReviewDetail.finalNontransactionEvaluateLevel} == 良">良</option>
-                                <option value="优" th:selected="${entryCasReviewDetail.finalNontransactionEvaluateLevel} == 优">优</option>
                             </select>
                         </div>
                     </td>
