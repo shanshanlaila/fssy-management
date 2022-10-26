@@ -58,7 +58,8 @@
                             </button>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入指标库
+                            <button shiro:haspermission="system:manager:manage-kpi-lib:index"
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入指标库
                             </button>
                         </div>
                     </div>
