@@ -52,7 +52,7 @@ public class ManageKpiMonthAimController {
     private ImportModuleService importModuleService;
 
     /**
-     * 经营管理月度项目指标管理页面
+     * 经营管理月度项目指标 管理页面
      *
      * @param model
      * @return
@@ -64,7 +64,7 @@ public class ManageKpiMonthAimController {
     }
 
     /**
-     * 返回经营管理月度项目指标数据
+     * 返回经营管理月度项目指标数据表格
      *
      * @param request
      * @return
