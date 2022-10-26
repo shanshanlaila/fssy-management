@@ -15,6 +15,7 @@ import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ui.Model;
@@ -38,7 +39,7 @@ import java.util.*;
  * @since 2022-10-24
  */
 @Controller
-@RequestMapping("/system/manager/manage-kpi-month/")
+@RequestMapping("/system/manager/manage-kpi-month-aim/")
 public class ManageKpiMonthAimController {
 
     @Autowired
@@ -57,9 +58,11 @@ public class ManageKpiMonthAimController {
      * @return
      */
     @GetMapping("index1")
+    @RequiresPermissions("system:manager:manage-kpi-month-aim:index1")
+    @RequiredLog("经营管理月度项目指标管理")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "system/manager/manage-kpi-month/manage-kpi-month-list";
+        return "system/manager/manage-kpi-month-aim/manage-kpi-month-aim-list";
     }
 
     /**
@@ -97,6 +100,7 @@ public class ManageKpiMonthAimController {
      */
     @RequiredLog("附件上传")
     @GetMapping("index")
+    @RequiresPermissions("system:manager:manage-kpi-month-aim:index")
     public String materialDataAttachmentIndex(Model model) {
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
@@ -113,7 +117,7 @@ public class ManageKpiMonthAimController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度目标数据"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "system/manager/manage-kpi-month/manage-kpi-month-attachment-list";
+        return "system/manager/manage-kpi-month-aim/manage-kpi-month-aim-attachment-list";
     }
 
     /**
@@ -124,7 +128,7 @@ public class ManageKpiMonthAimController {
      * @param request
      * @return 附件id
      */
-    @RequiredLog("经营管理项目指标附件上传")
+    @RequiredLog("经营管理月度目标附件上传")
     @PostMapping("uploadFile")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
@@ -174,6 +178,7 @@ public class ManageKpiMonthAimController {
      * @param request
      * @param response
      */
+    @RequiredLog("数据导出")
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);

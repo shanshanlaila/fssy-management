@@ -16,6 +16,7 @@ import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -56,6 +57,8 @@ public class ManageKpiYearController {
      * @return
      */
     @GetMapping("index1")
+    @RequiredLog("经营管理年度项目指标管理")
+    @RequiresPermissions("system:manager:manage-kpi-year:index1")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
         return "system/manager/manage-kpi-year/manage-kpi-year-list";
@@ -96,6 +99,7 @@ public class ManageKpiYearController {
      */
     @RequiredLog("附件上传")
     @GetMapping("index")
+    @RequiresPermissions("system:manager:manage-kpi-year:index")
     public String materialDataAttachmentIndex(Model model) {
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
@@ -123,7 +127,7 @@ public class ManageKpiYearController {
      * @param request
      * @return 附件id
      */
-    @RequiredLog("经营管理项目指标附件上传")
+    @RequiredLog("经营管理年度项目指标附件上传")
     @PostMapping("uploadFile")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
@@ -174,6 +178,7 @@ public class ManageKpiYearController {
      * @param response 相应
      */
     @GetMapping("downloadForCharge")
+    @RequiredLog("导出数据")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
         //SQL语句

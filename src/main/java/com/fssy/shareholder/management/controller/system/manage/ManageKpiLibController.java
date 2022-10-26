@@ -16,6 +16,7 @@ import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,6 +56,8 @@ public class ManageKpiLibController {
      * @param model
      * @return
      */
+    @RequiredLog("经营指标库管理")
+    @RequiresPermissions("system:manager:manage-kpi-lib:index1")
     @GetMapping("index1")
     public String managerIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
@@ -140,6 +143,7 @@ public class ManageKpiLibController {
      * @return 页面
      */
     @RequiredLog("附件上传")
+    @RequiresPermissions("system:manager:manage-kpi-lib:index")
     @GetMapping("index")
     public String materialDataAttachmentIndex(Model model) {
         SimpleDateFormat sdf = new SimpleDateFormat();
@@ -168,7 +172,7 @@ public class ManageKpiLibController {
      * @return 附件ID
      */
     @PostMapping("uploadFile")
-    @RequiredLog("经理人年度KPI指标库附件上传")
+    @RequiredLog("经营管理指标库附件上传")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                 HttpServletRequest request) {
@@ -219,6 +223,7 @@ public class ManageKpiLibController {
      * @param response 相应
      */
     @GetMapping("downloadForCharge")
+    @RequiredLog("数据导出")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
         params.put("select", "id,projectDesc,status,isCommon,unit,kpiDefinition,kpiFormula,kpiYear,managerKpi,cfoKpi,note");

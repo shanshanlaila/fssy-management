@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>经营管理月度项目指标管理</title>
@@ -60,7 +60,8 @@
                             </button>
                             </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入月度目标
+                                <button shiro:haspermission="system:manager:manage-kpi-month-aim:index1"
+                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入月度目标
                                 </button>
                             </div>
                         </div>
@@ -100,7 +101,7 @@
         //监听导出按钮
         form.on('submit(downloadForCharge)',function (data){
             var field = data.field;
-            field.url = "/system/manager/manage-kpi-month/downloadForCharge";
+            field.url = "/system/manager/manage-kpi-month-aim/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出经营管理月度目标，请稍候");
             window.open(url, true);
@@ -112,7 +113,7 @@
                 type: 2,
                 title: "上传经营管理月度目标",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/manager/manage-kpi-month/index',
+                content: '/system/manager/manage-kpi-month-aim/index',
                 scrollbar: true,
                 maxmin: true,
             });
@@ -122,7 +123,7 @@
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/manager/manage-kpi-month/getObjects",
+            url: "/system/manager/manage-kpi-month-aim/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -306,14 +307,14 @@
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/manage/manage-kpi-month/edit?id=' + data.id,
+                    content: '/system/manage/manage-kpi-month-aim/edit?id=' + data.id,
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
                 layer.confirm('确认删除序号为：' + data.id + '的月度目标吗？', function () {
                     $.ajax({
                         type: 'DELETE',
-                        url: '/system/manage/manage-kpi-month/' + data.id,
+                        url: '/system/manage/manage-kpi-month-aim/' + data.id,
                         success: function (result) {
                             layer.msg(result.msg);
                             if (result.status == 200) {

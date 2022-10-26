@@ -16,6 +16,7 @@ import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,6 +57,8 @@ public class ManageKpiMonthAnalyzeController {
      * @return
      */
     @GetMapping("index1")
+    @RequiredLog("经营管理月度风险分析管理")
+    @RequiresPermissions("system:manager:manage-kpi-month-analyze:index1")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
         return "system/manager/manage-kpi-month-analyze/manage-kpi-month-analyze-list";
@@ -96,6 +99,7 @@ public class ManageKpiMonthAnalyzeController {
      */
     @RequiredLog("附件上传")
     @GetMapping("index")
+    @RequiresPermissions("system:manager:manage-kpi-month-analyze:index")
     public String materialDataAttachmentIndex(Model model) {
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
@@ -174,6 +178,7 @@ public class ManageKpiMonthAnalyzeController {
      * @param response
      */
     @GetMapping("downloadForCharge")
+    @RequiredLog("数据导出")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         //内循环准备，决定列的数据
         Map<String, Object> params = getParams(request);

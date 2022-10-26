@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>经营管理月度风险分析管理</title>
@@ -67,7 +67,8 @@
                             </button>
                             </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入月度风险分析
+                                <button shiro:haspermission="system:manager:manage-kpi-month-analyze:index"
+                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入月度风险分析
                                 </button>
                             </div>
                         </div>
