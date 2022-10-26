@@ -11,6 +11,7 @@ import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
+import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
@@ -34,8 +35,8 @@ import java.util.*;
  * @date 2022/10/14 10:19
  */
 @Controller
-@RequestMapping("/system/entry-cas-plan-detail/attachment")
-public class EntryCasPlanDetailAttachmentController {
+@RequestMapping("/system/entry-cas-review-detail/attachment/")
+public class EntryCasReviewDetailAttachmentController {
 
     @Autowired
     private ImportModuleService importModuleService;
@@ -47,17 +48,17 @@ public class EntryCasPlanDetailAttachmentController {
     private FileAttachmentTool fileAttachmentTool;
 
     @Autowired
-    private EntryCasPlanDetailService entryCasPlanDetailService;
+    private EntryCasReviewDetailService entryCasReviewDetailService;
 
 
     /**
-     * 履职计划附件列表（导入月度履职计划）
+     * 履职计划回顾附件列表（导入履职回顾）
      *
-     * @return 履职计划附件列表html路径
+     * @return 履职计划回顾附件列表html路径
      */
     @RequiredLog("履职计划附件列表")
     @GetMapping("import")
-    @RequiresPermissions("system:performance:entryCasPlanDetail:import")
+    @RequiresPermissions("system:performance:entryCasReviewDetail:import")
     public String showImportPage(Model model) {
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
@@ -68,24 +69,24 @@ public class EntryCasPlanDetailAttachmentController {
 
         // 查询导入场景
         Map<String, Object> params = new HashMap<>();
-        params.put("noteEq", "履职计划");
+        params.put("noteEq", "履职计划回顾");
         List<ImportModule> importModules = importModuleService.findImportModuleDataListByParams(params);
         if (ObjectUtils.isEmpty(importModules)) {
-            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "履职计划"));
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "履职计划回顾"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "system/performance/employee/entry-cas-plan-detail-attachment-list";
+        return "system/performance/employee/entry-cas-plan-review-detail-attachment-list";
     }
 
     /**
-     * 事件列表附件上传导入
+     * 履职回顾附件上传导入
      *
      * @param file       前台传来的附件数据
      * @param attachment 附件表实体类
      * @return 附件ID
      */
     @PostMapping("uploadFile")
-    @RequiredLog("履职管控附件上传导入")
+    @RequiredLog("履职计划回顾上传导入")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                 HttpServletRequest request) {
@@ -102,7 +103,7 @@ public class EntryCasPlanDetailAttachmentController {
 
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = entryCasPlanDetailService.readEntryCasPlanDetailDataSource(result);
+            Map<String, Object> resultMap =entryCasReviewDetailService.readEntryCasReviewDetailDataSource(result);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));

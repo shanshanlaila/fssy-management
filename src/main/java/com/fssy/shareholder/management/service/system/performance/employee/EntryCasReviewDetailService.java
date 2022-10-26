@@ -2,6 +2,7 @@ package com.fssy.shareholder.management.service.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 
 import java.util.List;
@@ -56,5 +57,20 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
      */
     boolean sectionWorkAudit(EntryCasReviewDetail entryCasReviewDetail);
 
+    /**
+     * 读取附件数据到数据库表
+     *
+     * @param attachment 履职计划回顾表附件
+     * @return 履职管控计划回顾表附件map集合
+     */
+    Map<String, Object> readEntryCasReviewDetailDataSource(Attachment attachment);
 
+
+    /**
+     * 批量审核-计划工作完成情况评价（部长）
+     * @param entryReviewDetailIds 履职回顾的dis
+     * @param ministerReview 部长复核
+     * @return 审核结果
+     */
+    boolean batchAudit(List<String> entryReviewDetailIds,String ministerReview);
 }

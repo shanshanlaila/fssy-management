@@ -35,8 +35,6 @@
                                    class="layui-input laydate search-laydate" id="createDate">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <!--<input type="text" name="status" placeholder="事件清单状态查询" autocomplete="off"
-                                   class="layui-input">-->
                             <label>
                                 <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
@@ -52,9 +50,8 @@
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                             <div class="layui-inline layui-show-xs-block">
-                                <button
-                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
-                                    导入回顾
+                                <button shiro:haspermission="system:performance:entryCasReviewDetail:import" class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
+                                    导入履职回顾
                                 </button>
                             </div>
                         </div>
@@ -211,6 +208,11 @@
                     {
                         field: 'id',
                         title: '序号',
+                        width: 50
+                    },
+                    {
+                        field: 'casPlanId',
+                        title: '对应的履职计划id',
                         width: 50
                     },
                     {

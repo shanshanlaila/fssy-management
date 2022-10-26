@@ -99,7 +99,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     @Override
     @Transactional
     public Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment) {
-        //
+        // 导入月度履职计划
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         StringBuffer sb = new StringBuffer();
@@ -232,7 +232,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setWorkOutput(workOutput);
             entryCasPlanDetail.setPlanStartDate(LocalDate.parse(planStartDate));
             entryCasPlanDetail.setPlanEndDate(LocalDate.parse(planEndDate));
-            entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+            entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
             entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
             // 数据库不能为null的字段设置值
             entryCasPlanDetail.setEventsId(Long.valueOf(eventListId));
@@ -268,7 +268,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setYear(Integer.valueOf(year));
             entryCasPlanDetail.setMonth(Integer.valueOf(month));
             User user = (User) SecurityUtils.getSubject().getPrincipal();
-            entryCasPlanDetail.setCreateName(user.getName());
             entryCasPlanDetail.setCreatedAt(LocalDateTime.now());
             entryCasPlanDetail.setCreateId(user.getId());
             entryCasPlanDetail.setCreateName(user.getName());

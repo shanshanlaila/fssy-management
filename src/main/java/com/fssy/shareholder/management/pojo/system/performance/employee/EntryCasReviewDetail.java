@@ -27,13 +27,13 @@ public class EntryCasReviewDetail extends BaseModel {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 事件表主键
      */
     @TableField("eventsId")
-    private Integer eventsId;
+    private Long eventsId;
 
     /**
      * 事件类别
@@ -105,7 +105,7 @@ public class EntryCasReviewDetail extends BaseModel {
      * 部门表主键
      */
     @TableField("departmentId")
-    private Integer departmentId;
+    private Long departmentId;
 
     /**
      * 岗位（角色）名称
@@ -117,7 +117,7 @@ public class EntryCasReviewDetail extends BaseModel {
      * 岗位表（角色）主键
      */
     @TableField("roleId")
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 员工姓名
@@ -129,7 +129,7 @@ public class EntryCasReviewDetail extends BaseModel {
      * 员工表主键
      */
     @TableField("userId")
-    private Integer userId;
+    private Long userId;
 
     /**
      * 申报日期
@@ -201,7 +201,7 @@ public class EntryCasReviewDetail extends BaseModel {
      * 编制人主键
      */
     @TableField("createId")
-    private Integer createId;
+    private Long createId;
 
     /**
      * 审核人
@@ -213,7 +213,7 @@ public class EntryCasReviewDetail extends BaseModel {
      * 审核人主键
      */
     @TableField("auditId")
-    private Integer auditId;
+    private Long auditId;
 
     /**
      * 审核日期
@@ -243,7 +243,7 @@ public class EntryCasReviewDetail extends BaseModel {
      * 员工月度履职计划表主键
      */
     @TableField("mergeId")
-    private Integer mergeId;
+    private Long mergeId;
 
     /**
      * 实际完成时间
@@ -315,7 +315,7 @@ public class EntryCasReviewDetail extends BaseModel {
      * 对应的履职计划主键
      */
     @TableField("casPlanId")
-    private Integer casPlanId;
+    private Long casPlanId;
 
     /**
      * 备注
@@ -357,7 +357,7 @@ public class EntryCasReviewDetail extends BaseModel {
      * 导入时，对应的附件表主键
      */
     @TableField("attachmentId")
-    private Integer attachmentId;
+    private Long attachmentId;
 
 
 }

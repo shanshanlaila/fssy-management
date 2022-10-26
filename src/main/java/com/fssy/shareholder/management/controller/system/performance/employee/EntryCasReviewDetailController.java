@@ -37,7 +37,6 @@ public class EntryCasReviewDetailController {
     private DepartmentService departmentService;
 
     /**
-     *
      * @param model
      * @return
      */
@@ -78,6 +77,7 @@ public class EntryCasReviewDetailController {
 
         return result;
     }
+
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
@@ -234,7 +234,8 @@ public class EntryCasReviewDetailController {
 
     /**
      * 展示修改页面
-     * @param id 履职明细id
+     *
+     * @param id    履职明细id
      * @param model 数据模型
      * @return 修改页面
      */
@@ -263,6 +264,7 @@ public class EntryCasReviewDetailController {
         }
         return SysResult.build(500, "履职明细更新失败");
     }
+
     /**
      * 取消履职明细
      *
@@ -283,6 +285,7 @@ public class EntryCasReviewDetailController {
 
     /**
      * 工作计划完成情况审核评价 （部 门 领导、非事务）
+     *
      * @param model
      * @return
      */
@@ -297,7 +300,8 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     *工作计划完成情况审核评价 （科长，事务类）
+     * 工作计划完成情况审核评价 （科长，事务类）
+     *
      * @param model
      * @return
      */
@@ -313,6 +317,7 @@ public class EntryCasReviewDetailController {
 
     /**
      * 履职计划部 门 领导、非事务审核评价
+     *
      * @param id
      * @param model
      * @return
@@ -326,7 +331,13 @@ public class EntryCasReviewDetailController {
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         return "/system/performance/employee/performance-entry-cas-review-detail-minister-edit";
     }
-    @GetMapping("SectionEdit/{id}")
+
+    /**
+     * 工作计划完成情况审核（科长）-修改按钮
+     * @param id id
+     * @return 路径
+     */
+    @GetMapping("sectionEdit/{id}")
     public String showEditPageBySection(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
@@ -335,6 +346,7 @@ public class EntryCasReviewDetailController {
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         return "/system/performance/employee/performance-entry-cas-review-detail-section-chief-edit";
     }
+
     /**
      * 筛选状态-提交审核
      *
@@ -361,8 +373,7 @@ public class EntryCasReviewDetailController {
     @RequiredLog("撤销审核")
     @PostMapping("retreat")
     @ResponseBody
-    public SysResult retreat(@RequestParam(value = "reviewDet" +
-            "ailIds[]") List<String> reviewDetailIds) {
+    public SysResult retreat(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds) {
         boolean result = entryCasReviewDetailService.retreat(reviewDetailIds);
         if (result) {
             return SysResult.ok();
@@ -372,10 +383,11 @@ public class EntryCasReviewDetailController {
 
     /**
      * 提交修改工作计划完成情况审核评价 （科长，事务类）
+     *
      * @param entryCasReviewDetail 回顾履职
      * @return 提交结果
      */
-    @PostMapping("SectionUpdate")
+    @PostMapping("sectionUpdate")
     @ResponseBody
     public SysResult SectionUpdate(EntryCasReviewDetail entryCasReviewDetail) {
         boolean result = entryCasReviewDetailService.sectionWorkAudit(entryCasReviewDetail);
@@ -383,5 +395,17 @@ public class EntryCasReviewDetailController {
             return SysResult.ok();
         }
         return SysResult.build(500, "履职明细更新失败");
+    }
+
+    @PostMapping("batchAudit")
+    @ResponseBody
+    @RequiredLog("批量审核")
+    public SysResult batchAudit(@RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds, HttpServletRequest request) {
+        String ministerReview = request.getParameter("ministerReview");
+        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, ministerReview);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "批量审核失败");
     }
 }

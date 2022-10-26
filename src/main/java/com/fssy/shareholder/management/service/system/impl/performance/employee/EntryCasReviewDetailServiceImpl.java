@@ -8,16 +8,34 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasReviewDetailMapper;
+import com.fssy.shareholder.management.pojo.manage.department.Department;
+import com.fssy.shareholder.management.pojo.manage.role.Role;
+import com.fssy.shareholder.management.pojo.manage.user.User;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
+import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
+import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * <p>
@@ -32,13 +50,25 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     @Autowired
     private EntryCasReviewDetailMapper entryCasReviewDetailMapper;
+
     @Autowired
-    private DepartmentMapper departmentMapper;
+    private SheetService sheetService;
+
+    @Autowired
+    private EntryCasPlanDetailMapper entryCasPlanDetailMapper;
+
     @Autowired
     private RoleMapper roleMapper;
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private DepartmentMapper departmentMapper;
+
+    @Autowired
+    private EntryCasMergeMapper entryCasMergeMapper;
+
 
     @Override
     public Page<EntryCasReviewDetail> findDataListByParams(Map<String, Object> params) {
@@ -237,19 +267,18 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     /**
      * 修改更新部 门 领导、非事务审核评价
      *
-     * @param entryCasReviewDetail
-     * @return
+     * @param entryCasReviewDetail 履职回顾
+     * @return 审核结果
      */
     @Override
     public boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
-        int result = entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
-        if (entryCasReviewDetail.getMinisterReview().equals(PerformanceConstant.REVIEW_DETAIL_MINISTER_REVIEW_EXCELLENT)) {
+        if (entryCasReviewDetail.getMinisterReview().equals(PerformanceConstant.EXCELLENT)) {
             entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
         } else {
             entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
         }
-        entryCasReviewDetailMapper.update(entryCasReviewDetail,
-                new LambdaQueryWrapper<EntryCasReviewDetail>().eq(EntryCasReviewDetail::getId, entryCasReviewDetail.getId()));
+        entryCasReviewDetail.setFinalNontransactionEvaluateLevel(entryCasReviewDetail.getMinisterReview());
+        int result = entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         return result > 0;
     }
 
@@ -311,5 +340,348 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         // 事务类评价等级与最终非事务类评价等级值相等
         entryCasReviewDetail.setFinalNontransactionEvaluateLevel(entryCasReviewDetail.getChargeTransactionEvaluateLevel());
         return entryCasReviewDetailMapper.updateById(entryCasReviewDetail) > 0;
+    }
+
+    /**
+     * 设置失败的内容
+     *
+     * @param result 结果map
+     * @param append 导入失败的原因
+     */
+    private void setFailedContent(Map<String, Object> result, String append) {
+        String content = result.get("content").toString();
+        if (ObjectUtils.isEmpty(content)) {
+            result.put("content", append);
+        } else {
+            result.put("content", content + "," + append);
+        }
+        result.put("failed", true);
+    }
+
+    @Override
+    public Map<String, Object> readEntryCasReviewDetailDataSource(Attachment attachment) {
+        // 返回消息
+        Map<String, Object> result = new HashMap<>();
+        StringBuffer sb = new StringBuffer();// 用于数据校验的StringBuffer
+        result.put("content", "");
+        result.put("failed", false);
+        // 读取附件
+        sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
+        // 读取表单
+        sheetService.readByName("Sheet1"); //根据表单名称获取该工作表单
+        // 获取表单数据
+        Sheet sheet = sheetService.getSheet();
+        if (ObjectUtils.isEmpty(sheet)) {
+            throw new ServiceException("表单【Sheet1】不存在，无法读取数据，请检查");
+        }
+
+        // 获取单价列表数据
+        Row row;
+        // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
+        short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
+        // 缓存map
+        Map<String, EntryCasMerge> mergeMap = new HashMap<>();
+        // 循环总行数(不读表头，从第2行开始读，索引从0开始，所以j=1)
+        for (int j = 1; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
+            List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
+            row = sheet.getRow(j);// 获取第j行
+            // 获取一行中有多少列 Row：行，cell：列
+            // 循环row行中的每一个单元格
+            for (int k = 0; k < maxSize + 2; k++) {
+                // 如果这单元格为空，就写入空
+                if (row.getCell(k) == null) {
+                    cells.add("");
+                    continue;
+                }
+                // 处理单元格读取到公式的问题
+                if (row.getCell(k).getCellType() == CellType.FORMULA) {
+                    row.getCell(k).setCellType(CellType.STRING);
+                    String res = row.getCell(k).getStringCellValue();
+                    cells.add(res);
+                    continue;
+                }
+                // Cannot get a STRING value from a NUMERIC cell 无法从单元格获取数值
+                Cell cell = row.getCell(k);
+                String res = sheetService.getValue(cell).trim();// 获取单元格的值
+                cells.add(res);// 将单元格的值写入行
+            }
+            Cell cell = row.createCell(SheetService.columnToIndex("X"));
+            // 读取数据
+            String casPlanId = cells.get(SheetService.columnToIndex("A"));// 履职计划主键
+            String eventsId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
+            String eventsFirstType = cells.get(SheetService.columnToIndex("C"));// 事务类别
+            String jobName = cells.get(SheetService.columnToIndex("D"));// 工作职责
+            String workEvents = cells.get(SheetService.columnToIndex("E"));// 流程（工作事件）
+            String delowStandard = cells.get(SheetService.columnToIndex("F"));// 不合格
+            String middleStandard = cells.get(SheetService.columnToIndex("G"));// 中
+            String fineStandard = cells.get(SheetService.columnToIndex("H"));// 良
+            String excellentStandard = cells.get(SheetService.columnToIndex("I"));// 优
+            String eventsForm = cells.get(SheetService.columnToIndex("J"));// 绩效类型
+            String standardValue = cells.get(SheetService.columnToIndex("K"));// 事件价值标准分
+            String departmentName = cells.get(SheetService.columnToIndex("L"));// 部门名称
+            String roleName = cells.get(SheetService.columnToIndex("M"));// 岗位名称
+            String userName = cells.get(SheetService.columnToIndex("N"));// 员工姓名
+            String applyDate = cells.get(SheetService.columnToIndex("O"));// 申报日期
+            String mainOrNext = cells.get(SheetService.columnToIndex("P"));// 主/次担
+            String planningWork = cells.get(SheetService.columnToIndex("Q"));// 对应工作事件的计划内容
+            String times = cells.get(SheetService.columnToIndex("R"));// 频次
+            String workOutput = cells.get(SheetService.columnToIndex("S"));// 表单（输出内容）
+            String planStartDate = cells.get(SheetService.columnToIndex("T"));// 计划开始时间
+            String planEndDate = cells.get(SheetService.columnToIndex("U"));// 计划完成时间
+            String actualCompleteDate = cells.get(SheetService.columnToIndex("V"));// 实际完成时间
+            String completeDesc = cells.get(SheetService.columnToIndex("W"));// 工作完成描述
+            // 数据库必填项判断
+            if (ObjectUtils.isEmpty(casPlanId)) {
+                setFailedContent(result, String.format("第%s行的履职计划序号为空", j + 1));
+                cell.setCellValue("履职计划序号不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(eventsFirstType)) {
+                setFailedContent(result, String.format("第%s行的事务类型为空", j + 1));
+                cell.setCellValue("事务类型不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(eventsId)) {
+                setFailedContent(result, String.format("第%s行的事件清单表序号为空", j + 1));
+                cell.setCellValue("事件清单表序号不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(jobName)) {
+                setFailedContent(result, String.format("第%s行的工作职责为空", j + 1));
+                cell.setCellValue("工作职责不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(workEvents)) {
+                setFailedContent(result, String.format("第%s行的流程（工作事件）为空", j + 1));
+                cell.setCellValue("流程（工作事件）不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(delowStandard)) {
+                setFailedContent(result, String.format("第%s行的不合格标准为空", j + 1));
+                cell.setCellValue("不合格标准不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(middleStandard)) {
+                setFailedContent(result, String.format("第%s行的中标准为空", j + 1));
+                cell.setCellValue("中标准不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(fineStandard)) {
+                setFailedContent(result, String.format("第%s行的良标准为空", j + 1));
+                cell.setCellValue("良标准不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(excellentStandard)) {
+                setFailedContent(result, String.format("第%s行的优标准为空", j + 1));
+                cell.setCellValue("优标准不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(eventsForm)) {
+                setFailedContent(result, String.format("第%s行的绩效类型为空", j + 1));
+                cell.setCellValue("绩效类型不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(standardValue)) {
+                setFailedContent(result, String.format("第%s行的事件价值标准分为空", j + 1));
+                cell.setCellValue("事件价值标准分不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(departmentName)) {
+                setFailedContent(result, String.format("第%s行的部门名称为空", j + 1));
+                cell.setCellValue("部门名称不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(roleName)) {
+                setFailedContent(result, String.format("第%s行的岗位名称为空", j + 1));
+                cell.setCellValue("岗位名称不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(userName)) {
+                setFailedContent(result, String.format("第%s行的员工姓名为空", j + 1));
+                cell.setCellValue("员工姓名不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(applyDate)) {
+                setFailedContent(result, String.format("第%s行的申报日期为空", j + 1));
+                cell.setCellValue("申报日期不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(mainOrNext)) {
+                setFailedContent(result, String.format("第%s行的主/次担为空", j + 1));
+                cell.setCellValue("主/次担不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(planningWork)) {
+                setFailedContent(result, String.format("第%s行的对应工作事件的计划内容为空", j + 1));
+                cell.setCellValue("对应工作事件的计划内容不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(times)) {
+                setFailedContent(result, String.format("第%s行的频次为空", j + 1));
+                cell.setCellValue("频次不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(workOutput)) {
+                setFailedContent(result, String.format("第%s行的表单（输出内容）为空", j + 1));
+                cell.setCellValue("表单（输出内容）不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(planStartDate)) {
+                setFailedContent(result, String.format("第%s行的计划开始时间为空", j + 1));
+                cell.setCellValue("计划开始时间不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(planEndDate)) {
+                setFailedContent(result, String.format("第%s行的计划完成时间为空", j + 1));
+                cell.setCellValue("计划完成时间不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(actualCompleteDate)) {
+                setFailedContent(result, String.format("第%s行的实际完成时间为空", j + 1));
+                cell.setCellValue("实际完成时间不能为空");
+                continue;
+            }
+            if (ObjectUtils.isEmpty(completeDesc)) {
+                setFailedContent(result, String.format("第%s行的工作完成描述为空", j + 1));
+                cell.setCellValue("工作完成描述不能为空");
+                continue;
+            }
+            // 数据检查校验
+            // 绩效类型数据校验：基础事件绩效、拓展事件绩效
+            if (!("基础事件绩效".equals(eventsForm) || "拓展事件绩效".equals(eventsForm))) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的绩效类型不为基础事件绩效或者拓展事件绩效，不能导入", j + 1, eventsForm));
+                cell.setCellValue(String.format("履职计划序号为【%s】的事件清单状态不为基础事件绩效或者拓展事件绩效，不能导入", casPlanId));
+            }
+            // 事务类别数据校验：非事务类、事务类
+            if (!("非事务类".equals(eventsForm) || "事务类".equals(eventsForm))) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的事务类别不为非事务类效或者事务类，不能导入", j + 1, eventsForm));
+                cell.setCellValue(String.format("履职计划序号为【%s】的事务类别不为非事务类效或者事务类，不能导入", casPlanId));
+            }
+            // 申报年份
+            String year = Arrays.asList(applyDate.split("-")).get(0);
+            String month = Arrays.asList(applyDate.split("-")).get(1);
+            // 构建实体
+            EntryCasReviewDetail entryCasReviewDetail = new EntryCasReviewDetail();
+            // 根据履职计划id查询回顾id
+            LambdaQueryWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            entryCasReviewDetailLambdaQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId, casPlanId);
+            List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailLambdaQueryWrapper);
+            if (entryCasReviewDetails.size() > 0) {
+                Long entryReviewId = entryCasReviewDetails.get(0).getId();
+                entryCasReviewDetail.setId(entryReviewId);
+            }
+            entryCasReviewDetail.setCasPlanId(Long.valueOf(casPlanId));
+            entryCasReviewDetail.setEventsId(Long.valueOf(eventsId));
+            entryCasReviewDetail.setEventsFirstType(eventsFirstType);
+            entryCasReviewDetail.setJobName(jobName);
+            entryCasReviewDetail.setWorkEvents(workEvents);
+            entryCasReviewDetail.setDelowStandard(delowStandard);
+            entryCasReviewDetail.setMiddleStandard(middleStandard);
+            entryCasReviewDetail.setFineStandard(fineStandard);
+            entryCasReviewDetail.setExcellentStandard(excellentStandard);
+            entryCasReviewDetail.setEventsForm(eventsForm);
+            entryCasReviewDetail.setStandardValue(new BigDecimal(standardValue));
+            entryCasReviewDetail.setDepartmentName(departmentName);
+            entryCasReviewDetail.setRoleName(roleName);
+            entryCasReviewDetail.setUserName(userName);
+            entryCasReviewDetail.setApplyDate(LocalDate.parse(applyDate));
+            entryCasReviewDetail.setMainOrNext(mainOrNext);
+            entryCasReviewDetail.setPlanningWork(planningWork);
+            entryCasReviewDetail.setTimes(times);
+            entryCasReviewDetail.setWorkOutput(workOutput);
+            entryCasReviewDetail.setPlanStartDate(LocalDate.parse(planStartDate));
+            entryCasReviewDetail.setPlanEndDate(LocalDate.parse(planEndDate));
+            entryCasReviewDetail.setActualCompleteDate(LocalDate.parse(actualCompleteDate));
+            entryCasReviewDetail.setCompleteDesc(completeDesc);
+            // 查询部门id
+            LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            departmentLambdaQueryWrapper.eq(Department::getDepartmentName, departmentName);
+            List<Department> departments = departmentMapper.selectList(departmentLambdaQueryWrapper);
+            if (ObjectUtils.isEmpty(departments)) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的部门名称在系统中未查找到，不能导入", j + 1, departmentName));
+                cell.setCellValue(String.format("履职计划序号为【%s】的部门名称未查到，不能导入", casPlanId));
+                continue;
+            }
+            Long departmentId = departments.get(0).getId();
+            entryCasReviewDetail.setDepartmentId(departmentId);
+            // 查询角色id
+            LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            roleLambdaQueryWrapper.eq(Role::getName, roleName);
+            List<Role> roles = roleMapper.selectList(roleLambdaQueryWrapper);
+            if (ObjectUtils.isEmpty(roles)) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的岗位名称在系统中未查找到，不能导入", j + 1, roleName));
+                cell.setCellValue(String.format("履职计划序号为【%s】的岗位名称未查到，不能导入", casPlanId));
+                continue;
+            }
+            Long roleId = roles.get(0).getId();
+            entryCasReviewDetail.setRoleId(roleId);
+            // 查询用户id
+            LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            userLambdaQueryWrapper.eq(User::getName, userName);
+            List<User> users = userMapper.selectList(userLambdaQueryWrapper);
+            if (ObjectUtils.isEmpty(users)) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的用户名称在系统中未查找到，不能导入", j + 1, roleName));
+                cell.setCellValue(String.format("履职计划序号为【%s】的用户名称未查到，不能导入", casPlanId));
+                continue;
+            }
+            Long userId = users.get(0).getId();
+            entryCasReviewDetail.setUserId(userId);
+            // 查询MergeNo
+            LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            entryCasMergeLambdaQueryWrapper
+                    .eq(EntryCasMerge::getDepartmentName, departmentName)
+                    .eq(EntryCasMerge::getYear, year);
+            List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
+            // 不存在merge就报错
+            if (ObjectUtils.isEmpty(entryCasMerges)) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的履职编号在系统中未查找到，不能导入", j + 1, roleName));
+                cell.setCellValue(String.format("履职计划序号为【%s】的履职编号未查到，不能导入", casPlanId));
+                continue;
+            }
+            EntryCasMerge entryCasMerge = entryCasMerges.get(0);
+            entryCasReviewDetail.setMergeNo(entryCasMerge.getMergeNo());
+            entryCasReviewDetail.setMergeId(entryCasMerge.getId());
+            // 查询当前登录用户
+            User user = (User) SecurityUtils.getSubject().getPrincipal();
+            entryCasReviewDetail.setCreateName(user.getName());
+            entryCasReviewDetail.setCreateId(user.getId());
+            entryCasReviewDetail.setCreateDate(LocalDate.now());
+            entryCasReviewDetail.setCreatedAt(LocalDateTime.now());
+            entryCasReviewDetail.setMonth(Integer.valueOf(month));
+            entryCasReviewDetail.setYear(Integer.valueOf(year));
+            entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+            entryCasReviewDetail.setAttachmentId(attachment.getId());
+            // 更新或新增
+            saveOrUpdate(entryCasReviewDetail);
+            // 更新planDetail数据的状态为完结
+            EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailMapper.selectById(casPlanId);
+            if (ObjectUtils.isEmpty(entryCasPlanDetail)) {
+                throw new ServiceException("不存在对应的履职计划序号，导入失败");
+            }
+            entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+            entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
+
+            cell.setCellValue("导入成功");
+
+        }
+        sheetService.write(attachment.getPath(), attachment.getFilename());
+        return result;
+    }
+
+    @Override
+    public boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview) {
+        List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
+        for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
+            entryCasReviewDetail.setFinalNontransactionEvaluateLevel(ministerReview);
+            entryCasReviewDetail.setMinisterReview(ministerReview);
+            // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
+            if (ministerReview.equals(PerformanceConstant.EXCELLENT)) {
+                entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
+            } else {
+                entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+            }
+            entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
+        }
+        return true;
     }
 }

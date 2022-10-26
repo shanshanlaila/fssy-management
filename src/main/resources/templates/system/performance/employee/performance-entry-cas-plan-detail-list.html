@@ -128,6 +128,7 @@
         // 导出
         form.on('submit(export)', function (data) {
             var field = data.field;
+            data.field.status = '待提交审核'
             field.url = "/system/entry-cas-plan-detail/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");
@@ -148,7 +149,7 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                status:'待提交审核'
+                status: '待提交审核'
             },
             cols: [
                 [
@@ -235,6 +236,11 @@
                     {
                         field: 'id',
                         title: '序号',
+                        width: 50
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
                         width: 50
                     },
                     {
