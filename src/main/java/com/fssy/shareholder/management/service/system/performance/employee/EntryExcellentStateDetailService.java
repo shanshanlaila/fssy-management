@@ -24,16 +24,45 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
     Page<EntryExcellentStateDetail> findDataListByParams(Map<String, Object> params);
 
     /**
+     * 绩效科撤销审核评优材料
+     * @param excellentStateDetailIds 履职回顾的Ids
+     * @return 撤销成功
+     */
+    boolean PerformanceRetreat(List<String> excellentStateDetailIds);
+
+    /**
+     * 绩效科审核评优材料（修改按钮）
+     * @param entryExcellentStateDetail 履职回顾
+     * @return 提交成功
+     */
+    boolean updateEntryExcellentStateDetail(EntryExcellentStateDetail entryExcellentStateDetail);
+
+    /**
+     * 评优材料提交审核
+     * @param excellentStateDetailIds 履职回顾的Ids
+     * @return 提交成功
+     */
+    boolean submitAudit(List<String> excellentStateDetailIds);
+
+    /**
      * 评优材料撤销审核
-     * @param excellentStateDetailIds
-     * @return
+     * @param excellentStateDetailIds 履职回顾的Ids
+     * @return 撤销成功
      */
     boolean retreat(List<String> excellentStateDetailIds);
 
     /**
-     * 修改更新提交评优材料
-     * @param entryExcellentStateDetail
-     * @return
+     * 经营管理部主管审核评优材料（修改按钮）
+     * @param entryExcellentStateDetail 履职回顾表
+     * @return 提交成功
      */
-    boolean updateEntryExcellentStateDetail(EntryExcellentStateDetail entryExcellentStateDetail);
+
+    boolean updateMinister(EntryExcellentStateDetail entryExcellentStateDetail);
+
+    /**
+     * 经营管理部主管撤销审核评优材料
+     * @param excellentStateDetailIds 履职回顾的Ids
+     * @return 撤销成功
+     */
+    boolean MinisterRetreat(List<String> excellentStateDetailIds);
 }

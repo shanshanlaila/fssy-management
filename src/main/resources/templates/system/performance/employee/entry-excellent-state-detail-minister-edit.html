@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>履职计划明细信息修改</title>
+    <title>评优材料修改页面</title>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
 </head>
@@ -49,36 +49,41 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th colspan="4">履职明细信息修改</th>
+                    <th colspan="4">评优材料修改</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td style="text-align: right"><span
-                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;对应工作事件的计划内容:
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;经营管理部主管复核:
                     </td>
                     <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="hidden" name="id" id="id" th:value="${entryCasReviewDetail['id']}">
-                            <input type="text" class="layui-input" name="planningWork" id="planningWork"
-                                   placeholder="对应工作事件的计划内容" autocomplete="off"
-                                   lay-verify="required" lay-reqText="对应工作事件的计划内容为必填项"
-                                   th:value="${entryCasReviewDetail['planningWork']}"/>
-
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span
-                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;表单:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="workOutput" id="workOutput"
-                                   placeholder="表单" autocomplete="off"
-                                   lay-verify="required" lay-reqText="表单为必填项"
-                                   th:value="${entryCasReviewDetail['workOutput']}"/>
+                        <div class="layui-input-inline layui-show-xs-block" style="width: 120px">
+                            <input type="hidden" name="id" id="id" th:value="${entryExcellentStateDetail['id']}">
+                            <select name="ministerReview" lay-verify="required"
+                                    lay-reqText="绩效科复核为必填项">
+                                <option value="不合格" th:selected="${entryExcellentStateDetail.ministerReview} == 不合格">不合格</option>
+                                <option value="中" th:selected="${entryExcellentStateDetail.ministerReview} == 中">中</option>
+                                <option value="良" th:selected="${entryExcellentStateDetail.ministerReview} == 良">良</option>
+                                <option value="优" th:selected="${entryExcellentStateDetail.ministerReview} == 优">优</option>
+                            </select>
                         </div>
                     </td>
                 </tr>
+                </tbody>
+            </table>
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<!--laui-->
 <script th:inline="javascript">
     layui.use(['layer', 'form', 'laydate'], function () {
         var $ = layui.$
@@ -97,12 +102,13 @@
                 });
         });
 
+        // 修改页面的提交
         form.on('submit(baseForm)', function (data) {
             var elem = data.elem;
             $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
             $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
             $.ajax({
-                url: '/system/entry-cas-review-detail/update',
+                url: '/system/entry-excellent-state-detail/updateMinister',
                 type: 'POST',
                 data: data.field,
                 success: function (result) {

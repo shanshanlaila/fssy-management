@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>评优材料审核</title>
+    <title>经营管理部主管评优材料管理页面</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>评优材料审核</cite></a>
+            <a> <cite>经营管理部主管审核评优材料</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -38,7 +38,6 @@
                             <label>
                                 <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
-                                    <option value="待提交审核">待提交审核</option>
                                     <option value="待绩效科复核">待绩效科复核</option>
                                     <option value="待经营管理部主管复核">待经营管理部主管复核</option>
                                     <option value="完结">完结</option>
@@ -56,10 +55,6 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="confirm">提交审核
-                                </button>
-                            </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit=""
                                         lay-filter="retreat">撤销审核
@@ -122,7 +117,7 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                status: '待提交审核'
+                status: '待绩效科复核'
             },
             cols: [
                 [
@@ -272,41 +267,41 @@
             ]
         });
 
-        form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-            layer.confirm('确定提交审核吗？', {icon: 3, title: '提示'}, function (index) {
-                var excellentStateDetailIds = [];// 创建id数组，存放选择的数据id
-                data.forEach(function (item) {// 循环选择的每一行字段数据
-                    excellentStateDetailIds.push(item.id);// 放进ids
-                });
-                // 携带数据发送异步请求后端处理逻辑
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-excellent-state-detail/indexStatus',
-                    data: {"excellentStateDetailIds": excellentStateDetailIds},
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
-                        }
-                    }
-                })
-            });
-            return false;
-        });
+        // form.on('submit(confirm)', function (data) {
+        //     var checkStatus = table.checkStatus(dataTable.config.id),
+        //         data = checkStatus.data;
+        //     if (data.length <= 0) {
+        //         layer.alert("请至少选择一行数据");
+        //         return false;
+        //     }
+        //     layer.confirm('确定提交审核吗？', {icon: 3, title: '提示'}, function (index) {
+        //         var excellentStateDetailIds = [];// 创建id数组，存放选择的数据id
+        //         data.forEach(function (item) {// 循环选择的每一行字段数据
+        //             excellentStateDetailIds.push(item.id);// 放进ids
+        //         });
+        //         // 携带数据发送异步请求后端处理逻辑
+        //         $.ajax({
+        //             type: 'POST',
+        //             url: '/system/entry-excellent-state-detail/indexStatus',
+        //             data: {"excellentStateDetailIds": excellentStateDetailIds},
+        //             success: function (result) {
+        //                 layer.msg(result.msg);
+        //                 if (result.status === 200) {
+        //                     table.reload('dataTable');
+        //                     laydate.render(
+        //                         {
+        //                             elem: this,
+        //                             //更换触发方式
+        //                             trigger: 'click',
+        //                             type: 'date',
+        //                             value: new Date()
+        //                         });
+        //                 }
+        //             }
+        //         })
+        //     });
+        //     return false;
+        // });
 
         form.on('submit(retreat)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
@@ -326,18 +321,10 @@
                 excellentStateDetailIds.push(item.id);
             });
 
-            // if (flag) {
-            //     layer.msg("开票通知单号为：" + msg + '的数据状态为财务审核通过不能撤销，请取消选择', {
-            //         icon: 5,
-            //         time: 4000
-            //     });
-            //     return false;
-            // }
-
             layer.confirm('确定撤销审核吗？', {icon: 3, title: '提示'}, function (index) {
                 $.ajax({
                     type: 'POST',
-                    url: '/system/entry-excellent-state-detail/retreat',
+                    url: '/system/entry-excellent-state-detail/MinisterRetreat',
                     data: {
                         "excellentStateDetailIds": excellentStateDetailIds,
                     },
@@ -359,6 +346,7 @@
             });
             return false;
         });
+
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
@@ -373,10 +361,10 @@
                     title: '序号为' + data.id + '的评优材料修改',
                     area:
                         [
-                            $(window).width() * 0.9 + 'px',
-                            $(window).height() - 50 + 'px'
+                            $(window).width() * 0.6 + 'px',
+                            $(window).height() - 0 + 'px'
                         ],
-                    content: '/system/entry-excellent-state-detail/edit/' + data.id,
+                    content: '/system/entry-excellent-state-detail/editMinister/' + data.id,
                     maxmin: true,
                     scrollbar: true
                 });

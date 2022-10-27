@@ -673,6 +673,12 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         return result;
     }
 
+    /**
+     * 批量审核——工作计划完成情况审核评价（部长复核）
+     * @param entryReviewDetailIds 履职回顾的dis
+     * @param ministerReview 部长复核
+     * @return
+     */
     @Override
     public boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
@@ -685,6 +691,26 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             } else {
                 entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
             }
+            entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
+        }
+        return true;
+    }
+
+    /**
+     * 批量审核——工作计划完成情况审核评价（科长复核）
+     * @param entryReviewDetailIds
+     * @param chargeTransactionEvaluateLevel
+     * @param chargeTransactionBelowType
+     * @return
+     */
+    @Override
+    public boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType) {
+        List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
+        for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
+            entryCasReviewDetail.setFinalNontransactionEvaluateLevel(chargeTransactionEvaluateLevel);
+            entryCasReviewDetail.setChargeTransactionEvaluateLevel(chargeTransactionEvaluateLevel);
+            entryCasReviewDetail.setChargeTransactionBelowType(chargeTransactionBelowType);
+            entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
             entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }
         return true;
