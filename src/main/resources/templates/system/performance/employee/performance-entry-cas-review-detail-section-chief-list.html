@@ -48,6 +48,35 @@
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
                         {{# } }}
                     </script>
+                    <script type="text/html" id="toolbar">
+                        <form class="layui-form layui-col-space5">
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 110px; line-height: 1.1; padding: 9px 0px;">事物类评价等级&nbsp;&nbsp;</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <select name="chargeTransactionEvaluateLevel" id="chargeTransactionEvaluateLevel">
+                                        <option value="合格">合格</option>
+                                        <option value="不合格">不合格</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 110px; line-height: 1.1; padding: 9px 0px;">事物类评价不同类型&nbsp;&nbsp;</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <select name="chargeTransactionBelowType" id="chargeTransactionBelowType">
+                                        <option value="时间不合格">时间不合格</option>
+                                        <option value="质量不合格">质量不合格</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <button class="layui-btn layui-btn-sm"
+                                        lay-submit="" lay-filter="confirm">一键审核
+                                </button>
+                            </div>
+                        </form>
+                    </script>
                 </div>
             </div>
         </div>
@@ -326,6 +355,39 @@
                 content: '/system/entry-cas-review-detail/attachment/import',
                 scrollbar: true,
                 maxmin: true,
+            });
+            return false;
+        });
+        // 一键审核
+        form.on('submit(confirm)', function (data) {
+            var checkStatus = table.checkStatus(dataTable.config.id),
+                data = checkStatus.data;
+            if (data.length <= 0) {
+                layer.alert("请至少选择一行数据");
+                return false;
+            }
+            // 履职回顾id列表
+            var entryReviewDetailIds = [];
+            data.forEach(function (item) {
+                entryReviewDetailIds.push(item.id);
+            });
+            layer.load();
+            $.ajax({
+                type: 'POST',
+                url: '/system/entry-cas-review-detail/sectionBatchAudit',
+                data: {
+                    "entryReviewDetailIds": entryReviewDetailIds,
+                    "chargeTransactionEvaluateLevel": $('#chargeTransactionEvaluateLevel').find("option:selected").val(),
+                    "chargeTransactionBelowType": $('#chargeTransactionBelowType').find("option:selected").val(),
+
+                },
+                success: function (result) {
+                    layer.closeAll();
+                    layer.msg(result.msg);
+                    if (result.status === 200) {
+                        table.reload('dataTable');
+                    }
+                }
             });
             return false;
         });

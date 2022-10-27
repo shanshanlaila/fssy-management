@@ -73,4 +73,14 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
      * @return 审核结果
      */
     boolean batchAudit(List<String> entryReviewDetailIds,String ministerReview);
+
+    /**
+     * 批量审核-计划工作完成评价（科长）
+     * @param entryReviewDetailIds  履职回顾的Ids
+     * @param chargeTransactionEvaluateLevel  事务类评价等级
+     * @param chargeTransactionBelowType 事务类评价不同类型
+     * @return
+     */
+    boolean batchAudit(List<String> entryReviewDetailIds,String chargeTransactionEvaluateLevel,String chargeTransactionBelowType);
+
 }

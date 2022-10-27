@@ -408,4 +408,19 @@ public class EntryCasReviewDetailController {
         }
         return SysResult.build(500, "批量审核失败");
     }
+    /**
+     * 工作计划完成情况批量审核（科长，事物类）
+     */
+    @RequestMapping("sectionBatchAudit")
+    @ResponseBody
+    @RequiredLog("科长事物类批量审核")
+    public SysResult sectionBatchAudit(@RequestParam(value = "entryReviewDetailIds[]")List<String> entryReviewDetailIds,HttpServletRequest request) {
+        String chargeTransactionEvaluateLevel = request.getParameter("chargeTransactionEvaluateLevel");
+        String chargeTransactionBelowType = request.getParameter("chargeTransactionBelowType");
+        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds,chargeTransactionEvaluateLevel,chargeTransactionBelowType);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500,"批量审核失败");
+    }
 }
