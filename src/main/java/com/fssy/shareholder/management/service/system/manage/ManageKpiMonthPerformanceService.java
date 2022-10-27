@@ -1,10 +1,10 @@
-package com.fssy.shareholder.management.service.system.manager;
+package com.fssy.shareholder.management.service.system.manage;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.manager.ManageKpiMonthPerformance;
+import com.fssy.shareholder.management.pojo.system.manage.ManageKpiMonthPerformance;
 
 import java.util.List;
 import java.util.Map;

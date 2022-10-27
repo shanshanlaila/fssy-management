@@ -1,4 +1,4 @@
-package com.fssy.shareholder.management.pojo.system.manager;
+package com.fssy.shareholder.management.pojo.system.manage;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
