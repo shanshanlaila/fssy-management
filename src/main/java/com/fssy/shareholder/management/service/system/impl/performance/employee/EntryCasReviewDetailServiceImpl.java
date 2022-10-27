@@ -285,12 +285,12 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     /**
      * 工作计划完成情况提交审核
      *
-     * @param planDetailIds
+     * @param reviewDetailIds
      * @return
      */
     @Override
-    public boolean submitAudit(List<String> planDetailIds) {
-        List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(planDetailIds);
+    public boolean submitAudit(List<String> reviewDetailIds) {
+        List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(reviewDetailIds);
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
             // 只能提交 待提交审核 状态的事件清单
             if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
@@ -312,12 +312,12 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     /**
      * 工作计划完成情况撤销审核
      *
-     * @param planDetailIds
+     * @param reviewDetailIds
      * @return
      */
     @Override
-    public boolean retreat(List<String> planDetailIds) {
-        List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(planDetailIds);
+    public boolean retreat(List<String> reviewDetailIds) {
+        List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(reviewDetailIds);
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
             LambdaUpdateWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
             if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG) ||
@@ -335,6 +335,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         return true;
     }
 
+    /**
+     * 修改更新科长、事物类审核评价
+     * @param entryCasReviewDetail 回顾履职
+     * @return
+     */
     @Override
     public boolean sectionWorkAudit(EntryCasReviewDetail entryCasReviewDetail) {
         // 事务类评价等级与最终非事务类评价等级值相等

@@ -36,18 +36,18 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     /**
      * 工作计划完成情况提交审核
      *
-     * @param planDetailIds
+     * @param reviewDetailIds
      * @return
      */
-    boolean submitAudit(List<String> planDetailIds);
+    boolean submitAudit(List<String> reviewDetailIds);
 
     /**
      * 工作计划完成情况撤销审核
      *
-     * @param planDetailIds
+     * @param reviewDetailIds
      * @return
      */
-    boolean retreat(List<String> planDetailIds);
+    boolean retreat(List<String> reviewDetailIds);
 
     /**
      * 工作计划完成情况审核评价 （科长，事务类）
