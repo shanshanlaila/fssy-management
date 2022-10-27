@@ -23,6 +23,8 @@ public interface PerformanceConstant {
     String PLAN_DETAIL_STATUS_AUDIT_ZHUGUAN="待主管审核";
     String REVIEW_DETAIL_MINISTER_REVIEW_EXCELLENT="优";
     String REVIEW_DETAIL_STATUS_AUDIT_A="待经营管理部审核";
+    String REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN="待经营管理部主管审核";
+    String PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE="待绩效科复核";
     String EXCELLENT="优";
     String UNQUALIFIED="不合格";
     String MIDDLE="中";
