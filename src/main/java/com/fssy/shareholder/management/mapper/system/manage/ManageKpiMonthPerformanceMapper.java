@@ -1,8 +1,8 @@
-package com.fssy.shareholder.management.mapper.system.manager;
+package com.fssy.shareholder.management.mapper.system.manage;
 
 
 import com.fssy.shareholder.management.mapper.manage.common.MyBaseMapper;
-import com.fssy.shareholder.management.pojo.system.manager.ManageKpiMonthPerformance;
+import com.fssy.shareholder.management.pojo.system.manage.ManageKpiMonthPerformance;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
