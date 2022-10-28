@@ -16,10 +16,12 @@ public enum Module {
 
     PERFORMANCE_HANDLERS_ITEM(1, "handler_item"),
     PERFORMANCE_EVENT_LIST(2, "event_list"),
-    IKUN(78,"ikun"),
-    TEACHER(79,"teacher"),
-    PERFORMANCE_HANDLERSITEM_LIST(80,"performance_handlersitem_list"),
-    PERFORMANCE_EVENTS_LIST(81,"performance_events_list");
+    PERFORMANCE_KPI_MONTH(3, "kpi_month"),// 月度
+    IKUN(78, "ikun"),
+    TEACHER(79, "teacher"),
+    PERFORMANCE_HANDLERSITEM_LIST(80, "performance_handlersitem_list"),
+    PERFORMANCE_EVENTS_LIST(81, "performance_events_list"),
+    EXCELLENT_MULTIPART_UPLOAD(33,"excellent_file");//MultipartFile
 
 
     private final Integer value;

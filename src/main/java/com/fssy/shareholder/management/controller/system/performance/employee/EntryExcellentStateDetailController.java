@@ -3,10 +3,20 @@ package com.fssy.shareholder.management.controller.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.pojo.common.Module;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.system.config.StateRelationAttachment;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryExcellentStateDetail;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
+import com.fssy.shareholder.management.service.manage.user.UserService;
+import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
+import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
+import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
+import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -34,8 +45,24 @@ import java.util.Map;
 public class EntryExcellentStateDetailController {
     @Autowired
     private EntryExcellentStateDetailService entryExcellentStateDetailService;
+
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private FileAttachmentTool fileAttachmentTool;
+
+    @Autowired
+    private EventListService eventListService;
+
+    @Autowired
+    private EntryCasPlanDetailService entryCasPlanDetailService;
+
+    @Autowired
+    private EntryCasReviewDetailService entryCasReviewDetailService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("index")
     @RequiredLog("")
@@ -351,6 +378,79 @@ public class EntryExcellentStateDetailController {
             return SysResult.ok();
         }
         return SysResult.build(500, "撤销审核失败");
+    }
+
+    /**
+     * 展示评优材料上传页面
+     *
+     * @param id 履职明细id
+     * @return 修改页面
+     */
+    @GetMapping("createAndUpload/{id}")
+    public String showExcellentPage(@PathVariable String id, Model model) {
+        EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
+        // 查询事件清单
+        EventList eventList = eventListService.getById(entryCasReviewDetail.getEventsId());
+        // 查询履职计划
+        EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(entryCasReviewDetail.getCasPlanId());
+        // 查询用户
+        Map<String,Object> params=new HashMap<>();
+        List<Map<String, Object>> userNameList = userService.findUserSelectedDataListByParams(params,new ArrayList<>());
+        model.addAttribute("eventList", eventList);
+        model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
+        model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
+        model.addAttribute("userNameList", userNameList);
+        return "/system/performance/employee/entry-excellent-state-detail-createAndUpload";
+    }
+
+
+    /**
+     * 菜单跳转待评优的履职回顾
+     *
+     * @param model 数据模型
+     */
+    @GetMapping("waitUploadList")
+    public String waitUploadList(Model model) {
+        // 部门下拉选择
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        return "/system/performance/employee/entry-review-detail-wait-upload-list";
+    }
+
+    /**
+     * 多附件上传
+     *
+     * @param file       前台传来的附件数据
+     * @param attachment 附件表实体类
+     * @return 附件ID
+     */
+    @PostMapping("uploadFile")
+    @RequiredLog("评优说明材料多附件上传")
+    @ResponseBody
+    public SysResult uploadFile(@RequestParam("file") MultipartFile file, StateRelationAttachment attachment) {
+        // 保存附件
+        StateRelationAttachment result = fileAttachmentTool.storeStateRelationFileToModule(file, Module.EXCELLENT_MULTIPART_UPLOAD, attachment);
+        // 返回结果
+        return SysResult.ok(result.getId());
+    }
+
+    /**
+     * 创建履职评价说明明细
+     *
+     * @param entryExcellentStateDetail 履职评价说明明细
+     * @return 结果
+     */
+    @PostMapping("save")
+    @ResponseBody
+    public SysResult create(EntryExcellentStateDetail entryExcellentStateDetail,HttpServletRequest request) {
+        String mainIds = request.getParameter("mainIds");
+        String nextIds = request.getParameter("nextIds");
+        boolean result = entryExcellentStateDetailService.save(entryExcellentStateDetail,mainIds,nextIds);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "上传失败");
     }
 
 }

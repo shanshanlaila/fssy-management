@@ -29,13 +29,13 @@ public class EntryExcellentStateDetail extends BaseModel {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 事件表主键
      */
     @TableField("eventsId")
-    private Integer eventsId;
+    private Long eventsId;
 
     /**
      * 工作事件
@@ -95,7 +95,7 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 评价部门主键
      */
     @TableField("departmentId")
-    private Integer departmentId;
+    private Long departmentId;
 
     /**
      * 编制日期
@@ -113,7 +113,7 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 编制人主键
      */
     @TableField("createId")
-    private Integer createId;
+    private Long createId;
 
     /**
      * 审核人
@@ -125,7 +125,7 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 审核人主键
      */
     @TableField("auditId")
-    private Integer auditId;
+    private Long auditId;
 
     /**
      * 审核日期
@@ -149,19 +149,19 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 履职评价说明表主键，按年、月、部门分表
      */
     @TableField("mergeId")
-    private Integer mergeId;
+    private Long mergeId;
 
     /**
      * 对应的履职计划明细主键
      */
     @TableField("casPlanId")
-    private Integer casPlanId;
+    private Long casPlanId;
 
     /**
      * 对应的履职回顾明细主键
      */
     @TableField("casReviewId")
-    private Integer casReviewId;
+    private Long casReviewId;
 
     /**
      * 申报日期
@@ -209,7 +209,7 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 经营管理部主管复核人主键
      */
     @TableField("ministerReviewUserId")
-    private Integer ministerReviewUserId;
+    private Long ministerReviewUserId;
 
     /**
      * 经营管理部主管复核日期
@@ -227,7 +227,7 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 绩效科复核人主键
      */
     @TableField("classReviewUserId")
-    private Integer classReviewUserId;
+    private Long classReviewUserId;
 
     /**
      * 绩效科复核日期

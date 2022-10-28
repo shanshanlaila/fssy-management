@@ -1,22 +1,30 @@
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
+import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
-import com.fssy.shareholder.management.mapper.system.performance.employee.EntryExcellentStateDetailMapper;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EntryExcellentStateDetail;
+import com.fssy.shareholder.management.mapper.system.performance.employee.*;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
+import com.fssy.shareholder.management.pojo.manage.user.User;
+import com.fssy.shareholder.management.pojo.system.performance.employee.*;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * <p>
@@ -39,6 +47,21 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private EntryCasMergeMapper entryCasMergeMapper;
+
+    @Autowired
+    private ViewDepartmentRoleUserMapper viewDepartmentRoleUserMapper;
+
+    @Autowired
+    private StateRelationMainUserMapper stateRelationMainUserMapper;
+
+    @Autowired
+    private StateRelationNextUserMapper stateRelationNextUserMapper;
+
+    @Autowired
+    private EntryExcellentStateMergeMapper entryExcellentStateMergeMapper;
 
     /**
      * 根据分页查询数据
@@ -309,5 +332,147 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         return true;
     }
 
+    @Override
+    public boolean save(EntryExcellentStateDetail entryExcellentStateDetail, String mainIdsStr, String nextIdsStr) {
+
+        // 查询当前登录用户对应的部门和角色信息
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        LambdaQueryWrapper<ViewDepartmentRoleUser> druWrapper = new LambdaQueryWrapper<>();
+        druWrapper.eq(ViewDepartmentRoleUser::getUserId, user.getId());
+        List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(druWrapper);
+        if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
+            throw new ServiceException(String.format("登陆人id为【%s】的用户，不存在对应的部门，提交失败", user.getId()));
+        }
+        ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
+
+        // 主/次担任人名称处理
+        StringBuilder mainSb = new StringBuilder();
+        StringBuilder nextSb = new StringBuilder();
+        int countMain = 0, countNext = 0;
+        String[] mainIds = mainIdsStr.split(",");
+        String[] nextIds = nextIdsStr.split(",");
+        for (String mainId : mainIds) {
+            User mainUser = userMapper.selectById(mainId);
+            countMain++;
+            // 查询主担责任人，并用,拼接成字符串
+            if (countMain == mainIds.length) {
+                mainSb.append(mainUser.getName());
+            } else {
+                mainSb.append(mainUser.getName());
+                mainSb.append(",");
+            }
+        }
+        for (String nextId : nextIds) {
+            User nextUser = userMapper.selectById(nextId);
+            countNext++;
+            // 查询次担责任人，并用,拼接成字符串
+            if (countNext == nextIds.length) {
+                nextSb.append(nextUser.getName());
+            } else {
+                nextSb.append(nextUser.getName());
+                nextSb.append(",");
+            }
+        }
+        // 创建评价说明材料明细
+        entryExcellentStateDetail.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
+        entryExcellentStateDetail.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
+        entryExcellentStateDetail.setCreatedAt(LocalDateTime.now());
+        entryExcellentStateDetail.setCreatedId(user.getId());
+        entryExcellentStateDetail.setCreatedName(user.getName());
+        entryExcellentStateDetail.setNextUserName(nextSb.toString());
+        entryExcellentStateDetail.setMainUserName(mainSb.toString());
+        entryExcellentStateDetail.setCreateDate(LocalDate.now());
+        entryExcellentStateDetail.setCreateName(user.getName());
+        entryExcellentStateDetail.setCreateId(user.getId());
+        entryExcellentStateDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+        entryExcellentStateDetail.setApplyDate(LocalDate.now());
+        int year = LocalDate.now().getYear();
+        entryExcellentStateDetail.setYear(year);
+        int month = LocalDate.now().getMonthValue();
+        entryExcellentStateDetail.setMonth(month);
+
+        // 按照申报年份、月份加申报部门创建表“bs_performance_entry_excellent_state_merge”，
+        EntryExcellentStateMerge entryExcellentStateMerge = new EntryExcellentStateMerge();
+        entryExcellentStateMerge.setCreateDate(LocalDate.now());
+        entryExcellentStateMerge.setCreatedAt(LocalDateTime.now());
+        entryExcellentStateMerge.setCreateId(user.getId());
+        entryExcellentStateMerge.setCreateName(user.getName());
+        entryExcellentStateMerge.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
+        entryExcellentStateMerge.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
+        entryExcellentStateMerge.setAuditName(null);
+        entryExcellentStateMerge.setAuditId(null);
+        entryExcellentStateMerge.setAuditDate(null);
+        entryExcellentStateMerge.setApplyDate(entryExcellentStateDetail.getApplyDate());
+        entryExcellentStateMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryExcellentStateMerge);// 保存
+        entryExcellentStateDetail.setMergeId(entryExcellentStateMerge.getId());
+        entryExcellentStateDetail.setMergeNo(entryExcellentStateMerge.getMergeNo());
+        int result = entryExcellentStateDetailMapper.insert(entryExcellentStateDetail);// 保存
+
+        // 根据选择的主担，创建表“bs_performance_state_relation_main_user”
+        for (String mainId : mainIds) {
+            User mainUser = userMapper.selectById(mainId);
+            StateRelationMainUser stateRelationMainUser = new StateRelationMainUser();
+            stateRelationMainUser.setMainUserId(mainUser.getId());
+            stateRelationMainUser.setMainUserName(mainUser.getName());
+            stateRelationMainUser.setMainDepartmentId(viewDepartmentRoleUser.getDepartmentId());
+            stateRelationMainUser.setMainDepartmentName(viewDepartmentRoleUser.getTheDepartmentName());
+            stateRelationMainUser.setMainRoleId(viewDepartmentRoleUser.getRoleId());
+            stateRelationMainUser.setMainRoleName(viewDepartmentRoleUser.getRoleName());
+            stateRelationMainUser.setStateId(entryExcellentStateDetail.getId());
+            stateRelationMainUser.setCreatedId(user.getId());
+            stateRelationMainUser.setCreatedName(user.getName());
+            stateRelationMainUser.setCreatedAt(LocalDateTime.now());
+            stateRelationMainUserMapper.insert(stateRelationMainUser);// 保存
+        }
+
+        // 根据选择的次担，创建表“bs_performance_state_relation_next_user”
+        for (String nextId : nextIds) {
+            User nextUser = userMapper.selectById(nextId);
+            StateRelationNextUser stateRelationNextUser = new StateRelationNextUser();
+            stateRelationNextUser.setNextUserName(nextUser.getName());
+            stateRelationNextUser.setNextUserId(nextUser.getId());
+            stateRelationNextUser.setNextDepartmentId(viewDepartmentRoleUser.getDepartmentId());
+            stateRelationNextUser.setNextDepartmentName(viewDepartmentRoleUser.getDepartmentName());
+            stateRelationNextUser.setNextRoleId(viewDepartmentRoleUser.getRoleId());
+            stateRelationNextUser.setNextRoleName(viewDepartmentRoleUser.getRoleName());
+            stateRelationNextUser.setStateId(entryExcellentStateDetail.getId());
+            stateRelationNextUser.setCreatedId(user.getId());
+            stateRelationNextUser.setCreatedName(user.getName());
+            stateRelationNextUser.setCreatedAt(LocalDateTime.now());
+            stateRelationNextUserMapper.insert(stateRelationNextUser);// 保存
+        }
+        return result > 0;
+    }
+
+    public synchronized EntryExcellentStateMerge storeNoticeMerge(LocalDate createDate,
+                                                                  Map<String, Object> otherParams, EntryExcellentStateMerge entryExcellentStateMerge) {
+        // region 创建通知单数据
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+
+        // 生成通知单明细合并序列号
+        int noticeMergeSerial;
+        int year = createDate.getYear();
+        int month = createDate.getMonthValue();
+        QueryWrapper<EntryCasMerge> queryNoticeMergeSerialQueryWrapper = new QueryWrapper<>();
+        queryNoticeMergeSerialQueryWrapper.eq("year", year)
+                .select("max(serial) as serial");
+        EntryCasMerge noticeMergeLastSerialData = entryCasMergeMapper
+                .selectOne(queryNoticeMergeSerialQueryWrapper);
+        noticeMergeSerial = !ObjectUtils.isEmpty(noticeMergeLastSerialData)
+                && !ObjectUtils.isEmpty(noticeMergeLastSerialData.getSerial())
+                ? noticeMergeLastSerialData.getSerial().intValue() + 1
+                : 1;
+        entryExcellentStateMerge.setMergeNo(
+                String.format("PJ%s%s", year,
+                        new DecimalFormat("000").format(noticeMergeSerial)));
+        entryExcellentStateMerge.setSerial(noticeMergeSerial);
+        entryExcellentStateMerge.setYear(year);
+        entryExcellentStateMerge.setMonth(month);
+        entryExcellentStateMerge.setCreateDate(createDate);
+
+        entryExcellentStateMergeMapper.insert(entryExcellentStateMerge);
+        // endregion
+        return entryExcellentStateMerge;
+    }
 
 }

@@ -65,4 +65,14 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
      * @return 撤销成功
      */
     boolean MinisterRetreat(List<String> excellentStateDetailIds);
+
+    /**
+     * 创建履职评价说明明细
+     *
+     * @param entryExcellentStateDetail 履职评价说明明细
+     * @param mainIds                   主担人ids
+     * @param nextIds                   次担人ids
+     * @return 创建结果
+     */
+    boolean save(EntryExcellentStateDetail entryExcellentStateDetail, String mainIds, String nextIds);
 }

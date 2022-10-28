@@ -1,7 +1,7 @@
 /**
  * 修改人                 修改日期                   修改内容
  * 兰宇铧	 	 	2021-11-24 	 	 添加导入日期判断，使用upload插件不会被前端校验，测试问题修改
- * 
+ *
  * 修改人                 修改日期                   修改内容
  * 兰宇铧	 	 	2021-12-17 	 	 上传附件和更改状态设置不需要事务，否则导入BOM报业务错误会写不进数据表
  *
@@ -15,11 +15,13 @@ package com.fssy.shareholder.management.tools.common;
 
 import com.fssy.shareholder.management.mapper.system.config.AttachmentMapper;
 import com.fssy.shareholder.management.mapper.system.config.AttachmentSecretMapper;
+import com.fssy.shareholder.management.mapper.system.config.StateRelationAttachmentMapper;
 import com.fssy.shareholder.management.pojo.properties.FileProperties;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.AttachmentSecret;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.common.Module;
+import com.fssy.shareholder.management.pojo.system.config.StateRelationAttachment;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -41,12 +43,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
  * 文件/附件操作工具类
- * 
+ *
  * @author Solomon
  *
  */
@@ -61,9 +65,12 @@ public class FileAttachmentTool
 	@Autowired
 	private AttachmentSecretMapper attachmentSecretMapper;
 
+	@Autowired
+	private StateRelationAttachmentMapper stateRelationAttachmentMapper;
+
 	/**
 	 * 构造器设置文件目录
-	 * 
+	 *
 	 * @param fileProperties
 	 */
 	@Autowired
@@ -116,7 +123,7 @@ public class FileAttachmentTool
 
 	/**
 	 * 按模块分开保存文件/附件
-	 * 
+	 *
 	 * @param file   文件对象
 	 * @param module 模块枚举类
 	 * @return
@@ -187,7 +194,7 @@ public class FileAttachmentTool
 
 	/**
 	 * 加载文件
-	 * 
+	 *
 	 * @param path 文件路径名
 	 * @param fileName 文件名
 	 * @return 文件
@@ -216,7 +223,7 @@ public class FileAttachmentTool
 
 	/**
 	 * 删除文件
-	 * 
+	 *
 	 * @param path 文件路径名
 	 * @param fileName 文件名
 	 * @return
@@ -249,7 +256,7 @@ public class FileAttachmentTool
 
 	/**
 	 * 重新根据MD5拼凑文件名
-	 * 
+	 *
 	 * @param fileName   原文件名
 	 * @param saltString UUID字符串
 	 * @return
@@ -265,7 +272,7 @@ public class FileAttachmentTool
 
 	/**
 	 * 获取模块，年，月的目录路径
-	 * 
+	 *
 	 * @param moduleName 模块名字
 	 * @return
 	 */
@@ -405,6 +412,59 @@ public class FileAttachmentTool
 		{
 			throw new ServiceException("保存文件/附件失败，名字为：" + fileName + "，请重新尝试",
 					ex);
+		}
+	}
+
+	/**
+	 * 员工月度评价情况关联附件保存
+	 *
+	 * @param file   员工月度评价情况关联附件
+	 * @param module 导入场景
+	 * @return 员工月度评价情况关联附件对象
+	 */
+	public StateRelationAttachment storeStateRelationFileToModule(MultipartFile file, Module module, StateRelationAttachment attachment) {
+		// 格式化文件名，针对斜杠
+		String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+		// 生成UUID盐值
+		String saltString = UUID.randomUUID().toString();
+		// 用于查询的条件
+		String queryPath = DigestUtils.md5Hex(saltString);
+		// 获取md5文件名
+		String md5FileName = randomFileName(fileName, saltString);
+		// 文件路径
+		// 从模块开始到月份的相对路径
+		String relativeFilePathStr = joinModuleAndDate(module.getName());
+		String relativePathStr = relativeFilePathStr + File.separator + md5FileName;
+		try {
+			// 判断文件名格式
+			if (fileName.contains("..")) {
+				throw new ServiceException("文件名格式不正确" + fileName);
+			}
+
+			// 获取文件所在目录信息
+			Path targetDirLocation = this.fileStorageLocation.resolve(relativeFilePathStr);
+			// 判断目录存在与否，不存在创建目录或者存在但是为文件
+			File dir = new File(targetDirLocation.toString());
+			if (!(dir.exists() && dir.isDirectory())) {
+				dir.mkdirs();
+			}
+			// 解析目标文件名
+			Path targetLocation = targetDirLocation.resolve(md5FileName);
+			// 保存文件（存在同名文件则覆盖）
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			//Calendar calendar = Calendar.getInstance();
+			attachment.setImportDate(LocalDate.now());
+			// 保存附件表
+			attachment.setFilename(fileName);
+			// 默认就是正在导入
+			attachment.setMd5Path(queryPath);
+			attachment.setPath(relativePathStr);
+			attachment.setAttachmentId(attachment.getAttachmentId());
+			// 默认就是上载成功
+			stateRelationAttachmentMapper.insert(attachment);
+			return attachment;
+		} catch (IOException ex) {
+			throw new ServiceException("保存文件/附件失败，名字为：" + fileName + "，请重新尝试", ex);
 		}
 	}
 }
