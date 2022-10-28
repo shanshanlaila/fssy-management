@@ -260,7 +260,7 @@ public class EntryExcellentStateDetailController {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryExcellentStateDetail", entryExcellentStateDetail);
-        return "/system/performance/employee/entry-excellent-state-detail-edit";
+        return "/system/performance/employee/entry-excellent-state-detail-performance-edit";
     }
     /**
      * 绩效科审核评优材料（修改按钮）

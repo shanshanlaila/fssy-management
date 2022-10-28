@@ -67,12 +67,6 @@
                             </div>
                         </form>
                     </script>
-                    <!--行工具栏-->
-                    <script type="text/html" id="tool">
-                        {{# if(d.status != '取消') {}}
-                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
-                        {{# } }}
-                    </script>
                 </div>
             </div>
         </div>
@@ -260,13 +254,6 @@
                         field: 'classReviewDate',
                         title: '绩效科复核日期',
                         width: 130
-                    },
-                    {
-                        fixed: 'right',
-                        title: '操作',
-                        width: 100,
-                        align: 'center',
-                        toolbar: '#tool'
                     }
                 ]
             ]
@@ -358,29 +345,6 @@
                 })
             });
             return false;
-        });
-        // 监听行工具事件
-        table.on('tool(dataTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'edit') { // 修改
-                // 不能修改取消状态下的事件请单
-                if (data.status === '取消') {
-                    layer.msg('不能修改取消状态下的事件请单');
-                    return false;
-                }
-                layer.open({
-                    type: 2,
-                    title: '序号为' + data.id + '的评优材料修改',
-                    area:
-                        [
-                            $(window).width() * 0.9 + 'px',
-                            $(window).height() - 50 + 'px'
-                        ],
-                    content: '/system/entry-excellent-state-detail/edit/' + data.id,
-                    maxmin: true,
-                    scrollbar: true
-                });
-            }
         });
     });
 
