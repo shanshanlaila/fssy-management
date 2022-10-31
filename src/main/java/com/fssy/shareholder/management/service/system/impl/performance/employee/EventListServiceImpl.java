@@ -6,13 +6,16 @@
  */
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
+import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
@@ -53,6 +56,9 @@ public class EventListServiceImpl implements EventListService {
 
     @Autowired
     private DepartmentMapper departmentMapper;
+
+    @Autowired
+    private ViewDepartmentRoleUserMapper viewDepartmentRoleUserMapper;
 
     @Override
     public Page<EventList> findDataListByParams(Map<String, Object> params) {
@@ -299,6 +305,7 @@ public class EventListServiceImpl implements EventListService {
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
         result.put("failed", false);
+        StringBuffer sb = new StringBuffer();// 用于数据校验
         //读取附件
         sheetService.load(attachment.getPath(), attachment.getFilename());//根据路径和名称读取附件
         //读取表单
@@ -481,6 +488,17 @@ public class EventListServiceImpl implements EventListService {
             eventList.setDepartmentId(department.getId());
 
             eventList.setOffice(office);
+            LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getOfficeName,office);
+            List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentRoleUserLambdaQueryWrapper);
+            if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的部门名称在系统中未查找到，不能导入", j + 1, departmentName));
+                cell.setCellValue(String.format("行数为【%s】的部门名称未查到，不能导入", j + 1));
+                continue;
+
+            }
+            ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
+            eventList.setOfficeId(viewDepartmentRoleUser.getOfficeId());
             eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_WAIT);
 
             //eventLists.add(eventList);
