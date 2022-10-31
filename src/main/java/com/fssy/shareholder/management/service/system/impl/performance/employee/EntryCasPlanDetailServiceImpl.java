@@ -301,7 +301,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                     entryCasMerge.setAuditId(null);
                     entryCasMerge.setAuditDate(null);
                     entryCasMerge.setRoleId(roles.get(0).getId());
-
+                    entryCasMerge.setRoleName(roles.get(0).getName());
+                    entryCasMerge.setUserId(user.getId());
+                    entryCasMerge.setUserName(user.getName());
                     // mergeNo
                     entryCasMerge.setApplyDate(LocalDate.parse(applyDate));
                     entryCasMerge.setYear(Integer.valueOf(year));
@@ -512,7 +514,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
                 LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
                 if (entryCasPlanDetail.getEventsFirstType().equals("事务类")) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_ZHUGUAN);
+                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG);
                     entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
                     entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
                 } else {
