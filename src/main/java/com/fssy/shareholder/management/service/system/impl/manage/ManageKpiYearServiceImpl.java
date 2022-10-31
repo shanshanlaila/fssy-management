@@ -160,6 +160,7 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             if (manageKpiLibs.size() == 0) {
                 setFailedContent(result, String.format("第%s行的指标不存在", j + 1));
                 cell.setCellValue("指标不存在，检查指标和年份是否正确");
+                continue;
             }
             ManageKpiLib manageKpiLib = manageKpiLibMapper.selectList(manageKpiLibQueryWrapper).get(0);
 

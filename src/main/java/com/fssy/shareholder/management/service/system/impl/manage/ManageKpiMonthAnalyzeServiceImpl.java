@@ -30,12 +30,12 @@ import java.util.Map;
 
 /**
  * @author Shizn
- * @ClassName: ManageKpiMonthAnalyzeAimServiceImpl
+ * @ClassName: ManageKpiMonthAnalyzeServiceImpl
  * @Description: 经营管理月度风险分析 服务类接口
  * @date 2022/10/24 0024 17:05
  */
 @Service
-public class ManageKpiMonthAnalyzeAimServiceImpl extends ServiceImpl<ManageKpiMonthAimMapper, ManageKpiMonthAim> implements ManageKpiMonthAnalyzeService {
+public class ManageKpiMonthAnalyzeServiceImpl extends ServiceImpl<ManageKpiMonthAimMapper, ManageKpiMonthAim> implements ManageKpiMonthAnalyzeService {
     @Autowired
     private SheetService sheetService;
     @Autowired
@@ -102,7 +102,7 @@ public class ManageKpiMonthAnalyzeAimServiceImpl extends ServiceImpl<ManageKpiMo
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
         //定义项目状态，实现导入成则改变项目的状态
-        String status = "已分析";
+        String evaluateStatus = "已分析";
         // 循环总行数(不读表的标题，从第1行开始读)
         for (int j = 4; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
@@ -155,7 +155,7 @@ public class ManageKpiMonthAnalyzeAimServiceImpl extends ServiceImpl<ManageKpiMo
             manageKpiMonthAim.setId(Integer.valueOf(id));
             manageKpiMonthAim.setAnalyzeDesc(analyzeDesc);
             manageKpiMonthAim.setAnalyzeRes(analyzeRes);
-            manageKpiMonthAim.setStatus(status);
+            manageKpiMonthAim.setEvaluateStatus(evaluateStatus);
             // 根据id进行判断，存在则更新，不存在则新增
             saveOrUpdate(manageKpiMonthAim);
             cell.setCellValue("导入成功");
@@ -203,8 +203,8 @@ public class ManageKpiMonthAnalyzeAimServiceImpl extends ServiceImpl<ManageKpiMo
         if (params.containsKey("dataSource")) {
             queryWrapper.like("dataSource", params.get("dataSource"));
         }
-        if (params.containsKey("status")) {
-            queryWrapper.eq("status", params.get("status"));
+        if (params.containsKey("evaluateStatus")) {
+            queryWrapper.eq("evaluateStatus", params.get("evaluateStatus"));
         }
         if (params.containsKey("yearIsNotNull")) {
             queryWrapper.isNotNull("year");
@@ -212,6 +212,7 @@ public class ManageKpiMonthAnalyzeAimServiceImpl extends ServiceImpl<ManageKpiMo
         if (params.containsKey("group")) {
             queryWrapper.groupBy((String) params.get("group"));
         }
+
         return queryWrapper;
     }
 }
