@@ -222,6 +222,9 @@ public class EntryExcellentStateDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("nextUserName"))) {
             params.put("nextUserName", request.getParameter("nextUserName"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("statusOr"))) {
+            params.put("statusOr", request.getParameter("statusOr"));
+        }
         return params;
     }
 

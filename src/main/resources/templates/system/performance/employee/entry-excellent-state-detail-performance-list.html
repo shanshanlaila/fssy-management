@@ -117,7 +117,7 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                status: '待绩效科复核'
+                statusOr:true
             },
             cols: [
                 [
@@ -266,42 +266,6 @@
                 ]
             ]
         });
-
-        // form.on('submit(confirm)', function (data) {
-        //     var checkStatus = table.checkStatus(dataTable.config.id),
-        //         data = checkStatus.data;
-        //     if (data.length <= 0) {
-        //         layer.alert("请至少选择一行数据");
-        //         return false;
-        //     }
-        //     layer.confirm('确定提交审核吗？', {icon: 3, title: '提示'}, function (index) {
-        //         var excellentStateDetailIds = [];// 创建id数组，存放选择的数据id
-        //         data.forEach(function (item) {// 循环选择的每一行字段数据
-        //             excellentStateDetailIds.push(item.id);// 放进ids
-        //         });
-        //         // 携带数据发送异步请求后端处理逻辑
-        //         $.ajax({
-        //             type: 'POST',
-        //             url: '/system/entry-excellent-state-detail/indexStatus',
-        //             data: {"excellentStateDetailIds": excellentStateDetailIds},
-        //             success: function (result) {
-        //                 layer.msg(result.msg);
-        //                 if (result.status === 200) {
-        //                     table.reload('dataTable');
-        //                     laydate.render(
-        //                         {
-        //                             elem: this,
-        //                             //更换触发方式
-        //                             trigger: 'click',
-        //                             type: 'date',
-        //                             value: new Date()
-        //                         });
-        //                 }
-        //             }
-        //         })
-        //     });
-        //     return false;
-        // });
 
         form.on('submit(retreat)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
