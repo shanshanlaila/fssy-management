@@ -24,7 +24,7 @@ import lombok.Setter;
 @TableName("bs_manage_kpi_month")
 public class ManageKpiMonthAim extends BaseModel {
 
-    private static final long serialVersionUID = 283340324047211196L;
+    private static final long serialVersionUID = 3769607030427242946L;
 
     /**
      * 序号
@@ -127,7 +127,11 @@ public class ManageKpiMonthAim extends BaseModel {
      */
     @TableField("monitorUser")
     private String monitorUser;
-
+    /**
+     * 评价状态
+     */
+    @TableField("evaluateStatus")
+    private String evaluateStatus;
     /**
      * 监控人ID
      */
@@ -350,6 +354,16 @@ public class ManageKpiMonthAim extends BaseModel {
      */
     @TableField("manageKpiYearId")
     private Integer manageKpiYearId;
+    /**
+     * 自动生成分数
+     */
+    @TableField("scoreAuto")
+    private BigDecimal scoreAuto;
 
+    /**
+     * 人工调整分数
+     */
+    @TableField("scoreAdjust")
+    private BigDecimal scoreAdjust;
 
 }

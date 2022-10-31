@@ -16,6 +16,7 @@ import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.jcp.xml.dsig.internal.SignerOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ui.Model;
