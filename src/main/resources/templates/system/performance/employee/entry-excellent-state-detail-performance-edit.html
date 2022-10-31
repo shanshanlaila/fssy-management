@@ -60,6 +60,7 @@
                     <td>
                         <div class="layui-input-inline layui-show-xs-block" style="width: 120px">
                             <input type="hidden" name="id" id="id" th:value="${entryExcellentStateDetail['id']}">
+                            <input type="hidden" name="casReviewId" id="casReviewId" th:value="${entryExcellentStateDetail['casReviewId']}">
                             <select name="classReview" lay-verify="required"
                                     lay-reqText="绩效科复核为必填项">
                                 <option value="不合格" th:selected="${entryExcellentStateDetail.classReview} == 不合格">不合格</option>
@@ -107,6 +108,7 @@
             var elem = data.elem;
             $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
             $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            console.log(data.field)
             $.ajax({
                 url: '/system/entry-excellent-state-detail/update',
                 type: 'POST',

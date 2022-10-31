@@ -60,6 +60,7 @@
                     <td>
                         <div class="layui-input-inline layui-show-xs-block" style="width: 120px">
                             <input type="hidden" name="id" id="id" th:value="${entryExcellentStateDetail['id']}">
+                            <input type="hidden" name="casReviewId" id="casReviewId" th:value="${entryExcellentStateDetail['casReviewId']}">
                             <select name="ministerReview" lay-verify="required"
                                     lay-reqText="绩效科复核为必填项">
                                 <option value="不合格" th:selected="${entryExcellentStateDetail.ministerReview} == 不合格">不合格</option>
