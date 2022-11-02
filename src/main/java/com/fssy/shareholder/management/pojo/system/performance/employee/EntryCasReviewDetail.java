@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -134,6 +136,8 @@ public class EntryCasReviewDetail extends BaseModel {
     /**
      * 申报日期
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     @TableField("applyDate")
     private LocalDate applyDate;
 
@@ -176,18 +180,24 @@ public class EntryCasReviewDetail extends BaseModel {
     /**
      * 计划开始日期
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     @TableField("planStartDate")
     private LocalDate planStartDate;
 
     /**
      * 计划完成日期
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     @TableField("planEndDate")
     private LocalDate planEndDate;
 
     /**
      * 编制日期
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     @TableField("createDate")
     private LocalDate createDate;
 
@@ -248,6 +258,8 @@ public class EntryCasReviewDetail extends BaseModel {
     /**
      * 实际完成时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     @TableField("actualCompleteDate")
     private LocalDate actualCompleteDate;
 

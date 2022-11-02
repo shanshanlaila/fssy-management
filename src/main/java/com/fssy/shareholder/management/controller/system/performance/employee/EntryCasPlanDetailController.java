@@ -12,16 +12,17 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
+import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
+import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +47,12 @@ public class EntryCasPlanDetailController {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private EntryCasReviewDetailService entryCasReviewDetailService;
 
 
     /**
@@ -413,5 +420,21 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         return "/system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
     }
+    /**
+     * 展示新增单条履职回顾页面
+     *
+     * @param id 履职明细id
+     * @return 修改页面
+     */
+    @GetMapping("createReview/{id}")
+    public String showCreateReview(@PathVariable String id, Model model) {
+        EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
+        //EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.saveFormPlanDetail(entryCasPlanDetail);
+        //model.addAttribute("entryCasReviewDetail",entryCasReviewDetail);
+        model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
+        return "/system/performance/employee/entry-cas-plan-detail-createReview";
+    }
+
+
 
 }

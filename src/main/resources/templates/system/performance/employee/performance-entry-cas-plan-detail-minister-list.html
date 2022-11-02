@@ -30,9 +30,34 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 140px;">
                             <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="workEvents" placeholder="流程（工作事件）"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="workOutput" placeholder="表单"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
+                            <input type="text" name="times" placeholder="频次"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <label>
+                                <select id = “mainOrNext” name="mainOrNext">
+                                    <option style="display: none" value="">请选择主担/次担</option>
+                                    <option value="主担">主担</option>
+                                    <option value="次担">次担</option>
+                                </select>
+                            </label>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
@@ -89,8 +114,38 @@
                         width: 80
                     },
                     {
+                        field: 'eventsType',
+                        title: '事件类别',
+                        width: 80
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 80
+                    },
+                    {
+                        field: 'jobName',
+                        title: '工作职责',
+                        width: 80
+                    },
+                    {
+                        field: 'workEvents',
+                        title: '流程（工作事件）',
+                        width: 200,
+                    },
+                    {
                         field: 'planningWork',
                         title: '对应工作事件的计划内容',
+                        width: 130
+                    },
+                    {
+                        field: 'times',
+                        title: '频次',
+                        width: 130
+                    },
+                    {
+                        field: 'planOutput',
+                        title: '表单(输出内容)来源自己填写',
                         width: 130
                     },
                     {
@@ -104,51 +159,9 @@
                         width: 130
                     },
                     {
-                        field: 'times',
-                        title: '频次',
-                        width: 130
-                    },
-                    {
                         field: 'planEndDate',
                         title: '计划完成日期',
                         width: 130
-                    },
-                    {
-                        field: 'createDate',
-                        title: '编制日期',
-                        width: 130
-                    },
-                    {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                    },
-                    {
-                        field: 'departmentName',
-                        title: '计划内容',
-                        width: 90,
-                    },
-                    {
-                        field: 'departmentName',
-                        title: '完成时间',
-                        width: 90,
-                    },
-                    {
-                        field: 'createDate',
-                        title: '编制日期',
-                        width: 70,
-                    },
-                    {
-                        field: 'workEvents',
-                        title: '流程（工作事件）',
-                        width: 200,
-                    },
-
-
-                    {
-                        field: 'status',
-                        title: '履职计划状态',
-                        width: 90
                     },
                     {
                         field: 'delowStandard',
@@ -171,29 +184,14 @@
                         width: 130
                     },
                     {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
+                        field: 'status',
+                        title: '履职计划状态',
+                        width: 120
                     },
                     {
-                        field: 'eventsType',
-                        title: '事件类别',
-                        width: 80
-                    },
-                    {
-                        field: 'jobName',
-                        title: '工作职责',
-                        width: 80
-                    },
-                    {
-                        field: 'note',
-                        title: '备注',
-                        width: 80
-                    },
-                    {
-                        field: 'eventsFirstType',
-                        title: '事件类型',
-                        width: 80
+                        field: 'eventsForm',
+                        title: '绩效类型',
+                        width: 120
                     },
                     {
                         field: 'standardValue',
@@ -203,6 +201,31 @@
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
+                        width: 80
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 130
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 70,
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 50
+                    },
+                    {
+                        field: 'note',
+                        title: '备注',
                         width: 80
                     },
                     {
@@ -229,11 +252,6 @@
                         field: 'month',
                         title: '申报月份',
                         width: 80
-                    },
-                    {
-                        field: 'planOutput',
-                        title: '表单(输出内容)来源自己填写',
-                        width: 130
                     },
                     {
                         field: 'createName',
@@ -265,6 +283,11 @@
                         title: '履职计划审核状态',
                         width: 80
                     },
+                    {
+                        field: 'id',
+                        title: '序号',
+                        width: 50
+                    }
                 ]
             ]
         });
@@ -278,6 +301,11 @@
                     trigger: 'click',
                     type: 'date'
                 });
+        });
+        //年选择器
+        laydate.render({
+            elem: '#year'
+            ,type: 'year'
         });
 
         // 监听搜索按钮

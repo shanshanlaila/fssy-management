@@ -337,6 +337,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     /**
      * 修改更新科长、事物类审核评价
+     *
      * @param entryCasReviewDetail 回顾履职
      * @return
      */
@@ -675,8 +676,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     /**
      * 批量审核——工作计划完成情况审核评价（部长复核）
+     *
      * @param entryReviewDetailIds 履职回顾的dis
-     * @param ministerReview 部长复核
+     * @param ministerReview       部长复核
      * @return
      */
     @Override
@@ -698,6 +700,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     /**
      * 批量审核——工作计划完成情况审核评价（科长复核）
+     *
      * @param entryReviewDetailIds
      * @param chargeTransactionEvaluateLevel
      * @param chargeTransactionBelowType

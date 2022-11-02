@@ -423,4 +423,20 @@ public class EntryCasReviewDetailController {
         }
         return SysResult.build(500,"批量审核失败");
     }
+
+    /**
+     * 创建单条履职回顾
+     *
+     * @param entryCasReviewDetail 履职回顾
+     * @return 结果
+     */
+    @PostMapping("save")
+    @ResponseBody
+    public SysResult create(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request) {
+        boolean result = entryCasReviewDetailService.save(entryCasReviewDetail);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "创建失败");
+    }
 }
