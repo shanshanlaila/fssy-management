@@ -5,10 +5,11 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 组织结构数据访问接口
- * 
+ *
  * @author Solomon
  */
 public interface DepartmentMapper extends BaseMapper<Department>

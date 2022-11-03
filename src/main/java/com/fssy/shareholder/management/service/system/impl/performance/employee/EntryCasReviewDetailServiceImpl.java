@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
+import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasReviewDetailMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.role.Role;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
@@ -68,6 +70,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     @Autowired
     private EntryCasMergeMapper entryCasMergeMapper;
+
+    @Autowired
+    private ViewDepartmentRoleUserMapper viewDepartmentRoleUserMapper;
 
 
     @Override
@@ -366,6 +371,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     @Override
     public Map<String, Object> readEntryCasReviewDetailDataSource(Attachment attachment) {
+        // 导入履职回顾
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         StringBuffer sb = new StringBuffer();// 用于数据校验的StringBuffer
@@ -415,27 +421,27 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             // 读取数据
             String casPlanId = cells.get(SheetService.columnToIndex("A"));// 履职计划主键
             String eventsId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
-            String eventsFirstType = cells.get(SheetService.columnToIndex("C"));// 事务类别
+            String eventsFirstType = cells.get(SheetService.columnToIndex("C"));// 事件类型
             String jobName = cells.get(SheetService.columnToIndex("D"));// 工作职责
             String workEvents = cells.get(SheetService.columnToIndex("E"));// 流程（工作事件）
-            String delowStandard = cells.get(SheetService.columnToIndex("F"));// 不合格
-            String middleStandard = cells.get(SheetService.columnToIndex("G"));// 中
-            String fineStandard = cells.get(SheetService.columnToIndex("H"));// 良
-            String excellentStandard = cells.get(SheetService.columnToIndex("I"));// 优
-            String eventsForm = cells.get(SheetService.columnToIndex("J"));// 绩效类型
-            String standardValue = cells.get(SheetService.columnToIndex("K"));// 事件价值标准分
-            String departmentName = cells.get(SheetService.columnToIndex("L"));// 部门名称
-            String roleName = cells.get(SheetService.columnToIndex("M"));// 岗位名称
-            String userName = cells.get(SheetService.columnToIndex("N"));// 员工姓名
-            String applyDate = cells.get(SheetService.columnToIndex("O"));// 申报日期
-            String mainOrNext = cells.get(SheetService.columnToIndex("P"));// 主/次担
-            String planningWork = cells.get(SheetService.columnToIndex("Q"));// 对应工作事件的计划内容
-            String times = cells.get(SheetService.columnToIndex("R"));// 频次
-            String workOutput = cells.get(SheetService.columnToIndex("S"));// 表单（输出内容）
-            String planStartDate = cells.get(SheetService.columnToIndex("T"));// 计划开始时间
-            String planEndDate = cells.get(SheetService.columnToIndex("U"));// 计划完成时间
-            String actualCompleteDate = cells.get(SheetService.columnToIndex("V"));// 实际完成时间
-            String completeDesc = cells.get(SheetService.columnToIndex("W"));// 工作完成描述
+//            String delowStandard = cells.get(SheetService.columnToIndex("F"));// 不合格标准
+//            String middleStandard = cells.get(SheetService.columnToIndex("G"));// 中标准
+//            String fineStandard = cells.get(SheetService.columnToIndex("H"));// 良标准
+//            String excellentStandard = cells.get(SheetService.columnToIndex("I"));// 优标准
+            String eventsForm = cells.get(SheetService.columnToIndex("F"));// 绩效类型
+            String standardValue = cells.get(SheetService.columnToIndex("G"));// 事件价值标准分
+            String departmentName = cells.get(SheetService.columnToIndex("H"));// 部门名称
+            String roleName = cells.get(SheetService.columnToIndex("I"));// 岗位名称
+            String userName = cells.get(SheetService.columnToIndex("J"));// 员工姓名
+            String applyDate = cells.get(SheetService.columnToIndex("K"));// 申报日期
+            String mainOrNext = cells.get(SheetService.columnToIndex("L"));// 主/次担
+            String planningWork = cells.get(SheetService.columnToIndex("M"));// 对应工作事件的计划内容
+            String times = cells.get(SheetService.columnToIndex("N"));// 频次
+            String workOutput = cells.get(SheetService.columnToIndex("O"));// 表单（输出内容）
+            String planStartDate = cells.get(SheetService.columnToIndex("P"));// 计划开始时间
+            String planEndDate = cells.get(SheetService.columnToIndex("Q"));// 计划完成时间
+            String actualCompleteDate = cells.get(SheetService.columnToIndex("R"));// 实际完成时间
+            String completeDesc = cells.get(SheetService.columnToIndex("S"));// 工作完成描述
             // 数据库必填项判断
             if (ObjectUtils.isEmpty(casPlanId)) {
                 setFailedContent(result, String.format("第%s行的履职计划序号为空", j + 1));
@@ -462,7 +468,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue("流程（工作事件）不能为空");
                 continue;
             }
-            if (ObjectUtils.isEmpty(delowStandard)) {
+            /*if (ObjectUtils.isEmpty(delowStandard)) {
                 setFailedContent(result, String.format("第%s行的不合格标准为空", j + 1));
                 cell.setCellValue("不合格标准不能为空");
                 continue;
@@ -481,7 +487,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 setFailedContent(result, String.format("第%s行的优标准为空", j + 1));
                 cell.setCellValue("优标准不能为空");
                 continue;
-            }
+            }*/
             if (ObjectUtils.isEmpty(eventsForm)) {
                 setFailedContent(result, String.format("第%s行的绩效类型为空", j + 1));
                 cell.setCellValue("绩效类型不能为空");
@@ -581,10 +587,10 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setEventsFirstType(eventsFirstType);
             entryCasReviewDetail.setJobName(jobName);
             entryCasReviewDetail.setWorkEvents(workEvents);
-            entryCasReviewDetail.setDelowStandard(delowStandard);
-            entryCasReviewDetail.setMiddleStandard(middleStandard);
-            entryCasReviewDetail.setFineStandard(fineStandard);
-            entryCasReviewDetail.setExcellentStandard(excellentStandard);
+//            entryCasReviewDetail.setDelowStandard(delowStandard);
+//            entryCasReviewDetail.setMiddleStandard(middleStandard);
+//            entryCasReviewDetail.setFineStandard(fineStandard);
+//            entryCasReviewDetail.setExcellentStandard(excellentStandard);
             entryCasReviewDetail.setEventsForm(eventsForm);
             entryCasReviewDetail.setStandardValue(new BigDecimal(standardValue));
             entryCasReviewDetail.setDepartmentName(departmentName);
@@ -649,6 +655,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setMergeId(entryCasMerge.getId());
             // 查询当前登录用户
             User user = (User) SecurityUtils.getSubject().getPrincipal();
+            // 根据user查询 部门-角色-用户 视图
+            LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getUserId, user.getId());
+            List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentRoleUserLambdaQueryWrapper);
+            if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
+                throw new ServiceException(String.format("登陆人id为【%s】的用户，不存在对应的部门，请联系管理员", user.getId()));
+            }
             entryCasReviewDetail.setCreateName(user.getName());
             entryCasReviewDetail.setCreateId(user.getId());
             entryCasReviewDetail.setCreateDate(LocalDate.now());
@@ -657,8 +670,6 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setYear(Integer.valueOf(year));
             entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
             entryCasReviewDetail.setAttachmentId(attachment.getId());
-            // 更新或新增
-            saveOrUpdate(entryCasReviewDetail);
             // 更新planDetail数据的状态为完结
             EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailMapper.selectById(casPlanId);
             if (ObjectUtils.isEmpty(entryCasPlanDetail)) {
@@ -666,6 +677,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             }
             entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
             entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
+            // 更新或新增
+            saveOrUpdate(entryCasReviewDetail);
 
             cell.setCellValue("导入成功");
 
@@ -692,11 +705,20 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
             } else {
                 entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+                // 通过事件清单序号（eventsId）找对应的事件清单，delow、middle、fine、excellent，ministerReview=‘不合格’时取
+                //delow，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                /*
+                 * ministerReview=‘中’时取middle，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                 * ministerReview=‘良’时取fine，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                 * ministerReview=‘优或者合格’excellent，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                 * 以年，月，事件清单序号查询有多少条回顾，以回顾数除以分数，就是最终分数
+                 * */
             }
             entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }
         return true;
     }
+
 
     /**
      * 批量审核——工作计划完成情况审核评价（科长复核）
@@ -716,6 +738,26 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
             entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }
+        return true;
+    }
+
+    @Override
+    public boolean saveReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getUserId, user.getId());
+        List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentRoleUserLambdaQueryWrapper);
+        if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
+            throw new ServiceException("无符合部门");
+        }
+        ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
+        entryCasReviewDetail.setUserId(user.getId());
+        entryCasReviewDetail.setUserName(user.getName());
+        entryCasReviewDetail.setRoleId(viewDepartmentRoleUser.getRoleId());
+        entryCasReviewDetail.setRoleName(viewDepartmentRoleUser.getRoleName());
+        entryCasReviewDetail.setCreatedAt(LocalDateTime.now());
+        entryCasReviewDetail.setCreateName(user.getName());
+        entryCasReviewDetail.setCreateDate(LocalDate.now());
         return true;
     }
 }
