@@ -28,27 +28,18 @@
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="projectDesc" placeholder="项目查询" autocomplete="off"
+                            <input type="text" name="projectDesc" placeholder="指标类别查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="projectDesc" placeholder="指标名称查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="kpiYear" placeholder="创建年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <select name="managerKpi" id="managerKpi">
-                                <option value="">是否经理人KPI查询</option>
-                                <option value="是">是</option>
-                                <option value="">否</option>
-                            </select>
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <select name="cfoKpi" id="managerKpi">
-                                <option value="">外派财务KPI查询</option>
-                                <option value="是">是</option>
-                                <option value="">否</option>
-                            </select>
-                        </div>
+
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
@@ -58,8 +49,8 @@
                             </button>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <button shiro:haspermission="system:manager:manage-kpi-lib:index"
-                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入指标库
+                            <button shiro:haspermission="system:performance:manager_kpi:manage-kpi-lib:index"
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入附件
                             </button>
                         </div>
                     </div>
@@ -67,8 +58,8 @@
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-                        <a lay-event="edit" title="修改经理人KPI指标库信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除经理人KPI指标库信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a lay-event="edit" title="修改经营管理指标库信息"><i class="layui-icon">&#xe642;</i></a>
+<!--                        <a lay-event="delete" title="删除经理人KPI指标库信息"><i class="layui-icon">&#xe640;</i></a>-->
                     </script>
                 </div>
             </div>
@@ -137,68 +128,54 @@
                     },
                     {
                         field: 'id',
-                        title: 'id',
+                        title: '序号',
+                        align: 'center',
                         width: 40
                     },
                     {
                         field: 'projectType',
                         title: '指标类别',
-                        width: 150
+                        align: 'center',
+                        width: 130
                     },
                     {
                         field: 'projectDesc',
                         title: '指标名称',
-                        width: 150
-                    },
-                    {
-                        field: 'status',
-                        title: '状态',
-                        width: 80
-                    },
-                    {
-                        field: 'isCommon',
-                        title: '项目类型',
-                        width: 60
+                        align: 'center',
+                        width: 130
                     },
                     {
                         field: 'unit',
                         title: '单位',
+                        align: 'center',
                         width: 80
                     },
                     {
                         field: 'kpiDefinition',
-                        title: '定义',
-                        width: 110,
+                        title: '指标定义',
+                        width: 170,
                     },
                     {
                         field: 'kpiFormula',
-                        title: '公式',
-                        width: 110
+                        title: '指标计算公式',
+                        width: 170
                     },
                     {
                         field: 'kpiYear',
-                        title: '创建年份',
-                        width: 100
-                    },
-                    {
-                        field: 'managerKpi',
-                        title: '是否经理人kpi',
-                        width: 100
-                    },
-                    {
-                        field: 'cfoKpi',
-                        title: '是否财务总监kpi',
+                        title: '年份',
+                        align: 'center',
                         width: 100
                     },
                     {
                         field: 'note',
                         title: '备注',
-                        width: 130
+                        align: 'center',
+                        width: 100
                     },
                     {
                         fixed: 'right',
                         title: '操作',
-                        width: 100,
+                        width: 80,
                         align: 'center',
                         toolbar: '#tool'
                     }
@@ -231,20 +208,20 @@
                     content: '/system/performance/manager_kpi/manage-kpi-lib/edit?id=' + data.id,
                     maxmin: true
                 });
-            } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除序号为：' + data.id + '的经营管理指标库吗？', function () {
-                    $.ajax({
-                        type: 'DELETE',
-                        url: '/system/performance/manager_kpi/manage-kpi-lib/' + data.id,
-                        success: function (result) {
-                            layer.msg(result.msg);
-                            if (result.status == 200) {
-                                table.reload('dataTable');
-                            }
-                        }
-                    })
-                });
-            }
+            } //else if (obj.event === 'delete') { // 删除
+                //layer.confirm('确认删除序号为：' + data.id + '的经营管理指标库吗？', function () {
+                  //  $.ajax({
+                    //    type: 'DELETE',
+                      //  url: '/system/performance/manager_kpi/manage-kpi-lib/' + data.id,
+                        //success: function (result) {
+                          //  layer.msg(result.msg);
+                            //if (result.status == 200) {
+                              //  table.reload('dataTable');
+                            //}
+                        //}
+                    //})
+                //});
+            //}
         });
     });
 </script>

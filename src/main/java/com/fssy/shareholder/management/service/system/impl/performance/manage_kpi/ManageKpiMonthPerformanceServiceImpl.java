@@ -89,11 +89,11 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
         // 读取附件
         sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
         // 读取表单
-        sheetService.readByName("经营管理月度项目指标"); //根据表单名称获取该工作表单
+        sheetService.readByName("经营管理月度实绩项目"); //根据表单名称获取该工作表单
         // 获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【经营管理月度项目指标】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【经营管理月度实绩项目】不存在，无法读取数据，请检查");
         }
         // 获取单价列表数据
         Row row;
@@ -126,84 +126,78 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             }
             //导入结果写入列
             //错误信息提示存入到AD单元格内
-            Cell cell = row.createCell(SheetService.columnToIndex("AD"));
+            Cell cell = row.createCell(SheetService.columnToIndex("U"));
             String id = cells.get(SheetService.columnToIndex("A"));
-            String companyName = cells.get(SheetService.columnToIndex("B"));
-            String status = cells.get(SheetService.columnToIndex("C"));
-            String projectType = cells.get(SheetService.columnToIndex("D"));
-            String projectDesc = cells.get(SheetService.columnToIndex("E"));
+            String projectType = cells.get(SheetService.columnToIndex("B"));
+            String projectDesc = cells.get(SheetService.columnToIndex("C"));
+            String kpiFormula = cells.get(SheetService.columnToIndex("D"));
+            String dataSource = cells.get(SheetService.columnToIndex("E"));
             String unit = cells.get(SheetService.columnToIndex("F"));
-            String dataSource = cells.get(SheetService.columnToIndex("G"));
-            String benchmarkCompany = cells.get(SheetService.columnToIndex("H"));
-            String benchmarkValue = cells.get(SheetService.columnToIndex("I"));
-            String monitorDepartment = cells.get(SheetService.columnToIndex("J"));
-            String monitorUser = cells.get(SheetService.columnToIndex("K"));
-            String year = cells.get(SheetService.columnToIndex("L"));
-            String basicTarget = cells.get(SheetService.columnToIndex("M"));
-            String mustInputTarget = cells.get(SheetService.columnToIndex("N"));
-            String reachTarget = cells.get(SheetService.columnToIndex("O"));
-            String challengeTarget = cells.get(SheetService.columnToIndex("P"));
+            String benchmarkCompany = cells.get(SheetService.columnToIndex("G"));
+            String benchmarkValue = cells.get(SheetService.columnToIndex("H"));
+            String pastThreeYearsActual = cells.get(SheetService.columnToIndex("I"));
+            String pastTwoYearsActual = cells.get(SheetService.columnToIndex("J"));
+            String pastOneYearActual = cells.get(SheetService.columnToIndex("K"));
+            String basicTarget = cells.get(SheetService.columnToIndex("L"));
+            String mustInputTarget = cells.get(SheetService.columnToIndex("M"));
+            String reachTarget = cells.get(SheetService.columnToIndex("N"));
+            String challengeTarget = cells.get(SheetService.columnToIndex("O"));
+            String monthTarget = cells.get(SheetService.columnToIndex("P"));
+            String monthActualValue = cells.get(SheetService.columnToIndex("Q"));
+            String accumulateTarget = cells.get(SheetService.columnToIndex("R"));
+            String accumulateActual = cells.get(SheetService.columnToIndex("S"));
+            String analyzeRes = cells.get(SheetService.columnToIndex("T"));
 //            String proportion = cells.get(SheetService.columnToIndex("Q"));
-            String pastOneYearActual = cells.get(SheetService.columnToIndex("Q"));
-            String pastTwoYearsActual = cells.get(SheetService.columnToIndex("R"));
-            String pastThreeYearsActual = cells.get(SheetService.columnToIndex("S"));
-            String setPolicy = cells.get(SheetService.columnToIndex("T"));
-            String source = cells.get(SheetService.columnToIndex("U"));
-            String monthTarget = cells.get(SheetService.columnToIndex("V"));
-            String monthActualValue = cells.get(SheetService.columnToIndex("W"));
-            String accumulateTarget = cells.get(SheetService.columnToIndex("X"));
-            String accumulateActual = cells.get(SheetService.columnToIndex("Y"));
-            String analyzeDesc = cells.get(SheetService.columnToIndex("Z"));
+//            String source = cells.get(SheetService.columnToIndex("U"));
+//            String monthTarget = cells.get(SheetService.columnToIndex("V"));
+//            String monthActualValue = cells.get(SheetService.columnToIndex("W"));
+//            String accumulateTarget = cells.get(SheetService.columnToIndex("X"));
+//            String accumulateActual = cells.get(SheetService.columnToIndex("Y"));
+//            String analyzeDesc = cells.get(SheetService.columnToIndex("Z"));
             // 判斷空值
             if (ObjectUtils.isEmpty(basicTarget)) {
                 basicTarget = "0";
             }
-            if (ObjectUtils.isEmpty(year)) {
-                year = "0";
+            if (ObjectUtils.isEmpty(mustInputTarget)) {
+                mustInputTarget = "0";
             }
-            // 根据指标、年份和公司名称找月度报表对应的id，后导入id
-            QueryWrapper<ManageKpiYear> manageKpiYearQueryWrapper = new QueryWrapper<>();
-            manageKpiYearQueryWrapper.eq("projectDesc", projectDesc).eq("year", year).eq("companyName",companyName);
-            List<ManageKpiYear> manageKpiYears = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper);
-            if (manageKpiYears.size()>1){
-                setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));
-                cell.setCellValue("存在多个指标，检查指标、年份和公司名称是否正确");
-                continue;
-            } if(manageKpiYears.size()==0) {
-                setFailedContent(result, String.format("第%s行的指标不存在", j + 1));
-                cell.setCellValue("指标不存在，检查指标、年份和公司名称是否正确");
-            }
-            ManageKpiYear manageKpiYear = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper).get(0);
+//            // projectDesc、dataSource和projectType找月度报表对应的id，后导入id
+//            QueryWrapper<ManageKpiYear> manageKpiYearQueryWrapper = new QueryWrapper<>();
+//            manageKpiYearQueryWrapper.eq("projectDesc", projectDesc).eq("projectType", projectType).eq("dataSource",dataSource);
+//            List<ManageKpiYear> manageKpiYears = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper);
+//            if (manageKpiYears.size()>1){
+//                setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));
+//                cell.setCellValue("存在多个指标，检查指标、年份和公司名称是否正确");
+//                continue;
+//            } if(manageKpiYears.size()==0) {
+//                setFailedContent(result, String.format("第%s行的指标不存在", j + 1));
+//                cell.setCellValue("指标不存在，检查指标、年份和公司名称是否正确");
+//                continue;
+//            }
+//            ManageKpiYear manageKpiYear = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper).get(0);
             //构建实体类
             ManageKpiMonthPerformance manageKpiMonthPerformance = new ManageKpiMonthPerformance();
             manageKpiMonthPerformance.setId(Integer.valueOf(id));
-            manageKpiMonthPerformance.setManageKpiYearId(manageKpiYear.getId());
-            manageKpiMonthPerformance.setCompanyName(companyName);
-            manageKpiMonthPerformance.setStatus(status);
+//            manageKpiMonthPerformance.setManageKpiYearId(manageKpiYear.getId());
             manageKpiMonthPerformance.setProjectType(projectType);
             manageKpiMonthPerformance.setProjectDesc(projectDesc);
-            manageKpiMonthPerformance.setUnit(unit);
+            manageKpiMonthPerformance.setProjectDesc(kpiFormula);
             manageKpiMonthPerformance.setDataSource(dataSource);
+            manageKpiMonthPerformance.setUnit(unit);
             manageKpiMonthPerformance.setBenchmarkCompany(benchmarkCompany);
             manageKpiMonthPerformance.setBenchmarkValue(benchmarkValue);
-            manageKpiMonthPerformance.setMonitorDepartment(monitorDepartment);
-            manageKpiMonthPerformance.setMonitorUser(monitorUser);
-            manageKpiMonthPerformance.setYear(manageKpiYear.getYear());
+            manageKpiMonthPerformance.setPastThreeYearsActual(pastThreeYearsActual);
+            manageKpiMonthPerformance.setPastTwoYearsActual(pastTwoYearsActual);
+            manageKpiMonthPerformance.setPastOneYearActual(pastOneYearActual);
             manageKpiMonthPerformance.setBasicTarget(basicTarget);
             manageKpiMonthPerformance.setMustInputTarget(mustInputTarget);
             manageKpiMonthPerformance.setReachTarget(reachTarget);
             manageKpiMonthPerformance.setChallengeTarget(challengeTarget);
-//            manageKpiMonth.setProportion(new BigDecimal(proportion));
-            manageKpiMonthPerformance.setPastOneYearActual(pastOneYearActual);
-            manageKpiMonthPerformance.setPastTwoYearsActual(pastTwoYearsActual);
-            manageKpiMonthPerformance.setPastThreeYearsActual(pastThreeYearsActual);
-            manageKpiMonthPerformance.setSetPolicy(setPolicy);
-            manageKpiMonthPerformance.setSource(source);
             manageKpiMonthPerformance.setMonthTarget(new BigDecimal(monthTarget));
             manageKpiMonthPerformance.setMonthActualValue(new BigDecimal(monthActualValue));
             manageKpiMonthPerformance.setAccumulateTarget(new BigDecimal(accumulateTarget));
             manageKpiMonthPerformance.setAccumulateActual(new BigDecimal(accumulateActual));
-            manageKpiMonthPerformance.setAnalyzeDesc(analyzeDesc);
+            manageKpiMonthPerformance.setAnalyzeDesc(analyzeRes);
 
             // 根据id进行判断，存在则更新，不存在则新增
             saveOrUpdate(manageKpiMonthPerformance);
@@ -225,20 +219,17 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
     }
     private QueryWrapper<ManageKpiMonthPerformance> getQueryWrapper(Map<String,Object> params){
         QueryWrapper<ManageKpiMonthPerformance> queryWrapper = new QueryWrapper<>();
-        if (params.containsKey("id")) {
-            queryWrapper.eq("id", params.get("id"));
-        }
+//        if (params.containsKey("id")) {
+//            queryWrapper.eq("id", params.get("id"));
+//        }
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
-        }
-        if (params.containsKey("projectType")) {
-            queryWrapper.like("projectType", params.get("projectType"));
         }
         if (params.containsKey("year")) {
             queryWrapper.eq("year", params.get("year"));
         }
-        if (params.containsKey("month")) {
-            queryWrapper.eq("month", params.get("month"));
+        if (params.containsKey("projectType")) {
+            queryWrapper.like("projectType", params.get("projectType"));
         }
         if (params.containsKey("projectDesc")) {
             queryWrapper.like("projectDesc", params.get("projectDesc"));

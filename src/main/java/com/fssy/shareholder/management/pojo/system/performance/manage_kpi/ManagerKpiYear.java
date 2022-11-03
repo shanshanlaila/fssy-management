@@ -8,6 +8,8 @@ import com.fssy.shareholder.management.pojo.common.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 /**
  * <p>
  * 经理人年度kpi指标
@@ -40,6 +42,16 @@ public class ManagerKpiYear extends BaseModel {
      */
     @TableField("note")
     private String note;
+    /**
+     * 数据来源
+     */
+    @TableField("dataSource")
+    private String dataSource;
+    /**
+     * 权重：%
+     */
+    @TableField("proportion")
+    private BigDecimal proportion;
 
     /**
      * 经理人姓名
