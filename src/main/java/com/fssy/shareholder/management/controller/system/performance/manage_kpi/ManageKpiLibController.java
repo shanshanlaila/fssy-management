@@ -153,11 +153,11 @@ public class ManageKpiLibController {
         model.addAttribute("importDateStart", importDateStart);
         // 查询导入场景
         Map<String, Object> params = new HashMap<>();
-        params.put("noteEq", "经理人KPI指标库");
+        params.put("noteEq", "经营管理指标库");
         List<ImportModule> importModules = importModuleService
                 .findImportModuleDataListByParams(params);
         if (ObjectUtils.isEmpty(importModules)) {
-            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经理人KPI指标库"));
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理指标库"));
         }
         model.addAttribute("module", importModules.get(0).getId());
         return "/system/performance/manager_kpi/manage-kpi-lib/manage-kpi-lib-attachment-list";
@@ -225,31 +225,59 @@ public class ManageKpiLibController {
     @RequiredLog("数据导出")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
-        params.put("select", "id,projectDesc,status,isCommon,unit,kpiDefinition,kpiFormula,kpiYear,managerKpi,cfoKpi,note");
+        params.put("select", "id,projectType,projectDesc,unit,kpiDefinition,kpiFormula,kpiYear,note");
         List<Map<String, Object>> managerKpiLibList = manageKpiLibService.findManagerKpiLibDataSource(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
 
         //需要改变背景色的格子
         fieldMap.put("id", "序号");
-        fieldMap.put("projectDesc", "重点KPI");
-        fieldMap.put("status", "状态");
-        fieldMap.put("isCommon", "项目类型");
+        fieldMap.put("projectType", "指标类别");
+        fieldMap.put("projectDesc", "指标名称");
         fieldMap.put("unit", "单位");
         fieldMap.put("kpiDefinition", "指标定义");
-        fieldMap.put("kpiFormule", "指标公式");
-        fieldMap.put("kpiYear", "创建年份");
-        fieldMap.put("managerKpi", "是否总经理kpi");
-        fieldMap.put("cfoKpi", "是否财务总监KPI");
+        fieldMap.put("kpiFormula", "指标计算公式");
+        fieldMap.put("kpiYear", "年份");
         fieldMap.put("note", "备注");
 
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
         SheetOutputService sheetOutputService = new SheetOutputService();
         if (ObjectUtils.isEmpty(managerKpiLibList)) {
             throw new ServiceException("未查出数据");
         }
         sheetOutputService.exportNum("经营管理指标库", managerKpiLibList, fieldMap, response, strList, null);
 
+    }
+    /**
+     * 修改经营管理指标库信息
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("edit")
+    public String edit(HttpServletRequest request, Model model) {
+        String id = request.getParameter("id");
+        System.out.println("id = " + id);
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        ManageKpiLib manageKpiLib = manageKpiLibService.findStudentsDataByParams(params).get(0);
+        model.addAttribute("manageKpiLib", manageKpiLib);
+        return "/system/performance/manager_kpi/manage-kpi-lib/manage-kpi-lib-edit";
+    }
+    /**
+     * 更新经营管理指标库信息
+     * @param manageKpiLib
+     * @return
+     */
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(ManageKpiLib manageKpiLib) {
+
+        boolean result = manageKpiLibService.updateManageKpiLib(manageKpiLib);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "经营管理指标库信息没有更新，请检查数据后重新尝试");
     }
 
 }

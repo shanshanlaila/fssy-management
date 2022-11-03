@@ -2,6 +2,7 @@ package com.fssy.shareholder.management.service.system.performance.manage_kpi;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiLib;
 
@@ -16,12 +17,25 @@ import java.util.Map;
  * @author Shizn
  * @since 2022-10-12
  */
-public interface ManageKpiLibService {
+public interface ManageKpiLibService extends IService<ManageKpiLib> {
     /**
-     * 通过查询条件分页查询经理人年度KPI指标库列表
+     * 修改 经营管理指标库 数据
+     * @param manageKpiLib 经营管理指标库 实体
+     * @return 经营管理指标库数据
+     */
+    public boolean updateManageKpiLib(ManageKpiLib manageKpiLib);
+    /**
+     * 通过查询条件，查询经营管理指标库信息 数据
+     * @param params
+     * @return 经营管理指标库信息数据
+     */
+
+    List<ManageKpiLib> findStudentsDataByParams(Map<String,Object> params);
+    /**
+     * 通过查询条件分页查询经营管理指标库指标库列表
      *
      * @param params 查询条件
-     * @return 经理人年度KPI指标库分页数据
+     * @return 经营管理指标库指标库分页数据
      */
     Page<ManageKpiLib> findManagerKpiLibDataListPerPageByParams(Map<String, Object> params);
 

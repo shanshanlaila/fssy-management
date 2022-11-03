@@ -28,25 +28,25 @@
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="companyName" placeholder="公司名称查询" autocomplete="off"
+                            <input type="text" name="projectType" placeholder="重点工作" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="创建年份查询" autocomplete="off"
+                            <input type="text" name="projectDesc" placeholder="管理项目" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="projectType" placeholder="指标类型查询" autocomplete="off"
+                            <input type="text" name="dataSource" placeholder="数据来源部门" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="projectDesc" placeholder="项目名称查询" autocomplete="off"
+                            <input type="text" name="benchmarkCompany" placeholder="对标企业名称" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 130px;">
-                            <input type="text" name="dataSource" placeholder="数据来源部门查询" autocomplete="off"
-                                   class="layui-input">
-                        </div>
+<!--                        <div class="layui-inline layui-show-xs-block" style="width: 130px;">-->
+<!--                            <input type="text" name="dataSource" placeholder="数据来源部门查询" autocomplete="off"-->
+<!--                                   class="layui-input">-->
+<!--                        </div>-->
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
@@ -56,8 +56,8 @@
                             </button>
                             </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <button shiro:haspermission="system:manager:manage-kpi-month-performance:index"
-                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入月度项目
+                                <button shiro:haspermission="system:performance:manager_kpi:manage-kpi-month-performance:index"
+                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入附件
                                 </button>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="edit" title="修改经营管理月度实绩项目信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除经营管理月度实绩项目信息"><i class="layui-icon">&#xe640;</i></a>
+<!--                        <a lay-event="delete" title="删除经营管理月度实绩项目信息"><i class="layui-icon">&#xe640;</i></a>-->
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -137,142 +137,124 @@
                     {
                         field: 'id',
                         title: '序号',
+                        align: 'center',
                         width: 40
-                    },
-                    // {
-                    //     field: 'manageKpiYearId',
-                    //     title: '年度序号',
-                    //     width: 100
-                    // },
-                    {
-                        field: 'companyName',
-                        title: '企业名称',
-                        width: 100
-                    },
-                    {
-                        field: 'status',
-                        title: '项目状态',
-                        width: 80,
                     },
                     {
                         field: 'projectType',
-                        title: '指标类别',
-                        width: 150
+                        title: '重点工作',
+                        align: 'center',
+                        width: 130
                     },
                     {
                         field: 'projectDesc',
-                        title: '项目名称',
-                        width: 150
+                        title: '管理项目',
+                        align: 'center',
+                        width: 130,
                     },
                     {
-                        field: 'unit',
-                        title: '单位',
-                        width: 50
+                        field: 'kpiFormula',
+                        title: '管理项目定义',
+                        width: 170
                     },
                     {
                         field: 'dataSource',
                         title: '数据来源部门',
+                        align: 'center',
                         width: 100
                     },
                     {
+                        field: 'unit',
+                        title: '单位',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
                         field: 'benchmarkCompany',
-                        title: '对标标杆公司名称',
-                        width: 150
+                        title: '对标企业名称',
+                        width: 130
                     },
                     {
                         field: 'benchmarkValue',
                         title: '标杆值',
-                        width: 80
-                    },
-                    {
-                        field: 'monitorDepartment',
-                        title: '监控部门名称',
-                        width: 120
-                    },
-                    {
-                        field: 'monitorUser',
-                        title: '监控人姓名',
+                        align: 'center',
                         width: 100
                     },
                     {
-                        field: 'year',
-                        title: '年份',
-                        width: 50
-                    },
-                    {
-                        field: 'basicTarget',
-                        title: '基本目标',
-                        width: 80,
-                    },
-                    {
-                        field: 'mustInputTarget',
-                        title: '必达目标',
-                        width: 80
-                    },
-                    {
-                        field: 'reachTarget',
-                        title: '达标目标',
-                        width: 80
-                    },
-                    {
-                        field: 'challengeTarget',
-                        title: '挑战目标',
-                        width: 80
-                    },
-                    {
-                        field: 'pastOneYearActual',
-                        title: '过去第一年值',
+                        field: 'pastThreeYearsActual',
+                        title: '过去第三年值',
+                        align: 'center',
                         width: 100
                     },
                     {
                         field: 'pastTwoYearsActual',
                         title: '过去第二年值',
-                        width: 100,
-                    },
-                    {
-                        field: 'pastThreeYearsActual',
-                        title: '过去第三年值',
+                        align: 'center',
                         width: 100
                     },
                     {
-                        field: 'setPolicy',
-                        title: '选取原则',
-                        width: 130
+                        field: 'pastOneYearActual',
+                        title: '过去第一年值',
+                        align: 'center',
+                        width: 100
                     },
                     {
-                        field: 'source',
-                        title: '来源',
-                        width: 100
+                        field: 'basicTarget',
+                        title: '基本目标',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'mustInputTarget',
+                        title: '必达目标',
+                        align: 'center',
+                        width: 80,
+                    },
+                    {
+                        field: 'reachTarget',
+                        title: '达标目标',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'challengeTarget',
+                        title: '挑战目标',
+                        align: 'center',
+                        width: 80
                     },
                     {
                         field: 'monthTarget',
-                        title: '目标值',
-                        width: 100
+                        title: '月度目标值',
+                        align: 'center',
+                        width: 80
                     },
                     {
                         field: 'monthActualValue',
-                        title: '实绩值',
-                        width: 100,
+                        title: '月度实绩值',
+                        align: 'center',
+                        width: 80
                     },
                     {
                         field: 'accumulateTarget',
-                        title: '本年同期目标累计值',
-                        width: 100
+                        title: '目标值(累计)',
+                        align: 'center',
+                        width: 80,
                     },
                     {
                         field: 'accumulateActual',
-                        title: '本年同期实际累计值',
-                        width: 100
+                        title: '实际值(累计)',
+                        align: 'center',
+                        width: 80
                     },
                     {
-                        field: 'analyzeDesc',
-                        title: '企业分析',
-                        width: 130
+                        field: 'analyzeRes',
+                        title: '未达成或劣化原因分析',
+                        width: 170
                     },
                     {
                         fixed: 'right',
                         title: '操作',
-                        width: 100,
+                        width: 80,
                         align: 'center',
                         toolbar: '#tool'
                     }
@@ -304,19 +286,6 @@
                     ],
                     content: '/system/performance/manager_kpi/manage-kpi-month-performance/edit?id=' + data.id,
                     maxmin: true
-                });
-            } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除序号为：' + data.id + '的经理人月度KPI吗？', function () {
-                    $.ajax({
-                        type: 'DELETE',
-                        url: '/system/performance/manager_kpi/manage-kpi-month-performance/' + data.id,
-                        success: function (result) {
-                            layer.msg(result.msg);
-                            if (result.status == 200) {
-                                table.reload('dataTable');
-                            }
-                        }
-                    })
                 });
             }
         });
