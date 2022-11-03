@@ -2,10 +2,10 @@
  * ------------------------修改日志---------------------------------
  * 修改人    修改日期                   修改内容
  * 兰宇铧    2021-11-29 	    开放login的登录方法，否则永远执行一次登录请求
- * 
+ *
  * 修改人    修改日期                   修改内容
  * 兰宇铧    2021-12-01 	    添加重复登录的踢人操作，由application.yml的kickout做为开关，默认开启
- * 
+ *
  * 修改人    修改日期                   修改内容
  * 兰宇铧    2022-03-30 	    修改session过期时间为两个小时,默认为30分钟
  */
@@ -48,7 +48,7 @@ import net.sf.ehcache.CacheManager;
 
 /**
  * shiro配置类
- * 
+ *
  * @author Solomon
  */
 @Configuration
@@ -59,10 +59,10 @@ public class ShiroConfiguration
 	 */
 	@Value("${business.kickout:false}")
 	private String kickout;
-	
+
 	/**
 	 * 自定义口令认证器
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean("CredentialsMatcher")
@@ -73,7 +73,7 @@ public class ShiroConfiguration
 
 	/**
 	 * 配置重写的realm
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean("ShiroRealm")
@@ -99,7 +99,7 @@ public class ShiroConfiguration
 
 	/**
 	 * 由于使用了spring-boot-shiro-start这个bean与realm冲突
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean
@@ -110,7 +110,7 @@ public class ShiroConfiguration
 
 	/**
 	 * 由于使用了spring-boot-shiro-start这个bean与realm冲突
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean
@@ -121,7 +121,7 @@ public class ShiroConfiguration
 
 	/**
 	 * ehcache管理
-	 * 
+	 *
 	 * @param cacheManager
 	 * @return
 	 */
@@ -149,7 +149,7 @@ public class ShiroConfiguration
 
 	/**
 	 * 自定义session管理
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean
@@ -169,7 +169,7 @@ public class ShiroConfiguration
 
 	/**
 	 * 配置realm和缓存管理器到安全管理控制类中
-	 * 
+	 *
 	 * @param shiroRealm     自定义的realm
 	 * @param ehCacheManager ehcache的缓存
 	 * @return
@@ -199,7 +199,7 @@ public class ShiroConfiguration
 	/**
 	 * 开启shiro aop注解支持 使用代理方式所以需要开启代码支持
 	 * 一定要写入上面advisorAutoProxyCreator（）自动代理。不然AOP注解不会生效
-	 * 
+	 *
 	 * @param securityManager
 	 * @return
 	 */
@@ -214,7 +214,7 @@ public class ShiroConfiguration
 
 	/**
 	 * 配置过滤器 设置对应的过滤条件和跳转条件
-	 * 
+	 *
 	 * @param securityManager 管理控制
 	 * @return
 	 */
@@ -243,6 +243,8 @@ public class ShiroConfiguration
 		// 对业务请求需要进入kickout
 		map.put("/manage/**", "authc,kickout");
 		map.put("/system/**", "authc,kickout");
+		// 积木报表认证
+		map.put("/jmreport/**", "anon");
 		// 设置报错页面，认证不通过跳转
 		shiroFilterFactoryBean.setUnauthorizedUrl("/error");
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
@@ -263,10 +265,10 @@ public class ShiroConfiguration
 	{
 		return new ShiroDialect();
 	}
-	
+
 	/**
 	 * 创建重复登录控制过滤器
-	 * 
+	 *
 	 * @param securityManager 管理控制
 	 * @return
 	 */
@@ -278,7 +280,7 @@ public class ShiroConfiguration
 
 	/**
 	 * 创建自定义退出登录过滤器
-	 * 
+	 *
 	 * @param securityManager 管理控制
 	 * @return
 	 */

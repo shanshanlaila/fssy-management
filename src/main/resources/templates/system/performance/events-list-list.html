@@ -65,7 +65,6 @@
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="完结">完结</option>
                                     <option value="待填报价值">待填报价值</option>
-                                    <option value="待填报标准">待填报标准</option>
                                 </select>
                             </label>
                         </div>
@@ -75,9 +74,9 @@
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <button shiro:hasPermission="system:performance:employee:event:attachment:withoutStandardImport" 
+                            <button shiro:hasPermission="system:performance:employee:event:attachment:withoutStandardImport"
                             		lay-submit lay-filter="import" class="layui-btn">导入</button>
-                            <button shiro:hasPermission="system:performance:employee:event:attachment:importToCompleteRole" 
+                            <button shiro:hasPermission="system:performance:employee:event:attachment:importToCompleteRole"
                             		lay-submit lay-filter="importToCompleteRole" class="layui-btn" title="请在系统自动打分前完成事件岗位分配情况，否则系统无法计算得分">导出事件清单维护事件岗位配比</button>
                             <a class="layui-btn" lay-submit th:href="@{/export/eventList.xlsx}">
                                 <i class="layui-icon">&#xe601</i>下载模板

@@ -35,23 +35,22 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <label>
+                            <!--<label>
                                 <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="完结">完结</option>
                                     <option value="待填报价值">待填报价值</option>
                                     <option value="待填报标准">待填报标准</option>
                                 </select>
-                            </label>
+                            </label>-->
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="export"
-                                        title="请选择查询条件进行导出">
-                                    导出待填报标准事件清单
+                                <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
+                                        lay-filter="downloadForCharge" title="状态‘完结’事件清单，可以导出">导出事件清单填报履职计划
                                 </button>
                             </div>
                         </div>
@@ -96,10 +95,12 @@
             ,type: 'year'
         });
 
-        // 导出
-        form.on('submit(export)', function (data) {
+        // 监听导出按钮
+        form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
-            field.url = "/system/performance/employee/eventsList/downloadObjects";
+            // 导出参数设置-只导出完结状态下的数据-status=“完结”
+            data.field.status = '完结';
+            field.url = "/system/performance/employee/eventsList/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");
             window.open(url, true);
@@ -120,7 +121,7 @@
             toolbar: '#toolbar',
             where: {
                 // 向controller传入额外参数
-                status:'待填报价值'
+                status:'完结'
             },
             cols: [
                 [
@@ -153,7 +154,7 @@
                         title: '状态',
                         width: 90
                     },
-                    {
+                    /*{
                         field: 'delowStandard',
                         title: '不合格',
                         width: 80
@@ -172,7 +173,7 @@
                         field: 'excellentStandard',
                         title: '优',
                         width: 130
-                    },
+                    },*/
                     {
                         field: 'id',
                         title: '序号',

@@ -172,7 +172,7 @@
         // 导出
         form.on('submit(export)', function (data) {
             var field = data.field;
-            data.field.status = '待提交审核'
+            data.field.status = '待填报回顾'
             field.url = "/system/entry-cas-plan-detail/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");
@@ -239,7 +239,7 @@
                     },
                     {
                         field: 'workOutput',
-                        title: '表单',
+                        title: '表单(输出内容)来源事件清单',
                         width: 130
                     },
                     {
@@ -252,7 +252,7 @@
                         title: '计划完成日期',
                         width: 130
                     },
-                    {
+                    /*{
                         field: 'delowStandard',
                         title: '不合格',
                         width: 80
@@ -271,7 +271,7 @@
                         field: 'excellentStandard',
                         title: '优',
                         width: 130
-                    },
+                    },*/
                     {
                         field: 'status',
                         title: '履职计划状态',

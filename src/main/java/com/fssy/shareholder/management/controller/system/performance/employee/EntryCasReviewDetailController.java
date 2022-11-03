@@ -18,6 +18,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -433,7 +434,7 @@ public class EntryCasReviewDetailController {
     @PostMapping("save")
     @ResponseBody
     public SysResult create(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request) {
-        boolean result = entryCasReviewDetailService.save(entryCasReviewDetail);
+        boolean result = entryCasReviewDetailService.saveReviewDetail(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
         }

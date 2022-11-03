@@ -149,26 +149,26 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             Cell cell = row.createCell(SheetService.columnToIndex("Z"));// 每一行的结果信息上传到S列
             // 检查必填项
             String eventListId = cells.get(SheetService.columnToIndex("A"));// 事件清单序号
-            String eventsType = cells.get(SheetService.columnToIndex("B"));//事务类别
+            String eventsFirstType = cells.get(SheetService.columnToIndex("B"));//事务类别
             String jobName = cells.get(SheetService.columnToIndex("C"));//工作职责
             String workEvents = cells.get(SheetService.columnToIndex("D"));//流程（工作事件）
             String status = cells.get(SheetService.columnToIndex("E"));//状态
             String departmentName = cells.get(SheetService.columnToIndex("F"));//部门
-            String delowStandard = cells.get(SheetService.columnToIndex("G"));//不合格
-            String middleStandard = cells.get(SheetService.columnToIndex("H"));//中
-            String fineStandard = cells.get(SheetService.columnToIndex("I"));//良
-            String excellentStandard = cells.get(SheetService.columnToIndex("J"));//优
-            //String fineStandard = cells.get(SheetService.columnToIndex("K"));//绩效类型
-            String standardValue = cells.get(SheetService.columnToIndex("L"));// 事件价值标准分
-            String mainOrNext = cells.get(SheetService.columnToIndex("M"));// 主/次担
-            String planningWork = cells.get(SheetService.columnToIndex("N"));// 对应工作事件的计划内容
-            String times = cells.get(SheetService.columnToIndex("O"));// 频次
-            String workOutput = cells.get(SheetService.columnToIndex("P"));// 表单（输出内容）
-            String planStartDateStr = cells.get(SheetService.columnToIndex("Q"));// 计划开始时间
-            String planEndDateStr = cells.get(SheetService.columnToIndex("R"));// 计划完成时间
-            String roleName = cells.get(SheetService.columnToIndex("S"));// 岗位名称
-            String userName = cells.get(SheetService.columnToIndex("T"));// 岗位人员姓名
-            String applyDateStr = cells.get(SheetService.columnToIndex("U"));// 申报月份
+//            String delowStandard = cells.get(SheetService.columnToIndex("G"));//不合格
+//            String middleStandard = cells.get(SheetService.columnToIndex("H"));//中
+//            String fineStandard = cells.get(SheetService.columnToIndex("I"));//良
+//            String excellentStandard = cells.get(SheetService.columnToIndex("J"));//优
+            String standardValue = cells.get(SheetService.columnToIndex("G"));// 事件价值标准分
+            String eventsForm = cells.get(SheetService.columnToIndex("H"));//绩效类型
+            String mainOrNext = cells.get(SheetService.columnToIndex("I"));// 主/次担
+            String planningWork = cells.get(SheetService.columnToIndex("J"));// 对应工作事件的计划内容
+            String times = cells.get(SheetService.columnToIndex("K"));// 频次
+            String workOutput = cells.get(SheetService.columnToIndex("L"));// 表单（输出内容）
+            String planStartDateStr = cells.get(SheetService.columnToIndex("M"));// 计划开始时间
+            String planEndDateStr = cells.get(SheetService.columnToIndex("N"));// 计划完成时间
+            String roleName = cells.get(SheetService.columnToIndex("O"));// 岗位名称
+            String userName = cells.get(SheetService.columnToIndex("P"));// 岗位人员姓名
+            String applyDateStr = cells.get(SheetService.columnToIndex("Q"));// 申报月份
             // 检查必填项
             if (ObjectUtils.isEmpty(eventListId)) {
                 setFailedContent(result, String.format("第%s行的事件清单表序号为空", j + 1));
@@ -219,13 +219,13 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
             // 构建实体类
             EntryCasPlanDetail entryCasPlanDetail = new EntryCasPlanDetail();
-            entryCasPlanDetail.setEventsType(eventsType);
+            entryCasPlanDetail.setEventsFirstType(eventsFirstType);
             entryCasPlanDetail.setJobName(jobName);
             entryCasPlanDetail.setWorkEvents(workEvents);
-            entryCasPlanDetail.setDelowStandard(delowStandard);
-            entryCasPlanDetail.setMiddleStandard(middleStandard);
-            entryCasPlanDetail.setFineStandard(fineStandard);
-            entryCasPlanDetail.setExcellentStandard(excellentStandard);
+//            entryCasPlanDetail.setDelowStandard(delowStandard);
+//            entryCasPlanDetail.setMiddleStandard(middleStandard);
+//            entryCasPlanDetail.setFineStandard(fineStandard);
+//            entryCasPlanDetail.setExcellentStandard(excellentStandard);
             entryCasPlanDetail.setMainOrNext(mainOrNext);
             entryCasPlanDetail.setPlanningWork(planningWork);
             entryCasPlanDetail.setTimes(times);
@@ -234,6 +234,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
             entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
+            entryCasPlanDetail.setEventsForm(eventsForm);
             // 数据库不能为null的字段设置值
             entryCasPlanDetail.setEventsId(Long.valueOf(eventListId));
             entryCasPlanDetail.setDepartmentName(departmentName);
@@ -249,7 +250,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
             roleLambdaQueryWrapper.eq(Role::getName, roleName);
             List<Role> roles = roleMapper.selectList(roleLambdaQueryWrapper);
-            if (ObjectUtils.isEmpty(roleName)) {
+            if (ObjectUtils.isEmpty(roles)) {
                 setFailedContent(result, String.format("第%s行的岗位名称无对应数据", j + 1));
                 cell.setCellValue("表中岗位名称无对应数据");
                 continue;
@@ -270,6 +271,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             entryCasPlanDetail.setCreatedAt(LocalDateTime.now());
             entryCasPlanDetail.setCreateId(user.getId());
+            entryCasPlanDetail.setCreateDate(LocalDate.now());
             entryCasPlanDetail.setCreateName(user.getName());
             // 根据条件查询或生成bs_performance_employee_entry_cas_merge表数据
             LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -566,40 +568,31 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (event.equals("pass")) {
             // 部长、科长审核通过
             for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
                 // 部长通过
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
-                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+                    entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
                 }
                 // 科长通过
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
-                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
+                    entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
                 }
-                entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
+                entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
         }
         // 部长、科长审核拒绝
         else if (event.equals("noPass")) {
             for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
                 // 科长审核拒绝
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG) && entryCasPlanDetail.getEventsFirstType().equals("事务类")) {
                     entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
-                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
-
                 }
                 // 部长审核拒绝
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
                     entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
-                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
-
                 }
-                entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
+                entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
         }
-
         return true;
     }
 }
