@@ -38,6 +38,10 @@
                             <input type="text" name="jobName" placeholder="工作职责查询" autocomplete="off"
                                    class="layui-input">
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <input type="text" name="supportFunctions" placeholder="支持职能查询" autocomplete="off"
                                    class="layui-input">
@@ -93,6 +97,12 @@
             layer.msg("正在导出事件列表，请稍候");
             window.open(url, true);
             return false;
+        });
+
+        //年选择器
+        laydate.render({
+            elem: '#year'
+            ,type: 'year'
         });
 
         // 实例表格

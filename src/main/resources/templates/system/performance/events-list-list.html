@@ -30,15 +30,15 @@
                             <div id="departmentSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
+                            <input  type="text"  id = "year" name="year" placeholder="编制年份"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="strategyFunctions" placeholder="战略职能"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="supportFunctions" placeholder="支持职能"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="year" placeholder="编制年份"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -118,6 +118,12 @@
                             trigger: 'click',
                             type: 'date'
                         });
+                });
+
+                //年选择器
+                laydate.render({
+                    elem: '#year'
+                    ,type: 'year'
                 });
                 // 实例表格
                 table
@@ -208,6 +214,11 @@
                                             width: 80
                                         },
                                         {
+                                            field: 'eventsFirstType',
+                                            title: '事件类型',
+                                            width: 80
+                                        },
+                                        {
                                             field: 'jobName',
                                             title: '工作职责',
                                             width: 120
@@ -285,6 +296,11 @@
                                             field: 'standardCreateDate',
                                             title: '事件标准创建日期',
                                             width: 130
+                                        },
+                                        {
+                                            field: 'id',
+                                            title: '序号',
+                                            width: 50
                                         },
                                         {
                                             fixed : 'right',

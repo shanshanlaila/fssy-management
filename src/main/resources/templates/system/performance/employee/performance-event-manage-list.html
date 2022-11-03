@@ -31,7 +31,7 @@
                             <div id="departmentSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="编制年份查询" autocomplete="off"
+                            <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
@@ -88,6 +88,12 @@
                 }
             });
             return false
+        });
+
+        //年选择器
+        laydate.render({
+            elem: '#year'
+            ,type: 'year'
         });
 
         // 导出

@@ -538,7 +538,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
             LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_ZHUGUAN) ||
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG) ||
                     entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
                 entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
                 entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());

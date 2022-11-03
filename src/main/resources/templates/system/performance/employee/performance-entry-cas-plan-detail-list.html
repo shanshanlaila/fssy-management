@@ -30,13 +30,41 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
                         </div>
+
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="workEvents" placeholder="流程（工作事件）"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="workOutput" placeholder="表单"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="jobName" placeholder="工作职责"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
+                            <input type="text" name="times" placeholder="频次"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px">
+                            <label>
+                                <select name="eventsFirstType">
+                                    <option style="display: none" value="">请选择事务类型</option>
+                                    <option value="事务类">事物类</option>
+                                    <option value="非事务类">非事物类</option>
+                                </select>
+                            </label>
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <!--<input type="text" name="status" placeholder="事件清单状态查询" autocomplete="off"
-                                   class="layui-input">-->
                             <label>
                                 <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
@@ -44,6 +72,15 @@
                                     <option value="待部长审核">待部长审核</option>
                                     <option value="待科长审核">待科长审核</option>
                                     <option value="完结">完结</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <label>
+                                <select id = “mainOrNext” name="mainOrNext">
+                                    <option style="display: none" value="">请选择主担/次担</option>
+                                    <option value="主担">主担</option>
+                                    <option value="次担">次担</option>
                                 </select>
                             </label>
                         </div>
@@ -87,6 +124,7 @@
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
                         {{# } }}
                         <a lay-event="cancel" title="取消"><i class="layui-icon">&#x1007;</i></a>
+                        <a lay-event="createReview" title="新增单条履职回顾"><i class="layui-icon">&#xe608;</i></a>
                     </script>
                 </div>
             </div>
@@ -123,6 +161,12 @@
             });
             return false
         });
+        //年选择器
+        laydate.render({
+            elem: '#year'
+            ,type: 'year'
+        });
+
 
 
         // 导出
@@ -159,13 +203,33 @@
                         width: 80
                     },
                     {
+                        field: 'eventsType',
+                        title: '事件类别',
+                        width: 80
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 80
+                    },
+                    {
+                        field: 'jobName',
+                        title: '工作职责',
+                        width: 80
+                    },
+                    {
+                        field: 'workEvents',
+                        title: '流程（工作事件）',
+                        width: 200,
+                    },
+                    {
                         field: 'planningWork',
                         title: '对应工作事件的计划内容',
                         width: 130
                     },
                     {
-                        field: 'workOutput',
-                        title: '表单',
+                        field: 'times',
+                        title: '频次',
                         width: 130
                     },
                     {
@@ -174,8 +238,8 @@
                         width: 130
                     },
                     {
-                        field: 'times',
-                        title: '频次',
+                        field: 'workOutput',
+                        title: '表单',
                         width: 130
                     },
                     {
@@ -187,31 +251,6 @@
                         field: 'planEndDate',
                         title: '计划完成日期',
                         width: 130
-                    },
-                    {
-                        field: 'createDate',
-                        title: '编制日期',
-                        width: 130
-                    },
-                    {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                    },
-                    {
-                        field: 'status',
-                        title: '履职计划状态',
-                        width: 120
-                    },
-                    {
-                        field: 'createDate',
-                        title: '编制日期',
-                        width: 70,
-                    },
-                    {
-                        field: 'workEvents',
-                        title: '流程（工作事件）',
-                        width: 200,
                     },
                     {
                         field: 'delowStandard',
@@ -234,34 +273,14 @@
                         width: 130
                     },
                     {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
+                        field: 'status',
+                        title: '履职计划状态',
+                        width: 120
                     },
                     {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 50
-                    },
-                    {
-                        field: 'eventsType',
-                        title: '事件类别',
-                        width: 80
-                    },
-                    {
-                        field: 'jobName',
-                        title: '工作职责',
-                        width: 80
-                    },
-                    {
-                        field: 'note',
-                        title: '备注',
-                        width: 80
-                    },
-                    {
-                        field: 'eventsFirstType',
-                        title: '事件类型',
-                        width: 80
+                        field: 'eventsForm',
+                        title: '绩效类型',
+                        width: 120
                     },
                     {
                         field: 'standardValue',
@@ -271,6 +290,31 @@
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
+                        width: 80
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 130
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 70,
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 50
+                    },
+                    {
+                        field: 'note',
+                        title: '备注',
                         width: 80
                     },
                     {
@@ -327,6 +371,11 @@
                         field: 'auditStatus',
                         title: '履职计划审核状态',
                         width: 80
+                    },
+                    {
+                        field: 'id',
+                        title: '序号',
+                        width: 50
                     },
                     {
                         fixed: 'right',
@@ -474,9 +523,24 @@
                             }
                         })
                 });
-            }
+            }else if (obj.event === 'createReview') { // 填写履职回顾
+                        layer.open({
+                            type: 2,
+                            title: '序号为' + data.id + '的履职回顾填写',
+                            area:
+                                [
+                                    $(window).width() * 0.9 + 'px',
+                                    $(window).height() - 50 + 'px'
+                                ],
+                            content: '/system/entry-cas-plan-detail/createReview/' + data.id,
+                            maxmin: true,
+                            scrollbar: true
+                        });
+                    }
         });
+
     });
+
 
     // 部门查询下拉列表
     let departmentSelect = xmSelect.render({

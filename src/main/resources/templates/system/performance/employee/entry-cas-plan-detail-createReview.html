@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>履职回顾新增页面</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <input type="hidden" name="casPlanId" id="casPlanId" th:value="${entryCasPlanDetail.id}">
+            <input type="hidden" name="eventsId" id="eventsId" th:value="${entryCasPlanDetail.eventsId}">
+            <input type="hidden" name="departmentName" id="departmentName" th:value="${entryCasPlanDetail.departmentName}">
+            <input type="hidden" name="workEvents" id="workEvents" th:value="${entryCasPlanDetail.workEvents}">
+            <input type="hidden" name="eventsForm" id="eventsForm" th:value="${entryCasPlanDetail.eventsForm}">
+            <input type="hidden" name="standardValue" id="standardValue" th:value="${entryCasPlanDetail.standardValue}">
+            <input type="hidden" name="roleName" id="roleName" th:value="${entryCasPlanDetail.roleName}">
+            <input type="hidden" name="userName" id="userName" th:value="${entryCasPlanDetail.userName}">
+            <input type="hidden" name="applyDate" id="applyDate" th:value="${entryCasPlanDetail.applyDate}">
+            <input type="hidden" name="mainOrNext" id="mainOrNext" th:value="${entryCasPlanDetail.mainOrNext}">
+            <input type="hidden" name="planningWork" id="planningWork" th:value="${entryCasPlanDetail.planningWork}">
+            <input type="hidden" name="times" id="times" th:value="${entryCasPlanDetail.times}">
+            <input type="hidden" name="workOutput" id="workOutput" th:value="${entryCasPlanDetail.workOutput}">
+            <input type="hidden" name="planStartDate" id="planStartDate" th:value="${entryCasPlanDetail.planStartDate}">
+            <input type="hidden" name="planEndDate" id="planEndDate" th:value="${entryCasPlanDetail.planEndDate}">
+            <input type="hidden" name="eventsFirstType" id="eventsFirstType" th:value="${entryCasPlanDetail.eventsFirstType}">
+            <input type="hidden" name="jobName" id="jobName" th:value="${entryCasPlanDetail.jobName}">
+            <input type="hidden" name="departmentId" id="departmentId" th:value="${entryCasPlanDetail.departmentId}">
+            <input type="hidden" name="roleId" id="roleId" th:value="${entryCasPlanDetail.roleId}">
+            <input type="hidden" name="userId" id="userId" th:value="${entryCasPlanDetail.userId}">
+            <input type="hidden" name="year" id="year" th:value="${entryCasPlanDetail.year}">
+            <input type="hidden" name="month" id="month" th:value="${entryCasPlanDetail.month}">
+            <input type="hidden" name="createDate" id="createDate" th:value="${entryCasPlanDetail.createDate}">
+            <input type="hidden" name="createName" id="createName" th:value="${entryCasPlanDetail.createName}">
+            <input type="hidden" name="createId" id="createId" th:value="${entryCasPlanDetail.createId}">
+            <input type="hidden" name="status" id="status" th:value="${entryCasPlanDetail.status}">
+            <input type="hidden" name="mergeNo" id="mergeNo" th:value="${entryCasPlanDetail.mergeNo}">
+            <input type="hidden" name="mergeId" id="mergeId" th:value="${entryCasPlanDetail.mergeId}">
+
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="6" style="background: #f7f7f7; color: black;">履职回顾内容</td>
+                </tr>
+                <tr>
+                    <td style="width:14%; text-align: right">&nbsp;&nbsp;事件类型:
+                    </td>
+                    <td style="width:22%">
+                        <div class="layui-input-inline" style="width: 50px">
+                            <span>[[${entryCasPlanDetail.eventsFirstType}]]</span>
+                        </div>
+                    </td>
+                    <td style="width: 12%; text-align: right">&nbsp;&nbsp;工作职责:
+                    </td>
+                    <td style="width: 21%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.jobName}]]</span>
+                        </div>
+                    </td>
+                    <td style="width: 12%; text-align: right">&nbsp;&nbsp;
+                    </td>
+                    <td style="width: 21%">
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: right">工作事件</td>
+                    <td colspan="5">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.workEvents}]]</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style=" text-align: right">&nbsp;&nbsp;绩效类型:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.eventsForm}]]</span>
+                        </div>
+                    </td>
+                    <td style=" text-align: right">&nbsp;&nbsp;事件标准分:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.standardValue}]]</span>
+                        </div>
+                    </td>
+                    <td style=" text-align: right">&nbsp;&nbsp;部门名称:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.departmentName}]]</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style=" text-align: right">&nbsp;&nbsp;岗位名称:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.roleName}]]</span>
+                        </div>
+                    </td>
+                    <td style=" text-align: right">&nbsp;&nbsp;员工姓名:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.userName}]]</span>
+                        </div>
+                    </td>
+                    <td style=" text-align: right">&nbsp;&nbsp;申报日期:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.applyDate}]]</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style=" text-align: right">&nbsp;&nbsp;主担/次担:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.mainOrNext}]]</span>
+                        </div>
+                    </td>
+
+                    <td style=" text-align: right">&nbsp;&nbsp;频次:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.times}]]</span>
+                        </div>
+                    </td>
+                    <td style=" text-align: right">&nbsp;&nbsp;
+                    </td>
+                    <td >
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: right">对应事件的计划内容</td>
+                    <td colspan="5">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.planningWork}]]</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: right">表单输出内容</td>
+                    <td colspan="5">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.workOutput}]]</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td style=" text-align: right">&nbsp;&nbsp;计划开始时间:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.planStartDate}]]</span>
+                        </div>
+                    </td>
+                    <td style=" text-align: right">&nbsp;&nbsp;计划完成时间:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${entryCasPlanDetail.planEndDate}]]</span>
+                        </div>
+                    </td>
+                    <td style=" text-align: right">&nbsp;&nbsp;
+                    </td>
+                    <td >
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="6" style="background: #f7f7f7; color: black;">回顾内容填写</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;工作完成描述:
+                    </td>
+                    <td colspan="6">
+                        <div > <div class="layui-input-inline" style="width: 100%">
+<!--                            <input type="text" class="layui-input " name="completeDesc"-->
+<!--                                   id="completeDesc" lay-verify="required"-->
+<!--                                   autocomplete="off" />-->
+                            <textarea rows="6" style="resize: vertical;" class="layui-input " name="completeDesc"
+                                id="completeDesc" lay-verify="required"></textarea>
+                        </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;实际完成时间:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="actualCompleteDate"
+                                   id="actualCompleteDate" lay-verify="required"
+                                   autocomplete="off" />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+
+<!--                <tr>-->
+<!--                    <td style="text-align: right">备注</td>-->
+<!--                    <td colspan="3">-->
+<!--                        <div>-->
+
+<!--				<textarea placeholder="请输入备注" id="note" name="note"-->
+<!--                          class="layui-textarea" th:text="${entryCasReviewDetail['completeDesc']}"></textarea>-->
+<!--                        </div>-->
+<!--                    </td>-->
+<!--                </tr>-->
+
+                <tr>
+                    <td colspan="6" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render({
+                elem: this,
+                //更换触发方式
+                trigger: 'click',
+                type: 'date',
+                value: new Date()
+            });
+        });
+
+        // 修改页面的提交
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/entry-cas-review-detail/save',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status === 200) {
+                        layer.msg(result.msg, {icon: 6, time: 1000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</body>
+</html>
