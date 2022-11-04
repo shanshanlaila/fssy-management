@@ -263,7 +263,7 @@ public class EventListServiceImpl implements EventListService {
             String fineStandard = cells.get(SheetService.columnToIndex("H"));
             String excellentStandard = cells.get(SheetService.columnToIndex("I"));
             // 数据校验
-            if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_WAIT)){
+            if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_WAIT)) {
                 StringTool.setMsg(sb, String.format("第【%s】行状态为【%s】的事件清单不为待填报标准，不能导入", j + 1, status));
                 cell.setCellValue(String.format("序号为【%s】的事件清单状态不为待填报标准，不能导入", id));
                 continue;
@@ -301,6 +301,7 @@ public class EventListServiceImpl implements EventListService {
     @Override
     @Transactional
     public Map<String, Object> readEventListWithoutStandardDataSource(Attachment attachment) {
+        // 导入无标准事件
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -313,7 +314,7 @@ public class EventListServiceImpl implements EventListService {
         //获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【经理绩效表单】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【Sheet1】不存在，无法读取数据，请检查");
         }
         //处理导入日期
         Date importDate = attachment.getImportDate();
@@ -383,10 +384,10 @@ public class EventListServiceImpl implements EventListService {
                 cell.setCellValue("表单（输出内容）是空的");
                 continue;
             }
-            String eventsType = cells.get(SheetService.columnToIndex("F"));
-            if (ObjectUtils.isEmpty(eventsType)) {
-                setFailedContent(result, String.format("第%s行的事件类别是空的", j + 1));
-                cell.setCellValue("事件类别是空的");
+            String eventsFirstType = cells.get(SheetService.columnToIndex("F"));
+            if (ObjectUtils.isEmpty(eventsFirstType)) {
+                setFailedContent(result, String.format("第%s行的事件类型是空的", j + 1));
+                cell.setCellValue("事件类型是空的");
                 continue;
             }
             String duration = cells.get(SheetService.columnToIndex("G"));
@@ -430,7 +431,20 @@ public class EventListServiceImpl implements EventListService {
                 cell.setCellValue("科室是空的");
                 continue;
             }
-
+            // 数据校验
+            if (!(eventsFirstType.equals("事务类") || eventsFirstType.equals("非事务类") || eventsFirstType.equals("新增工作流"))) {
+                setFailedContent(result, String.format("第%s行的事务类型填写有误", j + 1));
+                cell.setCellValue("表中事件类型填写有误");
+                continue;
+            }
+            LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            departmentLambdaQueryWrapper.eq(Department::getDepartmentName, departmentName);
+            List<Department> departmentList = departmentMapper.selectList(departmentLambdaQueryWrapper);
+            if (ObjectUtils.isEmpty(departmentList)) {
+                setFailedContent(result, String.format("第%s行的部门名称填写有误", j + 1));
+                cell.setCellValue("部门名称填写有误");
+                continue;
+            }
 
             //构建实体类
             EventList eventList = new EventList();
@@ -440,7 +454,7 @@ public class EventListServiceImpl implements EventListService {
             eventList.setJobName(jobName);
             eventList.setWorkEvents(workEvents);
             eventList.setWorkOutput(workOutput);
-            eventList.setEventsType(eventsType);
+            eventList.setEventsFirstType(eventsFirstType);
 
             Date date = new Date();
             String format = new SimpleDateFormat("yyyy-MM-dd").format(date);
@@ -452,6 +466,7 @@ public class EventListServiceImpl implements EventListService {
             eventList.setStandardValue(new BigDecimal(standardValue));
             eventList.setNote(note);
             eventList.setDepartmentName(departmentName);
+            eventList.setDepartmentId(departmentList.get(0).getDepartmentId());
             eventList.setDelow(new BigDecimal(delow));
             eventList.setMiddle(new BigDecimal(middle));
             eventList.setFine(new BigDecimal(fine));
@@ -472,39 +487,20 @@ public class EventListServiceImpl implements EventListService {
             eventList.setStandardCreateUserId(user.getId());
             eventList.setStandardCreateDate(new Date());
             eventList.setStandardAttachmentId(attachment.getId());
-            // 查询 部门 表主键
-            // 创建条件构造器
-            QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
-            // 设置条件
-            departmentQueryWrapper.eq("name", eventList.getDepartmentName());
-            // 查询
-            List<Department> departments = departmentMapper.selectList(departmentQueryWrapper);
-            if (ObjectUtils.isEmpty(departments)) {
-                setFailedContent(result, String.format("第%s行的【%s】未在系统维护", j + 1, departmentName));
-                cell.setCellValue(String.format("【%s】未在系统维护", departmentName));
-                continue;
-            }
-            Department department = departments.get(0);
-            eventList.setDepartmentId(department.getId());
-
             eventList.setOffice(office);
             LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getOfficeName,office);
+            viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getOfficeName, office);
             List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentRoleUserLambdaQueryWrapper);
             if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的部门名称在系统中未查找到，不能导入", j + 1, departmentName));
                 cell.setCellValue(String.format("行数为【%s】的部门名称未查到，不能导入", j + 1));
                 continue;
-
             }
             ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
             eventList.setOfficeId(viewDepartmentRoleUser.getOfficeId());
-            eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_WAIT);
-
-            //eventLists.add(eventList);
+            eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 不需要填报事件标准，直接完结
             eventListMapper.insert(eventList);
             cell.setCellValue("导入成功");
-
         }
 
         sheetService.write(attachment.getPath(), attachment.getFilename());//写入excel表

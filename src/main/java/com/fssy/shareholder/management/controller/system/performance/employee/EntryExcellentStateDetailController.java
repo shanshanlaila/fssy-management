@@ -261,6 +261,7 @@ public class EntryExcellentStateDetailController {
         }
         return SysResult.build(500, "撤销审核失败");
     }
+
     /**
      * 绩效科撤销审核评优材料
      *
@@ -277,9 +278,11 @@ public class EntryExcellentStateDetailController {
         }
         return SysResult.build(500, "撤销审核失败");
     }
+
     /**
      * 绩效科审核展示修改页面
-     * @param id 履职明细id
+     *
+     * @param id    履职明细id
      * @param model 数据模型
      * @return 修改页面
      */
@@ -292,6 +295,7 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("entryExcellentStateDetail", entryExcellentStateDetail);
         return "/system/performance/employee/entry-excellent-state-detail-performance-edit";
     }
+
     /**
      * 绩效科审核评优材料（修改按钮）
      *
@@ -307,8 +311,10 @@ public class EntryExcellentStateDetailController {
         }
         return SysResult.build(500, "履职明细更新失败");
     }
+
     /**
      * 绩效科审核评优材料返回页面
+     *
      * @param model
      * @return
      */
@@ -324,6 +330,7 @@ public class EntryExcellentStateDetailController {
 
     /**
      * 经营管理部主管审核评优材料返回页面
+     *
      * @param model
      * @return
      */
@@ -336,9 +343,11 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         return "/system/performance/employee/entry-excellent-state-detail-minister-list";
     }
+
     /**
      * 经营管理部主管展示修改页面
-     * @param id 履职明细id
+     *
+     * @param id    履职明细id
      * @param model 数据模型
      * @return 修改页面
      */
@@ -351,6 +360,7 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("entryExcellentStateDetail", entryExcellentStateDetail);
         return "/system/performance/employee/entry-excellent-state-detail-minister-edit";
     }
+
     /**
      * 绩效科审核评优材料（修改按钮）
      *
@@ -366,6 +376,7 @@ public class EntryExcellentStateDetailController {
         }
         return SysResult.build(500, "履职明细更新失败");
     }
+
     /**
      * 绩效科撤销审核评优材料
      *
@@ -397,8 +408,8 @@ public class EntryExcellentStateDetailController {
         // 查询履职计划
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(entryCasReviewDetail.getCasPlanId());
         // 查询用户
-        Map<String,Object> params=new HashMap<>();
-        List<Map<String, Object>> userNameList = userService.findUserSelectedDataListByParams(params,new ArrayList<>());
+        Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> userNameList = userService.findUserSelectedDataListByParams(params, new ArrayList<>());
         model.addAttribute("eventList", eventList);
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
@@ -446,10 +457,13 @@ public class EntryExcellentStateDetailController {
      */
     @PostMapping("save")
     @ResponseBody
-    public SysResult create(EntryExcellentStateDetail entryExcellentStateDetail,HttpServletRequest request) {
+    public SysResult create(EntryExcellentStateDetail entryExcellentStateDetail, HttpServletRequest request) {
+        if (!(entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A))) {
+            return SysResult.build(500, "只能上传待经营管理部审核的回顾评优材料");
+        }
         String mainIds = request.getParameter("mainIds");
         String nextIds = request.getParameter("nextIds");
-        boolean result = entryExcellentStateDetailService.save(entryExcellentStateDetail,mainIds,nextIds);
+        boolean result = entryExcellentStateDetailService.save(entryExcellentStateDetail, mainIds, nextIds);
         if (result) {
             return SysResult.ok();
         }

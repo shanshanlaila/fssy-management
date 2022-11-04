@@ -111,39 +111,40 @@ public class EventListController {
                 "eventsType," +
                 "jobName," +
                 "workEvents," +
-                "delowStandard," +
+                /*"delowStandard," +
                 "middleStandard," +
                 "fineStandard," +
-                "excellentStandard," +
+                "excellentStandard," +*/
                 "performanceForm," +
                 "departmentName,"+
-                "status"
+                "status,standardValue,eventsFirstType"
         );
         List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
 
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         // 需要改背景色的格子
         fieldMap.put("id", "事件清单序号");
-        fieldMap.put("eventsType", "事务类别");
+        fieldMap.put("eventsFirstType", "事务类型");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
         fieldMap.put("status","状态");
         fieldMap.put("departmentName", "部门");
-        fieldMap.put("delowStandard", "不合格");
+        /*fieldMap.put("delowStandard", "不合格");
         fieldMap.put("middleStandard", "中");
         fieldMap.put("fineStandard", "良");
-        fieldMap.put("excellentStandard", "优");
-        fieldMap.put("jixiaoleixing", "绩效类型");
-        fieldMap.put("shijianjiazhibiazhunfen", "事件价值标准分");
-        fieldMap.put("dan", "主/次担");
-        fieldMap.put("duiyingjihuaneirong", "对应工作事件的计划内容");
-        fieldMap.put("pinci", "频次");
-        fieldMap.put("biaodan", "表单（输出内容）");
-        fieldMap.put("jihuakaishishijian", "计划开始时间");
-        fieldMap.put("jihuawanchengshijian", "计划完成时间");
-        fieldMap.put("gangweimingcheng", "岗位名称");
-        fieldMap.put("gangweirenyuanxingming", "岗位人员姓名");
-        fieldMap.put("shengbaoyuefen", "申报日期");
+        fieldMap.put("excellentStandard", "优");*/
+        fieldMap.put("standardValue", "事件价值标准分");
+        // 需要填写的部分
+        fieldMap.put("jixiaoleixing", "*绩效类型");
+        fieldMap.put("dan", "*主/次担");
+        fieldMap.put("duiyingjihuaneirong", "*对应工作事件的计划内容");
+        fieldMap.put("pinci", "*频次");
+        fieldMap.put("biaodan", "*表单（输出内容）");
+        fieldMap.put("jihuakaishishijian", "*计划开始时间");
+        fieldMap.put("jihuawanchengshijian", "*计划完成时间");
+        fieldMap.put("gangweimingcheng", "*岗位名称");
+        fieldMap.put("gangweirenyuanxingming", "*岗位人员姓名");
+        fieldMap.put("shengbaoyuefen", "*申报日期");
         // 标识字符串的列
         List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16,17,18,19,20,21);
         SheetOutputService sheetOutputService = new SheetOutputService();
@@ -164,7 +165,7 @@ public class EventListController {
         Map<String, Object> params = getParams(request);
         params.put("select",
                 "id," +
-                "eventsType," +
+                "eventsFirstType," +
                 "jobName," +
                 "workEvents," +
                 "delowStandard," +
@@ -177,14 +178,14 @@ public class EventListController {
 
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         fieldMap.put("id", "事件清单序号");
-        fieldMap.put("eventsType", "事件类别");
+        fieldMap.put("eventsFirstType", "事件类型");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
         fieldMap.put("status", "状态");
-        fieldMap.put("delowStandard", "不合格");
-        fieldMap.put("middleStandard", "中");
-        fieldMap.put("fineStandard", "良");
-        fieldMap.put("excellentStandard", "优");
+        fieldMap.put("delowStandard", "不合格标准");
+        fieldMap.put("middleStandard", "中标准");
+        fieldMap.put("fineStandard", "良标准");
+        fieldMap.put("excellentStandard", "优标准");
 
         // 创建导出服务
         SheetOutputService sheetOutputService = new SheetOutputService();

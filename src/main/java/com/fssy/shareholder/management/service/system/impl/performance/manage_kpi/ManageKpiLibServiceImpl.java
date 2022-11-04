@@ -30,8 +30,7 @@ import java.util.*;
  * @since 2022-10-12
  */
 @Service
-public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, ManageKpiLib
-        > implements ManageKpiLibService {
+public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, ManageKpiLib> implements ManageKpiLibService {
     @Autowired
     private SheetService sheetService;
     @Autowired
@@ -40,6 +39,32 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
     private AttachmentMapper attachmentMapper;
 
 
+    /**
+     * 修改经营管理指标库信息
+     * @param manageKpiLib 经营管理指标库 实体
+     * @return
+     */
+    @Override
+    public boolean updateManageKpiLib(ManageKpiLib manageKpiLib) {
+        int result = manageKpiLibMapper.updateById(manageKpiLib);
+        if (result > 0) {
+            return true;
+        }
+        return false;
+    }
+    //展示经营管理指标库信息
+    @Override
+    public List<ManageKpiLib> findStudentsDataByParams(Map<String, Object> params) {
+        QueryWrapper<ManageKpiLib> queryWrapper = getQueryWrapper(params);
+        List<ManageKpiLib> manageKpiLibList = manageKpiLibMapper.selectList(queryWrapper);
+        return manageKpiLibList;
+    }
+
+    /**
+     * 分页查询
+     * @param params 查询条件
+     * @return
+     */
     @Override
     public Page<ManageKpiLib> findManagerKpiLibDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManageKpiLib> queryWrapper = getQueryWrapper(params);
@@ -76,11 +101,11 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
         // 读取附件
         sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
         // 读取表单
-        sheetService.readByName("指标库"); //根据表单名称获取该工作表单
+        sheetService.readByName("经营管理指标库"); //根据表单名称获取该工作表单
         // 获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【指标库】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【经营管理指标库】不存在，无法读取数据，请检查");
         }
 
         // 获取单价列表数据
@@ -112,7 +137,7 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
                 cells.add(res);// 将单元格的值写入行
             }
             // 导入结果写入列
-            Cell cell = row.createCell(SheetService.columnToIndex("N"));// 报错信息上传到excel D列（暂未实现）
+            Cell cell = row.createCell(SheetService.columnToIndex("I"));// 报错信息上传到excel D列（暂未实现）
             String id = cells.get(SheetService.columnToIndex("A"));
             String projectType = cells.get(SheetService.columnToIndex("B"));
             String projectDesc = cells.get(SheetService.columnToIndex("C"));
@@ -122,29 +147,21 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
                 cell.setCellValue("项目名称是空的");
                 throw new ServiceException("表中有空值");
             }
-            String status = cells.get(SheetService.columnToIndex("D"));
-            String isCommon = cells.get(SheetService.columnToIndex("E"));
-            String unit = cells.get(SheetService.columnToIndex("F"));
-            String kpiDefinition = cells.get(SheetService.columnToIndex("G"));
-            String kpiFormula = cells.get(SheetService.columnToIndex("H"));
-            String kpiYear = cells.get(SheetService.columnToIndex("I"));
-            String managerKpi = cells.get(SheetService.columnToIndex("J"));
-            String cfoKpi = cells.get(SheetService.columnToIndex("K"));
-            String note = cells.get(SheetService.columnToIndex("L"));
+            String unit = cells.get(SheetService.columnToIndex("D"));
+            String kpiDefinition = cells.get(SheetService.columnToIndex("E"));
+            String kpiFormula = cells.get(SheetService.columnToIndex("F"));
+            String kpiYear = cells.get(SheetService.columnToIndex("G"));
+            String note = cells.get(SheetService.columnToIndex("H"));
 
             //构建实体类
             ManageKpiLib manageKpiLib = new ManageKpiLib();
             manageKpiLib.setId(Integer.valueOf(id));
             manageKpiLib.setProjectType(projectType);
             manageKpiLib.setProjectDesc(projectDesc);
-            manageKpiLib.setStatus(status);
-            manageKpiLib.setIsCommon(isCommon);
             manageKpiLib.setUnit(unit);
             manageKpiLib.setKpiDefinition(kpiDefinition);
             manageKpiLib.setKpiFormula(kpiFormula);
             manageKpiLib.setKpiYear(Integer.valueOf(kpiYear));
-            manageKpiLib.setManagerKpi(managerKpi);
-            manageKpiLib.setCfoKpi(cfoKpi);
             manageKpiLib.setNote(note);
 
             // 根据id进行判断，存在则更新，不存在则新增
@@ -172,21 +189,17 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
         if (params.containsKey("select")) {
             queryWrapper.select((String) params.get("select"));
         }
-        // 经理人年度KPI指标库表创建年份查询
-        if (params.containsKey("kpiYear")) {
-            queryWrapper.eq("kpiYear", params.get("kpiYear"));
+        // 指标类别
+        if (params.containsKey("projectType")) {
+            queryWrapper.like("projectType", params.get("projectType"));
         }
-        // 经理人年度KPI指标库表是否经理人查询
-        if (params.containsKey("managerKpi")) {
-            queryWrapper.eq("managerKpi", params.get("managerKpi"));
-        }
-        // 经理人年度KPI指标库表是否是外派财务查询
-        if (params.containsKey("cfoKpi")) {
-            queryWrapper.eq("cfoKpi", params.get("cfoKpi"));
-        }
-        // 经理人年度KPI指标库表KPI名称模糊查询
+        // 指标名称
         if (params.containsKey("projectDesc")) {
             queryWrapper.like("projectDesc", params.get("projectDesc"));
+        }
+        // 创建年份
+        if (params.containsKey("kpiYear")) {
+            queryWrapper.eq("kpiYear", params.get("kpiYear"));
         }
         return queryWrapper;
     }
