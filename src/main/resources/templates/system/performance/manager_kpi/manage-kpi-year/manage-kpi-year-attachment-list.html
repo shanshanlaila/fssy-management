@@ -55,12 +55,40 @@
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="importDate" id="importDate" placeholder="导入日期" autocomplete="off"
-                                       class="layui-input laydate">
+                                <label class="layui-form-label"
+                                       style="width: 80px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;公司名称</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="公司名称" id="companyName"
+                                           name="companyName"
+                                           lay-verify="" lay-reqText="公司名称为必填项">
+                                </div>
                             </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <button type="button" class="layui-btn layui-btn-sm" id="chooseFile">选择文件</button>
-                                <button class="layui-btn layui-btn-sm" lay-submit id="importAccountStatement" lay-filter="importAccountStatement">导入</button>
+                                <label class="layui-form-label"
+                                       style="width: 50px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;年份</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="年份" id="year" name="year"
+                                           lay-verify="" lay-reqText="年份为必填项">
+                                </div>
+                            </div>
+
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 120px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;导入日期</label>
+                                <div class="layui-inline layui-show-xs-block">
+                                    <input type="text" name="importDate" id="importDate" placeholder="导入日期"
+                                           autocomplete="off"
+                                           class="layui-input laydate">
+                                </div>
+                                <div class="layui-inline layui-show-xs-block">
+                                    <button type="button" class="layui-btn layui-btn-sm" id="chooseFile">选择文件</button>
+                                    <button class="layui-btn layui-btn-sm" lay-submit id="importAccountStatement"
+                                            lay-filter="importAccountStatement">导入
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </script>
@@ -71,7 +99,7 @@
 </div>
 
 <script th:inline="javascript">
-    layui.use(['table', 'form', 'layer', 'laydate', 'upload','element'
+    layui.use(['table', 'form', 'layer', 'laydate', 'upload', 'element'
     ], function () {
         var $ = layui.$,
             table = layui.table,
@@ -190,7 +218,8 @@
                 elem: '#importDate',
                 trigger: 'click',
                 type: 'date',
-                value: moment().format("YYYY-MM-DD")
+                value: moment().format("YYYY-MM-DD"),
+
             });
 
         // 监听搜索按钮
@@ -214,29 +243,29 @@
                 });
 
             upload.render({
-                elem : '#chooseFile',
-                url : "/system/performance/manager_kpi/manage-kpi-year/uploadFile",
-                auto : false,
-                accept : 'file' //允许上传所有文件
+                elem: '#chooseFile',
+                url: "/system/performance/manager_kpi/manage-kpi-year/uploadFile",
+                auto: false,
+                accept: 'file' //允许上传所有文件
                 ,
-                exts : 'xlxs|xls|xlsm|xlsx',
-                bindAction : '#importAccountStatement',
-                data : {
-                    '_token' : "{{csrf_token()}}"
+                exts: 'xlxs|xls|xlsm|xlsx',
+                bindAction: '#importAccountStatement',
+                data: {
+                    '_token': "{{csrf_token()}}"
                 },
-                before : function(obj) {
+                before: function (obj) {
                     layer.load();
-                    this.data.customerOrderType = $('#customerOrderType').find("option:selected").val();
-                    // this.data.contractId = $('input[name=contractId]').val();
+                    this.data.year = $('input[name=year]').val();
+                    this.data.companyName = $('input[name=companyName]').val();
                     this.data.importDate = $('input[name=importDate]').val();
                     this.data.module = [[${module}]];
                 },
-                done : function(result) {
+                done: function (result) {
                     layer.closeAll();
                     if (result.status === 200) {
                         layer.msg(result.msg, {
-                            icon : 6,
-                            time : 2000
+                            icon: 6,
+                            time: 2000
                         });
                         setTimeout(function () {
                             parent.layui.table.reload('dataTable');
@@ -253,8 +282,8 @@
                         }, 2000)
                     } else {
                         layer.msg(result.msg, {
-                            icon : 5,
-                            time : 4000
+                            icon: 5,
+                            time: 4000
                         });
                         table.reload('dataTable');
                     }
@@ -265,31 +294,31 @@
 
         // 重新重置日期控件
         upload.render({
-            elem : '#chooseFile',
-            url : "/system/performance/manager_kpi/manage-kpi-year/uploadFile",
-            auto : false,
-            accept : 'file' //允许上传所有文件
+            elem: '#chooseFile',
+            url: "/system/performance/manager_kpi/manage-kpi-year/uploadFile",
+            auto: false,
+            accept: 'file' //允许上传所有文件
             ,
-            exts : 'xlxs|xls|xlsm|xlsx',
-            bindAction : '#importAccountStatement',
-            data : {
-                '_token' : "{{csrf_token()}}"
+            exts: 'xlxs|xls|xlsm|xlsx',
+            bindAction: '#importAccountStatement',
+            data: {
+                '_token': "{{csrf_token()}}"
             },
-            before : function(obj) {
+            before: function (obj) {
                 layer.load();
-                this.data.customerOrderType = $('#customerOrderType').find("option:selected").val();
-                // this.data.contractId = $('input[name=contractId]').val();
+                this.data.year = $('input[name=year]').val();
+                this.data.companyName = $('input[name=companyName]').val();
                 this.data.importDate = $('input[name=importDate]').val();
                 this.data.module = [[${module}]];
 
 
             },
-            done : function(result) {
+            done: function (result) {
                 layer.closeAll();
                 if (result.status === 200) {
                     layer.msg(result.msg, {
-                        icon : 6,
-                        time : 2000
+                        icon: 6,
+                        time: 2000
                     });
                     setTimeout(function () {
                         parent.layui.table.reload('dataTable');
@@ -306,8 +335,8 @@
                     }, 2000)
                 } else {
                     layer.msg(result.msg, {
-                        icon : 5,
-                        time : 4000
+                        icon: 5,
+                        time: 4000
                     });
                     table.reload('dataTable');
                 }
@@ -315,17 +344,17 @@
         });
 
         // 每个标签加一个class，名为laydate
-        $(".laydate").each(function() {
+        $(".laydate").each(function () {
             laydate.render({
-                elem : this,
+                elem: this,
                 //更换触发方式
-                trigger : 'click',
-                type : 'date',
+                trigger: 'click',
+                type: 'date',
                 value: new Date()
             });
         });
 
-        form.on('submit(importAccountStatement)', function(data) {
+        form.on('submit(importAccountStatement)', function (data) {
             // 上传文件已经做了提交，这里不需要再进行表单提交
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });

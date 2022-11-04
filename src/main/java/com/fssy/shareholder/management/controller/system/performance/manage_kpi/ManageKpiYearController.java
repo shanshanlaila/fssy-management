@@ -11,6 +11,7 @@ import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.ManageKpiYearSheetOutputService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
+import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiLibService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiYearService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
@@ -110,7 +111,7 @@ public class ManageKpiYearController {
         model.addAttribute("importDateStart", importDateStart);
         // 查询导入场景
         Map<String, Object> params = new HashMap<>();
-        params.put("noteEq", "经营管理年度项目指标");
+        params.put("noteEq", "年度经营管理指标");
         List<ImportModule> importModules = importModuleService
                 .findImportModuleDataListByParams(params);
         if (ObjectUtils.isEmpty(importModules)) {
@@ -133,6 +134,16 @@ public class ManageKpiYearController {
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                 HttpServletRequest request) {
+        //判断是否选择对应公司、年份
+        Map<String, Object> params = getParams(request);
+        String year = (String) params.get("year");
+        String companyName = (String) params.get("companyName");
+        if (ObjectUtils.isEmpty(params.get("companyName"))) {
+            throw new ServiceException("未选择公司，导入失败");
+        }
+        if (ObjectUtils.isEmpty(params.get("year"))) {
+            throw new ServiceException("未选择年份，导入失败");
+        }
         // 保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -147,7 +158,7 @@ public class ManageKpiYearController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = manageKpiYearService.readManageKpiYearDataSource(result);
+            Map<String, Object> resultMap = manageKpiYearService.readManageKpiYearDataSource(result,year,companyName);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -185,68 +196,50 @@ public class ManageKpiYearController {
         //SQL语句
         params.put("select", "id,companyName,status,projectType,projectDesc,unit,dataSource,benchmarkCompany," +
                 "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,challengeTarget," +
-                "proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,setPolicy,source");
+                "proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,kpiDefinition,kpiDecomposeMode");
         //查询
         List<Map<String, Object>> manageKpiYearMapDataByParams = manageKpiYearService.findManageKpiYearMapDataByParams(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         //需要改变背景的格子
         fieldMap.put("id", "序号");
-        fieldMap.put("companyName", "企业名称");
-        fieldMap.put("status", "项目状态");
         fieldMap.put("projectType", "指标类别");
         fieldMap.put("projectDesc", "项目名称");
+        fieldMap.put("kpiDefinition","管理项目定义（公式）");
         fieldMap.put("unit", "单位");
         fieldMap.put("dataSource", "数据来源部门");
         fieldMap.put("benchmarkCompany", "对标标杆公司名称");
         fieldMap.put("benchmarkValue", "标杆值");
-        fieldMap.put("monitorDepartment", "监控部门名称");
-        fieldMap.put("monitorUser", "监控人姓名");
-        fieldMap.put("year", "年份");
+        fieldMap.put("pastOneYearActual", "过去第一年值");
+        fieldMap.put("pastTwoYearsActual", "过去第二年值");
+        fieldMap.put("pastThreeYearsActual", "过去第三年值");
         fieldMap.put("basicTarget", "基本目标");
         fieldMap.put("mustInputTarget", "必达目标");
         fieldMap.put("reachTarget", "达标目标");
         fieldMap.put("challengeTarget", "挑战目标");
-        fieldMap.put("proportion", "权重");
-        fieldMap.put("pastOneYearActual", "过去第一年值");
-        fieldMap.put("pastTwoYearsActual", "过去第二年值");
-        fieldMap.put("pastThreeYearsActual", "过去第三年值");
-        fieldMap.put("setPolicy", "选取原则");
-        fieldMap.put("source", "KPI来源");
-        fieldMap.put("accumulateTarget", "本年同期目标累计值");
-        fieldMap.put("accumulateActual", "本年同期实际累计值");
         fieldMap.put("目标值1", "目标值");
-        fieldMap.put("实绩值1", "实绩值");
         fieldMap.put("目标值2", "目标值");
-        fieldMap.put("实绩值2", "实绩值");
-        fieldMap.put("目标值3", "目标值");
-        fieldMap.put("实绩值3", "实绩值");
+        fieldMap.put("目标值3", "目标值");;
         fieldMap.put("目标值4", "目标值");
-        fieldMap.put("实绩值4", "实绩值");
-        fieldMap.put("目标值5", "目标值");
-        fieldMap.put("实绩值5", "实绩值");
+        fieldMap.put("目标值5", "目标值");;
         fieldMap.put("目标值6", "目标值");
-        fieldMap.put("实绩值6", "实绩值");
         fieldMap.put("目标值7", "目标值");
-        fieldMap.put("实绩值7", "实绩值");
         fieldMap.put("目标值8", "目标值");
-        fieldMap.put("实绩值8", "实绩值");
         fieldMap.put("目标值9", "目标值");
-        fieldMap.put("实绩值9", "实绩值");
         fieldMap.put("目标值10", "目标值");
-        fieldMap.put("实绩值10", "实绩值");
         fieldMap.put("目标值11", "目标值");
-        fieldMap.put("实绩值11", "实绩值");
         fieldMap.put("目标值12", "目标值");
-        fieldMap.put("实绩值12", "实绩值");
+        fieldMap.put("monitorDepartment", "监控部门名称");
+        fieldMap.put("monitorUser", "监控人姓名");
+        fieldMap.put("kpiDecomposeMode", "指标分解方式");
 
 
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25);
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26,27,28);
         SheetOutputService sheetOutputService = new ManageKpiYearSheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(manageKpiYearMapDataByParams)) {
             throw new ServiceException("未查出数据");
         }
-        sheetOutputService.exportNum("经营管理年度项目指标", manageKpiYearMapDataByParams, fieldMap, response, strList, null);
+        sheetOutputService.exportNum("经营管理年度项目指标填报", manageKpiYearMapDataByParams, fieldMap, response, strList, null);
 
     }
 
@@ -263,6 +256,9 @@ public class ManageKpiYearController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("status"))) {
             params.put("status", request.getParameter("status"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("kpiDefinition"))){
+            params.put("kpiDefinition",request.getParameter("kpiDefinition"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("projectType"))) {
             params.put("projectType", request.getParameter("projectType"));
@@ -320,6 +316,9 @@ public class ManageKpiYearController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("source"))) {
             params.put("source", request.getParameter("source"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("kpiDecomposeMode"))){
+            params.put("kpiDecomposeMode",request.getParameter("kpiDecomposeMode"));
         }
 
         return params;
