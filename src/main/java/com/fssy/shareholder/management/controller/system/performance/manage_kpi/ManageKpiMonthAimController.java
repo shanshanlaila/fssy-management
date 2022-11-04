@@ -1,13 +1,15 @@
 package com.fssy.shareholder.management.controller.system.performance.manage_kpi;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthAimMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
-import com.fssy.shareholder.management.service.common.override.ManageKpiMonthAimSheetOutputService;
+import com.fssy.shareholder.management.service.common.override.ManageKpiYearSheetOutputService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiMonthAimService;
@@ -50,6 +52,9 @@ public class ManageKpiMonthAimController {
     @Autowired
     private ImportModuleService importModuleService;
 
+    @Autowired
+    private ManageKpiMonthAimMapper manageKpiMonthAimMapper;
+
     /**
      * 经营管理月度项目指标 管理页面
      *
@@ -79,7 +84,7 @@ public class ManageKpiMonthAimController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
-        Page<ManageKpiMonthAim> manageKpiMonthPage = manageKpiMonthAimService.findManageKpiMonthDataListPerPageByParams(params);
+        Page<Map<String,Object>> manageKpiMonthPage = manageKpiMonthAimService.findManageKpiMonthDataMapListPerPageByParams(params);
         if (manageKpiMonthPage.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");
@@ -132,6 +137,16 @@ public class ManageKpiMonthAimController {
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                 HttpServletRequest request) {
+        //判断是否选择对应的时间
+        Map<String, Object> params = getParams(request);
+        String year = (String) params.get("year");
+        String companyName = (String) params.get("companyName");
+        if (ObjectUtils.isEmpty(params.get("companyName"))) {
+            throw new ServiceException("未选择公司，导入失败");
+        }
+        if (ObjectUtils.isEmpty(params.get("year"))) {
+            throw new ServiceException("未选择年份，导入失败");
+        }
         // 保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -146,7 +161,7 @@ public class ManageKpiMonthAimController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = manageKpiMonthAimService.readManageKpiMonthDataSource(result);
+            Map<String, Object> resultMap = manageKpiMonthAimService.readManageKpiMonthDataSource(result,companyName,year);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -180,73 +195,70 @@ public class ManageKpiMonthAimController {
     @RequiredLog("数据导出")
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> params = getParams(request);
-        //sql语句
-        params.put("select", "id,companyName,status,projectType,projectDesc,unit,dataSource,benchmarkCompany," +
-                "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,challengeTarget," +
-                "proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,setPolicy,source," +
-                "monthTarget,monthActualValue,accumulateTarget,accumulateActual");
-        //查询
-        List<Map<String, Object>> manageKpiMonthMapDataByParams = manageKpiMonthAimService.findManageKpiMonthMapDataByParams(params);
+        if (ObjectUtils.isEmpty(request.getParameter("companyName"))){
+            throw new ServiceException("导出失败，请选择导出数据的公司");
+        }
+        if (ObjectUtils.isEmpty(request.getParameter("year"))){
+            throw new ServiceException("导出失败，请选择导出数据的年份");
+        }
+        QueryWrapper<ManageKpiMonthAim> manageKpiMonthAimQueryWrapper = new QueryWrapper<>();
+        int month = 1;
+        // sql字符串
+        StringBuilder selectStr1 = new StringBuilder("id,companyName,projectType,projectDesc,unit,benchmarkCompany," +
+                "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,dataSource," +
+                "challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,kpiDefinition,kpiDecomposeMode");
+        do
+        //12个月目标值的循环
+        {
+            selectStr1.append(", sum(if(MONTH =" +  month + ",monthTarget,0)) AS '目标值" + month + "'");
+            month++;
+        } while (month <= 12);
+        //querywrapper查询，分组
+        manageKpiMonthAimQueryWrapper.select(selectStr1.toString()).eq("companyName",request.getParameter("companyName"))
+                .eq("year",request.getParameter("year"))
+                .groupBy("manageKpiYearId");
+        List<Map<String, Object>> manageKpiMonthAims = manageKpiMonthAimMapper.selectMaps(manageKpiMonthAimQueryWrapper);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         //需要改变背景的格子
         fieldMap.put("id", "序号");
-        fieldMap.put("companyName", "企业名称");
-        fieldMap.put("status", "项目状态");
         fieldMap.put("projectType", "指标类别");
         fieldMap.put("projectDesc", "项目名称");
+        fieldMap.put("kpiDefinition","管理项目定义（公式）");
         fieldMap.put("unit", "单位");
         fieldMap.put("dataSource", "数据来源部门");
         fieldMap.put("benchmarkCompany", "对标标杆公司名称");
         fieldMap.put("benchmarkValue", "标杆值");
-        fieldMap.put("monitorDepartment", "监控部门名称");
-        fieldMap.put("monitorUser", "监控人姓名");
-        fieldMap.put("year", "年份");
+        fieldMap.put("pastOneYearActual", "过去第一年值");
+        fieldMap.put("pastTwoYearsActual", "过去第二年值");
+        fieldMap.put("pastThreeYearsActual", "过去第三年值");
         fieldMap.put("basicTarget", "基本目标");
         fieldMap.put("mustInputTarget", "必达目标");
         fieldMap.put("reachTarget", "达标目标");
         fieldMap.put("challengeTarget", "挑战目标");
-        fieldMap.put("proportion", "权重");
-        fieldMap.put("pastOneYearActual", "过去第一年值");
-        fieldMap.put("pastTwoYearsActual", "过去第二年值");
-        fieldMap.put("pastThreeYearsActual", "过去第三年值");
-        fieldMap.put("setPolicy", "选取原则");
-        fieldMap.put("source", "KPI来源");
-        fieldMap.put("accumulateTarget", "本年同期目标累计值");
-        fieldMap.put("accumulateActual", "本年同期实际累计值");
         fieldMap.put("目标值1", "目标值");
-        fieldMap.put("实绩值1", "实绩值");
         fieldMap.put("目标值2", "目标值");
-        fieldMap.put("实绩值2", "实绩值");
-        fieldMap.put("目标值3", "目标值");
-        fieldMap.put("实绩值3", "实绩值");
+        fieldMap.put("目标值3", "目标值");;
         fieldMap.put("目标值4", "目标值");
-        fieldMap.put("实绩值4", "实绩值");
-        fieldMap.put("目标值5", "目标值");
-        fieldMap.put("实绩值5", "实绩值");
+        fieldMap.put("目标值5", "目标值");;
         fieldMap.put("目标值6", "目标值");
-        fieldMap.put("实绩值6", "实绩值");
         fieldMap.put("目标值7", "目标值");
-        fieldMap.put("实绩值7", "实绩值");
         fieldMap.put("目标值8", "目标值");
-        fieldMap.put("实绩值8", "实绩值");
         fieldMap.put("目标值9", "目标值");
-        fieldMap.put("实绩值9", "实绩值");
         fieldMap.put("目标值10", "目标值");
-        fieldMap.put("实绩值10", "实绩值");
         fieldMap.put("目标值11", "目标值");
-        fieldMap.put("实绩值11", "实绩值");
         fieldMap.put("目标值12", "目标值");
-        fieldMap.put("实绩值12", "实绩值");
+        fieldMap.put("monitorDepartment", "监控部门名称");
+        fieldMap.put("monitorUser", "监控人姓名");
+        fieldMap.put("kpiDecomposeMode", "指标分解方式");
+
+
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25);
-        SheetOutputService sheetOutputService = new ManageKpiMonthAimSheetOutputService();
-        if (org.apache.commons.lang3.ObjectUtils.isEmpty(manageKpiMonthMapDataByParams)) {
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26,27,28);
+        SheetOutputService sheetOutputService = new ManageKpiYearSheetOutputService();
+        if (org.apache.commons.lang3.ObjectUtils.isEmpty(manageKpiMonthAims)) {
             throw new ServiceException("未查出数据");
         }
-        sheetOutputService.exportNum("经营管理月度项目指标报表", manageKpiMonthMapDataByParams, fieldMap, response, strList, null);
-
-
+        sheetOutputService.exportNum("经营管理月度目标指标数据报表", manageKpiMonthAims, fieldMap, response, strList, null);
     }
 
     private Map<String, Object> getParams(HttpServletRequest request) {
@@ -337,6 +349,42 @@ public class ManageKpiMonthAimController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("analyzeDesc"))) {
             params.put("analyzeDesc", request.getParameter("analyzeDesc"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值1"))) {
+            params.put("目标值1", request.getParameter("目标值1"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值2"))) {
+            params.put("目标值2", request.getParameter("目标值2"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值3"))) {
+            params.put("目标值3", request.getParameter("目标值3"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值4"))) {
+            params.put("目标值4", request.getParameter("目标值4"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值5"))) {
+            params.put("目标值5", request.getParameter("目标值5"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值6"))) {
+            params.put("目标值6", request.getParameter("目标值6"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值7"))) {
+            params.put("目标值7", request.getParameter("目标值7"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值8"))) {
+            params.put("目标值8", request.getParameter("目标值8"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值9"))) {
+            params.put("目标值9", request.getParameter("目标值9"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值10"))) {
+            params.put("目标值10", request.getParameter("目标值10"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值11"))) {
+            params.put("目标值11", request.getParameter("目标值11"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("目标值12"))) {
+            params.put("目标值12", request.getParameter("目标值12"));
         }
         return params;
 

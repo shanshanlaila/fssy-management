@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>经营管理月度项目指标管理</title>
+    <title>经营管理年度项目指标管理</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -13,7 +13,7 @@
 <!-- 引入xadmin -->
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">经理人绩效管理</a> <a href="">经营管理月度项目指标管理</a>
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">经理人绩效管理</a> <a href="">经营管理年度项目指标管理</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
                                                               style="line-height: 30px"></i>
@@ -36,10 +36,6 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="month" placeholder="创建月份查询" autocomplete="off"
-                                   class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="projectType" placeholder="指标类型查询" autocomplete="off"
                                    class="layui-input">
                         </div>
@@ -56,21 +52,31 @@
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                             <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
-                                    lay-filter="downloadForCharge" title="填写经营管理月度目，导出数据修改">导出月度目标
+                                    lay-filter="downloadForCharge" title="填写经营管理年度项目，导出数据修改">填报模板导出
                             </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button shiro:haspermission="system:manager:manage-kpi-month-aim:index1"
-                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入月度目标
-                                </button>
-                            </div>
                         </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="downloadForChargeMonth">
+                                数据导出
+                            </button>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button shiro:haspermission="system:performance:manager_kpi:manage-kpi-year:index"
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="yearimport">导入年度经营管理指标
+                            </button>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button shiro:haspermission="system:performance:manager_kpi:manage-kpi-month-aim:index"
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="monthimport">导入月度目标
+                            </button>
+                        </div>
+                    </div>
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-                        <a lay-event="edit" title="修改经营管理月度目标信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除经营管理月度目标信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a lay-event="edit" title="修改经营管理年度项目信息"><i class="layui-icon">&#xe642;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -98,17 +104,38 @@
             });
             return false
         });
-        //监听导出按钮
-        form.on('submit(downloadForCharge)',function (data){
+        //监听模板导出按钮
+        form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
-            field.url = "/system/performance/manager_kpi/manage-kpi-month-aim/downloadForCharge";
+            field.url = "/system/performance/manager_kpi/manage-kpi-year/downloadForCharge";
             var url = createUrl(field);
-            layer.msg("正在导出经营管理月度目标，请稍候");
+            layer.msg("正在导出经营管理年度指标填报模板，请稍候");
             window.open(url, true);
             return false;
         });
-        // 导入按钮
-        form.on('submit(import)', function (data) {
+        //监听数据导出按钮
+        form.on('submit(downloadForChargeMonth)', function (data) {
+            var field = data.field;
+            field.url = "/system/performance/manager_kpi/manage-kpi-month-aim/downloadForCharge";
+            var url = createUrl(field);
+            layer.msg("正在导出经营管理年度指标，请稍候");
+            window.open(url, true);
+            return false;
+        });
+        // 经营管理年度导入按钮
+        form.on('submit(yearimport)', function (data) {
+            var createLayer = layer.open({
+                type: 2,
+                title: "上传经营管理年度指标",
+                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                content: '/system/performance/manager_kpi/manage-kpi-year/index',
+                scrollbar: true,
+                maxmin: true,
+            });
+            return false;
+        });
+        // 月度目标导入按钮
+        form.on('submit(monthimport)', function (data) {
             var createLayer = layer.open({
                 type: 2,
                 title: "上传经营管理月度目标",
@@ -136,150 +163,339 @@
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        width: 60
+                        width: 60,
+                        rowspan: 2
                     },
                     {
                         field: 'id',
                         title: '序号',
-                        width: 40
-                    },
-                    {
-                        field: 'manageKpiYearId',
-                        title: '年度序号',
-                        width: 100
+                        width: 80,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'companyName',
                         title: '企业名称',
-                        width: 100
-                    },
-                    {
-                        field: 'status',
-                        title: '项目状态',
-                        width: 80,
+                        width: 100,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'projectType',
                         title: '指标类别',
-                        width: 150
+                        width: 150,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'projectDesc',
                         title: '项目名称',
-                        width: 150
+                        width: 150,
+                        align: 'center',
+                        rowspan: 2
+                    },
+                    {
+                        field: 'kpiDefinition',
+                        title: '管理项目定义（公式）',
+                        width: 150,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'unit',
                         title: '单位',
-                        width: 50
+                        width: 50,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'dataSource',
                         title: '数据来源部门',
-                        width: 100
+                        width: 100,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'benchmarkCompany',
                         title: '对标标杆公司名称',
-                        width: 150
+                        width: 150,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'benchmarkValue',
                         title: '标杆值',
-                        width: 80
-                    },
-                    {
-                        field: 'monitorDepartment',
-                        title: '监控部门名称',
-                        width: 120
-                    },
-                    {
-                        field: 'monitorUser',
-                        title: '监控人姓名',
-                        width: 100
+                        width: 80,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'year',
                         title: '年份',
-                        width: 50
-                    },
-                    {
-                        field: 'month',
-                        title: '月份',
-                        width: 50
-                    },
-                    {
-                        field: 'basicTarget',
-                        title: '基本目标',
-                        width: 80,
-                    },
-                    {
-                        field: 'mustInputTarget',
-                        title: '必达目标',
-                        width: 80
-                    },
-                    {
-                        field: 'reachTarget',
-                        title: '达标目标',
-                        width: 80
-                    },
-                    {
-                        field: 'challengeTarget',
-                        title: '挑战目标',
-                        width: 80
+                        width: 50,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'pastOneYearActual',
                         title: '过去第一年值',
-                        width: 100
+                        width: 100,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'pastTwoYearsActual',
                         title: '过去第二年值',
                         width: 100,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'pastThreeYearsActual',
                         title: '过去第三年值',
-                        width: 100
+                        width: 100,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
-                        field: 'setPolicy',
-                        title: '选取原则',
-                        width: 130
+                        field: 'basicTarget',
+                        title: '基本目标',
+                        width: 80,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
-                        field: 'source',
-                        title: '来源',
-                        width: 100
+                        field: 'mustInputTarget',
+                        title: '必达目标',
+                        width: 80,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
-                        field: 'accumulateTarget',
-                        title: '本年同期目标累计值',
-                        width: 100
+                        field: 'reachTarget',
+                        title: '达标目标',
+                        width: 80,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
-                        field: 'monthActualValue',
-                        title: '本年同期实绩累计值',
-                        width: 130
+                        field: 'challengeTarget',
+                        title: '挑战目标',
+                        width: 80,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
-                        field: 'monthTarget',
-                        title: '目标值',
-                        width: 100
-                    },
-                    {
-                        field: 'monthActualValue',
-                        title: '实绩值',
-                        width: 130
-                    },
 
+                        title: '1月',
+                      /*  value: '目标值1',*/
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '2月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '3月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '4月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '5月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '6月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '7月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '8月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '9月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '10月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '11月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+
+                        title: '12月',
+                        width: 80,
+                        align: 'center',
+                        colspan: 1
+                    },
+                    {
+                        field: 'monitorDepartment',
+                        title: '监控部门名称',
+                        width: 120,
+                        align: 'center',
+                        rowspan: 2
+                    },
+                    {
+                        field: 'monitorUser',
+                        title: '监控人姓名',
+                        width: 100,
+                        align: 'center',
+                        rowspan: 2
+                    },
+                    {
+                        field: 'kpiDecomposeMode',
+                        title: '指标分解类别',
+                        width: 100,
+                        align: 'center',
+                        rowspan: 2
+                    },
                     {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
                         align: 'center',
-                        toolbar: '#tool'
+                        toolbar: '#tool',
+                        rowspan: 2
+                    }
+                ],
+				[
+                    //一月
+                    {
+                        field: '目标值1',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //二月
+                    {
+                        field: '目标值2',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //三月
+                    {
+                        field: '目标值3',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //四月
+                    {
+                        field: '目标值4',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //五月
+                    {
+                        field: '目标值5',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //六月
+                    {
+                        field: '目标值6',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //七月
+                    {
+                        field: '目标值7',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //八月
+                    {
+                        field: '目标值8',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //九月
+                    {
+                        field: '目标值9',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //十月
+                    {
+                        field: '目标值10',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //十一月
+                    {
+                        field: '目标值11',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    //十二月
+                    {
+                        field: '目标值12',
+                        title: '目标值',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
                     }
                 ]
             ]
@@ -303,25 +519,12 @@
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title: '序号为：' + data.id + '的经营管理月度目标信息修改',
+                    title: '序号为：' + data.id + '的经营管理年度指标信息修改',
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/performance/manager_kpi/manage-kpi-month-aim/edit?id=' + data.id,
+                    content: '/system/performance/manager_kpi/manage-kpi-year/edit?id=' + data.id,
                     maxmin: true
-                });
-            } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除序号为：' + data.id + '的月度目标吗？', function () {
-                    $.ajax({
-                        type: 'DELETE',
-                        url: '/system/performance/manager_kpi/manage-kpi-month-aim/' + data.id,
-                        success: function (result) {
-                            layer.msg(result.msg);
-                            if (result.status == 200) {
-                                table.reload('dataTable');
-                            }
-                        }
-                    })
                 });
             }
         });

@@ -26,12 +26,18 @@ public interface ManageKpiMonthAimService extends IService<ManageKpiMonthAim> {
     Page<ManageKpiMonthAim> findManageKpiMonthDataListPerPageByParams(Map<String, Object> params);
 
     /**
+     * 查询一年十二个月的数据，展示查询
+     * @param params
+     * @return
+     */
+    Page<Map<String,Object>> findManageKpiMonthDataMapListPerPageByParams(Map<String,Object> params);
+    /**
      * 读取附件数据到数据库表
      *
      * @param attachment 附件
      * @return 数据列表
      */
-    Map<String, Object> readManageKpiMonthDataSource(Attachment attachment);
+    Map<String, Object> readManageKpiMonthDataSource(Attachment attachment,String companyName,String year);
 
     /**
      * 通过查询条件查询履职计划map数据， 用于导出

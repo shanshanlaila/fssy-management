@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +31,10 @@ public interface ManageKpiYearService {
      * 读取附件数据到数据库表
      *
      * @param attachment 附件
+     * @param year
      * @return 附件map集合
      */
-    Map<String, Object> readManageKpiYearDataSource(Attachment attachment);
+    Map<String, Object> readManageKpiYearDataSource(Attachment attachment, String year,String companyName);
 
     /**
      * 通过查询条件查询履职计划map数据，用于导出
