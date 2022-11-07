@@ -69,11 +69,6 @@
                                 lay-submit="" lay-filter="confirmScore">自动生成分数
                         </button>
                     </div>
-                    <div class="layui-inline layui-show-xs-block">
-                        <button class="layui-btn layui-btn-sm"
-                                lay-submit="" lay-filter="confirmLock">锁定分数
-                        </button>
-                    </div>
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
@@ -111,7 +106,7 @@
         form.on('submit(downloadForCharge)',function (data){
             console.log(data.field)
             var field = data.field;
-            field.url = "/system/manager/manage-kpi-month-score/downloadForCharge";
+            field.url = "/system/performance/manager_kpi/manage-kpi-month-score/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出经营管理月度项目分数，请稍候");
             window.open(url, true);
@@ -123,7 +118,7 @@
             var field = data.field;
             $.ajax({
                 type: 'POST',
-                url: '/system/manager/manage-kpi-month-score/updateScore',
+                url: '/system/performance/manager_kpi/manage-kpi-month-score/updateScore',
                 data: {
                     'companyName':field.companyName,
                     'year':field.year,
@@ -284,14 +279,14 @@
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/manage/manage-kpi-month-score/edit?id=' + data.id,
+                    content: '/system/performance/manager_kpi/manage-kpi-month-score/edit?id=' + data.id,
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
                 layer.confirm('确认删除序号为：' + data.id + '的经营管理月度项目分数吗？', function () {
                     $.ajax({
                         type: 'DELETE',
-                        url: '/system/manage/manage-kpi-month-score/' + data.id,
+                        url: '/system/performance/manager_kpi/manage-kpi-month-score/' + data.id,
                         success: function (result) {
                             layer.msg(result.msg);
                             if (result.status == 200) {

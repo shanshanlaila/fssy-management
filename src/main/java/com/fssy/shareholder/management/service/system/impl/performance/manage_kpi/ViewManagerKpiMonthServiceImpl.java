@@ -149,7 +149,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                 managerKpiScore.setMonth(temp.getMonth());
                 managerKpiScore.setBusinessScore(businessScore);
                 managerKpiScore.setIncentiveScore(incentiveScore);
-                managerKpiScore.setScoreSys(scoreSys);
+                managerKpiScore.setScoreAuto(scoreSys);
                 managerKpiScore.setScoreAdjust(scoreSys);
                 managerKpiScore.setGeneralManagerScore(scoreSys);
 //                System.out.println("************************************");

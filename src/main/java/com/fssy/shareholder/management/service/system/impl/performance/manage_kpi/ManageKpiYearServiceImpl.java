@@ -164,6 +164,7 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             manageKpiYear.setId(Integer.valueOf(id));
             manageKpiYear.setKpiLibId(manageKpiLib.getId());  //指标库id
             manageKpiYear.setProjectType(projectType);
+            manageKpiYear.setKpiDefinition(kpiDefinition);
             manageKpiYear.setProjectDesc(projectDesc);
             manageKpiYear.setUnit(unit);
             manageKpiYear.setDataSource(dataSource);

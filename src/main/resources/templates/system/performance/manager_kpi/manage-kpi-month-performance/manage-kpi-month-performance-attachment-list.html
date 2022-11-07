@@ -55,30 +55,36 @@
                     <script type="text/html" id="toolbar">
 
                         <form class="layui-form layui-col-space5">
-<!--                            <div class="layui-inline layui-show-xs-block">-->
-<!--                                <label class="">公司名称</label>-->
-<!--                            </div>-->
+
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="companyName" id="companyName" autocomplete="off" placeholder="请输入公司名称"
-                                       class="" style="width: 110px;height: 30px">
+                                <label class="layui-form-label"
+                                       style="width: 80px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;公司名称</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="公司名称" id="companyName"
+                                           name="companyName"
+                                           lay-verify="" lay-reqText="公司名称为必填项">
+                                </div>
                             </div>
-<!--                            <div class="layui-inline layui-show-xs-block">-->
-<!--                                <label class="">年份</label>-->
-<!--                            </div>-->
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="year" id="year" autocomplete="off" placeholder="请输入年份"
-                                       class="" style="width: 80px;height: 30px">
+                                <label class="layui-form-label"
+                                       style="width: 50px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;年份</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="年份" id="year" name="year"
+                                           lay-verify="" lay-reqText="年份为必填项">
+                                </div>
                             </div>
-<!--                            <div class="layui-inline layui-show-xs-block">-->
-<!--                                <label class="">月份</label>-->
-<!--                            </div>-->
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="month" id="month" autocomplete="off" placeholder="请输入月份"
-                                       class="" style="width: 80px;height: 30px">
+                                <label class="layui-form-label"
+                                       style="width: 50px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;月份</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="月份" id="month" name="month"
+                                           lay-verify="" lay-reqText="年份为必填项">
+                                </div>
                             </div>
-<!--                            <div class="layui-inline layui-show-xs-block">-->
-<!--                                <button type="button" class="layui-btn" lay-submit id="" lay-filter="">验证</button>-->
-<!--                            </div>-->
+
                             <div class="layui-inline layui-show-xs-block">
                                 <input type="text" name="importDate" id="importDate" placeholder="导入日期" autocomplete="off"
                                        class="layui-input laydate">

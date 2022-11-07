@@ -147,13 +147,6 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             String accumulateTarget = cells.get(SheetService.columnToIndex("R"));
             String accumulateActual = cells.get(SheetService.columnToIndex("S"));
             String analyzeRes = cells.get(SheetService.columnToIndex("T"));
-//            String proportion = cells.get(SheetService.columnToIndex("Q"));
-//            String source = cells.get(SheetService.columnToIndex("U"));
-//            String monthTarget = cells.get(SheetService.columnToIndex("V"));
-//            String monthActualValue = cells.get(SheetService.columnToIndex("W"));
-//            String accumulateTarget = cells.get(SheetService.columnToIndex("X"));
-//            String accumulateActual = cells.get(SheetService.columnToIndex("Y"));
-//            String analyzeDesc = cells.get(SheetService.columnToIndex("Z"));
             // 判斷空值
             if (ObjectUtils.isEmpty(basicTarget)) {
                 basicTarget = "0";
@@ -161,20 +154,6 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             if (ObjectUtils.isEmpty(mustInputTarget)) {
                 mustInputTarget = "0";
             }
-//            // projectDesc、dataSource和projectType找月度报表对应的id，后导入id
-//            QueryWrapper<ManageKpiYear> manageKpiYearQueryWrapper = new QueryWrapper<>();
-//            manageKpiYearQueryWrapper.eq("projectDesc", projectDesc).eq("projectType", projectType).eq("dataSource",dataSource);
-//            List<ManageKpiYear> manageKpiYears = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper);
-//            if (manageKpiYears.size()>1){
-//                setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));
-//                cell.setCellValue("存在多个指标，检查指标、年份和公司名称是否正确");
-//                continue;
-//            } if(manageKpiYears.size()==0) {
-//                setFailedContent(result, String.format("第%s行的指标不存在", j + 1));
-//                cell.setCellValue("指标不存在，检查指标、年份和公司名称是否正确");
-//                continue;
-//            }
-//            ManageKpiYear manageKpiYear = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper).get(0);
             //构建实体类
             ManageKpiMonthPerformance manageKpiMonthPerformance = new ManageKpiMonthPerformance();
             manageKpiMonthPerformance.setId(Integer.valueOf(id));
@@ -197,7 +176,7 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             manageKpiMonthPerformance.setMonthActualValue(new BigDecimal(monthActualValue));
             manageKpiMonthPerformance.setAccumulateTarget(new BigDecimal(accumulateTarget));
             manageKpiMonthPerformance.setAccumulateActual(new BigDecimal(accumulateActual));
-            manageKpiMonthPerformance.setAnalyzeDesc(analyzeRes);
+            manageKpiMonthPerformance.setAnalyzeRes(analyzeRes);
 
             // 根据id进行判断，存在则更新，不存在则新增
             saveOrUpdate(manageKpiMonthPerformance);

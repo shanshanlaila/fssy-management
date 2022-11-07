@@ -135,17 +135,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             String companyName = cells.get(SheetService.columnToIndex("B"));
             String year = cells.get(SheetService.columnToIndex("C"));
             String projectDesc = cells.get(SheetService.columnToIndex("D"));
-//            String unit = cells.get(SheetService.columnToIndex("E"));
             String dataSource = cells.get(SheetService.columnToIndex("F"));
-//            String benchmarkCompany = cells.get(SheetService.columnToIndex("G"));
-//            String benchmarkValue = cells.get(SheetService.columnToIndex("H"));
-//            String pastThreeYearsActual = cells.get(SheetService.columnToIndex("I"));
-//            String pastTwoYearsActual = cells.get(SheetService.columnToIndex("J"));
-//            String pastOneYearActual = cells.get(SheetService.columnToIndex("K"));
-//            String basicTarget = cells.get(SheetService.columnToIndex("L"));
-//            String mustInputTarget = cells.get(SheetService.columnToIndex("M"));
-//            String reachTarget = cells.get(SheetService.columnToIndex("N"));
-//            String challengeTarget = cells.get(SheetService.columnToIndex("O"));
             String managerName = cells.get(SheetService.columnToIndex("P"));
             String proportion = cells.get(SheetService.columnToIndex("Q"));
             // 判斷空值
@@ -175,20 +165,11 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             //构建实体类
             ManagerKpiYear managerKpiYear = new ManagerKpiYear();
             managerKpiYear.setId(Integer.valueOf(id));
+            managerKpiYear.setManageKpiYearId(manageKpiYear.getId());  //年度指标id
             managerKpiYear.setCompanyName(companyName);
             managerKpiYear.setYear(Integer.valueOf(year));
             managerKpiYear.setProjectDesc(projectDesc);
-//            viewManagerKpiYear.setUnit(unit);
             managerKpiYear.setDataSource(dataSource);
-//            viewManagerKpiYear.setBenchmarkCompany(benchmarkCompany);
-//            viewManagerKpiYear.setBenchmarkValue(benchmarkValue);
-//            viewManagerKpiYear.setPastThreeYearsActual(pastThreeYearsActual);
-//            viewManagerKpiYear.setPastTwoYearsActual(pastTwoYearsActual);
-//            viewManagerKpiYear.setPastOneYearActual(pastOneYearActual);
-//            viewManagerKpiYear.setBasicTarget(basicTarget);
-//            viewManagerKpiYear.setMustInputTarget(mustInputTarget);
-//            viewManagerKpiYear.setReachTarget(reachTarget);
-//            viewManagerKpiYear.setChallengeTarget(challengeTarget);
             managerKpiYear.setManagerName(managerName);
             managerKpiYear.setProportion(new BigDecimal(proportion));
 

@@ -103,9 +103,9 @@ public class ManageKpiMonthPerformanceController {
         if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))) {
                 params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));
         }
-//        if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
-//            params.put("companyName", request.getParameter("companyName"));
-//        }
+        if (!ObjectUtils.isEmpty(request.getParameter("kpiDefinition"))) {
+            params.put("kpiDefinition", request.getParameter("kpiDefinition"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("projectType"))) {
             params.put("projectType", request.getParameter("projectType"));
         }
@@ -163,22 +163,15 @@ public class ManageKpiMonthPerformanceController {
         if (!ObjectUtils.isEmpty(request.getParameter("analyzeRes"))) {
             params.put("analyzeRes", request.getParameter("analyzeRes"));
         }
-
-//        if (!ObjectUtils.isEmpty(request.getParameter("monitorUser"))) {
-//            params.put("monitorUser", request.getParameter("monitorUser"));
-//        }
-//        if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
-//            params.put("year", request.getParameter("year"));
-//        }
-//        if (!ObjectUtils.isEmpty(request.getParameter("setPolicy"))) {
-//            params.put("setPolicy", request.getParameter("setPolicy"));
-//        }
-//        if (!ObjectUtils.isEmpty(request.getParameter("source"))) {
-//            params.put("source", request.getParameter("source"));
-//        }
-//        if (!ObjectUtils.isEmpty(request.getParameter("analyzeDesc"))) {
-//            params.put("analyzeDesc", request.getParameter("analyzeDesc"));
-//        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
+            params.put("companyName", request.getParameter("companyName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
+            params.put("year", request.getParameter("year"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("month"))) {
+            params.put("month", request.getParameter("month"));
+        }
         return params;
     }
 
@@ -268,6 +261,20 @@ public class ManageKpiMonthPerformanceController {
     @PostMapping("uploadFile")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file")MultipartFile file, Attachment attachment, HttpServletRequest request){
+        //判断是否选择对应公司、年份
+        Map<String, Object> params = getParams(request);
+        String year = (String) params.get("year");
+        String companyName = (String) params.get("companyName");
+        String month = (String) params.get("month");
+        if (ObjectUtils.isEmpty(params.get("companyName"))) {
+            throw new ServiceException("未选择公司，导入失败");
+        }
+        if (ObjectUtils.isEmpty(params.get("year"))) {
+            throw new ServiceException("未选择年份，导入失败");
+        }
+        if (ObjectUtils.isEmpty(params.get("month"))) {
+            throw new ServiceException("未选择月份，导入失败");
+        }
         //保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
