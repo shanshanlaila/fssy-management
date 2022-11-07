@@ -20,18 +20,25 @@ import java.util.Map;
 public interface ManageKpiMonthPerformanceService extends IService<ManageKpiMonthPerformance> {
 
     /**
-     * 通过查询条件 分页 查询列表
+     * 通过月份查询条件 分页 查询列表
      * @param params 查询条件
      * @return 分页数据
      */
     Page<ManageKpiMonthPerformance> findManageKpiMonthDataListPerPageByParams(Map<String, Object> params);
 
     /**
+     * 查询一年十二个月的数据，展示查询,包含条件查询
+     * @param params
+     * @return
+     */
+    Page<Map<String,Object>> findManageKpiMonthDataMapListPerPageByParams(Map<String,Object> params);
+
+    /**
      * 读取附件数据到数据库表
      * @param attachment 附件
      * @return 附件map集合
      */
-    Map<String,Object> readManageKpiMonthDataSource(Attachment attachment);
+    Map<String,Object> readManageKpiMonthDataSource(Attachment attachment, String companyName, String year,String month);
 
     /**
      * 通过查询条件查询履职计划map数据，用于导出

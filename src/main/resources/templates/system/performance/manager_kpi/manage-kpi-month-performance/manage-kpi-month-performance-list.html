@@ -28,25 +28,29 @@
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="projectType" placeholder="重点工作" autocomplete="off"
+                            <input type="text" name="companyName" placeholder="公司名称查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="projectDesc" placeholder="管理项目" autocomplete="off"
+                            <input type="text" name="year" placeholder="创建年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="dataSource" placeholder="数据来源部门" autocomplete="off"
+                            <input type="text" name="month" placeholder="创建月份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="benchmarkCompany" placeholder="对标企业名称" autocomplete="off"
+                            <input type="text" name="projectType" placeholder="指标类型查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-<!--                        <div class="layui-inline layui-show-xs-block" style="width: 130px;">-->
-<!--                            <input type="text" name="dataSource" placeholder="数据来源部门查询" autocomplete="off"-->
-<!--                                   class="layui-input">-->
-<!--                        </div>-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="projectDesc" placeholder="项目名称查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="dataSource" placeholder="数据来源部门查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
@@ -66,7 +70,6 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="edit" title="修改经营管理月度实绩项目信息"><i class="layui-icon">&#xe642;</i></a>
-<!--                        <a lay-event="delete" title="删除经营管理月度实绩项目信息"><i class="layui-icon">&#xe640;</i></a>-->
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -97,6 +100,17 @@
         //监听导出按钮
         form.on('submit(downloadForCharge)',function (data){
             var field = data.field;
+            var companyName = data.field.companyName;
+            var year =data.field.year;
+            if (year == ""){
+                layer.msg("年份为空！");
+                return false;
+            }
+            if(companyName == "")
+            {
+                layer.msg("公司名称未空!");
+                return false;
+            }
             field.url = "/system/performance/manager_kpi/manage-kpi-month-performance/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出经营管理月度实绩指标，请稍候");
@@ -127,6 +141,7 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
+            where:{month:'1'},
             cols: [
                 [
                     {
@@ -136,7 +151,7 @@
                         rowspan: 2
                     },
                     {
-                        field: 'id',
+                        field: 'manageKpiYearId',
                         title: '序号',
                         align: 'center',
                         width: 80,
@@ -177,7 +192,6 @@
                         width: 80,
                         rowspan: 2
                     },
-                    //------------------
                     {
                         title: '项目对标标杆',
                         colspan: 2,
@@ -191,7 +205,7 @@
                         align: 'center',
                     },
                     {
-                        title: '2021年目标值',
+                        title: '当年目标值',
                         colspan: 4,
                         width: 320,
                         align: 'center',
@@ -201,6 +215,12 @@
                         colspan: 2,
                         width: 160,
                         align: 'center',
+                    },
+                    {
+                        field: 'analyzeRes',
+                        title: '未达成或劣化原因分析',
+                        width: 170,
+                        rowspan: 2
                     },
                     {
                         title: '一月',
@@ -273,13 +293,6 @@
                         colspan: 2,
                         width: 160,
                         align: 'center',
-                    },
-                    //-----------------
-                    {
-                        field: 'analyzeRes',
-                        title: '未达成或劣化原因分析',
-                        width: 170,
-                        rowspan: 2
                     },
                     {
                         fixed: 'right',
@@ -355,28 +368,28 @@
                     //管理指标月度完成情况
                     {
                         field: 'monthTarget',
-                        title: '月度目标值',
+                        title: '累计目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
                         field: 'monthActualValue',
-                        title: '月度实绩值',
+                        title: '累计实绩值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     //一月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget1',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual1',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -384,14 +397,14 @@
                     },
                     //二月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget2',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual2',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -399,14 +412,14 @@
                     },
                     //三月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget3',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual3',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -414,14 +427,14 @@
                     },
                     //四月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget4',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual4',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -429,14 +442,14 @@
                     },
                     //五月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget5',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual5',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -444,14 +457,14 @@
                     },
                     //六月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget6',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual6',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -459,14 +472,14 @@
                     },
                     //七月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget7',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual7',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -474,14 +487,14 @@
                     },
                     //八月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget8',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual8',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -489,14 +502,14 @@
                     },
                     //九月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget9',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual9',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -504,14 +517,14 @@
                     },
                     //十月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget10',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual10',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -519,14 +532,14 @@
                     },
                     //十一月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget11',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual11',
                         title: '实际值',
                         align: 'center',
                         width: 80,
@@ -534,14 +547,14 @@
                     },
                     //十二月
                     {
-                        field: 'accumulateTarget',
+                        field: 'monthTarget12',
                         title: '目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'accumulateActual',
+                        field: 'monthActual12',
                         title: '实际值',
                         align: 'center',
                         width: 80,

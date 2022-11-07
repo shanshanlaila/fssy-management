@@ -47,14 +47,7 @@
                             <input type="text" name="dataSource" placeholder="数据来源部门查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn" lay-submit lay-filter="search">
-                                <i class="layui-icon">&#xe615;</i>
-                            </button>
-                            <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
-                                    lay-filter="downloadForCharge" title="填写经营管理年度项目，导出数据修改">填报模板导出
-                            </button>
-                        </div>
+
                         <div class="layui-inline layui-show-xs-block">
                             <button
                                     class="layui-btn layui-btn-sm" lay-submit="" lay-filter="downloadForChargeMonth">
@@ -116,6 +109,17 @@
         //监听数据导出按钮
         form.on('submit(downloadForChargeMonth)', function (data) {
             var field = data.field;
+            var companyName = data.field.companyName;
+            var year =data.field.year;
+            if (year == ""){
+                layer.msg("年份为空！");
+                return false;
+            }
+            if(companyName == "")
+            {
+                layer.msg("公司名称未空!");
+                return false;
+            }
             field.url = "/system/performance/manager_kpi/manage-kpi-month-aim/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出经营管理年度指标，请稍候");
@@ -401,7 +405,7 @@
 				[
                     //一月
                     {
-                        field: '目标值1',
+                        field: 'month1',
                         title: '目标值',
                         align: 'center',
                         width: 80
@@ -414,7 +418,7 @@
                     },
                     //二月
                     {
-                        field: '目标值2',
+                        field: 'month2',
                         title: '目标值',
                         align: 'center',
                         width: 80
@@ -427,7 +431,7 @@
                     },
                     //三月
                     {
-                        field: '目标值3',
+                        field: 'month3',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -441,7 +445,7 @@
                     },
                     //四月
                     {
-                        field: '目标值4',
+                        field: 'month4',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -455,7 +459,7 @@
                     },
                     //五月
                     {
-                        field: '目标值5',
+                        field: 'month5',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -469,7 +473,7 @@
                     },
                     //六月
                     {
-                        field: '目标值6',
+                        field: 'month6',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -483,7 +487,7 @@
                     },
                     //七月
                     {
-                        field: '目标值7',
+                        field: 'month7',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -497,7 +501,7 @@
                     },
                     //八月
                     {
-                        field: '目标值8',
+                        field: 'month8',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -511,7 +515,7 @@
                     },
                     //九月
                     {
-                        field: '目标值9',
+                        field: 'month9',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -525,7 +529,7 @@
                     },
                     //十月
                     {
-                        field: '目标值10',
+                        field: 'month10',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -539,7 +543,7 @@
                     },
                     //十一月
                     {
-                        field: '目标值11',
+                        field: 'month11',
                         title: '目标值',
                         align: 'center',
                         width: 80,
@@ -553,7 +557,7 @@
                     },
                     //十二月
                     {
-                        field: '目标值12',
+                        field: 'month12',
                         title: '目标值',
                         align: 'center',
                         width: 80,

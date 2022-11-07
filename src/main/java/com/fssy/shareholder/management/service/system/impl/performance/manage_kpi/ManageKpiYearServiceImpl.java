@@ -95,6 +95,19 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
         List<ManageKpiYear> manageKpiYears = new ArrayList<>(); //实体类集合，用于后面的批量写入数据库
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
+        //获取年份和公司名称
+        Cell companyCell = sheet.getRow(1).getCell(SheetService.columnToIndex("B"));
+        Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("F"));
+        String companyCellValue = sheetService.getValue(companyCell);
+        String yearCellValue = sheetService.getValue(yearCell);
+
+        //效验年份、公司名称
+        if (!year.equals(yearCellValue)){
+            throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
+        }
+        if (!companyName.equals(companyCellValue)){
+            throw new ServiceException("导入的公司名称与excel中的年份不一致，导入失败");
+        }
         // 循环总行数(不读表的标题，从第1行开始读)
         for (int j = 4; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
@@ -141,7 +154,7 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
 
             // 根据项目名称和年份找指标库对应的id，后导入id
             QueryWrapper<ManageKpiLib> manageKpiLibQueryWrapper = new QueryWrapper<>();
-            manageKpiLibQueryWrapper.eq("projectDesc", projectDesc).eq("kpiYear", year);
+            manageKpiLibQueryWrapper.eq("projectDesc", projectDesc);
             List<ManageKpiLib> manageKpiLibs = manageKpiLibMapper.selectList(manageKpiLibQueryWrapper);
             if (manageKpiLibs.size() > 1) {
                 setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));

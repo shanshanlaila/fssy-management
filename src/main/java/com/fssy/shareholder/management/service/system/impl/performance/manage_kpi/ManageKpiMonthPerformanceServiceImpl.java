@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthPerformanceMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiYearMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiLib;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthPerformance;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 import com.fssy.shareholder.management.service.common.SheetService;
@@ -17,6 +19,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,17 +51,34 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
 
     /**
      * 通过查询条件 分页 查询列表
+     *
      * @param params 查询条件
      * @return 分页数据
      */
     @Override
     public Page<ManageKpiMonthPerformance> findManageKpiMonthDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManageKpiMonthPerformance> queryWrapper = getQueryWrapper(params);
-        int limit = (int)params.get("limit");
-        int page = (int)params.get("page");
-        Page<ManageKpiMonthPerformance> myPage = new Page<>(page,limit);
-        return manageKpiMonthPerformanceMapper.selectPage(myPage,queryWrapper);
+        int limit = (int) params.get("limit");
+        int page = (int) params.get("page");
+        Page<ManageKpiMonthPerformance> myPage = new Page<>(page, limit);
+        return manageKpiMonthPerformanceMapper.selectPage(myPage, queryWrapper);
     }
+
+    /**
+     * 查询一年十二个月的数据，展示查询,包含条件查询
+     *
+     * @param params
+     * @return
+     */
+    @Override
+    public Page<Map<String, Object>> findManageKpiMonthDataMapListPerPageByParams(Map<String, Object> params) {
+        QueryWrapper<ManageKpiMonthPerformance> queryWrapper = getQueryWrapper(params);
+        int limit = (int) params.get("limit");
+        int page = (int) params.get("page");
+        Page<Map<String, Object>> myPage = new Page<>(page, limit);
+        return manageKpiMonthPerformanceMapper.selectMapsPage(myPage, queryWrapper);
+    }
+
     /**
      * 设置失败的内容
      *
@@ -74,14 +94,16 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
         }
         result.put("failed", true);
     }
+
     /**
      * 读取附件数据到数据库表
+     *
      * @param attachment 附件
      * @return 附件map集合
      */
     @Override
     @Transactional
-    public Map<String, Object> readManageKpiMonthDataSource(Attachment attachment) {
+    public Map<String, Object> readManageKpiMonthDataSource(Attachment attachment, String companyName, String year,String month) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -100,6 +122,25 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
         List<ManageKpiMonthPerformance> manageKpiMonthPerformances = new ArrayList<>(); //实体类集合，用于后面的批量写入数据库
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
+
+        //获取年份月份值
+        Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("H"));
+        Cell monthCell = sheet.getRow(1).getCell(SheetService.columnToIndex("L"));
+        Cell companyCell = sheet.getRow(1).getCell(SheetService.columnToIndex("B"));
+        String companyCellValue = sheetService.getValue(companyCell);
+        String monthCellValue = sheetService.getValue(monthCell);
+        String yearCellValue = sheetService.getValue(yearCell);
+        //效验年份、公司名称
+        if (!companyName.equals(companyCellValue)){
+            throw new ServiceException("导入的公司名称与excel中的名称不一致，导入失败");
+        }
+        if (!year.equals(yearCellValue)){
+            throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
+        }
+        if (!month.equals(monthCellValue)){
+            throw new ServiceException("导入的月份与excel中的名称不一致，导入失败");
+        }
+
         // 循环总行数(不读表的标题，从第1行开始读)
         //sheet.getLastRowNum();返回最后一行的索引，即比行总数小1
         for (int j = 3; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
@@ -147,20 +188,31 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             String accumulateTarget = cells.get(SheetService.columnToIndex("R"));
             String accumulateActual = cells.get(SheetService.columnToIndex("S"));
             String analyzeRes = cells.get(SheetService.columnToIndex("T"));
-            // 判斷空值
-            if (ObjectUtils.isEmpty(basicTarget)) {
-                basicTarget = "0";
+
+            //根据副标题中的年份、公司、月份和excel中的项目名称，对月份表进行查询找到唯一的id，再根据id进行导入
+            QueryWrapper<ManageKpiMonthPerformance> manageKpiMonthPerformanceQueryWrapper = new QueryWrapper<>();
+            manageKpiMonthPerformanceQueryWrapper.eq("year",yearCellValue)
+                    .eq("companyName",companyCellValue).eq("month",monthCellValue).eq("projectDesc",projectDesc);
+            List<ManageKpiMonthPerformance> monthPerformances = manageKpiMonthPerformanceMapper.selectList(manageKpiMonthPerformanceQueryWrapper);
+            if (monthPerformances.size()>1){
+                setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));
+                cell.setCellValue("存在多个指标，检查数据是否正确");
+                continue;
             }
-            if (ObjectUtils.isEmpty(mustInputTarget)) {
-                mustInputTarget = "0";
+            if (monthPerformances.size() == 0) {
+                setFailedContent(result, String.format("第%s行的指标不存在", j + 1));
+                cell.setCellValue("指标不存在，检查数据是否正确");
+                continue;
             }
+            ManageKpiMonthPerformance performance = monthPerformances.get(0);
+
             //构建实体类
             ManageKpiMonthPerformance manageKpiMonthPerformance = new ManageKpiMonthPerformance();
-            manageKpiMonthPerformance.setId(Integer.valueOf(id));
+            manageKpiMonthPerformance.setId(Integer.valueOf(performance.getId()));
 //            manageKpiMonthPerformance.setManageKpiYearId(manageKpiYear.getId());
             manageKpiMonthPerformance.setProjectType(projectType);
             manageKpiMonthPerformance.setProjectDesc(projectDesc);
-            manageKpiMonthPerformance.setProjectDesc(kpiFormula);
+            manageKpiMonthPerformance.setKpiFormula(kpiFormula);
             manageKpiMonthPerformance.setDataSource(dataSource);
             manageKpiMonthPerformance.setUnit(unit);
             manageKpiMonthPerformance.setBenchmarkCompany(benchmarkCompany);
@@ -177,7 +229,8 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             manageKpiMonthPerformance.setAccumulateTarget(new BigDecimal(accumulateTarget));
             manageKpiMonthPerformance.setAccumulateActual(new BigDecimal(accumulateActual));
             manageKpiMonthPerformance.setAnalyzeRes(analyzeRes);
-
+            manageKpiMonthPerformance.setMonth(Integer.parseInt(monthCellValue));
+            manageKpiMonthPerformance.setYear(Integer.parseInt(yearCellValue));
             // 根据id进行判断，存在则更新，不存在则新增
             saveOrUpdate(manageKpiMonthPerformance);
             cell.setCellValue("导入成功");
@@ -188,6 +241,7 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
 
     /**
      * 通过查询条件查询履职计划map数据，用于导出
+     *
      * @param params 查询条件
      * @return 数据列表
      */
@@ -196,11 +250,22 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
         QueryWrapper<ManageKpiMonthPerformance> queryWrapper = getQueryWrapper(params);
         return manageKpiMonthPerformanceMapper.selectMaps(queryWrapper);
     }
-    private QueryWrapper<ManageKpiMonthPerformance> getQueryWrapper(Map<String,Object> params){
+
+    private QueryWrapper<ManageKpiMonthPerformance> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ManageKpiMonthPerformance> queryWrapper = new QueryWrapper<>();
-//        if (params.containsKey("id")) {
-//            queryWrapper.eq("id", params.get("id"));
-//        }
+        int month = 1;
+        // 达成数量
+        StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany," +
+                "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,dataSource," +
+                "challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,kpiDefinition,kpiDecomposeMode,analyzeRes");
+        do {
+            selectStr1.append(", sum(if(MONTH =" + month + ",monthTarget,null)) AS 'monthTarget" + month + "'"
+                    + ", sum(if(MONTH =" + month + ",monthActualValue,null)) AS 'monthActual" + month + "'");
+            month++;
+        } while (month <= 12);
+        queryWrapper.select(selectStr1.toString())
+                .groupBy("manageKpiYearId");
+
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
         }
