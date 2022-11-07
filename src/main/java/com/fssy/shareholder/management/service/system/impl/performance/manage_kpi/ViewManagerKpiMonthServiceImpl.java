@@ -89,7 +89,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
         //条件查询出所有数据，进行未锁定进行筛选
         List<ViewManagerKpiMonth> ViewManagerKpiMonths = viewManagerKpiMonthMapper.selectList(queryWrapper);
         List<ViewManagerKpiMonth> filterList = ViewManagerKpiMonths.stream()
-                .filter(i -> i.getStatus().equals("已分析")).collect(Collectors.toList());
+                .filter(i -> i.getStatus().equals("已锁定")).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(filterList)) {
             throw new ServiceException("没有查出数据或已生成！生成失败！");
         }

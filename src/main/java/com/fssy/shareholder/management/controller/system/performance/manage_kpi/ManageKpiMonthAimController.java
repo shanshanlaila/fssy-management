@@ -163,7 +163,7 @@ public class ManageKpiMonthAimController {
             // 读取附件并保存数据
             Map<String, Object> resultMap = manageKpiMonthAimService.readManageKpiMonthDataSource(result,companyName,year);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
-                attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
+                attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
                 return SysResult.build(200, "表中有空值，未导入成功的数据请看附件导入列表页面！请重新导入失败的数据");
             } else {
@@ -195,12 +195,6 @@ public class ManageKpiMonthAimController {
     @RequiredLog("数据导出")
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
-        if (ObjectUtils.isEmpty(request.getParameter("companyName"))){
-            throw new ServiceException("导出失败，请选择导出数据的公司");
-        }
-        if (ObjectUtils.isEmpty(request.getParameter("year"))){
-            throw new ServiceException("导出失败，请选择导出数据的年份");
-        }
         QueryWrapper<ManageKpiMonthAim> manageKpiMonthAimQueryWrapper = new QueryWrapper<>();
         int month = 1;
         // sql字符串
@@ -210,7 +204,7 @@ public class ManageKpiMonthAimController {
         do
         //12个月目标值的循环
         {
-            selectStr1.append(", sum(if(MONTH =" +  month + ",monthTarget,0)) AS '目标值" + month + "'");
+            selectStr1.append(", sum(if(MONTH =" +  month + ",monthTarget,0)) AS 'month" + month + "'");
             month++;
         } while (month <= 12);
         //querywrapper查询，分组
@@ -235,18 +229,18 @@ public class ManageKpiMonthAimController {
         fieldMap.put("mustInputTarget", "必达目标");
         fieldMap.put("reachTarget", "达标目标");
         fieldMap.put("challengeTarget", "挑战目标");
-        fieldMap.put("目标值1", "目标值");
-        fieldMap.put("目标值2", "目标值");
-        fieldMap.put("目标值3", "目标值");;
-        fieldMap.put("目标值4", "目标值");
-        fieldMap.put("目标值5", "目标值");;
-        fieldMap.put("目标值6", "目标值");
-        fieldMap.put("目标值7", "目标值");
-        fieldMap.put("目标值8", "目标值");
-        fieldMap.put("目标值9", "目标值");
-        fieldMap.put("目标值10", "目标值");
-        fieldMap.put("目标值11", "目标值");
-        fieldMap.put("目标值12", "目标值");
+        fieldMap.put("month1", "目标值");
+        fieldMap.put("month2", "目标值");
+        fieldMap.put("month3", "目标值");;
+        fieldMap.put("month4", "目标值");
+        fieldMap.put("month5", "目标值");;
+        fieldMap.put("month6", "目标值");
+        fieldMap.put("month7", "目标值");
+        fieldMap.put("month8", "目标值");
+        fieldMap.put("month9", "目标值");
+        fieldMap.put("month10", "目标值");
+        fieldMap.put("month11", "目标值");
+        fieldMap.put("month12", "目标值");
         fieldMap.put("monitorDepartment", "监控部门名称");
         fieldMap.put("monitorUser", "监控人姓名");
         fieldMap.put("kpiDecomposeMode", "指标分解方式");
@@ -353,41 +347,41 @@ public class ManageKpiMonthAimController {
         if (!ObjectUtils.isEmpty(request.getParameter("analyzeDesc"))) {
             params.put("analyzeDesc", request.getParameter("analyzeDesc"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值1"))) {
-            params.put("目标值1", request.getParameter("目标值1"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month1"))) {
+            params.put("month1", request.getParameter("month1"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值2"))) {
-            params.put("目标值2", request.getParameter("目标值2"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month2"))) {
+            params.put("month2", request.getParameter("month2"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值3"))) {
-            params.put("目标值3", request.getParameter("目标值3"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month3"))) {
+            params.put("month3", request.getParameter("month3"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值4"))) {
-            params.put("目标值4", request.getParameter("目标值4"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month4"))) {
+            params.put("month4", request.getParameter("month4"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值5"))) {
-            params.put("目标值5", request.getParameter("目标值5"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month5"))) {
+            params.put("month5", request.getParameter("month5"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值6"))) {
-            params.put("目标值6", request.getParameter("目标值6"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month6"))) {
+            params.put("month6", request.getParameter("month6"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值7"))) {
-            params.put("目标值7", request.getParameter("目标值7"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month7"))) {
+            params.put("month7", request.getParameter("month7"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值8"))) {
-            params.put("目标值8", request.getParameter("目标值8"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month8"))) {
+            params.put("month8", request.getParameter("month8"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值9"))) {
-            params.put("目标值9", request.getParameter("目标值9"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month9"))) {
+            params.put("month9", request.getParameter("month9"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值10"))) {
-            params.put("目标值10", request.getParameter("目标值10"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month10"))) {
+            params.put("month10", request.getParameter("month10"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值11"))) {
-            params.put("目标值11", request.getParameter("目标值11"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month11"))) {
+            params.put("month11", request.getParameter("month11"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("目标值12"))) {
-            params.put("目标值12", request.getParameter("目标值12"));
+        if (!ObjectUtils.isEmpty(request.getParameter("month12"))) {
+            params.put("month12", request.getParameter("month12"));
         }
         return params;
 

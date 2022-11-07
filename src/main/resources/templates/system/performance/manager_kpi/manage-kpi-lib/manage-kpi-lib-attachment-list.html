@@ -55,15 +55,6 @@
                         <form class="layui-form layui-col-space5">
 
                             <div class="layui-inline layui-show-xs-block">
-                                <label class="layui-form-label"
-                                       style="width: 80px; line-height: 1.1; padding: 9px 0px;">
-                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;指标年份</label>
-                                <div class="layui-input-inline" style="width: 140px;">
-                                    <input class="layui-input" placeholder="年份" id="year" name="year"
-                                           lay-verify="" lay-reqText="年份为必填项">
-                                </div>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
 
                                 <input type="text" name="importDate" id="importDate" placeholder="导入日期"
                                        autocomplete="off"
@@ -231,8 +222,7 @@
                 elem: '#chooseFile',
                 url: "/system/performance/manager_kpi/manage-kpi-lib/uploadFile",
                 auto: false,
-                accept: 'file' //允许上传所有文件
-                ,
+                accept: 'file', //允许上传所有文件
                 exts: 'xlxs|xls|xlsm|xlsx',
                 bindAction: '#importAccountStatement',
                 data: {

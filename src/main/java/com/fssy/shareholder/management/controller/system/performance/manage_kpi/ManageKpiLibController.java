@@ -233,12 +233,7 @@ public class ManageKpiLibController {
     @GetMapping("downloadForCharge")
     @RequiredLog("数据导出")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
-        //判断是否选择对应的时间
         Map<String, Object> params = getParams(request);
-        String year = (String) params.get("year");
-        if (ObjectUtils.isEmpty(params.get("year"))) {
-            throw new ServiceException("未选择年份，导入失败");
-        }
         params.put("select", "id,projectType,projectDesc,unit,kpiDefinition,kpiFormula,kpiYear,note");
         List<Map<String, Object>> managerKpiLibList = manageKpiLibService.findManagerKpiLibDataSource(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();

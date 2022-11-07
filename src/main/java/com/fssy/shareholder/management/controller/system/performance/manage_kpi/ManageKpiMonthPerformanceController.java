@@ -78,7 +78,7 @@ public class ManageKpiMonthPerformanceController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit",limit);
         params.put("page",page);
-        Page<ManageKpiMonthPerformance> manageKpiMonthPage = manageKpiMonthPerformanceService.findManageKpiMonthDataListPerPageByParams(params);
+        Page<Map<String,Object>> manageKpiMonthPage = manageKpiMonthPerformanceService.findManageKpiMonthDataMapListPerPageByParams(params);
         if (manageKpiMonthPage.getTotal()==0){
             result.put("code",404);
             result.put("msg","未查出数据");
@@ -171,6 +171,78 @@ public class ManageKpiMonthPerformanceController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("month"))) {
             params.put("month", request.getParameter("month"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget1"))) {
+            params.put("monthTarget1", request.getParameter("monthTarget1"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget2"))) {
+            params.put("monthTarget2", request.getParameter("monthTarget2"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget3"))) {
+            params.put("monthTarget3", request.getParameter("monthTarget3"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget4"))) {
+            params.put("monthTarget4", request.getParameter("monthTarget4"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget5"))) {
+            params.put("monthTarget5", request.getParameter("monthTarget5"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget6"))) {
+            params.put("monthTarget6", request.getParameter("monthTarget6"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget7"))) {
+            params.put("monthTarget7", request.getParameter("monthTarget7"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget8"))) {
+            params.put("monthTarget8", request.getParameter("monthTarget8"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget9"))) {
+            params.put("monthTarget9", request.getParameter("monthTarget9"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget10"))) {
+            params.put("monthTarget10", request.getParameter("monthTarget10"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget11"))) {
+            params.put("monthTarget11", request.getParameter("monthTarget11"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthTarget12"))) {
+            params.put("monthTarget12", request.getParameter("monthTarget12"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual1"))) {
+            params.put("monthActual1", request.getParameter("monthActual1"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual2"))) {
+            params.put("monthActual2", request.getParameter("monthActual2"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual3"))) {
+            params.put("monthActual3", request.getParameter("monthActual3"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual4"))) {
+            params.put("monthActual4", request.getParameter("monthActual4"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual5"))) {
+            params.put("monthActual5", request.getParameter("monthActual5"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual6"))) {
+            params.put("monthActual6", request.getParameter("monthActual6"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual7"))) {
+            params.put("monthActual7", request.getParameter("monthActual7"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual8"))) {
+            params.put("monthActual8", request.getParameter("monthActual8"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual9"))) {
+            params.put("monthActual9", request.getParameter("monthActual9"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual10"))) {
+            params.put("monthActual10", request.getParameter("monthActual10"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual11"))) {
+            params.put("monthActual11", request.getParameter("monthActual11"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthActual12"))) {
+            params.put("monthActual12", request.getParameter("monthActual12"));
         }
         return params;
     }
@@ -290,9 +362,9 @@ public class ManageKpiMonthPerformanceController {
         Attachment result = fileAttachmentTool.storeFileToModule(file, module,attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = manageKpiMonthPerformanceService.readManageKpiMonthDataSource(result);
+            Map<String, Object> resultMap = manageKpiMonthPerformanceService.readManageKpiMonthDataSource(result,companyName,year,month);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
-                attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
+                attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
                 return SysResult.build(200, "表中有空值，未导入成功的数据请看附件导入列表页面！请重新导入失败的数据");
             } else {
