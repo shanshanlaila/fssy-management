@@ -293,6 +293,9 @@ public class ManageKpiMonthAimController {
         if (!ObjectUtils.isEmpty(request.getParameter("benchmarkValue"))) {
             params.put("benchmarkValue", request.getParameter("benchmarkValue"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))){
+            params.put("manageKpiYearId",request.getParameter("manageKpiYearId"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("monitorDepartment"))) {
             params.put("monitorDepartment", request.getParameter("monitorDepartment"));
         }

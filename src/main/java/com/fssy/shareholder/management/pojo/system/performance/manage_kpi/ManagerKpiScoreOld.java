@@ -100,8 +100,8 @@ public class ManagerKpiScoreOld extends BaseModel {
     /**
      * 系统生成分数
      */
-    @TableField("scoreSys")
-    private BigDecimal scoreSys;
+    @TableField("scoreAuto")
+    private BigDecimal scoreAuto;
 
     /**
      * 人工调整分数

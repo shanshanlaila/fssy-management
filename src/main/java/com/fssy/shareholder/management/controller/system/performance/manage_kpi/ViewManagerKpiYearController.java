@@ -148,6 +148,12 @@ public class ViewManagerKpiYearController {
         if (!ObjectUtils.isEmpty(request.getParameter("proportion"))) {
             params.put("proportion", request.getParameter("proportion"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
+            params.put("companyName", request.getParameter("companyName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
+            params.put("year", request.getParameter("year"));
+        }
         return params;
     }
     /**
@@ -166,12 +172,7 @@ public class ViewManagerKpiYearController {
                 "reachTarget,challengeTarget,managerName,proportion");
         //查询
         List<Map<String,Object>> viewManagerKpiYearDataByParams = viewManagerKpiYearService.findViewManagerKpiYearDataByParams(params);
-//        List<Map<String,Object>> manageKpiYearMapDataByParams = manageKpiYearService.findManageKpiYearMapDataByParams(params1);
-//        //将两张表查询出的内容合在一个List<map<String,Object>>中
-//        for(int i=0;i<managerKpiYearDataByParams.size();i++){
-//            Map<String, Object> params1 = userList.get(request);
-//            map.put("age", "新加的参数");
-//        }
+
         LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();
         //需要改变背景的格子
         fieldMap.put("id", "序号");
@@ -239,6 +240,16 @@ public class ViewManagerKpiYearController {
     @PostMapping("uploadFile")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request){
+        //判断是否选择对应公司、年份
+        Map<String, Object> params = getParams(request);
+        String year = (String) params.get("year");
+        String companyName = (String) params.get("companyName");
+        if (ObjectUtils.isEmpty(params.get("companyName"))) {
+            throw new ServiceException("未选择公司，导入失败");
+        }
+        if (ObjectUtils.isEmpty(params.get("year"))) {
+            throw new ServiceException("未选择年份，导入失败");
+        }
         //保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间

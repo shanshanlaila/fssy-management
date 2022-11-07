@@ -125,7 +125,7 @@ public class ViewManagerKpiMonthController {
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String,Object> params = getParams(request);
         //Sql语句
-        params.put("select","year,managerName,companyName,position,generalManager,month,scoreSys,scoreAdjust," +
+        params.put("select","year,managerName,companyName,position,generalManager,month,scoreAdjust,scoreAuto," +
                 "businessScore,incentiveScore,difficultyCoefficient,generalManagerScore");
         //查询
         List<Map<String,Object>> viewManagerKpiYearDataByParams = viewManagerKpiMonthService.findViewManagerKpiMonthMapDataByParams(params);
@@ -138,7 +138,7 @@ public class ViewManagerKpiMonthController {
         fieldMap.put("position", "职务");
         fieldMap.put("generalManager", "是否总经理");
         fieldMap.put("month", "月份");
-        fieldMap.put("scoreSys", "系统生成分数");
+        fieldMap.put("scoreAuto", "系统生成分数");
         fieldMap.put("scoreAdjust", "人工调整分数");
         fieldMap.put("businessScore", "经营绩效分数");
         fieldMap.put("incentiveScore", "激励约束分数");
@@ -180,8 +180,8 @@ public class ViewManagerKpiMonthController {
         if (!ObjectUtils.isEmpty(request.getParameter("month"))) {
             params.put("month", request.getParameter("month"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("monthScoreSys"))) {
-            params.put("monthScoreSys", request.getParameter("monthScoreSys"));
+        if (!ObjectUtils.isEmpty(request.getParameter("monthScoreAuto"))) {
+            params.put("monthScoreAuto", request.getParameter("monthScoreAuto"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("monthScoreAdjust"))) {
             params.put("monthScoreAdjust", request.getParameter("monthScoreAdjust"));
@@ -195,11 +195,11 @@ public class ViewManagerKpiMonthController {
         if (!ObjectUtils.isEmpty(request.getParameter("projectType"))) {
             params.put("projectType", request.getParameter("projectType"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("scoreSys"))) {
-            params.put("scoreSys", request.getParameter("scoreSys"));
-        }
         if (!ObjectUtils.isEmpty(request.getParameter("scoreAdjust"))) {
             params.put("scoreAdjust", request.getParameter("scoreAdjust"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("scoreAuto"))) {
+            params.put("scoreAuto", request.getParameter("scoreAuto"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("businessScore"))) {
             params.put("businessScore", request.getParameter("businessScore"));

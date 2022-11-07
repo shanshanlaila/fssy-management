@@ -290,7 +290,7 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
         QueryWrapper<ManageKpiMonthAim> queryWrapper = new QueryWrapper<>();
         int month = 1;
         // 达成数量
-        StringBuilder selectStr1 = new StringBuilder("id,companyName,projectType,projectDesc,unit,benchmarkCompany," +
+        StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany," +
                 "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,dataSource," +
                 "challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,kpiDefinition,kpiDecomposeMode");
         do
