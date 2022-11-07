@@ -38,6 +38,7 @@
                             <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
                         </div>
+
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
                                 <select name="status">
@@ -137,6 +138,11 @@
                     {
                         field: 'id',
                         title: '序号',
+                        width: 50
+                    },
+                    {
+                        field: 'mergeNo',
+                        title: '履职评价说明表编号，',
                         width: 130
                     },
                     {
@@ -151,12 +157,12 @@
                     },
                     {
                         field: 'mainUserName',
-                        title: '主担用户名称',
+                        title: '主担',
                         width: 130
                     },
                     {
-                        field: 'completeDesc',
-                        title: '工作完成描述',
+                        field: 'nextUserName',
+                        title: '次担',
                         width: 130
                     },
                     {
@@ -166,17 +172,17 @@
                     },
                     {
                         field: 'oriTarget',
-                        title: '创新或超越逾期的成果展示原设定目标',
+                        title: '原创新或超越目标',
                         width: 200
                     },
                     {
                         field: 'actualTarget',
-                        title: '创新或超越逾期的成果展示实际达成目标',
+                        title: '实际创新或超越目标',
                         width: 200
                     },
                     {
                         field: 'innovative',
-                        title: '创新或超越逾期的成果展示岗位开展的有价值的创新工作描述',
+                        title: '成功展示或创新工作描述',
                         width: 200
                     },
                     {
@@ -190,8 +196,13 @@
                         width: 130
                     },
                     {
-                        field: 'createDate',
-                        title: '编制日期',
+                        field: 'createName',
+                        title: '编制人',
+                        width: 130
+                    },
+                    {
+                        field: 'auditName',
+                        title: '审核人',
                         width: 130
                     },
                     {
@@ -200,33 +211,18 @@
                         width: 130
                     },
                     {
-                        field: 'auditNote',
-                        title: '审核意见',
-                        width: 130
-                    },
-                    {
-                        field: 'mergeNo',
-                        title: '履职评价说明表编号，',
-                        width: 130
-                    },
-                    {
-                        field: 'applyDate',
-                        title: '申报日期',
-                        width: 130
-                    },
-                    {
-                        field: 'year',
-                        title: '申报年份',
-                        width: 130
-                    },
-                    {
-                        field: 'month',
-                        title: '申报月份',
+                        field: 'createDate',
+                        title: '编制日期',
                         width: 130
                     },
                     {
                         field: 'ministerReview',
                         title: '经营管理部主管复核',
+                        width: 130
+                    },
+                    {
+                        field: 'auditNote',
+                        title: '审核意见',
                         width: 130
                     },
                     {
@@ -254,16 +250,6 @@
                         title: '绩效科复核日期',
                         width: 130
                     },
-                    {
-                        field: 'nextUserName',
-                        title: '次担用户名称',
-                        width: 130
-                    },
-                    {
-                        field: 'classReviewDate',
-                        title: '绩效科复核日期',
-                        width: 130
-                    }
                 ]
             ]
         });

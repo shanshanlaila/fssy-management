@@ -69,6 +69,17 @@
                             </select>
                         </div>
                     </td>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;审核意见:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="hidden" name="id" id="id" th:value="${entryCasReviewDetail['id']}">
+                            <input type="text" class="layui-input" name="auditNote" id="auditNote"
+                                   placeholder="审核意见" autocomplete="off"
+                                   th:value="${entryCasReviewDetail['auditNote']}"/>
+                        </div>
+                    </td>
                 </tr>
                 </tbody>
             </table>

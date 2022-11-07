@@ -30,6 +30,10 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
+                            <input type="text" name="roleName" placeholder="岗位查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
                                    class="layui-input">
@@ -131,6 +135,16 @@
                         width: 80
                     },
                     {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 50
+                    },
+                    {
+                        field: 'id',
+                        title: '序号',
+                        width: 50
+                    },
+                    {
                         field: 'eventsType',
                         title: '事件类别',
                         width: 80
@@ -155,11 +169,7 @@
                         title: '对应工作事件的计划内容',
                         width: 130
                     },
-                    {
-                        field: 'times',
-                        title: '频次',
-                        width: 130
-                    },
+
                     {
                         field: 'planOutput',
                         title: '表单(输出内容)来源自己填写',
@@ -178,6 +188,21 @@
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
+                        width: 130
+                    },
+                    {
+                        field: 'actualCompleteDate',
+                        title: '实际完成时间',
+                        width: 80
+                    },
+                    {
+                        field: 'completeDesc',
+                        title: '工作完成描述',
+                        width: 80
+                    },
+                    {
+                        field: 'times',
+                        title: '频次',
                         width: 130
                     },
                     /*{
@@ -205,11 +230,11 @@
                         title: '履职计划状态',
                         width: 120
                     },
-                    {
+                    /*{
                         field: 'eventsForm',
                         title: '绩效类型',
                         width: 120
-                    },
+                    },*/
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
@@ -230,11 +255,7 @@
                         title: '部门名称',
                         width: 90,
                     },
-                    {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 50
-                    },
+
                     {
                         field: 'note',
                         title: '备注',
@@ -294,22 +315,6 @@
                         field: 'auditStatus',
                         title: '履职计划审核状态',
                         width: 80
-                    },
-                    {
-                        field: 'actualCompleteDate',
-                        title: '实际完成时间',
-                        width: 80
-                    },
-                    {
-                        field: 'completeDesc',
-                        title: '工作完成描述',
-                        width: 80
-                    },
-
-                    {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
                     },
                     {
                         fixed: 'right',

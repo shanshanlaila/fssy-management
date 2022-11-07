@@ -58,15 +58,13 @@
                             style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;经营管理部主管复核:
                     </td>
                     <td>
-                        <div class="layui-input-inline layui-show-xs-block" style="width: 120px">
+                        <div class="layui-input-inline layui-show-xs-block text-align: center;" style="width: 120px">
                             <input type="hidden" name="id" id="id" th:value="${entryExcellentStateDetail['id']}">
                             <input type="hidden" name="casReviewId" id="casReviewId" th:value="${entryExcellentStateDetail['casReviewId']}">
                             <select name="ministerReview" lay-verify="required"
-                                    lay-reqText="绩效科复核为必填项">
-                                <option value="不合格" th:selected="${entryExcellentStateDetail.ministerReview} == 不合格">不合格</option>
-                                <option value="中" th:selected="${entryExcellentStateDetail.ministerReview} == 中">中</option>
-                                <option value="良" th:selected="${entryExcellentStateDetail.ministerReview} == 良">良</option>
-                                <option value="优" th:selected="${entryExcellentStateDetail.ministerReview} == 优">优</option>
+                                    lay-reqText="经营管理部主管复核为必填项">
+                                <option value="符合" th:selected="${entryExcellentStateDetail.ministerReview} == 符合">符合</option>
+                                <option value="不符合" th:selected="${entryExcellentStateDetail.ministerReview} == 不符合">不符合</option>
                             </select>
                         </div>
                     </td>

@@ -84,7 +84,7 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     boolean batchAudit(List<String> entryReviewDetailIds,String chargeTransactionEvaluateLevel,String chargeTransactionBelowType);
 
     /**
-     * 新增单挑履职回顾
+     * 新增单履职回顾
      *
      * @param entryCasReviewDetail
      * @return
