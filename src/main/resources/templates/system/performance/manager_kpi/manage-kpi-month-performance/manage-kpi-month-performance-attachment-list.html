@@ -254,8 +254,9 @@
                 },
                 before : function(obj) {
                     layer.load();
-                    this.data.customerOrderType = $('#customerOrderType').find("option:selected").val();
-                    // this.data.contractId = $('input[name=contractId]').val();
+                    this.data.year = $('input[name=year]').val();
+                    this.data.companyName = $('input[name=companyName]').val();
+                    this.data.month = $('input[name=month]').val();
                     this.data.importDate = $('input[name=importDate]').val();
                     this.data.module = [[${module}]];
                 },
@@ -305,8 +306,9 @@
             },
             before : function(obj) {
                 layer.load();
-                this.data.customerOrderType = $('#customerOrderType').find("option:selected").val();
-                // this.data.contractId = $('input[name=contractId]').val();
+                this.data.year = $('input[name=year]').val();
+                this.data.companyName = $('input[name=companyName]').val();
+                this.data.month = $('input[name=month]').val();
                 this.data.importDate = $('input[name=importDate]').val();
                 this.data.module = [[${module}]];
 

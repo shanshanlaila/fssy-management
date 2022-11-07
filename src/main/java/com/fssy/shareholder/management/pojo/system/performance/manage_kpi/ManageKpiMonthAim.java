@@ -364,5 +364,11 @@ public class ManageKpiMonthAim extends BaseModel {
      */
     @TableField("scoreAdjust")
     private BigDecimal scoreAdjust;
+    /**
+     * 分解目标方式
+     */
+    @TableField("kpiDecomposeMode")
+    private String kpiDecomposeMode;
+
 
 }

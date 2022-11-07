@@ -350,6 +350,11 @@ public class ManageKpiYear extends BaseModel {
      */
     @TableField("yearTargetRate")
     private BigDecimal yearTargetRate;
+    /**
+     * 分解目标方式
+     */
+    @TableField("kpiDecomposeMode")
+    private String kpiDecomposeMode;
 
 
 }

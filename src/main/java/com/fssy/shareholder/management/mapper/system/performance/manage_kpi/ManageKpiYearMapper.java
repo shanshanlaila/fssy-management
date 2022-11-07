@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- * 经理人年度KPI Mapper 接口
+ * 经营管理年度指标 Mapper 接口
  * </p>
  *
  * @author Shizn
