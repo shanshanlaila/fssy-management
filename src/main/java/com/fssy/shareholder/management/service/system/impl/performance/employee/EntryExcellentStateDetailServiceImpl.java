@@ -21,9 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.List;
-import java.util.Map;
-
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -213,6 +210,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         }
         if (params.containsKey("statusOr")) {
             queryWrapper.eq("status", PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)
+                    .or(item ->item.eq("status",PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE))
                     .or(item -> item.eq("status", PerformanceConstant.EVENT_LIST_STATUS_FINAL).ne("classReview", PerformanceConstant.EXCELLENT));
         }
 
@@ -493,6 +491,8 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         return result > 0;
     }
 
+
+
     public synchronized EntryExcellentStateMerge storeNoticeMerge(LocalDate createDate,
                                                                   Map<String, Object> otherParams, EntryExcellentStateMerge entryExcellentStateMerge) {
         // region 创建通知单数据
@@ -523,5 +523,58 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         // endregion
         return entryExcellentStateMerge;
     }
+    @Override
+    public boolean batchAudit(List<String> excellentStateDetailIds, String classReview) {
 
+        //根据ID集合去找对应的实体类集合
+        List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
+        //遍历entryExcellentStateDetails得到 entryExcellentStateDetail
+        for ( EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)||entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
+                throw new ServiceException("不能审核次状态下的评优材料");
+            }
+            QueryWrapper<EntryCasReviewDetail> entryCasReviewDetailQueryWrapper = new QueryWrapper<>();
+            entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
+            List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
+            if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
+                throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
+            }
+            EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
+            reviewDetail.setFinalNontransactionEvaluateLevel(classReview);
+            entryExcellentStateDetail.setClassReview(classReview);
+            if (classReview.equals(PerformanceConstant.REVIEW_DETAIL_MINISTER_REVIEW_EXCELLENT)) {
+                entryExcellentStateDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN);
+            } else {
+                entryExcellentStateDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+            }
+            entryCasReviewDetailMapper.updateById(reviewDetail);
+            entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean MinisterBtchAudit(List<String> excellentStateDetailIds, String ministerReview) {
+        //根据Id集合去找对应的实体类集合
+        List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
+        //遍历entryExcellentStateDetails得到 entryExcellentStateDetail
+        for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
+                throw new ServiceException("不能审核完结状态的评优材料");
+            }
+            QueryWrapper<EntryCasReviewDetail> entryCasReviewDetailQueryWrapper= new QueryWrapper<>();
+            entryCasReviewDetailQueryWrapper.eq("id",entryExcellentStateDetail.getCasReviewId());
+            List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
+            if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
+                throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾",entryExcellentStateDetail.getId()));
+            }
+            EntryCasReviewDetail reviewDetai = entryCasReviewDetails.get(0);//查到对应ID的数据，然后取这条数据
+            reviewDetai.setFinalNontransactionEvaluateLevel(ministerReview);
+            entryExcellentStateDetail.setMinisterReview(ministerReview);
+            entryExcellentStateDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+            entryCasReviewDetailMapper.updateById(reviewDetai);
+            entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
+        }
+        return true;
+    }
 }

@@ -469,5 +469,27 @@ public class EntryExcellentStateDetailController {
         }
         return SysResult.build(500, "上传失败");
     }
+    @PostMapping("batchAudit")
+    @ResponseBody
+    @RequiredLog("绩效科评优材料批量审核")
+    public SysResult batchAudit(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds, HttpServletRequest request) {
+        String classReview = request.getParameter("classReview");
+        boolean result = entryExcellentStateDetailService.batchAudit(excellentStateDetailIds, classReview);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "批量审核失败");
+    }
+    @PostMapping("MinsterBatchAudit")
+    @ResponseBody
+    @RequiredLog("经营管理部主管评优材料批量审核")
+    public SysResult batchAuditByMinister(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds, HttpServletRequest request) {
+        String  ministerReview = request.getParameter("ministerReview");
+        boolean result = entryExcellentStateDetailService.MinisterBtchAudit(excellentStateDetailIds,ministerReview);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "批量审核失败");
+    }
 
 }

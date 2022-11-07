@@ -75,4 +75,23 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
      * @return 创建结果
      */
     boolean save(EntryExcellentStateDetail entryExcellentStateDetail, String mainIds, String nextIds);
+
+    /**
+     * 绩效科评优材料批量审核
+     * @param excellentStateDetailIds
+     * @param classReview
+     * @return
+     */
+    boolean batchAudit(List<String> excellentStateDetailIds, String classReview);
+
+    /**
+     * 经营管理部主管评优材料批量审核
+     * @param excellentStateDetailIds
+     * @param ministerReview
+     * @return
+     */
+
+    boolean MinisterBtchAudit(List<String> excellentStateDetailIds, String ministerReview);
+
+
 }

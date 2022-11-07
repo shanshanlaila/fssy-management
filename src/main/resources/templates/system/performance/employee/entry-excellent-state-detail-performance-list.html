@@ -38,6 +38,10 @@
                             <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
+                            <input type="text" name="id" placeholder="按序号查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
                                 <select name="status">
@@ -59,6 +63,24 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 110px; line-height: 1.1; padding: 9px 0px;">绩效科复核&nbsp;&nbsp;</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <select name="classReview" id="classReview">
+                                        <option value="优">优</option>
+                                        <option value="良">良</option>
+                                        <option value="中">中</option>
+                                        <option value="不合格">不合格</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline layui-show-xs-block">
+                                <button class="layui-btn layui-btn-sm"
+                                        lay-submit="" lay-filter="confirm">一键审核
+                                </button>
+                            </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit=""
                                         lay-filter="retreat">撤销审核
@@ -112,7 +134,37 @@
             });
             return false
         });
-
+        // 一键审核
+        form.on('submit(confirm)', function (data) {
+            var checkStatus = table.checkStatus(dataTable.config.id),
+                data = checkStatus.data;
+            if (data.length <= 0) {
+                layer.alert("请至少选择一行数据");
+                return false;
+            }
+            // 评优材料id列表
+            var excellentStateDetailIds = [];
+            data.forEach(function (item) {
+                excellentStateDetailIds.push(item.id);
+            });
+            layer.load();
+            $.ajax({
+                type: 'POST',
+                url: '/system/entry-excellent-state-detail/batchAudit',
+                data: {
+                    "excellentStateDetailIds": excellentStateDetailIds,
+                    "classReview": $('#classReview').find("option:selected").val(),
+                },
+                success: function (result) {
+                    layer.closeAll();
+                    layer.msg(result.msg);
+                    if (result.status === 200) {
+                        table.reload('dataTable');
+                    }
+                }
+            });
+            return false;
+        });
         // 实例表格
         var dataTable = table.render({
             elem: '#dataTable',
@@ -138,6 +190,11 @@
                     {
                         field: 'id',
                         title: '序号',
+                        width: 50
+                    },
+                    {
+                        field: 'mergeNo',
+                        title: '履职评价说明表编号，',
                         width: 130
                     },
                     {
@@ -152,12 +209,12 @@
                     },
                     {
                         field: 'mainUserName',
-                        title: '主担用户名称',
+                        title: '主担',
                         width: 130
                     },
                     {
-                        field: 'completeDesc',
-                        title: '工作完成描述',
+                        field: 'nextUserName',
+                        title: '次担',
                         width: 130
                     },
                     {
@@ -167,17 +224,17 @@
                     },
                     {
                         field: 'oriTarget',
-                        title: '创新或超越逾期的成果展示原设定目标',
+                        title: '原创新或超越目标',
                         width: 200
                     },
                     {
                         field: 'actualTarget',
-                        title: '创新或超越逾期的成果展示实际达成目标',
+                        title: '实际创新或超越目标',
                         width: 200
                     },
                     {
                         field: 'innovative',
-                        title: '创新或超越逾期的成果展示岗位开展的有价值的创新工作描述',
+                        title: '成功展示或创新工作描述',
                         width: 200
                     },
                     {
@@ -191,8 +248,13 @@
                         width: 130
                     },
                     {
-                        field: 'createDate',
-                        title: '编制日期',
+                        field: 'createName',
+                        title: '编制人',
+                        width: 130
+                    },
+                    {
+                        field: 'auditName',
+                        title: '审核人',
                         width: 130
                     },
                     {
@@ -201,33 +263,18 @@
                         width: 130
                     },
                     {
-                        field: 'auditNote',
-                        title: '审核意见',
-                        width: 130
-                    },
-                    {
-                        field: 'mergeNo',
-                        title: '履职评价说明表编号，',
-                        width: 130
-                    },
-                    {
-                        field: 'applyDate',
-                        title: '申报日期',
-                        width: 130
-                    },
-                    {
-                        field: 'year',
-                        title: '申报年份',
-                        width: 130
-                    },
-                    {
-                        field: 'month',
-                        title: '申报月份',
+                        field: 'createDate',
+                        title: '编制日期',
                         width: 130
                     },
                     {
                         field: 'ministerReview',
                         title: '经营管理部主管复核',
+                        width: 130
+                    },
+                    {
+                        field: 'auditNote',
+                        title: '审核意见',
                         width: 130
                     },
                     {
@@ -248,16 +295,6 @@
                     {
                         field: 'classReviewUser',
                         title: '绩效科复核人名称',
-                        width: 130
-                    },
-                    {
-                        field: 'classReviewDate',
-                        title: '绩效科复核日期',
-                        width: 130
-                    },
-                    {
-                        field: 'nextUserName',
-                        title: '次担用户名称',
                         width: 130
                     },
                     {
@@ -334,8 +371,8 @@
                     title: '序号为' + data.id + '的评优材料修改',
                     area:
                         [
-                            $(window).width() * 0.9 + 'px',
-                            $(window).height() - 50 + 'px'
+                            $(window).width() * 0.3 + 'px',
+                            $(window).height() - 400 + 'px'
                         ],
                     content: '/system/entry-excellent-state-detail/edit/' + data.id,
                     maxmin: true,
