@@ -235,7 +235,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                     managerKpiScore.setScoreAuto(scoreSys);
                     managerKpiScore.setScoreAdjust(scoreSys);
                     managerKpiScore.setDifficultyCoefficient(difficultCoefficient);
-                    managerKpiScore.setGeneralManagerScore(scoreSys);
+                    managerKpiScore.setGeneralManagerScore(newBusinessScore);
                     //插入数据
                     managerKpiScoreMapper.insert(managerKpiScore);
                 }

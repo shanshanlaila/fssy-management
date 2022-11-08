@@ -29,7 +29,9 @@ public interface ViewManagerKpiYearService extends IService<ViewManagerKpiYear> 
      * @param attachment 附件
      * @return 附件map集合
      */
-    Map<String,Object> readViewManagerKpiYearDataSource(Attachment attachment);
+    Map<String,Object> readViewManagerKpiYearDataSource(Attachment attachment,String companyName, String year);
+
+
 
     /**
      * 导出 通过查询条件查询履职计划map数据

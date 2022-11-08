@@ -120,6 +120,18 @@ public class ViewManagerKpiYear extends BaseModel {
     private String benchmarkValue;
 
     /**
+     * 是否总经理
+     */
+    @TableField("generalManager")
+    private String generalManager;
+
+    /**
+     * 职位类别
+     */
+    @TableField("position")
+    private String position;
+
+    /**
      * 年份
      */
     @TableField("year")

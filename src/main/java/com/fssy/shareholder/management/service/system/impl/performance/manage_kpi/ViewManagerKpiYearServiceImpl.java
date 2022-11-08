@@ -3,7 +3,6 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiYearMapper;
-import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiYearMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ViewManagerKpiYearMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
@@ -62,6 +61,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         Page<ViewManagerKpiYear> myPage =new Page<>(page,limit);
         return viewManagerKpiYearMapper.selectPage(myPage,queryWrapper);
     }
+
     /**
      * 设置失败的内容
      *
@@ -85,7 +85,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
      */
     @Override
     @Transactional
-    public Map<String, Object> readViewManagerKpiYearDataSource(Attachment attachment) {
+    public Map<String, Object> readViewManagerKpiYearDataSource(Attachment attachment, String companyName, String year) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -104,9 +104,24 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         List<ViewManagerKpiYear> viewManagerKpiYears = new ArrayList<>();//实体类集合，用于后面的批量写入数据库
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
+
+        //获取年份月份值
+        Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("H"));
+        Cell companyCell = sheet.getRow(1).getCell(SheetService.columnToIndex("C"));
+//        System.out.println("companyCell = " + companyCell);
+//        System.out.println("yearCell = " + yearCell);
+        String companyCellValue = sheetService.getValue(companyCell);
+        String yearCellValue = sheetService.getValue(yearCell);
+        //效验年份、公司名称
+        if (!companyName.equals(companyCellValue)){
+            throw new ServiceException("导入的公司名称与excel中的名称不一致，导入失败");
+        }
+        if (!year.equals(yearCellValue)){
+            throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
+        }
         // 循环总行数(不读表的标题，从第1行开始读)
         //sheet.getLastRowNum();返回最后一行的索引，即比行总数小1
-        for (int j = 2; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
+        for (int j = 3; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
             row = sheet.getRow(j);// 获取第j行
             // 获取一行中有多少列 Row：行，cell：列
@@ -130,13 +145,15 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             }
             //导入结果写入列
             //错误信息提示存入到AD单元格内
-            Cell cell = row.createCell(SheetService.columnToIndex("R"));
+            Cell cell = row.createCell(SheetService.columnToIndex("T"));
             String id = cells.get(SheetService.columnToIndex("A"));
-            String companyName = cells.get(SheetService.columnToIndex("B"));
-            String year = cells.get(SheetService.columnToIndex("C"));
-            String projectDesc = cells.get(SheetService.columnToIndex("D"));
-            String dataSource = cells.get(SheetService.columnToIndex("F"));
-            String managerName = cells.get(SheetService.columnToIndex("P"));
+//            String companyName = cells.get(SheetService.columnToIndex("B"));
+//            String year = cells.get(SheetService.columnToIndex("C"));
+            String projectDesc = cells.get(SheetService.columnToIndex("B"));
+            String dataSource = cells.get(SheetService.columnToIndex("D"));
+            String managerName = cells.get(SheetService.columnToIndex("N"));
+            String generalManager = cells.get(SheetService.columnToIndex("O"));
+            String position = cells.get(SheetService.columnToIndex("P"));
             String proportion = cells.get(SheetService.columnToIndex("Q"));
             // 判斷空值
             if (ObjectUtils.isEmpty(companyName)) {
@@ -171,6 +188,8 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             managerKpiYear.setProjectDesc(projectDesc);
             managerKpiYear.setDataSource(dataSource);
             managerKpiYear.setManagerName(managerName);
+            managerKpiYear.setGeneralManager(generalManager);
+            managerKpiYear.setPosition(position);
             managerKpiYear.setProportion(new BigDecimal(proportion));
 
             // 根据id进行判断，存在则更新，不存在则新增
