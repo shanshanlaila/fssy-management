@@ -169,7 +169,7 @@ public class ViewManagerKpiYearController {
         //Sql语句 companyName,year
         params.put("select", "id,projectDesc,unit,dataSource,benchmarkCompany,benchmarkValue," +
                 "pastThreeYearsActual,pastTwoYearsActual,pastOneYearActual,basicTarget,mustInputTarget" +
-                "reachTarget,challengeTarget,managerName,proportion");
+                "reachTarget,challengeTarget,managerName,generalManager,position,proportion");
         //查询
         List<Map<String,Object>> viewManagerKpiYearDataByParams = viewManagerKpiYearService.findViewManagerKpiYearDataByParams(params);
 
@@ -191,9 +191,11 @@ public class ViewManagerKpiYearController {
         fieldMap.put("reachTarget", "达标目标");
         fieldMap.put("challengeTarget", "挑战目标");
         fieldMap.put("managerName", "经理人姓名");
+        fieldMap.put("generalManager", "是否总经理");
+        fieldMap.put("position", "职位类别");
         fieldMap.put("proportion", "权重");
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14);
+        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
         //选用导出模板
         ViewManagerKpiYearSheetOutputService viewManagerKpiYearSheetOutputService = new ViewManagerKpiYearSheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(viewManagerKpiYearDataByParams)) {
@@ -265,7 +267,7 @@ public class ViewManagerKpiYearController {
         Attachment result = fileAttachmentTool.storeFileToModule(file, module,attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = viewManagerKpiYearService.readViewManagerKpiYearDataSource(result);
+            Map<String, Object> resultMap = viewManagerKpiYearService.readViewManagerKpiYearDataSource(result,companyName,year);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
