@@ -141,7 +141,7 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
-            where:{month:'1'},
+            where:{month:'12'},
             cols: [
                 [
                     {
@@ -155,6 +155,13 @@
                         title: '序号',
                         align: 'center',
                         width: 80,
+                        rowspan: 2
+                    },
+                    {
+                        field: 'companyName',
+                        title: '企业名称',
+                        width: 100,
+                        align: 'center',
                         rowspan: 2
                     },
                     {
@@ -197,6 +204,13 @@
                         colspan: 2,
                         width: 230,
                         align: 'center',
+                    },
+                    {
+                        field: 'year',
+                        title: '年份',
+                        width: 80,
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         title: '前三年实绩',
@@ -367,14 +381,14 @@
                     },
                     //管理指标月度完成情况
                     {
-                        field: 'monthTarget',
+                        field: 'monthATarget',
                         title: '累计目标值',
                         align: 'center',
                         width: 80,
                         // rowspan: 2
                     },
                     {
-                        field: 'monthActualValue',
+                        field: 'monthAActual',
                         title: '累计实绩值',
                         align: 'center',
                         width: 80,
