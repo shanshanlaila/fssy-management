@@ -135,6 +135,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (params.containsKey("roleId")) {
             queryWrapper.eq("roleId", params.get("roleId"));
         }
+        if (params.containsKey("roleIdList")) {
+            queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
+        }
         if (params.containsKey("userName")) {
             queryWrapper.like("userName", params.get("userName"));
         }
@@ -380,11 +383,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         // 读取附件
         sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
         // 读取表单
-        sheetService.readByName("Sheet1"); //根据表单名称获取该工作表单
+        sheetService.readByName("导出履职计划填报月底回顾"); //根据表单名称获取该工作表单
         // 获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【Sheet1】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【导出履职计划填报月底回顾】不存在，无法读取数据，请检查");
         }
 
         // 获取单价列表数据
@@ -705,14 +708,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
             } else {
                 entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
-                // 通过事件清单序号（eventsId）找对应的事件清单，delow、middle、fine、excellent，ministerReview=‘不合格’时取
-                //delow，设置到entryCasReviewDetail.autoScore和artifactualScore；
-                /*
-                 * ministerReview=‘中’时取middle，设置到entryCasReviewDetail.autoScore和artifactualScore；
-                 * ministerReview=‘良’时取fine，设置到entryCasReviewDetail.autoScore和artifactualScore；
-                 * ministerReview=‘优或者合格’excellent，设置到entryCasReviewDetail.autoScore和artifactualScore；
-                 * 以年，月，事件清单序号查询有多少条回顾，以回顾数除以分数，就是最终分数
-                 * */
+                BigDecimal actualAutoScore = GetTool.calculateScore(entryCasReviewDetail, ministerReview);
+                entryCasReviewDetail.setAutoScore(actualAutoScore);
+                entryCasReviewDetail.setArtifactualScore(actualAutoScore);
             }
             entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }
@@ -743,14 +741,16 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     @Override
     public boolean saveReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        /*User user = (User) SecurityUtils.getSubject().getPrincipal();
         LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
         viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getUserId, user.getId());
         List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentRoleUserLambdaQueryWrapper);
         if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
             throw new ServiceException("无符合部门");
         }
-        ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
+        ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);*/
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser(user);
         entryCasReviewDetail.setUserId(user.getId());
         entryCasReviewDetail.setUserName(user.getName());
         entryCasReviewDetail.setRoleId(viewDepartmentRoleUser.getRoleId());
@@ -758,6 +758,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasReviewDetail.setCreatedAt(LocalDateTime.now());
         entryCasReviewDetail.setCreateName(user.getName());
         entryCasReviewDetail.setCreateDate(LocalDate.now());
+        entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+        entryCasReviewDetailMapper.insert(entryCasReviewDetail);
         return true;
     }
 }

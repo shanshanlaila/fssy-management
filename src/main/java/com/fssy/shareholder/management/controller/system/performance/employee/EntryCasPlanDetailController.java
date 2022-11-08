@@ -12,6 +12,7 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
+import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
@@ -54,6 +55,9 @@ public class EntryCasPlanDetailController {
     @Autowired
     private EntryCasReviewDetailService entryCasReviewDetailService;
 
+    @Autowired
+    private RoleService roleService;
+
 
     /**
      * 事件评价标准管理页面
@@ -67,6 +71,9 @@ public class EntryCasPlanDetailController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-plan-detail-list";
     }
 
@@ -146,6 +153,11 @@ public class EntryCasPlanDetailController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("roleName"))) {
             params.put("roleName", request.getParameter("roleName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("roleIds"))) {
+            String roleIds = request.getParameter("roleIds");
+            List<String> roleIdList = Arrays.asList(roleIds.split(","));
+            params.put("roleIdList", roleIdList);
         }
         if (!ObjectUtils.isEmpty(request.getParameter("roleId"))) {
             params.put("roleId", request.getParameter("roleId"));
@@ -228,6 +240,9 @@ public class EntryCasPlanDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("statusCancel"))) {
             params.put("statusCancel", request.getParameter("statusCancel"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("twoStatus"))) {
+            params.put("twoStatus", request.getParameter("twoStatus"));
+        }
         return params;
     }
 
@@ -239,6 +254,7 @@ public class EntryCasPlanDetailController {
      */
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
+        // 导出履职计划填报月底回顾
         Map<String, Object> params = getParams(request);
         params.put("select",
                 "id,eventsId," +
@@ -292,7 +308,7 @@ public class EntryCasPlanDetailController {
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(eventLists)) {
             throw new ServiceException("未查出数据");
         }
-        sheetOutputService.exportNum("Sheet1", eventLists, fieldMap, response, strList, null);
+        sheetOutputService.exportNum("导出履职计划填报月底回顾", eventLists, fieldMap, response, strList, null);
     }
 
     /**
@@ -392,7 +408,7 @@ public class EntryCasPlanDetailController {
     public SysResult affirm(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds, HttpServletRequest request) {
         String event = request.getParameter("event");
         boolean res = entryCasPlanDetailService.affirmStore(planDetailIds, event);
-        if (res) {
+      if (res) {
             return SysResult.ok();
         }
         return SysResult.build(500, "提交失败请检查数据后重试");
@@ -411,6 +427,9 @@ public class EntryCasPlanDetailController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-plan-detail-minister-list";
     }
 
@@ -421,6 +440,9 @@ public class EntryCasPlanDetailController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
     }
     /**
@@ -432,12 +454,74 @@ public class EntryCasPlanDetailController {
     @GetMapping("createReview/{id}")
     public String showCreateReview(@PathVariable String id, Model model) {
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
-        //EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.saveFormPlanDetail(entryCasPlanDetail);
-        //model.addAttribute("entryCasReviewDetail",entryCasReviewDetail);
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
         return "/system/performance/employee/entry-cas-plan-detail-createReview";
     }
 
+    @GetMapping("HRIndex")
+    @RequiredLog("人力资源部审核")
+    @RequiresPermissions("system:performance:entryCasPlanDetail")
+    public String HRIndex(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        return "/system/performance/employee/performance-entry-cas-plan-detail-HR-list";
+    }
+    @PostMapping("HRAffirmStore")
+    @ResponseBody
+    public SysResult HRAffirmStore(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds, HttpServletRequest request) {
+        String event = request.getParameter("event");
+        boolean res = entryCasPlanDetailService.HRAffirmStore(planDetailIds, event);
+        if (res) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "提交失败请检查数据后重试");
+    }
+    @GetMapping("SelectIndex")
+    @RequiredLog("待选择关联事件清单")
+    @RequiresPermissions("system:performance:entryCasPlanDetail")
+    public String SelectIndex(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        return "/system/performance/employee/performance-entry-cas-plan-detail-select-list";
+    }
 
-
+    /**
+     * 展示选择事件清单页面
+     *
+     * @param id    履职明细id
+     * @param model 数据模型
+     * @return 修改页面
+     */
+    @GetMapping("SelectEdit/{id}")
+    public String showSelectEditPage(@PathVariable String id, Model model) {
+        EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
+        if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+            throw new ServiceException("不能修改取消状态下的事件请单");
+        }
+        model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
+        return "/system/performance/employee/performance-entry-cas-plan-detail-select-edit";
+    }
+    /**
+     * 更新履职明细
+     *
+     * @param entryCasPlanDetail 履职明细实体
+     * @return 结果
+     */
+    @PostMapping("SelectUpdate")
+    @ResponseBody
+    public SysResult SelectUpdate(EntryCasPlanDetail entryCasPlanDetail) {
+        boolean result = entryCasPlanDetailService.SelectUpdate(entryCasPlanDetail);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "事件清单序号为空提交失败");
+    }
 }

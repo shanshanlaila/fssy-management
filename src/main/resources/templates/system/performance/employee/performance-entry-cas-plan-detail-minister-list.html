@@ -30,9 +30,8 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="roleName" placeholder="岗位查询"
-                                   autocomplete="off" class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
@@ -116,15 +115,16 @@
             toolbar: '#toolbar',
             where: {
                 // 向controller传入额外参数
-                eventsFirstType: '非事务类',
-                status: '待部长审核'
+                /*eventsFirstType: '非事务类',
+                status: '待部长审核'*/
+                twoStatus:true
             },
             cols: [
                 [
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'eventsType',
@@ -149,32 +149,27 @@
                     {
                         field: 'planningWork',
                         title: '对应工作事件的计划内容',
-                        width: 130
+                        width: 150
                     },
                     {
                         field: 'times',
                         title: '频次',
-                        width: 130
+                        width: 50
                     },
                     {
                         field: 'planOutput',
                         title: '表单(输出内容)来源自己填写',
-                        width: 130
-                    },
-                    {
-                        field: 'workOutput',
-                        title: '表单',
-                        width: 130
+                        width: 180
                     },
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 130
+                        width: 90
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 130
+                        width: 90
                     },
                     /*{
                         field: 'delowStandard',
@@ -199,54 +194,48 @@
                     {
                         field: 'status',
                         title: '履职计划状态',
-                        width: 120
+                        width: 100
                     },
                     {
                         field: 'eventsForm',
                         title: '绩效类型',
-                        width: 120
+                        width: 80
                     },
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
-                        width: 130
+                        width: 80
                     },
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 130
+                        width: 90
                     },
                     {
                         field: 'departmentName',
                         title: '部门名称',
-                        width: 90,
+                        width: 80,
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 70,
-                    },
-                    {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 50
+                        width: 80,
                     },
                     {
                         field: 'note',
                         title: '备注',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'roleName',
                         title: '岗位（角色）名称',
                         width: 80
                     },
-                    /*
                     {
                         field: 'userName',
                         title: '员工姓名',
@@ -272,7 +261,7 @@
                         title: '编制人',
                         width: 80
                     },
-                    {
+                    /*{
                         field: 'auditName',
                         title: '审核人',
                         width: 80
@@ -286,22 +275,27 @@
                         field: 'auditNote',
                         title: '审核意见',
                         width: 130
-                    },
+                    },*/
                     {
                         field: 'mergeNo',
                         title: '员工月度履职计划表编号',
                         width: 80
-                    },*/
+                    },
                     {
                         field: 'auditStatus',
                         title: '履职计划审核状态',
-                        width: 80
+                        width: 130
                     },
                     {
                         field: 'id',
                         title: '序号',
                         width: 50
-                    }
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 120
+                    },
                 ]
             ]
         });
@@ -416,6 +410,24 @@
             width: '160px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+    });
+    // 岗位查询下拉列表
+    let roleSelect = xmSelect.render({
+        el: '#roleSelect', // 绑定
+        language: 'zn',
+        data: [[${roleNameList}]],// model过来的
+        filterable: true,
+        // radio: true,// 是否是单选
+        tips: '岗位查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 30,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
 </script>
 </body>

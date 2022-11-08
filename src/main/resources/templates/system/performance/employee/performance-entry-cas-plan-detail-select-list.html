@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>履职计划科长审核管理</cite></a>
+            <a> <cite>待选择关联事件清单</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -80,14 +80,11 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
-                    <script type="text/html" id="toolbar">
-                        <form class="layui-form layui-col-space5">
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="pass">审核通过</button>
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="noPass" style="background-color: coral">审核拒绝
-                                </button>
-                            </div>
-                        </form>
+                    <!--行工具栏-->
+                    <script type="text/html" id="tool">
+                        {{# if(d.status != '取消') {}}
+                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+                        {{# } }}
                     </script>
                 </div>
             </div>
@@ -115,8 +112,8 @@
             toolbar: '#toolbar',
             where: {
                 // 向controller传入额外参数
-                eventsFirstType: '事务类',
-                status: '待科长审核'
+                eventsFirstType: '新增工作流',
+                status: '待选择事件清单'
             },
             cols: [
                 [
@@ -226,6 +223,11 @@
                         width: 80,
                     },
                     {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 120
+                    },
+                    {
                         field: 'note',
                         title: '备注',
                         width: 50
@@ -291,10 +293,12 @@
                         width: 50
                     },
                     {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 120
-                    },
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    }
                 ]
             ]
         });
@@ -326,69 +330,28 @@
             });
             return false
         });
-
-        // 审核通过按钮
-        form.on('submit(pass)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-
-            layer.confirm('确定审核通过吗？', {icon: 3, title: '提示'}, function (index) {
-                var planDetailIds = [];
-                data.forEach(function (item) {
-                    planDetailIds.push(item.id);
+        // 监听行工具事件
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') { // 修改
+                // 不能修改取消状态下的事件请单
+                if (data.status === '取消') {
+                    layer.msg('不能修改取消状态下的事件请单');
+                    return false;
+                }
+                layer.open({
+                    type: 2,
+                    title: '序号为' + data.id + '的待选择关联事件清单操作',
+                    area:
+                        [
+                            $(window).width() * 0.5 + 'px',
+                            $(window).height() - 300 + 'px'
+                        ],
+                    content: '/system/entry-cas-plan-detail/SelectEdit/' + data.id,
+                    maxmin: true,
+                    scrollbar: true
                 });
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-plan-detail/affirmStore?event=pass',
-                    data: {
-                        "planDetailIds": planDetailIds,
-                    },
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                        }
-                    }
-                })
-            });
-            return false;
-        });
-
-        form.on('submit(noPass)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
-
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
             }
-
-            layer.confirm('确认审核不通过吗？', {icon: 3, title: '提示'}, function (index) {
-                var planDetailIds = [];
-                data.forEach(function (item) {
-                    planDetailIds.push(item.id);
-                });
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-plan-detail/affirmStore?event=noPass',
-                    data: {
-                        "planDetailIds": planDetailIds,
-                    },
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                        }
-                    }
-                })
-            });
-            return false;
         });
     });
 
