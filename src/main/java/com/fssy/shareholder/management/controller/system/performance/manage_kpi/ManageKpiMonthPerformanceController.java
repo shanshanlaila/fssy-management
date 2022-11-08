@@ -72,6 +72,7 @@ public class ManageKpiMonthPerformanceController {
     @GetMapping("getObjects")
     @ResponseBody
     public Map<String,Object> getManageKpiMonthDatas(HttpServletRequest request){
+        String month = request.getParameter("month");
         Map<String,Object> result = new HashMap<>();
         Map<String,Object> params = getParams(request);
         int limit = Integer.parseInt(request.getParameter("limit"));
@@ -99,6 +100,12 @@ public class ManageKpiMonthPerformanceController {
         Map<String,Object> params =new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
             params.put("id", request.getParameter("id"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthATarget"))){
+            params.put("monthATarget",request.getParameter("monthATarget"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthAActual"))){
+            params.put("monthAActual",request.getParameter("monthAActual"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))) {
                 params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));

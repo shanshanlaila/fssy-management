@@ -253,16 +253,35 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
 
     private QueryWrapper<ManageKpiMonthPerformance> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ManageKpiMonthPerformance> queryWrapper = new QueryWrapper<>();
-        int month = 1;
+        //获取前端传来的默认值，12，依次递减
+        int month = Integer.valueOf((String) params.get("month"));
+        //获取表中数据
+//        ManageKpiMonthPerformance performance = new ManageKpiMonthPerformance();
+//        String companyName = performance.getCompanyName();
+//        Integer year = performance.getYear();
+//        String projectDesc = performance.getProjectDesc();
+//        Integer month1 = performance.getMonth();
+//        System.out.println("*****"+companyName);
+//        System.out.println("******"+year);
+//        System.out.println("//////"+projectDesc);
+//        System.out.println("///////////"+month);
+//        System.out.println("///////////"+month1);
+        String companyName = "方盛车桥（柳州）有限公司";
+        Integer year = 2022;
+        String projectDesc = "主营业务收入";
         // 达成数量
         StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany," +
                 "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,dataSource," +
                 "challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,kpiDefinition,kpiDecomposeMode,analyzeRes");
+        selectStr1.append(",(SELECT accumulateTarget FROM bs_manage_kpi_month " +
+                "WHERE companyName =" +"'"+ companyName +"'" +"AND year ="+ year +" AND projectDesc = "+"'"+ projectDesc +"'"+" AND MONTH ="+ month+") AS monthATarget"
+                +",(SELECT accumulateActual FROM bs_manage_kpi_month " +
+                "WHERE companyName =" +"'"+ companyName +"'" +"AND year ="+ year +" AND projectDesc = "+"'"+ projectDesc +"'"+" AND MONTH ="+ month+") AS monthAActual");
         do {
             selectStr1.append(", sum(if(MONTH =" + month + ",monthTarget,null)) AS 'monthTarget" + month + "'"
                     + ", sum(if(MONTH =" + month + ",monthActualValue,null)) AS 'monthActual" + month + "'");
-            month++;
-        } while (month <= 12);
+            month--;
+        } while (month>0);
         queryWrapper.select(selectStr1.toString())
                 .groupBy("manageKpiYearId");
 
