@@ -158,6 +158,12 @@
             cols: [
                 [
                     {
+                        field: 'id',
+                        title: '序号',
+                        width: 50,
+                        fixed: 'left'
+                    },
+                    {
                         field: 'departmentName',
                         title: '部门名称',
                         width: 90,
@@ -186,72 +192,6 @@
                         title: '状态',
                         width: 90
                     },
-                    /*{
-                        field: 'delowStandard',
-                        title: '不合格',
-                        width: 80
-                    },
-                    {
-                        field: 'middleStandard',
-                        title: '中',
-                        width: 130
-                    },
-                    {
-                        field: 'fineStandard',
-                        title: '良',
-                        width: 130
-                    },
-                    {
-                        field: 'excellentStandard',
-                        title: '优',
-                        width: 130
-                    },*/
-                    {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
-                    },
-                    {
-                        field: 'eventsType',
-                        title: '事件类别',
-                        width: 80
-                    },
-                    {
-                        field: 'jobName',
-                        title: '工作职责',
-                        width: 120
-                    },
-                    {
-                        field: 'strategyFunctions',
-                        title: '战略职能',
-                        width: 130
-                    },
-                    {
-                        field: 'supportFunctions',
-                        title: '支持职能',
-                        width: 130
-                    },
-
-                    {
-                        field: 'note',
-                        title: '备注',
-                        width: 130
-                    },
-                    {
-                        field: 'eventsFirstType',
-                        title: '事件类型',
-                        width: 130
-                    },
-                    {
-                        field: 'duration',
-                        title: '月工作标准时长（分）',
-                        width: 130
-                    },
-                    {
-                        field: 'level',
-                        title: '评价等级',
-                        width: 130
-                    },
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
@@ -278,26 +218,69 @@
                         width: 130
                     },
                     {
+                        field: 'eventsType',
+                        title: '事件类别',
+                        width: 80
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 80
+                    },
+                    {
+                        field: 'jobName',
+                        title: '工作职责',
+                        width: 120
+                    },
+                    {
+                        field: 'strategyFunctions',
+                        title: '战略职能',
+                        width: 130
+                    },
+                    {
+                        field: 'supportFunctions',
+                        title: '支持职能',
+                        width: 130
+                    },
+                    {
+                        field: 'note',
+                        title: '备注',
+                        width: 130
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 130
+                    },
+                    {
+                        field: 'duration',
+                        title: '月工作标准时长（分）',
+                        width: 130
+                    },
+                    {
+                        field: 'level',
+                        title: '评价等级',
+                        width: 130
+                    },
+                    {
                         field: 'createDate',
                         title: '编制日期',
                         width: 80,
-                        templet: function (d) {
-                            return moment(d.createDate).format('Y-MM-DD')
-                        }
                     },
                     {
                         field: 'activeDate',
                         title: '生效日期',
                         width: 80,
-                        templet: function (d) {
-                            return moment(d.activeDate).format('Y-MM-DD')
-                        }
                     },
                     {
                         field: 'performanceForm',
                         title: '绩效类型',
                         width: 130
                     },
+                    {
+                        field: 'office',
+                        title: '科室',
+                        width: 120},
                     {
                         field: 'listCreateUser',
                         title: '事件清单创建人',

@@ -30,9 +30,8 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="roleName" placeholder="岗位查询"
-                                   autocomplete="off" class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
@@ -83,7 +82,7 @@
                                     <select name="ministerReview" id="ministerReview">
                                         <option value="合格">合格</option>
                                         <option value="中">中</option>
-                                        <option value="良">良</option>
+                                        <option value="良" selected>良</option>
                                         <option value="优">优</option>
                                     </select>
                                 </div>
@@ -129,17 +128,19 @@
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'eventsId',
                         title: '对应事件清单序号',
-                        width: 50
+                        width: 50,
+                        fixed: 'left',
                     },
                     {
                         field: 'id',
                         title: '序号',
-                        width: 50
+                        width: 50,
+                        fixed: 'left',
                     },
                     {
                         field: 'eventsType',
@@ -180,12 +181,12 @@
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 130
+                        width: 90
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 130
+                        width: 90
                     },
                     {
                         field: 'actualCompleteDate',
@@ -200,7 +201,7 @@
                     {
                         field: 'times',
                         title: '频次',
-                        width: 130
+                        width: 50
                     },
                     /*{
                         field: 'delowStandard',
@@ -225,17 +226,17 @@
                     {
                         field: 'status',
                         title: '履职计划状态',
-                        width: 120
+                        width: 80
                     },
                     {
                         field: 'eventsForm',
                         title: '绩效类型',
-                        width: 120
+                        width: 90
                     },
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
-                        width: 130
+                        width: 80
                     },
                     {
                         field: 'mainOrNext',
@@ -245,7 +246,7 @@
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 130
+                        width: 100
                     },
                     {
                         field: 'departmentName',
@@ -253,14 +254,9 @@
                         width: 90,
                     },
                     {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 50
-                    },
-                    {
                         field: 'note',
                         title: '备注',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'roleName',
@@ -292,7 +288,7 @@
                         title: '编制人',
                         width: 80
                     },
-                    {
+                    /*{
                         field: 'auditName',
                         title: '审核人',
                         width: 80
@@ -306,7 +302,7 @@
                         field: 'auditNote',
                         title: '审核意见',
                         width: 130
-                    },
+                    }*/
                     {
                         field: 'mergeNo',
                         title: '员工月度履职计划表编号',
@@ -316,13 +312,6 @@
                         field: 'auditStatus',
                         title: '履职计划审核状态',
                         width: 80
-                    },
-
-
-                    {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
                     },
                     {
                         fixed: 'right',
@@ -449,6 +438,24 @@
             width: '160px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+    });
+    // 岗位查询下拉列表
+    let roleSelect = xmSelect.render({
+        el: '#roleSelect', // 绑定
+        language: 'zn',
+        data: [[${roleNameList}]],// model过来的
+        filterable: true,
+        // radio: true,// 是否是单选
+        tips: '岗位查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 30,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
 </script>
 </body>

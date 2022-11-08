@@ -67,8 +67,6 @@
                         </div>
 
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <!--<input type="text" name="status" placeholder="事件清单状态查询" autocomplete="off"
-                                   class="layui-input">-->
                             <label>
                                 <select name="status" >
                                     <option style="display: none" value="">请选择状态</option>
@@ -84,11 +82,11 @@
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                             <button shiro:hasPermission="system:performance:employee:event:attachment:withoutStandardImport"
-                            		lay-submit lay-filter="import" class="layui-btn">导入</button>
+                            		lay-submit lay-filter="import" class="layui-btn">导入基础事件</button>
                             <button shiro:hasPermission="system:performance:employee:event:attachment:importToCompleteRole"
                             		lay-submit lay-filter="importToCompleteRole" class="layui-btn" title="请在系统自动打分前完成事件岗位分配情况，否则系统无法计算得分">导出事件清单维护事件岗位配比</button>
                             <a class="layui-btn" lay-submit th:href="@{/export/eventList.xlsx}">
-                                <i class="layui-icon">&#xe601</i>下载模板
+                                <i class="layui-icon">&#xe601</i>下载填写基础事件清单模板
                             </a>
                         </div>
                     </div>
@@ -152,11 +150,18 @@
                             size: 'sm',
                              where: {
                                 // 向controller传入额外参数
-                                 statusCancel:true
+                                 statusCancel:true,//不显示状态为取消的基础事件
+                                 departmentName:[[${departmentName}]]//初始化只显示当前登录人用户的所在部门的基础事件
                             },
                             cols:
                                 [
                                     [
+                                        {
+                                            field: 'id',
+                                            title: '序号',
+                                            width: 50,
+                                            fixed: 'left'
+                                        },
                                         {
                                             field: 'departmentName',
                                             title: '部门名称',
@@ -210,11 +215,6 @@
                                             field: 'excellent',
                                             title: '优价值',
                                             width: 130
-                                        },
-                                        {
-                                            field: 'id',
-                                            title: '序号',
-                                            width: 50
                                         },
                                         {
                                             field: 'eventsType',
@@ -304,11 +304,6 @@
                                             field: 'standardCreateDate',
                                             title: '事件标准创建日期',
                                             width: 130
-                                        },
-                                        {
-                                            field: 'id',
-                                            title: '序号',
-                                            width: 50
                                         },
                                         {
                                             fixed : 'right',

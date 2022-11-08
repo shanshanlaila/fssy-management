@@ -30,9 +30,8 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="roleName" placeholder="岗位查询"
-                                   autocomplete="off" class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
@@ -70,6 +69,7 @@
                                     <option style="display: none" value="">请选择事务类型</option>
                                     <option value="事务类">事物类</option>
                                     <option value="非事务类">非事物类</option>
+                                    <option value="新增工作流">新增工作流</option>
                                 </select>
                             </label>
                         </div>
@@ -133,7 +133,9 @@
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
                         {{# } }}
                         <a lay-event="cancel" title="取消"><i class="layui-icon">&#x1007;</i></a>
+                        {{# if(d.status == '待填报回顾') {}}
                         <a lay-event="createReview" title="新增单条履职回顾"><i class="layui-icon">&#xe608;</i></a>
+                        {{# } }}
                     </script>
                 </div>
             </div>
@@ -209,7 +211,7 @@
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'eventsType',
@@ -234,32 +236,27 @@
                     {
                         field: 'planningWork',
                         title: '对应工作事件的计划内容',
-                        width: 130
+                        width: 150
                     },
                     {
                         field: 'times',
                         title: '频次',
-                        width: 130
+                        width: 50
                     },
                     {
                         field: 'planOutput',
                         title: '表单(输出内容)来源自己填写',
-                        width: 130
-                    },
-                    {
-                        field: 'workOutput',
-                        title: '表单(输出内容)来源事件清单',
-                        width: 130
+                        width: 180
                     },
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 130
+                        width: 90
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 130
+                        width: 90
                     },
                     /*{
                         field: 'delowStandard',
@@ -284,47 +281,47 @@
                     {
                         field: 'status',
                         title: '履职计划状态',
-                        width: 120
+                        width: 100
                     },
                     {
                         field: 'eventsForm',
                         title: '绩效类型',
-                        width: 120
+                        width: 80
                     },
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
-                        width: 130
+                        width: 80
                     },
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 130
+                        width: 90
                     },
                     {
                         field: 'departmentName',
                         title: '部门名称',
-                        width: 90,
+                        width: 80,
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 70,
+                        width: 80,
                     },
                     {
                         field: 'eventsId',
                         title: '对应事件清单序号',
-                        width: 50
+                        width: 120
                     },
                     {
                         field: 'note',
                         title: '备注',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'roleName',
@@ -379,7 +376,7 @@
                     {
                         field: 'auditStatus',
                         title: '履职计划审核状态',
-                        width: 80
+                        width: 130
                     },
                     {
                         field: 'id',
@@ -568,6 +565,25 @@
             width: '160px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+    });
+
+    // 岗位查询下拉列表
+    let roleSelect = xmSelect.render({
+        el: '#roleSelect', // 绑定
+        language: 'zn',
+        data: [[${roleNameList}]],// model过来的
+        filterable: true,
+        // radio: true,// 是否是单选
+        tips: '岗位查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 30,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
 </script>
 </body>

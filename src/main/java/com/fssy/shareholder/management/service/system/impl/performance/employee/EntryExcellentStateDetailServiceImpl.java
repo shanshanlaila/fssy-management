@@ -213,6 +213,15 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                     .or(item ->item.eq("status",PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE))
                     .or(item -> item.eq("status", PerformanceConstant.EVENT_LIST_STATUS_FINAL).ne("classReview", PerformanceConstant.EXCELLENT));
         }
+        if (params.containsKey("roleName")) {
+            queryWrapper.like("roleName", params.get("roleName"));
+        }
+        if (params.containsKey("roleId")) {
+            queryWrapper.eq("roleId", params.get("roleId"));
+        }
+        if (params.containsKey("roleIdList")) {
+            queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
+        }
 
         return queryWrapper;
     }

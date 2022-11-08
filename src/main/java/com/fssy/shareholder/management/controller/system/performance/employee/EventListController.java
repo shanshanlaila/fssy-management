@@ -7,12 +7,16 @@ package com.fssy.shareholder.management.controller.system.performance.employee;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
+import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,6 +44,9 @@ public class EventListController {
     @Autowired
     private DepartmentService departmentService;
 
+    @Autowired
+    private RoleService roleService;
+
     /**
      * 无标准事件管理页面
      *
@@ -52,6 +59,9 @@ public class EventListController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/performance-event-list";
     }
 
@@ -65,6 +75,9 @@ public class EventListController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/performance-event-manage-list";
     }
 
@@ -108,16 +121,16 @@ public class EventListController {
         Map<String, Object> params = getParams(request);
         params.put("select",
                 "id," +
-                "eventsType," +
-                "jobName," +
-                "workEvents," +
+                        "eventsType," +
+                        "jobName," +
+                        "workEvents," +
                 /*"delowStandard," +
                 "middleStandard," +
                 "fineStandard," +
                 "excellentStandard," +*/
-                "performanceForm," +
-                "departmentName,"+
-                "status,standardValue,eventsFirstType"
+                        "performanceForm," +
+                        "departmentName," +
+                        "standardValue,eventsFirstType"
         );
         List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
 
@@ -127,7 +140,6 @@ public class EventListController {
         fieldMap.put("eventsFirstType", "事务类型");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
-        fieldMap.put("status","状态");
         fieldMap.put("departmentName", "部门");
         /*fieldMap.put("delowStandard", "不合格");
         fieldMap.put("middleStandard", "中");
@@ -146,7 +158,7 @@ public class EventListController {
         fieldMap.put("gangweirenyuanxingming", "*岗位人员姓名");
         fieldMap.put("shengbaoyuefen", "*申报日期");
         // 标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16,17,18,19,20,21);
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
         SheetOutputService sheetOutputService = new SheetOutputService();
         if (ObjectUtils.isEmpty(eventLists)) {
             throw new ServiceException("未查出数据");
@@ -317,6 +329,17 @@ public class EventListController {
         if (!ObjectUtils.isEmpty(request.getParameter("statusCancel"))) {
             params.put("statusCancel", request.getParameter("statusCancel"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("roleName"))) {
+            params.put("roleName", request.getParameter("roleName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("roleIds"))) {
+            String roleIds = request.getParameter("roleIds");
+            List<String> roleIdList = Arrays.asList(roleIds.split(","));
+            params.put("roleIdList", roleIdList);
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("roleId"))) {
+            params.put("roleId", request.getParameter("roleId"));
+        }
         return params;
     }
 
@@ -339,6 +362,11 @@ public class EventListController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "system/performance/events-list-list";
     }
 
@@ -357,6 +385,12 @@ public class EventListController {
         EventList eventList = eventListService.getById(Long.valueOf(id));
         if (eventList.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
             throw new ServiceException("不能修改取消状态的事件清单");
+        }
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(user);
+        String userDepartmentName = departmentRoleByUser.getDepartmentName();
+        if (!userDepartmentName.equals(eventList.getDepartmentName())) {
+            throw new ServiceException("不能操作其他部门的事件");
         }
         model.addAttribute("eventList", eventList);//发送数据到前端，eventList对应
         return "/system/performance/events-list-edit";
@@ -443,9 +477,13 @@ public class EventListController {
         fieldMap.put("departmentName", "*部门名称");
         fieldMap.put("roleName", "*岗位名称");
         fieldMap.put("proportion", "*占比");
-        fieldMap.put("isMainOrNext", "*是否主担");
+        fieldMap.put("isMainOrNext", "*主担/次担");
         fieldMap.put("userName", "*职员名称");
-        fieldMap.put("score", "*价值分");
+        fieldMap.put("standardValue", "*事件标准价值");
+        fieldMap.put("delow", "*不合格价值");
+        fieldMap.put("middle", "*中价值");
+        fieldMap.put("fine", "*良价值");
+        fieldMap.put("excellent", "*优价值");
         fieldMap.put("activeDate", "*生效日期");
         // 标识字符串的列
         List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);

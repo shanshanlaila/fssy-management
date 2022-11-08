@@ -30,9 +30,8 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="roleName" placeholder="岗位查询"
-                                   autocomplete="off" class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 140px;">
                             <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
@@ -136,7 +135,7 @@
                     {
                         field: 'workOutput',
                         title: '表单',
-                        width: 130
+                        width: 80
                     },
                     {
                         field: 'planOutput',
@@ -146,22 +145,22 @@
                     {
                         field: 'times',
                         title: '频次',
-                        width: 130
+                        width: 50
                     },
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 130
+                        width: 100
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 130
+                        width: 100
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 130
+                        width: 100
                     },
                     {
                         field: 'departmentName',
@@ -226,7 +225,7 @@
                     {
                         field: 'note',
                         title: '备注',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'eventsFirstType',
@@ -236,12 +235,12 @@
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
-                        width: 130
+                        width: 100
                     },
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'roleName',
@@ -271,12 +270,12 @@
                     {
                         field: 'createName',
                         title: '编制人',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'auditName',
                         title: '审核人',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'auditDate',
@@ -345,6 +344,24 @@
             width: '160px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+    });
+    // 岗位查询下拉列表
+    let roleSelect = xmSelect.render({
+        el: '#roleSelect', // 绑定
+        language: 'zn',
+        data: [[${roleNameList}]],// model过来的
+        filterable: true,
+        // radio: true,// 是否是单选
+        tips: '岗位查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 30,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
 </script>
 </body>

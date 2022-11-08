@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
+import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
@@ -59,6 +60,9 @@ public class EventListServiceImpl implements EventListService {
 
     @Autowired
     private ViewDepartmentRoleUserMapper viewDepartmentRoleUserMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
 
     @Override
     public Page<EventList> findDataListByParams(Map<String, Object> params) {
@@ -183,6 +187,15 @@ public class EventListServiceImpl implements EventListService {
         }
         if (params.containsKey("statusCancel")) {
             queryWrapper.ne("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+        }
+        if (params.containsKey("roleName")) {
+            queryWrapper.like("roleName", params.get("roleName"));
+        }
+        if (params.containsKey("roleId")) {
+            queryWrapper.eq("roleId", params.get("roleId"));
+        }
+        if (params.containsKey("roleIdList")) {
+            queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
         }
         return queryWrapper;
     }
