@@ -1,6 +1,8 @@
 package com.fssy.shareholder.management.service.system.performance.manage_kpi;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiLib;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiMonth;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,6 +19,7 @@ import java.util.Map;
  * @since 2022-10-31
  */
 public interface ViewManagerKpiMonthService extends IService<ViewManagerKpiMonth>{
+
     /**
      * 通过查询条件 分页查询列表
      *

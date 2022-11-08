@@ -14,12 +14,9 @@ import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -91,16 +88,9 @@ public class ViewManagerKpiMonthController {
     @ResponseBody
     public SysResult updateScore(HttpServletRequest request){
         Map<String, Object> params = getParams(request);
-//        System.out.println("params = " + params);
-//        System.out.println("------------------------");
-        if (ObjectUtils.isEmpty(params.get("managerName"))){
-            throw new ServiceException("未填写经理人姓名，生成失败");
-        }
+
         if (ObjectUtils.isEmpty(params.get("companyName"))){
             throw new ServiceException("未填写企业名称，生成失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("generalManager"))){
-            throw new ServiceException("未选择是否为经理人，生成失败");
         }
         if (ObjectUtils.isEmpty(params.get("year"))){
             throw new ServiceException("未选择年份，生成失败");
@@ -115,6 +105,21 @@ public class ViewManagerKpiMonthController {
         return SysResult.build(500, "分数生成失败");
     }
 
+//    /**
+//     * 以主键删除经理人分数记录
+//     * @param managerName
+//     * @return true/false
+//     */
+//    @DeleteMapping("{managerName}")
+//    @ResponseBody
+//    public SysResult delete(@PathVariable(value = "managerName") String managerName) {
+//        System.out.println("--------------");
+//        boolean result = managerKpiScoreService.deleteStudentById(id);
+//        if (result) {
+//            return SysResult.ok();
+//        }
+//        return SysResult.build(500, "删除数据失败");
+//    }
     /**
      * excel 导出
      * @param request 请求

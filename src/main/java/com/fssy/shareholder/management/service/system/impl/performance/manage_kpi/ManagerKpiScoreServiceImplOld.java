@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiScoreMapperOld;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiMonth;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,8 +24,10 @@ import java.util.Map;
 @Service
 public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMapperOld, ManagerKpiScoreOld> implements ManagerKpiScoreServiceOld {
 
+
     @Autowired
     private ManagerKpiScoreMapperOld managerKpiScoreMapper;
+
 
     @Override
     public Page<ManagerKpiScoreOld> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
@@ -33,6 +37,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
         Page<ManagerKpiScoreOld> myPage = new Page<>(page,limit);
         return managerKpiScoreMapper.selectPage(myPage, queryWrapper);
     }
+
     /**
      * 查询条件
      * @param params
