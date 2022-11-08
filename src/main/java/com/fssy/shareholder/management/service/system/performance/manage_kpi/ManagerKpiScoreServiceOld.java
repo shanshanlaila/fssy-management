@@ -3,7 +3,9 @@ package com.fssy.shareholder.management.service.system.performance.manage_kpi;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiMonth;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,6 +17,7 @@ import java.util.Map;
  * @since 2022-10-31
  */
 public interface ManagerKpiScoreServiceOld extends IService<ManagerKpiScoreOld> {
+
     /**
      * 通过查询条件 分页查询列表
      *
@@ -22,4 +25,10 @@ public interface ManagerKpiScoreServiceOld extends IService<ManagerKpiScoreOld> 
      * @return 分页数据
      */
     Page<ManagerKpiScoreOld> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params);
+//    /**
+//     * 以人名删除 分数信息 数据
+//     * @param managerName
+//     * @return  true/false
+//     */
+//    public boolean deleteManagerKpiScoreOldBymanagerName(String managerName);
 }
