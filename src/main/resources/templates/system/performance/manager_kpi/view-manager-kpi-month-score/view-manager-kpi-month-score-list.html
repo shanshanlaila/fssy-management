@@ -38,7 +38,7 @@
 
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="year" placeholder="年份" autocomplete="off"
-                                   class="layui-input" value="2021">
+                                   class="layui-input" value="2022">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="month" placeholder="月份" autocomplete="off"
@@ -46,9 +46,9 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <select name="generalManager" id="generalManager">
-                                <option value="">是否经理人</option>
-                                <option value="是">是</option>
-                                <option value="否">否</option>
+                                <option value="">请选择职位类别</option>
+                                <option value="是">总经理</option>
+                                <option value="否">分管经理人</option>
                             </select>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -76,7 +76,7 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="edit" title="经理人分数信息明细"><i class="layui-icon">&#xe63c;</i></a>
-                        <a lay-event="delete" title="删除经理人分数信息"><i class="layui-icon">&#xe640;</i></a>
+<!--                        <a lay-event="delete" title="删除经理人分数信息"><i class="layui-icon">&#xe640;</i></a>-->
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -234,25 +234,12 @@
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title: '序号为：' + data.id + '的经理人月度KPI分数信息修改',
+                    title: data.managerName + '的各项分数信息如下:',
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
                     content: '/system/performance/manager_kpi/view-manager-kpi-month-score/edit?id=' + data.id,
                     maxmin: true
-                });
-            } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除' + data.managerName + '的此条记录吗？', function () {
-                    $.ajax({
-                        type: 'DELETE',
-                        url: '/system/performance/manager_kpi/view-manager-kpi-month-score/' + data.id,
-                        success: function (result) {
-                            layer.msg(result.msg);
-                            if (result.status == 200) {
-                                table.reload('dataTable');
-                            }
-                        }
-                    })
                 });
             }
         });
