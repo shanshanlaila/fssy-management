@@ -152,7 +152,7 @@
 							width : 140
 						}, {
 							field : 'isMainOrNext',
-							title : '主担次担',
+							title : '主担/次担',
 							width : 110
 						}, {
 							field : 'proportion',
@@ -198,7 +198,7 @@
 					]
 				]
 			});
-			
+
 			// 每个标签加一个class，名为laydate
 			$(".laydate").each(function()
 			{
@@ -210,7 +210,7 @@
 					type : 'date'
 				});
 			});
-			
+
 			// 导入按钮
       form.on('submit(showImport)', function (data) {
         var createLayer = layer.open({
@@ -223,7 +223,7 @@
         });
         return false;
       });
-			
+
 			// 部门查询下拉列表
 	    let departmentSelect = xmSelect.render({
         el: '#departmentSelect',
@@ -242,7 +242,7 @@
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
 	    });
-			
+
 			// 岗位查询下拉列表
 	    let roleSelect = xmSelect.render({
         el: '#roleSelect',

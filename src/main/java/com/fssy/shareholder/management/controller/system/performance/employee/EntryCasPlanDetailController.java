@@ -72,8 +72,8 @@ public class EntryCasPlanDetailController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-plan-detail-list";
     }
 
@@ -408,7 +408,7 @@ public class EntryCasPlanDetailController {
     public SysResult affirm(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds, HttpServletRequest request) {
         String event = request.getParameter("event");
         boolean res = entryCasPlanDetailService.affirmStore(planDetailIds, event);
-      if (res) {
+        if (res) {
             return SysResult.ok();
         }
         return SysResult.build(500, "提交失败请检查数据后重试");
@@ -428,8 +428,8 @@ public class EntryCasPlanDetailController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-plan-detail-minister-list";
     }
 
@@ -441,10 +441,11 @@ public class EntryCasPlanDetailController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
     }
+
     /**
      * 展示新增单条履职回顾页面
      *
@@ -466,10 +467,11 @@ public class EntryCasPlanDetailController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-plan-detail-HR-list";
     }
+
     @PostMapping("HRAffirmStore")
     @ResponseBody
     public SysResult HRAffirmStore(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds, HttpServletRequest request) {
@@ -480,6 +482,7 @@ public class EntryCasPlanDetailController {
         }
         return SysResult.build(500, "提交失败请检查数据后重试");
     }
+
     @GetMapping("SelectIndex")
     @RequiredLog("待选择关联事件清单")
     @RequiresPermissions("system:performance:entryCasPlanDetail")
@@ -488,8 +491,8 @@ public class EntryCasPlanDetailController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-plan-detail-select-list";
     }
 
@@ -509,6 +512,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
         return "/system/performance/employee/performance-entry-cas-plan-detail-select-edit";
     }
+
     /**
      * 更新履职明细
      *
@@ -523,5 +527,15 @@ public class EntryCasPlanDetailController {
             return SysResult.ok();
         }
         return SysResult.build(500, "事件清单序号为空提交失败");
+    }
+
+    /**
+     * 展示事件详情页面
+     *
+     * @return 页面路径
+     */
+    @GetMapping("AssociateEvents")
+    public String AssociateEvents() {
+        return "/system/performance/employee/entry-cas-new-plan-detail";
     }
 }

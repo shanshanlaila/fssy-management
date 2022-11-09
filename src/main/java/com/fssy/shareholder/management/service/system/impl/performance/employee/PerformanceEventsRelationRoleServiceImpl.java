@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.performance.employee.PerformanceEventsRelationRoleMapper;
-import com.fssy.shareholder.management.pojo.system.performance.employee.PerformanceEventsRelationRole;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.system.performance.employee.PerformanceEventsRelationRoleService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 
@@ -33,7 +33,7 @@ import com.fssy.shareholder.management.tools.common.InstandTool;
  */
 @Service
 public class PerformanceEventsRelationRoleServiceImpl
-		extends ServiceImpl<PerformanceEventsRelationRoleMapper, PerformanceEventsRelationRole>
+		extends ServiceImpl<PerformanceEventsRelationRoleMapper, EventsRelationRole>
 		implements PerformanceEventsRelationRoleService
 {
 	/**
@@ -44,32 +44,32 @@ public class PerformanceEventsRelationRoleServiceImpl
 
 	@Override
 	@Transactional
-	public PerformanceEventsRelationRole savePerformanceEventsRelationRole(
-			PerformanceEventsRelationRole performanceEventsRelationRole)
+	public EventsRelationRole savePerformanceEventsRelationRole(
+			EventsRelationRole eventsRelationRole)
 	{
-		performanceEventsRelationRoleMapper.insert(performanceEventsRelationRole);
-		return performanceEventsRelationRole;
+		performanceEventsRelationRoleMapper.insert(eventsRelationRole);
+		return eventsRelationRole;
 	}
 
 	@Override
-	public List<PerformanceEventsRelationRole> findPerformanceEventsRelationRoleDataListByParams(
+	public List<EventsRelationRole> findPerformanceEventsRelationRoleDataListByParams(
 			Map<String, Object> params)
 	{
-		QueryWrapper<PerformanceEventsRelationRole> queryWrapper = getQueryWrapper(params);
-		List<PerformanceEventsRelationRole> vehicleList = performanceEventsRelationRoleMapper
+		QueryWrapper<EventsRelationRole> queryWrapper = getQueryWrapper(params);
+		List<EventsRelationRole> vehicleList = performanceEventsRelationRoleMapper
 				.selectList(queryWrapper);
 		return vehicleList;
 	}
 
 	@Override
-	public Page<PerformanceEventsRelationRole> findPerformanceEventsRelationRoleDataListPerPageByParams(
+	public Page<EventsRelationRole> findPerformanceEventsRelationRoleDataListPerPageByParams(
 			Map<String, Object> params)
 	{
-		QueryWrapper<PerformanceEventsRelationRole> queryWrapper = getQueryWrapper(params);
+		QueryWrapper<EventsRelationRole> queryWrapper = getQueryWrapper(params);
 		int limit = (int) params.get("limit");
 		int page = (int) params.get("page");
-		Page<PerformanceEventsRelationRole> myPage = new Page<>(page, limit);
-		Page<PerformanceEventsRelationRole> vehiclePage = performanceEventsRelationRoleMapper
+		Page<EventsRelationRole> myPage = new Page<>(page, limit);
+		Page<EventsRelationRole> vehiclePage = performanceEventsRelationRoleMapper
 				.selectPage(myPage, queryWrapper);
 		return vehiclePage;
 	}
@@ -78,7 +78,7 @@ public class PerformanceEventsRelationRoleServiceImpl
 	public List<Map<String, Object>> findPerformanceEventsRelationRoleDataMapListByParams(
 			Map<String, Object> params)
 	{
-		QueryWrapper<PerformanceEventsRelationRole> queryWrapper = getQueryWrapper(params);
+		QueryWrapper<EventsRelationRole> queryWrapper = getQueryWrapper(params);
 		List<Map<String, Object>> vehicleList = performanceEventsRelationRoleMapper
 				.selectMaps(queryWrapper);
 		return vehicleList;
@@ -88,7 +88,7 @@ public class PerformanceEventsRelationRoleServiceImpl
 	public Page<Map<String, Object>> findPerformanceEventsRelationRoleDataMapListPerPageByParams(
 			Map<String, Object> params)
 	{
-		QueryWrapper<PerformanceEventsRelationRole> queryWrapper = getQueryWrapper(params);
+		QueryWrapper<EventsRelationRole> queryWrapper = getQueryWrapper(params);
 		int limit = (int) params.get("limit");
 		int page = (int) params.get("page");
 		Page<Map<String, Object>> myPage = new Page<>(page, limit);
@@ -101,23 +101,23 @@ public class PerformanceEventsRelationRoleServiceImpl
 	public List<Map<String, Object>> findPerformanceEventsRelationRoleSelectedDataListByParams(
 			Map<String, Object> params, List<String> selectedIds)
 	{
-		QueryWrapper<PerformanceEventsRelationRole> queryWrapper = getQueryWrapper(params);
-		List<PerformanceEventsRelationRole> vehicleList = performanceEventsRelationRoleMapper
+		QueryWrapper<EventsRelationRole> queryWrapper = getQueryWrapper(params);
+		List<EventsRelationRole> vehicleList = performanceEventsRelationRoleMapper
 				.selectList(queryWrapper);
 		List<Map<String, Object>> resultList = new ArrayList<>();
 		// 为选取的数据添加selected属性
 		Map<String, Object> result;
-		for (PerformanceEventsRelationRole performanceEventsRelationRole : vehicleList)
+		for (EventsRelationRole eventsRelationRole : vehicleList)
 		{
 			result = new HashMap<String, Object>();
-			result.put("name", performanceEventsRelationRole.getUserName());
-			result.put("value", performanceEventsRelationRole.getId());
-			result.put("id", performanceEventsRelationRole.getId());
+			result.put("name", eventsRelationRole.getUserName());
+			result.put("value", eventsRelationRole.getId());
+			result.put("id", eventsRelationRole.getId());
 			boolean selected = false;
 			for (int i = 0; i < selectedIds.size(); i++)
 			{
 				if (selectedIds.get(i)
-						.equals(InstandTool.objectToString(performanceEventsRelationRole.getId())))
+						.equals(InstandTool.objectToString(eventsRelationRole.getId())))
 				{
 					selected = true;
 					break;
@@ -132,16 +132,16 @@ public class PerformanceEventsRelationRoleServiceImpl
 	@Override
 	@Transactional
 	public Map<String, Object> updatePerformanceEventsRelationRole(
-			PerformanceEventsRelationRole performanceEventsRelationRole)
+			EventsRelationRole eventsRelationRole)
 	{
-		performanceEventsRelationRoleMapper.updateById(performanceEventsRelationRole);
+		performanceEventsRelationRoleMapper.updateById(eventsRelationRole);
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
-	private QueryWrapper<PerformanceEventsRelationRole> getQueryWrapper(Map<String, Object> params)
+	private QueryWrapper<EventsRelationRole> getQueryWrapper(Map<String, Object> params)
 	{
-		QueryWrapper<PerformanceEventsRelationRole> queryWrapper = new QueryWrapper<>();
+		QueryWrapper<EventsRelationRole> queryWrapper = new QueryWrapper<>();
 		// 事件清单岗位关系表主键查询
 		if (params.containsKey("id"))
 		{

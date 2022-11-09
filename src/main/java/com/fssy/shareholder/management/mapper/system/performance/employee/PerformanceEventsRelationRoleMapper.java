@@ -1,12 +1,11 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
 package com.fssy.shareholder.management.mapper.system.performance.employee;
 
-import com.fssy.shareholder.management.pojo.system.performance.employee.PerformanceEventsRelationRole;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.mapper.manage.common.MyBaseMapper;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -18,6 +17,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @author Solomon
  * @since 2022-10-10
  */
-public interface PerformanceEventsRelationRoleMapper extends MyBaseMapper<PerformanceEventsRelationRole> {
+public interface PerformanceEventsRelationRoleMapper extends MyBaseMapper<EventsRelationRole> {
 
 }
