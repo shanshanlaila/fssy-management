@@ -185,7 +185,7 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             String accumulateActual = cells.get(SheetService.columnToIndex("S"));
             String analyzeRes = cells.get(SheetService.columnToIndex("T"));
 
-            //根据副标题中的年份、公司、月份和excel中的项目名称，对月份表进行查询找到唯一的id，再根据id进行导入
+            //根据副标题中的年份、公司、月份和excel中的项目名称，对月份表进行查询找到唯一的id，再根据月份id进行导入
             QueryWrapper<ManageKpiMonthPerformance> manageKpiMonthPerformanceQueryWrapper = new QueryWrapper<>();
             manageKpiMonthPerformanceQueryWrapper.eq("year",yearCellValue)
                     .eq("companyName",companyCellValue).eq("month",monthCellValue).eq("projectDesc",projectDesc);
@@ -204,8 +204,7 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
 
             //构建实体类
             ManageKpiMonthPerformance manageKpiMonthPerformance = new ManageKpiMonthPerformance();
-            manageKpiMonthPerformance.setId(Integer.valueOf(performance.getId()));
-//            manageKpiMonthPerformance.setManageKpiYearId(manageKpiYear.getId());
+            manageKpiMonthPerformance.setId(Integer.valueOf(performance.getId()));  //月份id
             manageKpiMonthPerformance.setProjectType(projectType);
             manageKpiMonthPerformance.setProjectDesc(projectDesc);
             manageKpiMonthPerformance.setKpiFormula(kpiFormula);
@@ -220,10 +219,18 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             manageKpiMonthPerformance.setMustInputTarget(mustInputTarget);
             manageKpiMonthPerformance.setReachTarget(reachTarget);
             manageKpiMonthPerformance.setChallengeTarget(challengeTarget);
-            manageKpiMonthPerformance.setMonthTarget(new BigDecimal(monthTarget));
-            manageKpiMonthPerformance.setMonthActualValue(new BigDecimal(monthActualValue));
-            manageKpiMonthPerformance.setAccumulateTarget(new BigDecimal(accumulateTarget));
-            manageKpiMonthPerformance.setAccumulateActual(new BigDecimal(accumulateActual));
+            if (!ObjectUtils.isEmpty(monthTarget)){
+                manageKpiMonthPerformance.setMonthTarget(new BigDecimal(monthTarget));
+            }
+            if (!ObjectUtils.isEmpty(monthActualValue)){
+                manageKpiMonthPerformance.setMonthActualValue(new BigDecimal(monthActualValue));
+            }
+            if (!ObjectUtils.isEmpty(accumulateTarget)){
+                manageKpiMonthPerformance.setAccumulateTarget(new BigDecimal(accumulateTarget));
+            }
+            if (!ObjectUtils.isEmpty(accumulateActual)){
+                manageKpiMonthPerformance.setAccumulateActual(new BigDecimal(accumulateActual));
+            }
             manageKpiMonthPerformance.setAnalyzeRes(analyzeRes);
             manageKpiMonthPerformance.setMonth(Integer.parseInt(monthCellValue));
             manageKpiMonthPerformance.setYear(Integer.parseInt(yearCellValue));

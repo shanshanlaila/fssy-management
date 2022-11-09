@@ -101,6 +101,9 @@ public class ManageKpiMonthScoreServiceImpl extends ServiceImpl<ManageKpiMonthAi
             BigDecimal challengeTarget = new BigDecimal(monthAim.getChallengeTarget());
             //对每个月度进行月份目标的计算
             BigDecimal temp = new BigDecimal(12);
+//            if (!ObjectUtils.isEmpty(accumulateActual)){
+//                BigDecimal basicTargetMonth = basicTarget.divide(temp).multiply(month);
+//            }
             BigDecimal basicTargetMonth = basicTarget.divide(temp).multiply(month);
             BigDecimal mustInputTargetMonth = mustInputTarget.divide(temp).multiply(month);
             BigDecimal reachTargetMonth = reachTarget.divide(temp).multiply(month);

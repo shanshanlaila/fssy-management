@@ -29,7 +29,7 @@
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="companyName" placeholder="公司名称查询" autocomplete="off"
-                                   class="layui-input" value="方盛车桥（柳州）有限公司">
+                                   class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="year" placeholder="创建年份查询" autocomplete="off"
@@ -94,20 +94,6 @@
                 page: {
                     curr: 1
                 },
-
-                // done:function (){
-                //     console.log(1)
-                //     let month = data.field.month;
-                //     console.log(month)
-                //     $("[data-field]=12").find("span").each(
-                //         function (item)
-                //         {
-                //             console.log($(item))
-                //             console.log($(item).text())
-                //             $(item).text(month);
-                //         }
-                //     )
-                // }
             });
             return false
         });
