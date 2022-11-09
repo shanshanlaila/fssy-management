@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -29,10 +29,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("bs_performance_events_relation_role")
-public class PerformanceEventsRelationRole extends BaseModel {
+public class EventsRelationRole extends BaseModel {
 
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -6026015938943568306L;
 
@@ -146,4 +146,34 @@ public class PerformanceEventsRelationRole extends BaseModel {
      */
     @TableField("attachmentId")
     private Long attachmentId;
+
+    /**
+     * 事件标准价值
+     */
+    @TableField("standardValue")
+    private BigDecimal standardValue;
+
+    /**
+     * 不合格价值
+     */
+    @TableField("delow")
+    private BigDecimal delow;
+
+    /**
+     * 中价值
+     */
+    @TableField("middle")
+    private BigDecimal middle;
+
+    /**
+     * 良价值
+     */
+    @TableField("fine")
+    private BigDecimal fine;
+
+    /**
+     * 优价值
+     */
+    @TableField("excellent")
+    private BigDecimal excellent;
 }

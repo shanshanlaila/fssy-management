@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.pojo.system.performance.employee.PerformanceEventsRelationRole;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.system.performance.employee.PerformanceEventsRelationRoleService;
@@ -53,7 +53,7 @@ public class PerformanceEventsRelationRoleController
 	 */
 	@Autowired
 	private DepartmentService departmentService;
-	
+
 	/**
 	 * 角色功能业务实现类
 	 */
@@ -62,7 +62,7 @@ public class PerformanceEventsRelationRoleController
 
 	/**
 	 * 返回事件清单岗位关系管理页面
-	 * 
+	 *
 	 * @param model model对象
 	 * @return
 	 */
@@ -86,7 +86,7 @@ public class PerformanceEventsRelationRoleController
 
 	/**
 	 * 获取数据格式
-	 * 
+	 *
 	 * @param request 请求对象
 	 * @return
 	 */
@@ -101,7 +101,7 @@ public class PerformanceEventsRelationRoleController
 		params.put("limit", limit);
 		params.put("page", page);
 
-		Page<PerformanceEventsRelationRole> performanceEventsRelationRolePage = performanceEventsRelationRoleService
+		Page<EventsRelationRole> performanceEventsRelationRolePage = performanceEventsRelationRoleService
 				.findPerformanceEventsRelationRoleDataListPerPageByParams(params);
 
 		if (performanceEventsRelationRolePage.getTotal() == 0)

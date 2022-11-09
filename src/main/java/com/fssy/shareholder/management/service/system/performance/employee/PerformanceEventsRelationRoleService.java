@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -9,7 +9,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fssy.shareholder.management.pojo.system.performance.employee.PerformanceEventsRelationRole;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 
 /**
  * <p>
@@ -22,39 +22,39 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.Performa
  * @since 2022-10-10
  */
 public interface PerformanceEventsRelationRoleService
-		extends IService<PerformanceEventsRelationRole>
+		extends IService<EventsRelationRole>
 {
 
 	/**
 	 * 添加事件清单岗位关系
-	 * 
-	 * @param performanceEventsRelationRole 事件清单岗位关系实体
+	 *
+	 * @param eventsRelationRole 事件清单岗位关系实体
 	 * @return 事件清单岗位关系实体
 	 */
-	PerformanceEventsRelationRole savePerformanceEventsRelationRole(
-			PerformanceEventsRelationRole performanceEventsRelationRole);
+	EventsRelationRole savePerformanceEventsRelationRole(
+			EventsRelationRole eventsRelationRole);
 
 	/**
 	 * 通过查询条件查询事件清单岗位关系列表
-	 * 
+	 *
 	 * @param params 查询条件
 	 * @return 事件清单岗位关系列表
 	 */
-	List<PerformanceEventsRelationRole> findPerformanceEventsRelationRoleDataListByParams(
+	List<EventsRelationRole> findPerformanceEventsRelationRoleDataListByParams(
 			Map<String, Object> params);
 
 	/**
 	 * 通过查询条件分页查询事件清单岗位关系列表
-	 * 
+	 *
 	 * @param params 查询条件
 	 * @return 事件清单岗位关系分页数据
 	 */
-	Page<PerformanceEventsRelationRole> findPerformanceEventsRelationRoleDataListPerPageByParams(
+	Page<EventsRelationRole> findPerformanceEventsRelationRoleDataListPerPageByParams(
 			Map<String, Object> params);
 
 	/**
 	 * 通过查询条件查询事件清单岗位关系列表(map)
-	 * 
+	 *
 	 * @param params 查询条件
 	 * @return 事件清单岗位关系列表
 	 */
@@ -63,7 +63,7 @@ public interface PerformanceEventsRelationRoleService
 
 	/**
 	 * 通过查询条件分页查询事件清单岗位关系列表(map)
-	 * 
+	 *
 	 * @param params 查询条件
 	 * @return 事件清单岗位关系分页数据
 	 */
@@ -72,7 +72,7 @@ public interface PerformanceEventsRelationRoleService
 
 	/**
 	 * 通过查询条件查询用于xm-select控件的数据
-	 * 
+	 *
 	 * @param params      查询条件
 	 * @param selectedIds 已选择项主键
 	 * @return xm-select控件使用数据
@@ -82,10 +82,10 @@ public interface PerformanceEventsRelationRoleService
 
 	/**
 	 * 修改事件清单岗位关系数据
-	 * 
-	 * @param performanceEventsRelationRole 事件清单岗位关系实体
+	 *
+	 * @param eventsRelationRole 事件清单岗位关系实体
 	 * @return map
 	 */
 	Map<String, Object> updatePerformanceEventsRelationRole(
-			PerformanceEventsRelationRole performanceEventsRelationRole);
+			EventsRelationRole eventsRelationRole);
 }

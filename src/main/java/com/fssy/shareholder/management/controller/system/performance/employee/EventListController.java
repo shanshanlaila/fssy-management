@@ -14,6 +14,7 @@ import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.SecurityUtils;
@@ -121,14 +122,8 @@ public class EventListController {
         Map<String, Object> params = getParams(request);
         params.put("select",
                 "id," +
-                        "eventsType," +
                         "jobName," +
                         "workEvents," +
-                /*"delowStandard," +
-                "middleStandard," +
-                "fineStandard," +
-                "excellentStandard," +*/
-                        "performanceForm," +
                         "departmentName," +
                         "standardValue,eventsFirstType"
         );
@@ -141,10 +136,6 @@ public class EventListController {
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
         fieldMap.put("departmentName", "部门");
-        /*fieldMap.put("delowStandard", "不合格");
-        fieldMap.put("middleStandard", "中");
-        fieldMap.put("fineStandard", "良");
-        fieldMap.put("excellentStandard", "优");*/
         fieldMap.put("standardValue", "事件价值标准分");
         // 需要填写的部分
         fieldMap.put("jixiaoleixing", "*绩效类型");
@@ -492,5 +483,18 @@ public class EventListController {
             throw new ServiceException("未查出数据");
         }
         sheetOutputService.exportNum("事件分配岗位表", eventLists, fieldMap, response, strList, null);
+    }
+
+    @GetMapping("matchEventList")
+    public String showMatchEventList(Model model){
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
+        return "/system/performance/employee/entry-cas-new-plan-detail-match-event-list";
     }
 }

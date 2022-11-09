@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -35,7 +35,7 @@ import com.fssy.shareholder.management.pojo.manage.role.Role;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
-import com.fssy.shareholder.management.pojo.system.performance.employee.PerformanceEventsRelationRole;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleAttachmentService;
 import com.fssy.shareholder.management.tools.common.DateTool;
@@ -70,7 +70,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
      */
     @Autowired
     private DepartmentMapper departmentMapper;
-    
+
     /**
      * 角色数据访问层实现类
      */
@@ -82,13 +82,13 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
      */
     @Autowired
     private EventListMapper eventListMapper;
-    
+
     /**
      * 用户数据访问层实现类
      */
     @Autowired
     private UserMapper userMapper;
-    
+
 	@Override
 	@Transactional
 	public Map<String, Object> readAttachmentToData(Attachment attachment)
@@ -100,7 +100,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 		result.put("failed", false);
 		// 读取附件
 		sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
-		
+
 		try
 		{
 			// 读取表单
@@ -111,7 +111,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			e.printStackTrace();
 			throw new ServiceException("表单【事件分配岗位表】不存在于EXCEL中");
 		}
-		
+
 		// 获取表单数据
 		Sheet sheet = sheetService.getSheet();
 		if (ObjectUtils.isEmpty(sheet))
@@ -129,7 +129,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 		int successNum = 0;
 		// 检查事件岗位比重map
 		Map<String, BigDecimal> checkProportionMap = new HashMap<>();
-		List<PerformanceEventsRelationRole> insertList = new ArrayList<>();
+		List<EventsRelationRole> insertList = new ArrayList<>();
 		List<Long> updatedEventsIds = new ArrayList<>();
 		// 循环总行数(不读表头，从第2行开始读，索引从0开始，所以j=1)
 		for (int j = 1; j <= sheet.getLastRowNum(); j++)
@@ -153,7 +153,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			}
 			// 导入结果写入列
 			Cell cell = row.createCell(SheetService.columnToIndex("K"));// 每一行的结果信息上传到S列
-			
+
 			// region 导入数据校验
 			Long eventsId = null;
 			try
@@ -217,24 +217,92 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				cell.setCellValue("占比不能为空");
 				continue;
 			}
-			BigDecimal score = null;
+			BigDecimal standardValue;
 			try
 			{
-				score = new BigDecimal(temp.get(SheetService.columnToIndex("I")));
+				standardValue = new BigDecimal(temp.get(SheetService.columnToIndex("I")));// 事件标准价值
 			}
 			catch (Exception e)
 			{
-				StringTool.setMsg(sb, String.format("第【%s】行价值分格式不正确，必须为【数值】", j + 1));
-				cell.setCellValue("价值分格式不正确，必须为【数值】");
+				StringTool.setMsg(sb, String.format("第【%s】行事件标准价值格式不正确，必须为【数值】", j + 1));
+				cell.setCellValue("事件标准价值格式不正确，必须为【数值】");
 				continue;
 			}
-			if (ObjectUtils.isEmpty(score))
+			if (ObjectUtils.isEmpty(standardValue))
 			{
-				StringTool.setMsg(sb, String.format("第【%s】行价值分不能为空", j + 1));
-				cell.setCellValue("价值分不能为空");
+				StringTool.setMsg(sb, String.format("第【%s】行事件标准价值不能为空", j + 1));
+				cell.setCellValue("事件标准价值不能为空");
 				continue;
 			}
-			String activeDateStr = temp.get(SheetService.columnToIndex("J"));
+			BigDecimal delow;
+			try
+			{
+				delow = new BigDecimal(temp.get(SheetService.columnToIndex("J")));
+			}
+			catch (Exception e)
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行不合格价值格式不正确，必须为【数值】", j + 1));
+				cell.setCellValue("不合格价值格式不正确，必须为【数值】");
+				continue;
+			}
+			if (ObjectUtils.isEmpty(delow))
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行事件标准价值不能为空", j + 1));
+				cell.setCellValue("事件标准价值不能为空");
+				continue;
+			}
+			BigDecimal middle;
+			try
+			{
+				middle = new BigDecimal(temp.get(SheetService.columnToIndex("K")));
+			}
+			catch (Exception e)
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行中价值格式不正确，必须为【数值】", j + 1));
+				cell.setCellValue("中价值格式不正确，必须为【数值】");
+				continue;
+			}
+			if (ObjectUtils.isEmpty(middle))
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行中价值不能为空", j + 1));
+				cell.setCellValue("中价值不能为空");
+				continue;
+			}
+			BigDecimal fine;
+			try
+			{
+				fine = new BigDecimal(temp.get(SheetService.columnToIndex("L")));// 事件标准价值
+			}
+			catch (Exception e)
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行良价值格式不正确，必须为【数值】", j + 1));
+				cell.setCellValue("良价值格式不正确，必须为【数值】");
+				continue;
+			}
+			if (ObjectUtils.isEmpty(fine))
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行良价值不能为空", j + 1));
+				cell.setCellValue("良价值不能为空");
+				continue;
+			}
+			BigDecimal excellent;
+			try
+			{
+				excellent = new BigDecimal(temp.get(SheetService.columnToIndex("M")));// 事件标准价值
+			}
+			catch (Exception e)
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行优价值格式不正确，必须为【数值】", j + 1));
+				cell.setCellValue("优价值格式不正确，必须为【数值】");
+				continue;
+			}
+			if (ObjectUtils.isEmpty(excellent))
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行优价值不能为空", j + 1));
+				cell.setCellValue("优价值不能为空");
+				continue;
+			}
+			String activeDateStr = temp.get(SheetService.columnToIndex("N"));
 			LocalDate activeDate = null;
 			try
 			{
@@ -247,7 +315,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				continue;
 			}
 			// endregion
-			
+
 			// region 业务校验
 			// 事件清单信息部门与填报部门校验
 			// 查询事件清单
@@ -269,12 +337,12 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			// 清单序号，生效日期相同不能再次导入
 			boolean activeFlag = true;
 			// 查询岗位关联数据
-			QueryWrapper<PerformanceEventsRelationRole> relationRoleCheckQueryWrapper = new QueryWrapper<>();
+			QueryWrapper<EventsRelationRole> relationRoleCheckQueryWrapper = new QueryWrapper<>();
 			relationRoleCheckQueryWrapper.eq("eventsId", eventList.getId()).select("activeDate,id,eventsId");
-			List<PerformanceEventsRelationRole> checkDataList = performanceEventsRelationRoleMapper.selectList(relationRoleCheckQueryWrapper);
-			for (PerformanceEventsRelationRole performanceEventsRelationRole : checkDataList)
+			List<EventsRelationRole> checkDataList = performanceEventsRelationRoleMapper.selectList(relationRoleCheckQueryWrapper);
+			for (EventsRelationRole eventsRelationRole : checkDataList)
 			{
-				if (activeDate.isEqual(performanceEventsRelationRole.getActiveDate()))
+				if (activeDate.isEqual(eventsRelationRole.getActiveDate()))
 				{
 					activeFlag = false;
 					break;
@@ -289,7 +357,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				continue;
 			}
 			// endregion
-			
+
 			// region 查询部门，角色（岗位），用户信息
 			QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
 			departmentQueryWrapper.eq("name", departmentName);
@@ -322,7 +390,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			}
 			User signUser = userList.get(0);
 			// endregion
-			
+
 			// region 组装配比数据，相同事件序号的所有项比重之各必须等于100%，否则导入不成功
 			String key = eventsId.toString();
 			if (checkProportionMap.containsKey(key))
@@ -334,11 +402,15 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			{
 				checkProportionMap.put(key, proportion);
 			}
-			PerformanceEventsRelationRole eventsRelationRole = new PerformanceEventsRelationRole();
+			EventsRelationRole eventsRelationRole = new EventsRelationRole();
 			eventsRelationRole.setEventsId(eventsId);
 			eventsRelationRole.setRoleName(role.getName());
 			eventsRelationRole.setRoleId(role.getId());
-			eventsRelationRole.setScore(score);
+			eventsRelationRole.setStandardValue(standardValue);
+			eventsRelationRole.setDelow(delow);
+			eventsRelationRole.setMiddle(middle);
+			eventsRelationRole.setFine(fine);
+			eventsRelationRole.setExcellent(excellent);
 			LocalDate createDate = DateTool.dateToLocalDate(attachment.getImportDate());
 			eventsRelationRole.setCreateDate(createDate);
 			eventsRelationRole.setYear(createDate.getYear());
@@ -361,14 +433,14 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			eventsRelationRole.setCreatedAt(LocalDateTime.now());
 			eventsRelationRole.setUpdatedAt(LocalDateTime.now());
 			// endregion
-			
+
 			insertList.add(eventsRelationRole);
 			updatedEventsIds.add(eventList.getId());
 			temps.add(temp);
 			cell.setCellValue("成功");
 			successNum++;
 		}
-		
+
 		// region 检查占比
 		boolean flag = true;
 		List<Long> checkEventsIds = new ArrayList<>();
@@ -394,7 +466,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 		if (!ObjectUtils.isEmpty(insertList))
 		{
 			performanceEventsRelationRoleMapper.insertBatchSomeColumn(insertList);
-			
+
 			UpdateWrapper<EventList> eventUpdateWrapper = new UpdateWrapper<>();
 			eventUpdateWrapper.in("id", updatedEventsIds).set("roleComplete", CommonConstant.TRUE)
 					.set("updatedId", user.getId()).set("updatedName", user.getName())
@@ -402,14 +474,14 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			eventListMapper.update(null, eventUpdateWrapper);
 		}
 		// endregion
-		
+
 		sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
-		
+
 		if (successNum == 0)
 		{
 			throw new ServiceException(String.format("数据导入失败，请检查表格内容"));
 		}
-		
+
 		result.put("conclusion", String.format("excel数据行数%s行，其中成功导入%s行", temps.size(), successNum));
 
 		return result;

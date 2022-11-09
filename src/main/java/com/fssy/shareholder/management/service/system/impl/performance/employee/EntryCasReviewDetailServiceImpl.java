@@ -22,6 +22,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCas
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -708,7 +709,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
             } else {
                 entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
-                BigDecimal actualAutoScore = GetTool.calculateScore(entryCasReviewDetail, ministerReview);
+                BigDecimal actualAutoScore = GetTool.getScore(entryCasReviewDetail, ministerReview);
                 entryCasReviewDetail.setAutoScore(actualAutoScore);
                 entryCasReviewDetail.setArtifactualScore(actualAutoScore);
             }

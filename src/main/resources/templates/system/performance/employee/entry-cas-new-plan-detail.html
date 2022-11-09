@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增工作流关联基础事件</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="background: #f7f7f7;color: black;">新增工作流关联基础事件</td>
+                </tr>
+                <tr>
+                    <td style="width: 15%;text-align: right">事件清单序号 :</td>
+                    <td style="width: 35%">
+                        <input type="text" class="layui-input" name="eventsId" placeholder="选择对应的事件清单序号"
+                               id="eventsId" autocomplete="off"
+                               readonly lay-reqText="事件清单序号为必填项" lay-verify="required">
+                    </td>
+
+                    <td style="width: 15%;text-align: right">战略职能 :</td>
+                    <td style="width: 35%">
+                        <input type="text" class="layui-input" name="materialName" placeholder="战略职能"
+                               id="materialName" autocomplete="off" lay-verify="" lay-reqText="战略职能为必填项" readonly>
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+                    <td style="width: 15%;text-align: right">支持职能 :</td>
+                    <td style="width: 35%">
+                        <input type="text" class="layui-input" name="code" placeholder="支持职能"
+                               id="code" autocomplete="off" lay-reqText="支持职能为必填项" readonly
+                               lay-verify="required">
+                        <input type="hidden" id="warehouseId" name="warehouseId">
+
+                    </td>
+
+                    <td style="width: 15%;text-align: right">工作职责 :</td>
+                    <td style="width: 35%">
+                        <input type="text" class="layui-input" name="name" placeholder="工作职责"
+                               id="name" autocomplete="off" lay-verify="" lay-reqText="工作职责为必填项" readonly>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width: 15%;text-align: right">流程（工作事件）:</td>
+                    <td style="width: 35%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span></span>
+                        </div>
+                    </td>
+                    <td style="width: 15%;text-align: right">事件类型:</td>
+                    <td style="width: 35%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">表单（输出内容）:</td>
+                    <td colspan="3">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <textarea name="note" rowspan="3" class="layui-textarea" readonly
+                                      style="width: 100%"></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">备注:</td>
+                    <td colspan="3">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <textarea name="note" rowspan="3" class="layui-textarea" readonly
+                                      style="width: 100%"></textarea>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="create">
+                            关联此事件清单
+                        </button>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+</div>
+
+
+<script th:inline="javascript">
+
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render({
+                elem: this,
+                //更换触发方式
+                trigger: 'click',
+                type: 'month'
+            });
+        });
+
+        // id绑定点击事件
+        $("#eventsId").click(function () {
+            layer.open({
+                type: 2,
+                title: '双击选择要关联的基础事件',
+                area: [$(window).width() * 0.95 + 'px', $(window).height() - 20 + 'px'],
+                content: '/system/performance/employee/eventsList/matchEventList',
+                maxmin: true, // 最大化图标
+                shadeClose: false
+            });
+        });
+
+        form.on('submit(create)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/scm/warehouse-inventory/store',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status === 200) {
+                        layer.msg(result.msg, {icon: 6, time: 2000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+
+    });
+</script>
+</body>
+</html>

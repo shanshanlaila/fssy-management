@@ -196,7 +196,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 cell.setCellValue("申报日期不能为空");
                 continue;
             }
-            String applyDate = applyDateStr.substring(0, 10);
+            String applyDate = applyDateStr.trim().substring(0, 10);
             String year = Arrays.asList(applyDate.split("-")).get(0);
             String month = Arrays.asList(applyDate.split("-")).get(1);
             if (StringUtils.isEmpty(planStartDateStr)) {
@@ -204,13 +204,13 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 cell.setCellValue("计划开始时间不能为空");
                 continue;
             }
-            String planStartDate = planStartDateStr.substring(0, 10);
+            String planStartDate = planStartDateStr.trim().substring(0, 10);
             if (StringUtils.isEmpty(planEndDateStr)) {
                 setFailedContent(result, String.format("第%s行的计划完成时间为空", j + 1));
                 cell.setCellValue("计划完成时间不能为空");
                 continue;
             }
-            String planEndDate = planEndDateStr.substring(0, 10);
+            String planEndDate = planEndDateStr.trim().substring(0, 10);
             // 数据校验
             /*if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
                 StringTool.setMsg(sb, String.format("第【%s】行状态为【%s】的事件清单不为完结，不能导入", j + 1, status));
@@ -223,10 +223,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setEventsFirstType(eventsFirstType);
             entryCasPlanDetail.setJobName(jobName);
             entryCasPlanDetail.setWorkEvents(workEvents);
-//            entryCasPlanDetail.setDelowStandard(delowStandard);
-//            entryCasPlanDetail.setMiddleStandard(middleStandard);
-//            entryCasPlanDetail.setFineStandard(fineStandard);
-//            entryCasPlanDetail.setExcellentStandard(excellentStandard);
             entryCasPlanDetail.setMainOrNext(mainOrNext);
             entryCasPlanDetail.setPlanningWork(planningWork);
             entryCasPlanDetail.setTimes(times);
