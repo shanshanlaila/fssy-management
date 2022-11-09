@@ -224,6 +224,9 @@ public class ManageKpiMonthScoreController {
         if (!ObjectUtils.isEmpty(request.getParameter("monthActualValue"))) {
             params.put("monthActualValue", request.getParameter("monthActualValue"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("monthAnalyzeRes"))) {
+            params.put("monthAnalyzeRes", request.getParameter("monthAnalyzeRes"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("accumulateTarget"))) {
             params.put("accumulateTarget", request.getParameter("accumulateTarget"));
         }
@@ -232,6 +235,9 @@ public class ManageKpiMonthScoreController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("analyzeDesc"))) {
             params.put("analyzeDesc", request.getParameter("analyzeDesc"));
+        }
+        if(!ObjectUtils.isEmpty(request.getParameter("analyzeRes"))){
+            params.put("analyzeRes",request.getParameter("analyzeRes"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("scoreAuto"))) {
             params.put("scoreAuto", request.getParameter("scoreAuto"));

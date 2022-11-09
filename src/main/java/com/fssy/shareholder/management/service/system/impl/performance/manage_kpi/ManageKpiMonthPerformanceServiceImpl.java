@@ -8,10 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthPerformanceMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiYearMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiLib;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthPerformance;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiMonthPerformanceService;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -19,7 +16,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.util.CellReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -254,34 +250,21 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
     private QueryWrapper<ManageKpiMonthPerformance> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ManageKpiMonthPerformance> queryWrapper = new QueryWrapper<>();
         //获取前端传来的默认值，12，依次递减
-        int month = Integer.valueOf((String) params.get("month"));
-        //获取表中数据
-//        ManageKpiMonthPerformance performance = new ManageKpiMonthPerformance();
-//        String companyName = performance.getCompanyName();
-//        Integer year = performance.getYear();
-//        String projectDesc = performance.getProjectDesc();
-//        Integer month1 = performance.getMonth();
-//        System.out.println("*****"+companyName);
-//        System.out.println("******"+year);
-//        System.out.println("//////"+projectDesc);
-//        System.out.println("///////////"+month);
-//        System.out.println("///////////"+month1);
-        String companyName = "方盛车桥（柳州）有限公司";
-        Integer year = 2022;
-        String projectDesc = "主营业务收入";
+        int month= Integer.valueOf((String) params.get("month"));
+        //设置月份常量，十二月一共循环十二次，与数据查询的月份无关联
+        int MONTH=12;
         // 达成数量
         StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany," +
                 "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,dataSource," +
                 "challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,kpiDefinition,kpiDecomposeMode,analyzeRes");
-        selectStr1.append(",(SELECT accumulateTarget FROM bs_manage_kpi_month " +
-                "WHERE companyName =" +"'"+ companyName +"'" +"AND year ="+ year +" AND projectDesc = "+"'"+ projectDesc +"'"+" AND MONTH ="+ month+") AS monthATarget"
-                +",(SELECT accumulateActual FROM bs_manage_kpi_month " +
-                "WHERE companyName =" +"'"+ companyName +"'" +"AND year ="+ year +" AND projectDesc = "+"'"+ projectDesc +"'"+" AND MONTH ="+ month+") AS monthAActual");
+        selectStr1.append(",(SELECT a.accumulateTarget FROM bs_manage_kpi_month as a WHERE a.projectDesc=bs_manage_kpi_month.projectDesc and a.companyName = bs_manage_kpi_month.companyName AND a.YEAR = bs_manage_kpi_month.year  AND a.MONTH = "+month+") AS monthATarget"
+                +",(SELECT b.accumulateActual FROM bs_manage_kpi_month as b WHERE  b.projectDesc=bs_manage_kpi_month.projectDesc and b.companyName = bs_manage_kpi_month.companyName AND b.YEAR = bs_manage_kpi_month.year AND b.MONTH = "+month+") AS monthAActual"
+                +",(SELECT c.analyzeRes FROM bs_manage_kpi_month as c WHERE  c.projectDesc=bs_manage_kpi_month.projectDesc and c.companyName = bs_manage_kpi_month.companyName AND c.YEAR = bs_manage_kpi_month.year AND c.MONTH = "+month+") AS monthAnalyzeRes");
         do {
-            selectStr1.append(", sum(if(MONTH =" + month + ",monthTarget,null)) AS 'monthTarget" + month + "'"
-                    + ", sum(if(MONTH =" + month + ",monthActualValue,null)) AS 'monthActual" + month + "'");
-            month--;
-        } while (month>0);
+            selectStr1.append(", sum(if(MONTH =" + MONTH + ",monthTarget,null)) AS 'monthTarget" + MONTH + "'"
+                    + ", sum(if(MONTH =" + MONTH + ",monthActualValue,null)) AS 'monthActual" + MONTH + "'");
+            MONTH--;
+        } while (MONTH>0);
         queryWrapper.select(selectStr1.toString())
                 .groupBy("manageKpiYearId");
 

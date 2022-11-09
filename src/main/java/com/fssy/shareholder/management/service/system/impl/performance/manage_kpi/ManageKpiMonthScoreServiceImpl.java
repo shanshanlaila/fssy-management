@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthAimMapper;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiMonthScoreService;
+import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -145,6 +146,7 @@ public class ManageKpiMonthScoreServiceImpl extends ServiceImpl<ManageKpiMonthAi
 
     private QueryWrapper<ManageKpiMonthAim> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ManageKpiMonthAim> queryWrapper = new QueryWrapper<>();
+
         if (params.containsKey("id")) {
             queryWrapper.eq("id", params.get("id"));
         }
@@ -168,6 +170,10 @@ public class ManageKpiMonthScoreServiceImpl extends ServiceImpl<ManageKpiMonthAi
         }
         if (params.containsKey("status")) {
             queryWrapper.eq("status", params.get("status"));
+        }
+        //进行非空判断
+        if (params.containsKey("monthActualValue") && Boolean.valueOf(InstandTool.objectToString(params.get("monthActualValue")))) {
+            queryWrapper.isNotNull("monthActualValue");
         }
         return queryWrapper;
     }

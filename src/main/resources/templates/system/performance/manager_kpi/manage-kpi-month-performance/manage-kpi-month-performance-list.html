@@ -29,7 +29,7 @@
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="companyName" placeholder="公司名称查询" autocomplete="off"
-                                   class="layui-input">
+                                   class="layui-input" value="方盛车桥（柳州）有限公司">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="year" placeholder="创建年份查询" autocomplete="off"
@@ -93,7 +93,21 @@
                 where: data.field,
                 page: {
                     curr: 1
-                }
+                },
+
+                // done:function (){
+                //     console.log(1)
+                //     let month = data.field.month;
+                //     console.log(month)
+                //     $("[data-field]=12").find("span").each(
+                //         function (item)
+                //         {
+                //             console.log($(item))
+                //             console.log($(item).text())
+                //             $(item).text(month);
+                //         }
+                //     )
+                // }
             });
             return false
         });
@@ -141,7 +155,7 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
-            where:{month:'12'},
+            where:{month:'12',year:'2022'},
             cols: [
                 [
                     {
@@ -231,7 +245,7 @@
                         align: 'center',
                     },
                     {
-                        field: 'analyzeRes',
+                        field: 'monthAnalyzeRes',
                         title: '未达成或劣化原因分析',
                         width: 170,
                         rowspan: 2

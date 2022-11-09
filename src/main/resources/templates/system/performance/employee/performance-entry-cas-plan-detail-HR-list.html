@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>履职计划科长审核管理</cite></a>
+            <a> <cite>人力资源部 审核新增工作流</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -83,8 +83,8 @@
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="pass">审核通过</button>
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="noPass" style="background-color: coral">审核拒绝
+                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="yes">属于</button>
+                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="no" style="background-color: coral">不属于
                                 </button>
                             </div>
                         </form>
@@ -115,8 +115,8 @@
             toolbar: '#toolbar',
             where: {
                 // 向controller传入额外参数
-                eventsFirstType: '事务类',
-                status: '待科长审核'
+                eventsFirstType: '新增工作流',
+                status: '待人力资源部审核'
             },
             cols: [
                 [
@@ -328,7 +328,7 @@
         });
 
         // 审核通过按钮
-        form.on('submit(pass)', function (data) {
+        form.on('submit(yes)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
                 data = checkStatus.data;
             if (data.length <= 0) {
@@ -344,7 +344,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '/system/entry-cas-plan-detail/affirmStore?event=pass',
+                    url: '/system/entry-cas-plan-detail/HRAffirmStore?event=yes',
                     data: {
                         "planDetailIds": planDetailIds,
                     },
@@ -359,7 +359,7 @@
             return false;
         });
 
-        form.on('submit(noPass)', function (data) {
+        form.on('submit(no)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
                 data = checkStatus.data;
 
@@ -376,7 +376,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '/system/entry-cas-plan-detail/affirmStore?event=noPass',
+                    url: '/system/entry-cas-plan-detail/HRAffirmStore?event=no',
                     data: {
                         "planDetailIds": planDetailIds,
                     },

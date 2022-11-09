@@ -30,9 +30,8 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="roleName" placeholder="岗位查询"
-                                   autocomplete="off" class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
@@ -64,11 +63,6 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
-                    <script type="text/html" id="tool">
-                        {{# if(d.status != '取消') {}}
-                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
-                        {{# } }}
-                    </script>
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
@@ -83,7 +77,7 @@
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <label class="layui-form-label"
-                                       style="width: 110px; line-height: 1.1; padding: 9px 0px;">事物类评价不同类型&nbsp;&nbsp;</label>
+                                       style="width: 140px; line-height: 1.1; padding: 9px 0px;">事物类评价不同类型&nbsp;&nbsp;</label>
                                 <div class="layui-input-inline" style="width: 140px;">
                                     <select name="chargeTransactionBelowType" id="chargeTransactionBelowType">
                                         <option value="时间不合格">时间不合格</option>
@@ -132,17 +126,19 @@
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'eventsId',
                         title: '对应事件清单序号',
-                        width: 50
+                        width: 50,
+                        fixed: 'left',
                     },
                     {
                         field: 'id',
                         title: '序号',
-                        width: 50
+                        width: 50,
+                        fixed: 'left',
                     },
                     {
                         field: 'eventsType',
@@ -183,12 +179,12 @@
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 130
+                        width: 90
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 130
+                        width: 90
                     },
                     {
                         field: 'actualCompleteDate',
@@ -203,7 +199,7 @@
                     {
                         field: 'times',
                         title: '频次',
-                        width: 130
+                        width: 50
                     },
                     /*{
                         field: 'delowStandard',
@@ -228,17 +224,17 @@
                     {
                         field: 'status',
                         title: '履职计划状态',
-                        width: 120
+                        width: 80
                     },
-                    /*{
+                    {
                         field: 'eventsForm',
                         title: '绩效类型',
-                        width: 120
-                    },*/
+                        width: 90
+                    },
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
-                        width: 130
+                        width: 80
                     },
                     {
                         field: 'mainOrNext',
@@ -248,18 +244,17 @@
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 130
+                        width: 100
                     },
                     {
                         field: 'departmentName',
                         title: '部门名称',
                         width: 90,
                     },
-
                     {
                         field: 'note',
                         title: '备注',
-                        width: 80
+                        width: 50
                     },
                     {
                         field: 'roleName',
@@ -291,7 +286,7 @@
                         title: '编制人',
                         width: 80
                     },
-                    {
+                    /*{
                         field: 'auditName',
                         title: '审核人',
                         width: 80
@@ -305,7 +300,7 @@
                         field: 'auditNote',
                         title: '审核意见',
                         width: 130
-                    },
+                    }*/
                     {
                         field: 'mergeNo',
                         title: '员工月度履职计划表编号',
@@ -316,13 +311,6 @@
                         title: '履职计划审核状态',
                         width: 80
                     },
-                    {
-                        fixed: 'right',
-                        title: '操作',
-                        width: 100,
-                        align: 'center',
-                        toolbar: '#tool'
-                    }
                 ]
             ]
         });
@@ -411,29 +399,6 @@
             });
             return false;
         });
-        // 监听行工具事件
-        table.on('tool(dataTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'edit') { // 修改
-                // 不能修改取消状态下的事件请单
-                if (data.status === '取消') {
-                    layer.msg('不能修改取消状态下的事件请单');
-                    return false;
-                }
-                layer.open({
-                    type: 2,
-                    title: '序号为' + data.id + '的履职计划明细信息修改',
-                    area:
-                        [
-                            $(window).width() * 0.9 + 'px',
-                            $(window).height() - 50 + 'px'
-                        ],
-                    content: '/system/entry-cas-review-detail/sectionEdit/' + data.id,
-                    maxmin: true,
-                    scrollbar: true
-                });
-            }
-        });
     });
 
     // 部门查询下拉列表
@@ -453,6 +418,24 @@
             width: '160px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+    });
+    // 岗位查询下拉列表
+    let roleSelect = xmSelect.render({
+        el: '#roleSelect', // 绑定
+        language: 'zn',
+        data: [[${roleNameList}]],// model过来的
+        filterable: true,
+        // radio: true,// 是否是单选
+        tips: '岗位查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 30,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
 </script>
 </body>

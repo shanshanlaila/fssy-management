@@ -11,6 +11,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCas
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryExcellentStateDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
+import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
@@ -27,10 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -64,6 +62,9 @@ public class EntryExcellentStateDetailController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RoleService roleService;
+
     @GetMapping("index")
     @RequiredLog("")
 //    @RequiresPermissions("system:performance:entryExcellentStateDetail")
@@ -71,6 +72,9 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/entry-excellent-state-detail-list";
     }
 
@@ -147,8 +151,10 @@ public class EntryExcellentStateDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("departmentName"))) {
             params.put("departmentName", request.getParameter("departmentName"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("departmentId"))) {
-            params.put("departmentId", request.getParameter("departmentId"));
+        if (!ObjectUtils.isEmpty(request.getParameter("departmentIds"))) {
+            String departmentIds = request.getParameter("departmentIds");
+            List<String> departmentIdList = Arrays.asList(departmentIds.split(","));
+            params.put("departmentIdList", departmentIdList);
         }
         if (!ObjectUtils.isEmpty(request.getParameter("createDate"))) {
             params.put("createDate", request.getParameter("createDate"));
@@ -224,6 +230,17 @@ public class EntryExcellentStateDetailController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("statusOr"))) {
             params.put("statusOr", request.getParameter("statusOr"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("roleName"))) {
+            params.put("roleName", request.getParameter("roleName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("roleIds"))) {
+            String roleIds = request.getParameter("roleIds");
+            List<String> roleIdList = Arrays.asList(roleIds.split(","));
+            params.put("roleIdList", roleIdList);
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("roleId"))) {
+            params.put("roleId", request.getParameter("roleId"));
         }
         return params;
     }
@@ -325,6 +342,9 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/entry-excellent-state-detail-performance-list";
     }
 
@@ -341,6 +361,9 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/entry-excellent-state-detail-minister-list";
     }
 
@@ -405,8 +428,15 @@ public class EntryExcellentStateDetailController {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         // 查询事件清单
         EventList eventList = eventListService.getById(entryCasReviewDetail.getEventsId());
+        if (ObjectUtils.isEmpty(eventList)) {
+            throw new ServiceException("不存在对应的事件,请联系管理员");
+        }
         // 查询履职计划
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(entryCasReviewDetail.getCasPlanId());
+        // 履职计划判空
+        if (ObjectUtils.isEmpty(entryCasPlanDetail)) {
+            throw new ServiceException("不存在对应的履职计划,请联系管理员");
+        }
         // 查询用户
         Map<String, Object> params = new HashMap<>();
         List<Map<String, Object>> userNameList = userService.findUserSelectedDataListByParams(params, new ArrayList<>());
@@ -429,6 +459,9 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
+        model.addAttribute("roleNameList",roleNameList);//传到前端去
         return "/system/performance/employee/entry-review-detail-wait-upload-list";
     }
 
@@ -491,5 +524,4 @@ public class EntryExcellentStateDetailController {
         }
         return SysResult.build(500, "批量审核失败");
     }
-
 }

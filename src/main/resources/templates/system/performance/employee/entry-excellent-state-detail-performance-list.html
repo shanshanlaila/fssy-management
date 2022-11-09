@@ -185,129 +185,121 @@
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        width: 80
+                        align:'center',
+                        width: 80,
+                        rowspan:2
                     },
                     {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
-                    },
-                    {
-                        field: 'mergeNo',
-                        title: '履职评价说明表编号，',
-                        width: 130
-                    },
-                    {
-                        field: 'status',
-                        title: '申报材料复核状态',
-                        width: 130
+                        field: 'departmentName',
+                        title: '部门',
+                        align:'center',
+                        width: 80,
+                        rowspan:2
                     },
                     {
                         field: 'workEvents',
                         title: '工作事件',
-                        width: 130
+                        align:'center',
+                        width: 130,
+                        rowspan:2
                     },
                     {
                         field: 'mainUserName',
                         title: '主担',
-                        width: 130
+                        align:'center',
+                        width: 50,
+                        rowspan:2
                     },
                     {
                         field: 'nextUserName',
                         title: '次担',
-                        width: 130
+                        align:'center',
+                        width: 50,
+                        rowspan:2
                     },
                     {
                         field: 'actualCompleteDate',
                         title: '实际完成时间',
-                        width: 130
+                        align:'center',
+                        width: 130,
+                        rowspan:2
                     },
                     {
-                        field: 'oriTarget',
-                        title: '原创新或超越目标',
-                        width: 200
-                    },
-                    {
-                        field: 'actualTarget',
-                        title: '实际创新或超越目标',
-                        width: 200
-                    },
-                    {
-                        field: 'innovative',
-                        title: '成功展示或创新工作描述',
-                        width: 200
-                    },
-                    {
-                        field: 'note',
-                        title: '备注',
-                        width: 130
-                    },
-                    {
-                        field: 'departmentName',
-                        title: '评价部门',
-                        width: 130
-                    },
-                    {
-                        field: 'createName',
-                        title: '编制人',
-                        width: 130
-                    },
-                    {
-                        field: 'auditName',
-                        title: '审核人',
-                        width: 130
-                    },
-                    {
-                        field: 'auditDate',
-                        title: '审核日期',
-                        width: 130
-                    },
-                    {
-                        field: 'createDate',
-                        title: '编制日期',
-                        width: 130
-                    },
-                    {
-                        field: 'ministerReview',
-                        title: '经营管理部主管复核',
-                        width: 130
+                        field: '',
+                        title: '创新或超越预期的成果展示',
+                        align:'center',
+                        width: 600,
+                        colspan:3
                     },
                     {
                         field: 'auditNote',
                         title: '审核意见',
-                        width: 130
+                        width: 130,
+                        align:'center',
+                        rowspan:2
                     },
                     {
-                        field: 'classReview',
-                        title: '绩效科复核',
-                        width: 130
+                        field: 'note',
+                        title: '备注',
+                        width: 50,
+                        align:'center',
+                        rowspan:2
                     },
                     {
-                        field: 'ministerReviewUser',
-                        title: '经营管理部主管复核人名称',
-                        width: 130
+                        field: 'createName',
+                        title: '编制人',
+                        width: 50,
+                        align:'center',
+                        rowspan:2
                     },
                     {
-                        field: 'ministerReviewDate',
-                        title: '经营管理部主管复核日期',
-                        width: 130
+                        field: 'auditName',
+                        title: '审核人',
+                        width: 50,
+                        align:'center',
+                        rowspan:2
                     },
                     {
-                        field: 'classReviewUser',
-                        title: '绩效科复核人名称',
-                        width: 130
+                        field: 'auditDate',
+                        title: '审核日期',
+                        width: 90,
+                        align:'center',
+                        rowspan:2
                     },
                     {
-                        field: 'classReviewDate',
-                        title: '绩效科复核日期',
-                        width: 130
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 90,
+                        align:'center',
+                        rowspan:2
                     },
                     {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
                         align: 'center',
-                        toolbar: '#tool'
+                        toolbar: '#tool',
+                        rowspan:2
+                    }
+                ],
+                [
+                    {
+                        field: 'oriTarget',
+                        title: '原设定目标',
+                        align:'center',
+                        width: 200
+                    },
+                    {
+                        field: 'actualTarget',
+                        title: '实际达成目标',
+                        align:'center',
+                        width: 200
+                    },
+                    {
+                        field: 'innovative',
+                        title: '岗位开展的有价值的创新工作描述',
+                        align:'center',
+                        width: 200
                     }
                 ]
             ]

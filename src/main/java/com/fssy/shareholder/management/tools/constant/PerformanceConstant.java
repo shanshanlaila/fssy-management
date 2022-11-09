@@ -26,6 +26,10 @@ public interface PerformanceConstant {
     String REVIEW_DETAIL_STATUS_AUDIT_A="待经营管理部审核";
     String REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN="待经营管理部主管复核";
     String PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE="待绩效科复核";
+    String PLAN_DETAIL_STATUS_SELECT="待选择事件清单";
+    String EVENTS_FIRST_TYPE_A="事务类";
+    String EVENTS_FIRST_TYPE_B="非事务类";
+    String EVENTS_FIRST_TYPE_C="新增工作流";
     String EXCELLENT="优";
     String UNQUALIFIED="不合格";
     String MIDDLE="中";
