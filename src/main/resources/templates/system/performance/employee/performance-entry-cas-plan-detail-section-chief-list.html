@@ -46,7 +46,7 @@
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="workOutput" placeholder="按表单查询"
+                            <input type="text" name="planOutput" placeholder="按表单查询"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -126,9 +126,14 @@
                         width: 50
                     },
                     {
-                        field: 'eventsType',
-                        title: '事件类别',
-                        width: 80
+                        field: 'id',
+                        title: '序号',
+                        width: 50
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 120
                     },
                     {
                         field: 'eventsFirstType',
@@ -170,26 +175,6 @@
                         title: '计划完成日期',
                         width: 90
                     },
-                    /*{
-                        field: 'delowStandard',
-                        title: '不合格',
-                        width: 80
-                    },
-                    {
-                        field: 'middleStandard',
-                        title: '中',
-                        width: 130
-                    },
-                    {
-                        field: 'fineStandard',
-                        title: '良',
-                        width: 130
-                    },
-                    {
-                        field: 'excellentStandard',
-                        title: '优',
-                        width: 130
-                    },*/
                     {
                         field: 'status',
                         title: '履职计划状态',
@@ -203,12 +188,12 @@
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
-                        width: 80
+                        width: 100
                     },
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
-                        width: 50
+                        width: 100
                     },
                     {
                         field: 'createDate',
@@ -226,14 +211,9 @@
                         width: 80,
                     },
                     {
-                        field: 'note',
-                        title: '备注',
-                        width: 50
-                    },
-                    {
                         field: 'roleName',
                         title: '岗位（角色）名称',
-                        width: 80
+                        width: 110
                     },
                     {
                         field: 'userName',
@@ -260,21 +240,6 @@
                         title: '编制人',
                         width: 80
                     },
-                    /*{
-                        field: 'auditName',
-                        title: '审核人',
-                        width: 80
-                    },
-                    {
-                        field: 'auditDate',
-                        title: '审核日期',
-                        width: 80
-                    },
-                    {
-                        field: 'auditNote',
-                        title: '审核意见',
-                        width: 130
-                    },*/
                     {
                         field: 'mergeNo',
                         title: '员工月度履职计划表编号',
@@ -284,16 +249,6 @@
                         field: 'auditStatus',
                         title: '履职计划审核状态',
                         width: 130
-                    },
-                    {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
-                    },
-                    {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 120
                     },
                 ]
             ]
