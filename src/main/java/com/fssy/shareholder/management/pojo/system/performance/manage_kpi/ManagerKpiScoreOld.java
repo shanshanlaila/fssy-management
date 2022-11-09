@@ -23,7 +23,7 @@ import lombok.Setter;
 @TableName("bs_manager_kpi_score")
 public class ManagerKpiScoreOld extends BaseModel {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 9178769836525512783L;
 
     /**
      * 序号
@@ -163,5 +163,34 @@ public class ManagerKpiScoreOld extends BaseModel {
     @TableField("manageKpiYearId")
     private Integer manageKpiYearId;
 
+    /**
+     * 绩效优点(优点分析)
+     */
+    @TableField("advantageAnalyze")
+    private String advantageAnalyze;
+
+    /**
+     * 绩效存在问题(现况分析)
+     */
+    @TableField("disadvantageAnalyze")
+    private String disadvantageAnalyze;
+
+    /**
+     * 绩效风险(风险描述)
+     */
+    @TableField("riskDesc")
+    private String riskDesc;
+
+    /**
+     * 总部管控责任部门(责任部门)
+     */
+    @TableField("respDepartment")
+    private String respDepartment;
+
+    /**
+     * 管控措施(集团改善措施)
+     */
+    @TableField("groupImproveAction")
+    private String groupImproveAction;
 
 }

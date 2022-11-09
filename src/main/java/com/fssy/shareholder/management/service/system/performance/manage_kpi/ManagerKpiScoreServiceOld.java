@@ -1,6 +1,7 @@
 package com.fssy.shareholder.management.service.system.performance.manage_kpi;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiMonth;
@@ -25,10 +26,18 @@ public interface ManagerKpiScoreServiceOld extends IService<ManagerKpiScoreOld> 
      * @return 分页数据
      */
     Page<ManagerKpiScoreOld> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params);
-//    /**
-//     * 以人名删除 分数信息 数据
-//     * @param managerName
-//     * @return  true/false
-//     */
-//    public boolean deleteManagerKpiScoreOldBymanagerName(String managerName);
+
+    /**
+     * 读取附件数据到数据库表
+     * @param attachment 附件
+     * @return 附件map集合
+     */
+    Map<String,Object> readManagerKpiScoreOldDataSource(Attachment attachment);
+
+    /**
+     * 通过查询条件查询履职计划map数据，用于导出
+     * @param params 查询条件
+     * @return 数据列表
+     */
+    List<Map<String,Object>> findManagerKpiScoreOldDataByParams(Map<String, Object> params);
 }
