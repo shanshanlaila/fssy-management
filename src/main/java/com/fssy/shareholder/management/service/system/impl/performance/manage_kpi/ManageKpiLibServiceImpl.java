@@ -138,7 +138,7 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
             }
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("I"));// 报错信息上传到excel D列（暂未实现）
-            String id = cells.get(SheetService.columnToIndex("A"));
+         //   String id = cells.get(SheetService.columnToIndex("A"));
             String projectType = cells.get(SheetService.columnToIndex("B"));
             String projectDesc = cells.get(SheetService.columnToIndex("C"));
             // 检查必填项
@@ -155,7 +155,17 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
 
             //构建实体类
             ManageKpiLib manageKpiLib = new ManageKpiLib();
-            manageKpiLib.setId(Integer.valueOf(id));
+            //通过指标名称确定唯一的id，存在则更新，不存在则自动递增
+            QueryWrapper<ManageKpiLib> libQueryWrapper = new QueryWrapper<>();
+            libQueryWrapper.eq("projectDesc",projectDesc);
+            List<ManageKpiLib> kpiLibList = manageKpiLibMapper.selectList(libQueryWrapper);
+            if (kpiLibList.size()>1){
+                setFailedContent(result, String.format("第%s行的", j + 1));
+                cell.setCellValue("项目名称是空的");
+            }
+            if (kpiLibList.size()==1){
+                manageKpiLib.setId(kpiLibList.get(0).getId());
+            }
             manageKpiLib.setProjectType(projectType);
             manageKpiLib.setProjectDesc(projectDesc);
             manageKpiLib.setUnit(unit);

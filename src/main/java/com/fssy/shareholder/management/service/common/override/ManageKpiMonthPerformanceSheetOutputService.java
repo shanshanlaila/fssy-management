@@ -58,7 +58,7 @@ public class ManageKpiMonthPerformanceSheetOutputService extends SheetOutputServ
         //标题
         CellRangeAddress titleRange = new CellRangeAddress(0,0,
                 SheetService.columnToIndex("A"),
-                SheetService.columnToIndex("AA"));
+                SheetService.columnToIndex("T"));
         //副标题：填报企业
         CellRangeAddress setCompanyName = new CellRangeAddress(1,1,
                 SheetService.columnToIndex("A"),
@@ -100,7 +100,7 @@ public class ManageKpiMonthPerformanceSheetOutputService extends SheetOutputServ
         XSSFCell titleCell = sheet.createRow(0)
                 .createCell(SheetService.columnToIndex("A"));
         titleCell.setCellStyle(style);
-        titleCell.setCellValue("年度经营计划管理项目月度报表");
+        titleCell.setCellValue("月度实绩营业管理报表");
         //填报企业
         XSSFRow twoRow = sheet.createRow(1);
         XSSFCell getCompanyNameCell = twoRow

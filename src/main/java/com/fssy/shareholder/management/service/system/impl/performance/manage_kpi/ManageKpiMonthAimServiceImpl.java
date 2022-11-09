@@ -45,6 +45,8 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
     private ManageKpiMonthAimMapper manageKpiMonthAimMapper;
     @Autowired
     private ManageKpiLibMapper manageKpiLibMapper;
+    @Autowired
+    private ManageKpiYearMapper manageKpiYearMapper;
     /**
      * 通过查询条件 分页查询列表
      *
@@ -212,7 +214,7 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
                 if (i==12) {
                     monthTarget = cells.get(SheetService.columnToIndex("AA"));
                 }
-                // 根据项目名称和年份找指标库对应的id，后导入id
+                // 根据项目名称和年份找指标库对应的id，后导入指标库id
                 QueryWrapper<ManageKpiLib> manageKpiLibQueryWrapper = new QueryWrapper<>();
                 manageKpiLibQueryWrapper.eq("projectDesc", projectDesc);
                 List<ManageKpiLib> manageKpiLibs = manageKpiLibMapper.selectList(manageKpiLibQueryWrapper);
@@ -228,24 +230,38 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
                 }
                 ManageKpiLib manageKpiLib = manageKpiLibMapper.selectList(manageKpiLibQueryWrapper).get(0);
 
-                //查询出对应的经营管理年度指标，如果存在两条及两条以上的数据就抛出错误
+                //查询出对应的经营管理年度指标，如果存在两条及两条以上的数据就抛出错误,月度id
                 QueryWrapper<ManageKpiMonthAim> manageKpiMonthAimQueryWrapper = new QueryWrapper<>();
                 manageKpiMonthAimQueryWrapper.eq("companyName", companyName).eq("year", year)
                         .eq("month", month).eq("projectDesc", projectDesc);
                 List<ManageKpiMonthAim> monthAimList = manageKpiMonthAimMapper.selectList(manageKpiMonthAimQueryWrapper);
-                List<ManageKpiMonthAim> monthAim = manageKpiMonthAimMapper.selectList(manageKpiMonthAimQueryWrapper);
                 if (monthAimList.size() > 1) {
-                    setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));
+                    setFailedContent(result, String.format("第%s行的月度指标存在多条", j + 1));
                     cell.setCellValue("存在多个指标，检查数据是否正确");
                     continue;
                 }
                 //构建实体类
                 ManageKpiMonthAim manageKpiMonthAim = new ManageKpiMonthAim();
                 if (monthAimList.size()==1){
-                    Integer monthId = monthAim.get(0).getId();
+                    Integer monthId = monthAimList.get(0).getId();
                     manageKpiMonthAim.setId(monthId);  //月度id
                 }
-
+                //查询年度经营管理指标库中的id，写入月度表中，找出年度id
+                QueryWrapper<ManageKpiYear> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("companyName", companyName)
+                        .eq("year", year).eq("projectDesc", projectDesc);
+                List<ManageKpiYear> manageKpiYearList = manageKpiYearMapper.selectList(queryWrapper);
+                if (manageKpiYearList.size() > 1) {
+                    setFailedContent(result, String.format("第%s行的年度指标存在多条", j + 1));
+                    cell.setCellValue("存在多个指标，检查指标和年份是否正确");
+                    continue;
+                }
+                if (manageKpiYearList.size() == 0) {
+                    setFailedContent(result, String.format("第%s行的年度指标不存在", j + 1));
+                    cell.setCellValue("指标不存在，检查指标和年份是否正确");
+                    continue;
+                }
+                ManageKpiYear manageKpiYear = manageKpiYearList.get(0);
                 //导入时固定状态
                 String status="未锁定";
                 //前端选择并写入
@@ -255,7 +271,7 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
                 manageKpiMonthAim.setMonth(Integer.valueOf(month));
                 //对应id数据
 //                manageKpiMonthAim.setId(monthAim.getId());  //月度id
-                manageKpiMonthAim.setManageKpiYearId(Integer.valueOf(id));//经营管理年度指标id
+                manageKpiMonthAim.setManageKpiYearId(manageKpiYear.getId());//经营管理年度指标id
                 manageKpiMonthAim.setKpiLibId(manageKpiLib.getId());  //指标库id
                 manageKpiMonthAim.setStatus(status);//固定状态
                 //excel导入
@@ -276,7 +292,10 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
                 manageKpiMonthAim.setPastThreeYearsActual(pastThreeYearsActual);
                 manageKpiMonthAim.setKpiDecomposeMode(kpiDecomposeMode);
                 manageKpiMonthAim.setKpiDefinition(kpiDefinition);
-                manageKpiMonthAim.setMonthTarget(new BigDecimal(monthTarget));
+                if (!ObjectUtils.isEmpty(monthTarget)){
+                    manageKpiMonthAim.setMonthTarget(new BigDecimal(monthTarget));
+                }
+
 
                 // 根据id进行判断，存在则更新，不存在则新增
                 saveOrUpdate(manageKpiMonthAim);

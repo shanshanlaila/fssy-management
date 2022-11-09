@@ -152,7 +152,7 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             String monitorUser = cells.get(SheetService.columnToIndex("AC"));
             String kpiDecomposeMode = cells.get(SheetService.columnToIndex("AD"));
 
-            // 根据项目名称和年份找指标库对应的id，后导入id
+            // 根据项目名称和年份找指标库对应的id，后导入指标库id
             QueryWrapper<ManageKpiLib> manageKpiLibQueryWrapper = new QueryWrapper<>();
             manageKpiLibQueryWrapper.eq("projectDesc", projectDesc);
             List<ManageKpiLib> manageKpiLibs = manageKpiLibMapper.selectList(manageKpiLibQueryWrapper);
@@ -170,11 +170,23 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
 
             //构建实体类
             ManageKpiYear manageKpiYear = new ManageKpiYear();
+            //判断是否已经存在年度id
+            QueryWrapper<ManageKpiYear> yearQueryWrapper = new QueryWrapper<>();
+            yearQueryWrapper.eq("year",year).eq("companyName",companyName)
+                    .eq("projectDesc",projectDesc);
+            List<ManageKpiYear> manageKpiYearList = manageKpiYearMapper.selectList(yearQueryWrapper);
+            if (manageKpiYearList.size()>1){
+                setFailedContent(result,String.format("第%s行的年度指标存在多条", j + 1));
+                cell.setCellValue("存在多条年度指标，检查数据是否正确");
+                continue;
+            }
+            if (manageKpiYearList.size()==1){
+                manageKpiYear.setId(manageKpiYearList.get(0).getId());  //年份id
+            }
             //前端选择并写入
             manageKpiYear.setYear(Integer.valueOf(year));
             manageKpiYear.setCompanyName(companyName);
             //excel导入
-            manageKpiYear.setId(Integer.valueOf(id));
             manageKpiYear.setKpiLibId(manageKpiLib.getId());  //指标库id
             manageKpiYear.setProjectType(projectType);
             manageKpiYear.setKpiDefinition(kpiDefinition);

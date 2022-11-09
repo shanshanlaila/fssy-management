@@ -3,6 +3,7 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiYearMapper;
+import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiYearMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ViewManagerKpiYearMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
@@ -44,9 +45,13 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
     private ViewManagerKpiYearMapper viewManagerKpiYearMapper;
     @Autowired
     private ManageKpiYearMapper manageKpiYearMapper;
+    @Autowired
+    private ManagerKpiYearMapper managerKpiYearMapper;
 
     @Autowired
     private ManagerKpiYearServiceImpl managerKpiYearServiceImpl;
+    @Autowired
+    private ManageKpiYearServiceImpl manageKpiYearServiceImpl;
 
     /**
      * 通过查询条件 分页 查询列表
@@ -105,11 +110,9 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
 
-        //获取年份月份值
+        //获取公司、年份值
         Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("H"));
         Cell companyCell = sheet.getRow(1).getCell(SheetService.columnToIndex("C"));
-//        System.out.println("companyCell = " + companyCell);
-//        System.out.println("yearCell = " + yearCell);
         String companyCellValue = sheetService.getValue(companyCell);
         String yearCellValue = sheetService.getValue(yearCell);
         //效验年份、公司名称
@@ -146,9 +149,6 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             //导入结果写入列
             //错误信息提示存入到AD单元格内
             Cell cell = row.createCell(SheetService.columnToIndex("T"));
-            String id = cells.get(SheetService.columnToIndex("A"));
-//            String companyName = cells.get(SheetService.columnToIndex("B"));
-//            String year = cells.get(SheetService.columnToIndex("C"));
             String projectDesc = cells.get(SheetService.columnToIndex("B"));
             String dataSource = cells.get(SheetService.columnToIndex("D"));
             String managerName = cells.get(SheetService.columnToIndex("N"));
@@ -165,7 +165,26 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             if (ObjectUtils.isEmpty(year)) {
                 year = "0";
             }
-            // 根据指标、年份和公司名称找月度报表对应的id，后导入id
+
+            //自定义一个绩效标识，同时导入经营管理年度、月度、经理人年度KPI中
+            String performanceMark ="绩效指标";
+
+            //构建实体类
+            ManagerKpiYear managerKpiYear = new ManagerKpiYear();
+            //在表中查询是否有相同的id，并导入经理人年度id
+            QueryWrapper<ManagerKpiYear> managerKpiYearQueryWrapper = new QueryWrapper<>();
+            managerKpiYearQueryWrapper.eq("managerName",managerName).eq("companyName",companyName)
+                    .eq("year",year).eq("projectDesc",projectDesc);
+            List<ManagerKpiYear> managerKpiYearList = managerKpiYearMapper.selectList(managerKpiYearQueryWrapper);
+            if (managerKpiYearList.size()>1){
+                setFailedContent(result, String.format("第%s行的经理人年度指标id存在多条", j + 1));
+                cell.setCellValue("存在多个经理人年度指标，检查数据是否正确");
+                continue;
+            }
+            if (managerKpiYearList.size()==1){
+                managerKpiYear.setId(managerKpiYearList.get(0).getId());   //如果存在id则进行更新，没有就自动递增
+            }
+            // 根据指标、年份和公司名称找月度报表对应的id，后导入经营管理年度id
             QueryWrapper<ManageKpiYear> manageKpiYearQueryWrapper = new QueryWrapper<>();
             manageKpiYearQueryWrapper.eq("projectDesc", projectDesc).eq("year", year).eq("companyName",companyName);
             List<ManageKpiYear> manageKpiYears = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper);
@@ -178,11 +197,10 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
                 cell.setCellValue("指标不存在，检查指标、年份和公司名称是否正确");
                 continue;
             }
+            //表中存在数据的情况下获取这个MangeKpiYear
             ManageKpiYear manageKpiYear = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper).get(0);
-            //构建实体类
-            ManagerKpiYear managerKpiYear = new ManagerKpiYear();
-            managerKpiYear.setId(Integer.valueOf(id));
-            managerKpiYear.setManageKpiYearId(manageKpiYear.getId());  //年度指标id
+            managerKpiYear.setManageKpiYearId(manageKpiYear.getId());  //经营管理年度指标id
+            managerKpiYear.setPerformanceMark(performanceMark);   //经理人年度KPI绩效标识
             managerKpiYear.setCompanyName(companyName);
             managerKpiYear.setYear(Integer.valueOf(year));
             managerKpiYear.setProjectDesc(projectDesc);
@@ -194,7 +212,13 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
 
             // 根据id进行判断，存在则更新，不存在则新增
             managerKpiYearServiceImpl.saveOrUpdate(managerKpiYear);
+
+            
+            ManageKpiYear kpiYear = new ManageKpiYear();
+            kpiYear.setId(manageKpiYear.getId());         //经营管理年度id
+            kpiYear.setPerformanceMark(performanceMark);  //给经营管理年度添加绩效指标标识
             cell.setCellValue("导入成功");
+            manageKpiYearServiceImpl.saveOrUpdate(kpiYear);
         }
         // 写入excel表
         sheetService.write(attachment.getPath(), attachment.getFilename());

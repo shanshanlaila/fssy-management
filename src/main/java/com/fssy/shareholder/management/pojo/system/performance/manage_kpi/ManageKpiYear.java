@@ -355,6 +355,11 @@ public class ManageKpiYear extends BaseModel {
      */
     @TableField("kpiDecomposeMode")
     private String kpiDecomposeMode;
+    /**
+     * 绩效标识：识别经营管理指标和绩效指标
+     */
+    @TableField("performanceMark")
+    private String performanceMark;
 
 
 }
