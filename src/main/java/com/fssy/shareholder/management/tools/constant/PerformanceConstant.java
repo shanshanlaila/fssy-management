@@ -37,4 +37,6 @@ public interface PerformanceConstant {
     String FINE="良";
     String CONFORM="符合";
     String NON_CONFORM="不符合";
+    String BASICS_EVENT="基础事件绩效";
+    String EXPAND_EVENT="拓展事件绩效";
 }

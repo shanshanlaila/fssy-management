@@ -250,5 +250,11 @@ public class EntryExcellentStateDetail extends BaseModel {
     @TableField(exist = false)
     private Date importDate;
 
+    /**
+     * 事件岗位关系表主键
+     */
+    @TableField("eventsRoleId")
+    private Long eventsRoleId;
+
 
 }

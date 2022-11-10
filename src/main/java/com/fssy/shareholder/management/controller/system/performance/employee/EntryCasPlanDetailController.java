@@ -5,11 +5,14 @@
  */
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
+import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
@@ -534,8 +537,22 @@ public class EntryCasPlanDetailController {
      *
      * @return 页面路径
      */
-    @GetMapping("AssociateEvents")
-    public String AssociateEvents() {
+    @GetMapping("AssociateEvents/{id}")
+    public String AssociateEvents(@PathVariable String id, Model model) {
+        model.addAttribute("planId", id);
         return "/system/performance/employee/entry-cas-new-plan-detail";
+    }
+
+    @PostMapping("match/{planId}")
+    @ResponseBody
+    public SysResult match(EventList event, @PathVariable String planId) {
+        System.out.println(planId);
+        EntryCasPlanDetail planDetail = entryCasPlanDetailService.getById(planId);
+        planDetail.setEventsId(event.getId());
+        planDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+        boolean result = entryCasPlanDetailService.updateById(planDetail);
+        if (result) {
+            return SysResult.build(200, "关联基础事件成功");
+        } else return SysResult.build(500, "关联基础事件失败");
     }
 }

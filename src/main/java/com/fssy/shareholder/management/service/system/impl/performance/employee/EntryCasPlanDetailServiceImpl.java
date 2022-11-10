@@ -217,6 +217,11 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 cell.setCellValue(String.format("序号为【%s】的事件清单状态不为完结，不能导入", eventListId));
                 continue;
             }*/
+            if (!(eventsForm.equals(PerformanceConstant.BASICS_EVENT)||eventsForm.equals(PerformanceConstant.EXPAND_EVENT))){
+                setFailedContent(result, String.format("第%s行的绩效类型填写错误", j + 1));
+                cell.setCellValue("绩效类型填写错误");
+                continue;
+            }
 
             // 构建实体类
             EntryCasPlanDetail entryCasPlanDetail = new EntryCasPlanDetail();

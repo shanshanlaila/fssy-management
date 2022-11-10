@@ -19,15 +19,16 @@
                 <tr>
                     <td style="width: 15%;text-align: right">事件清单序号 :</td>
                     <td style="width: 35%">
-                        <input type="text" class="layui-input" name="eventsId" placeholder="选择对应的事件清单序号"
-                               id="eventsId" autocomplete="off"
+                        <input type="hidden" name="planId" id="planId" th:value="${planId}">
+                        <input type="text" class="layui-input" name="id" placeholder="选择对应的事件清单序号"
+                               id="id" autocomplete="off"
                                readonly lay-reqText="事件清单序号为必填项" lay-verify="required">
                     </td>
 
                     <td style="width: 15%;text-align: right">战略职能 :</td>
                     <td style="width: 35%">
-                        <input type="text" class="layui-input" name="materialName" placeholder="战略职能"
-                               id="materialName" autocomplete="off" lay-verify="" lay-reqText="战略职能为必填项" readonly>
+                        <input type="text" class="layui-input" name="strategyFunctions" placeholder="战略职能"
+                               id="strategyFunctions" autocomplete="off" lay-verify="" lay-reqText="战略职能为必填项" readonly>
 
                     </td>
 
@@ -37,18 +38,15 @@
                 <tr>
                     <td style="width: 15%;text-align: right">支持职能 :</td>
                     <td style="width: 35%">
-                        <input type="text" class="layui-input" name="code" placeholder="支持职能"
-                               id="code" autocomplete="off" lay-reqText="支持职能为必填项" readonly
+                        <input type="text" class="layui-input" name="supportFunctions" placeholder="支持职能"
+                               id="supportFunctions" autocomplete="off" lay-reqText="支持职能为必填项" readonly
                                lay-verify="required">
-                        <input type="hidden" id="warehouseId" name="warehouseId">
-
                     </td>
 
                     <td style="width: 15%;text-align: right">工作职责 :</td>
                     <td style="width: 35%">
-                        <input type="text" class="layui-input" name="name" placeholder="工作职责"
-                               id="name" autocomplete="off" lay-verify="" lay-reqText="工作职责为必填项" readonly>
-
+                        <input type="text" class="layui-input" name="jobName" placeholder="工作职责"
+                               id="jobName" autocomplete="off" lay-verify="" lay-reqText="工作职责为必填项" readonly>
                     </td>
                 </tr>
 
@@ -57,12 +55,17 @@
                     <td style="width: 35%">
                         <div class="layui-input-inline" style="width: 100%">
                             <span></span>
+                            <input type="text" class="layui-input" name="workEvents" placeholder="流程（工作事件）"
+                                   id="workEvents" autocomplete="off" lay-verify="" lay-reqText="流程（工作事件）为必填项" readonly>
                         </div>
                     </td>
                     <td style="width: 15%;text-align: right">事件类型:</td>
                     <td style="width: 35%">
                         <div class="layui-input-inline" style="width: 100%">
                             <span></span>
+                            <input type="text" class="layui-input" name="eventsFirstType" placeholder="事件类型"
+                                   id="eventsFirstType" autocomplete="off" lay-verify="" lay-reqText="事件类型为必填项"
+                                   readonly>
                         </div>
                     </td>
                 </tr>
@@ -70,8 +73,8 @@
                     <td style="text-align: right">表单（输出内容）:</td>
                     <td colspan="3">
                         <div class="layui-input-inline" style="width: 100%">
-                            <textarea name="note" rowspan="3" class="layui-textarea" readonly
-                                      style="width: 100%"></textarea>
+                            <textarea name="workOutput" rowspan="3" class="layui-textarea" readonly
+                                      style="width: 100%" id="workOutput"></textarea>
                         </div>
                     </td>
                 </tr>
@@ -80,7 +83,7 @@
                     <td colspan="3">
                         <div class="layui-input-inline" style="width: 100%">
                             <textarea name="note" rowspan="3" class="layui-textarea" readonly
-                                      style="width: 100%"></textarea>
+                                      style="width: 100%" id="note"></textarea>
                         </div>
                     </td>
                 </tr>
@@ -89,7 +92,7 @@
             <table class="layui-table layui-form" lay-size="sm">
                 <tr>
                     <td colspan="4" style="text-align: center">
-                        <button class="layui-btn" lay-submit id="create" lay-filter="create">
+                        <button class="layui-btn" lay-submit id="match" lay-filter="match">
                             关联此事件清单
                         </button>
                     </td>
@@ -120,7 +123,7 @@
         });
 
         // id绑定点击事件
-        $("#eventsId").click(function () {
+        $("#id").click(function () {
             layer.open({
                 type: 2,
                 title: '双击选择要关联的基础事件',
@@ -131,14 +134,15 @@
             });
         });
 
-        form.on('submit(create)', function (data) {
-            var elem = data.elem;
+        form.on('submit(match)', function (data) {
+            var elem = data.elem;// 表单结构
+            var field = data.field; // 表单字段数据
             $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
             $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
             $.ajax({
-                url: '/system/scm/warehouse-inventory/store',
+                url: '/system/entry-cas-plan-detail/match/' + field.planId,
                 type: 'POST',
-                data: data.field,
+                data: field,
                 success: function (result) {
                     if (result.status === 200) {
                         layer.msg(result.msg, {icon: 6, time: 2000});
