@@ -87,5 +87,11 @@ public class ManageKpiLib extends BaseModel {
     @TableField("kpiDefinition")
     private String kpiDefinition;
 
+    /**
+     * 评价模式：系统评分、人工评分
+     */
+    @TableField("evaluateMode")
+    private String evaluateMode;
+
 
 }

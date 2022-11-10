@@ -105,6 +105,9 @@ public class ManageKpiLibController {
         if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
             params.put("year", request.getParameter("year"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("evaluateMode"))) {
+            params.put("evaluateMode", request.getParameter("evaluateMode"));
+        }
         return params;
     }
 
@@ -234,7 +237,7 @@ public class ManageKpiLibController {
     @RequiredLog("数据导出")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
-        params.put("select", "id,projectType,projectDesc,unit,kpiDefinition,kpiFormula,kpiYear,note");
+        params.put("select", "id,projectType,projectDesc,unit,kpiDefinition,kpiFormula,kpiYear,evaluateMode,note");
         List<Map<String, Object>> managerKpiLibList = manageKpiLibService.findManagerKpiLibDataSource(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
 
@@ -246,10 +249,11 @@ public class ManageKpiLibController {
         fieldMap.put("kpiDefinition", "指标定义");
         fieldMap.put("kpiFormula", "指标计算公式");
         fieldMap.put("kpiYear", "年份");
+        fieldMap.put("evaluateMode", "评分模式");
         fieldMap.put("note", "备注");
 
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8);
         SheetOutputService sheetOutputService = new SheetOutputService();
         if (ObjectUtils.isEmpty(managerKpiLibList)) {
             throw new ServiceException("未查出数据");
