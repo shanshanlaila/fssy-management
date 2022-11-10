@@ -24,7 +24,7 @@ public interface ManagerKpiCoefficientService extends IService<ManagerKpiCoeffic
      * @param params 查询条件
      * @return 分页数据
      */
-    Page<ManageKpiYear> findManagerKpiCoefficientDataListPerPageByParams(Map<String, Object> params);
+    Page<ManagerKpiCoefficient> findManagerKpiCoefficientDataListPerPageByParams(Map<String, Object> params);
 
     /**
      * 读取附件数据到数据库表
