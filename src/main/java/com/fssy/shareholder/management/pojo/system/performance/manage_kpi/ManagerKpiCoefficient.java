@@ -23,7 +23,7 @@ import lombok.Setter;
 @TableName("bs_manager_kpi_coefficient")
 public class ManagerKpiCoefficient extends BaseModel {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1850219856294941327L;
 
     /**
      * 序号
@@ -90,6 +90,12 @@ public class ManagerKpiCoefficient extends BaseModel {
      */
     @TableField("position")
     private String position;
+
+    /**
+     * KPI项目名称
+     */
+    @TableField("projectDesc")
+    private String projectDesc;
 
     /**
      * 绩效考核系数
