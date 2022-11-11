@@ -83,10 +83,10 @@ public class ManageKpiMonthScoreServiceImpl extends ServiceImpl<ManageKpiMonthAi
     @Transactional
     public boolean createScore(Map<String, Object> params) {
         QueryWrapper<ManageKpiMonthAim> queryWrapper = getQueryWrapper(params);
-        //条件查询出所有数据，进行未锁定进行筛选
+        //条件查询出所有数据，进行未锁定和绩效指标进行筛选
         List<ManageKpiMonthAim> manageKpiMonthAims = manageKpiMonthAimMapper.selectList(queryWrapper);
         List<ManageKpiMonthAim> filterList = manageKpiMonthAims.stream()
-                .filter(i -> i.getStatus().equals("未锁定")).collect(Collectors.toList());
+                .filter(i -> i.getStatus().equals("未锁定") && "绩效指标".equals(i.getPerformanceMark())).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(filterList)) {
             throw new ServiceException("没有查出数据或已生成！生成失败！");
         }
@@ -101,9 +101,6 @@ public class ManageKpiMonthScoreServiceImpl extends ServiceImpl<ManageKpiMonthAi
             BigDecimal challengeTarget = new BigDecimal(monthAim.getChallengeTarget());
             //对每个月度进行月份目标的计算
             BigDecimal temp = new BigDecimal(12);
-//            if (!ObjectUtils.isEmpty(accumulateActual)){
-//                BigDecimal basicTargetMonth = basicTarget.divide(temp).multiply(month);
-//            }
             BigDecimal basicTargetMonth = basicTarget.divide(temp).multiply(month);
             BigDecimal mustInputTargetMonth = mustInputTarget.divide(temp).multiply(month);
             BigDecimal reachTargetMonth = reachTarget.divide(temp).multiply(month);
