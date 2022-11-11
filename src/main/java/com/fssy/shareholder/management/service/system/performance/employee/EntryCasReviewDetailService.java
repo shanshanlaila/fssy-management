@@ -89,5 +89,5 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
      * @param entryCasReviewDetail
      * @return
      */
-    boolean saveReviewDetail(EntryCasReviewDetail entryCasReviewDetail);
+    boolean saveOneReviewDetail(EntryCasReviewDetail entryCasReviewDetail);
 }

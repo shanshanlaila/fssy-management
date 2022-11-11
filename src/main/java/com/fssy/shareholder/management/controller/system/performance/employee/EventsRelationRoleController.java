@@ -4,14 +4,13 @@
  */
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.fssy.shareholder.management.service.common.SheetOutputService;
+import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +25,7 @@ import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
-import com.fssy.shareholder.management.service.system.performance.employee.PerformanceEventsRelationRoleService;
+import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 
 /**
  * <p>
@@ -40,13 +39,13 @@ import com.fssy.shareholder.management.service.system.performance.employee.Perfo
  */
 @Controller
 @RequestMapping("/system/performance/employee/events-relation-role/")
-public class PerformanceEventsRelationRoleController
+public class EventsRelationRoleController
 {
 	/**
 	 * 事件清单岗位关系功能业务实现类
 	 */
 	@Autowired
-	private PerformanceEventsRelationRoleService performanceEventsRelationRoleService;
+	private EventsRelationRoleService eventsRelationRoleService;
 
 	/**
 	 * 组织结构功能业务实现类
@@ -101,7 +100,7 @@ public class PerformanceEventsRelationRoleController
 		params.put("limit", limit);
 		params.put("page", page);
 
-		Page<EventsRelationRole> performanceEventsRelationRolePage = performanceEventsRelationRoleService
+		Page<EventsRelationRole> performanceEventsRelationRolePage = eventsRelationRoleService
 				.findPerformanceEventsRelationRoleDataListPerPageByParams(params);
 
 		if (performanceEventsRelationRolePage.getTotal() == 0)
@@ -256,5 +255,55 @@ public class PerformanceEventsRelationRoleController
 			params.put("roleIds", roleIds);
 		}
 		return params;
+	}
+
+	/**
+	 * excel导出(按钮：导出事件清单填报履职计划)
+	 *
+	 * @param request  请求
+	 * @param response 响应
+	 */
+	@GetMapping("downloadForCharge")
+	public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> params = getParams(request);
+		params.put("select",
+						"id,"+
+						"eventsId," +
+						"jobName," +
+						"workEvents," +
+						"departmentName," +
+						"standardValue," +
+						"eventsFirstType," +
+						"isMainOrNext"
+		);
+		List<Map<String, Object>> relationRoleLists = eventsRelationRoleService.findRelationRoleMapDataByParams(params);
+
+		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+		// 需要改背景色的格子
+		fieldMap.put("id", "系统序号");
+		fieldMap.put("eventsId", "事件清单序号");
+		fieldMap.put("eventsFirstType", "事务类型");
+		fieldMap.put("jobName", "工作职责");
+		fieldMap.put("workEvents", "流程（工作事件）");
+		fieldMap.put("departmentName", "部门");
+		fieldMap.put("standardValue", "事件价值标准分");
+		fieldMap.put("isMainOrNext", "主/次担");
+		// 需要填写的部分
+		fieldMap.put("jixiaoleixing", "*绩效类型");
+		fieldMap.put("duiyingjihuaneirong", "*对应工作事件的计划内容");// planningWork
+		fieldMap.put("pinci", "*频次");
+		fieldMap.put("biaodan", "*表单（输出内容）");// planOutput
+		fieldMap.put("jihuakaishishijian", "*计划开始时间");
+		fieldMap.put("jihuawanchengshijian", "*计划完成时间");
+		fieldMap.put("gangweimingcheng", "*岗位名称");
+		fieldMap.put("gangweirenyuanxingming", "*岗位人员姓名");
+		fieldMap.put("shengbaoyuefen", "*申报日期");
+		// 标识字符串的列
+		List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
+		SheetOutputService sheetOutputService = new SheetOutputService();
+		if (ObjectUtils.isEmpty(relationRoleLists)) {
+			throw new ServiceException("未查出数据");
+		}
+		sheetOutputService.exportNum("履职管控表", relationRoleLists, fieldMap, response, strList, null);
 	}
 }

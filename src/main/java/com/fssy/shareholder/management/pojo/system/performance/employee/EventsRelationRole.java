@@ -181,29 +181,29 @@ public class EventsRelationRole extends BaseModel {
      * 事件类型
      */
     @TableField("eventsFirstType")
-    private BigDecimal eventsFirstType;
+    private String eventsFirstType;
 
     /**
      * 不合格标准
      */
     @TableField("delowStandard")
-    private BigDecimal delowStandard;
+    private String delowStandard;
 
     /**
      * 中标准
      */
     @TableField("middleStandard")
-    private BigDecimal middleStandard;
+    private String middleStandard;
 
     /**
      * 良标准
      */
     @TableField("fineStandard")
-    private BigDecimal fineStandard;
+    private String fineStandard;
 
     /**
      * 优标准
      */
     @TableField("excellentStandard")
-    private BigDecimal excellentStandard;
+    private String excellentStandard;
 }

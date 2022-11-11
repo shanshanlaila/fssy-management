@@ -147,30 +147,28 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("Z"));// 每一行的结果信息上传到S列
             // 检查必填项
-            String eventListId = cells.get(SheetService.columnToIndex("A"));// 事件清单序号
-            String eventsFirstType = cells.get(SheetService.columnToIndex("B"));//事务类别
-            String jobName = cells.get(SheetService.columnToIndex("C"));//工作职责
-            String workEvents = cells.get(SheetService.columnToIndex("D"));//流程（工作事件）
+            String id = cells.get(SheetService.columnToIndex("A"));// 岗位关系序号
+            String eventsId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
+            String eventsFirstType = cells.get(SheetService.columnToIndex("C"));//事务类别
+            String jobName = cells.get(SheetService.columnToIndex("D"));//工作职责
+            String workEvents = cells.get(SheetService.columnToIndex("E"));//流程（工作事件）
 //            String status = cells.get(SheetService.columnToIndex("E"));//状态
-            String departmentName = cells.get(SheetService.columnToIndex("E"));//部门
-//            String delowStandard = cells.get(SheetService.columnToIndex("G"));//不合格
-//            String middleStandard = cells.get(SheetService.columnToIndex("H"));//中
-//            String fineStandard = cells.get(SheetService.columnToIndex("I"));//良
-//            String excellentStandard = cells.get(SheetService.columnToIndex("J"));//优
-            String standardValue = cells.get(SheetService.columnToIndex("F"));// 事件价值标准分
-            String eventsForm = cells.get(SheetService.columnToIndex("G"));//绩效类型
+            String departmentName = cells.get(SheetService.columnToIndex("F"));//部门
+            String standardValue = cells.get(SheetService.columnToIndex("G"));// 事件价值标准分
             String mainOrNext = cells.get(SheetService.columnToIndex("H"));// 主/次担
-            String planningWork = cells.get(SheetService.columnToIndex("I"));// 对应工作事件的计划内容
-            String times = cells.get(SheetService.columnToIndex("J"));// 频次
-            String workOutput = cells.get(SheetService.columnToIndex("K"));// 表单（输出内容）
-            String planStartDateStr = cells.get(SheetService.columnToIndex("L"));// 计划开始时间
-            String planEndDateStr = cells.get(SheetService.columnToIndex("M"));// 计划完成时间
-            String roleName = cells.get(SheetService.columnToIndex("N"));// 岗位名称
-            String userName = cells.get(SheetService.columnToIndex("O"));// 岗位人员姓名
-            String applyDateStr = cells.get(SheetService.columnToIndex("P"));// 申报月份
+            // 填写的数据
+            String eventsForm = cells.get(SheetService.columnToIndex("I"));//绩效类型
+            String planningWork = cells.get(SheetService.columnToIndex("J"));// 对应工作事件的计划内容
+            String times = cells.get(SheetService.columnToIndex("K"));// 频次
+            String planOutput = cells.get(SheetService.columnToIndex("L"));// 表单（输出内容）
+            String planStartDateStr = cells.get(SheetService.columnToIndex("M"));// 计划开始时间
+            String planEndDateStr = cells.get(SheetService.columnToIndex("N"));// 计划完成时间
+            String roleName = cells.get(SheetService.columnToIndex("O"));// 岗位名称
+            String userName = cells.get(SheetService.columnToIndex("P"));// 岗位人员姓名
+            String applyDateStr = cells.get(SheetService.columnToIndex("Q"));// 申报月份
             // 检查必填项
             //2022/11/7，当事件类型为新增工作流式，事件清单序号可以为空
-               /* if (ObjectUtils.isEmpty(eventListId)) {
+               /* if (ObjectUtils.isEmpty(eventsId)) {
                     setFailedContent(result, String.format("第%s行的事件清单表序号为空", j + 1));
                     cell.setCellValue("事件清单表序号不能为空");
                     continue;
@@ -214,7 +212,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 数据校验
             /*if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
                 StringTool.setMsg(sb, String.format("第【%s】行状态为【%s】的事件清单不为完结，不能导入", j + 1, status));
-                cell.setCellValue(String.format("序号为【%s】的事件清单状态不为完结，不能导入", eventListId));
+                cell.setCellValue(String.format("序号为【%s】的事件清单状态不为完结，不能导入", eventsId));
                 continue;
             }*/
             if (!(eventsForm.equals(PerformanceConstant.BASICS_EVENT)||eventsForm.equals(PerformanceConstant.EXPAND_EVENT))){
@@ -225,29 +223,30 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
             // 构建实体类
             EntryCasPlanDetail entryCasPlanDetail = new EntryCasPlanDetail();
+            entryCasPlanDetail.setEventsRoleId(Long.valueOf(id));
             entryCasPlanDetail.setEventsFirstType(eventsFirstType);
             entryCasPlanDetail.setJobName(jobName);
             entryCasPlanDetail.setWorkEvents(workEvents);
             entryCasPlanDetail.setMainOrNext(mainOrNext);
             entryCasPlanDetail.setPlanningWork(planningWork);
             entryCasPlanDetail.setTimes(times);
-            entryCasPlanDetail.setWorkOutput(workOutput);
+            entryCasPlanDetail.setPlanOutput(planOutput);
             entryCasPlanDetail.setPlanStartDate(LocalDate.parse(planStartDate));
             entryCasPlanDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
             entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
             entryCasPlanDetail.setEventsForm(eventsForm);
             // 数据库不能为null的字段设置值
-            if (!ObjectUtils.isEmpty(eventListId)) {
-                entryCasPlanDetail.setEventsId(Long.valueOf(eventListId));
+            if (!ObjectUtils.isEmpty(eventsId)) {
+                entryCasPlanDetail.setEventsId(Long.valueOf(eventsId));
             }
             entryCasPlanDetail.setDepartmentName(departmentName);
             LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
             departmentLambdaQueryWrapper.eq(Department::getDepartmentName, departmentName);
             List<Department> departments = departmentMapper.selectList(departmentLambdaQueryWrapper);
             if (ObjectUtils.isEmpty(departments)) {
-                setFailedContent(result, String.format("第%s行的部门无对应数据", j + 1));
-                cell.setCellValue("表中部门名称无对应数据");
+                setFailedContent(result, String.format("第%s行的部门未维护", j + 1));
+                cell.setCellValue("表中部门名称未维护");
                 continue;
             }
             entryCasPlanDetail.setDepartmentId(departments.get(0).getId());
@@ -255,8 +254,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             roleLambdaQueryWrapper.eq(Role::getName, roleName);
             List<Role> roles = roleMapper.selectList(roleLambdaQueryWrapper);
             if (ObjectUtils.isEmpty(roles)) {
-                setFailedContent(result, String.format("第%s行的岗位名称无对应数据", j + 1));
-                cell.setCellValue("表中岗位名称无对应数据");
+                setFailedContent(result, String.format("第%s行的岗位名称未维护", j + 1));
+                cell.setCellValue("表中岗位名称未维护");
                 continue;
             }
             entryCasPlanDetail.setRoleName(roleName);
@@ -264,8 +263,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setUserName(userName);
             List<User> users = userMapper.selectList(new LambdaQueryWrapper<User>().eq(User::getName, userName));
             if (ObjectUtils.isEmpty(users)) {
-                setFailedContent(result, String.format("第%s行的员工名称无对应数据", j + 1));
-                cell.setCellValue("表中员工名称无对应数据");
+                setFailedContent(result, String.format("第%s行的员工名称未维护", j + 1));
+                cell.setCellValue("表中员工名称未维护");
                 continue;
             }
             entryCasPlanDetail.setUserId(users.get(0).getId());

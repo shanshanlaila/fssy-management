@@ -270,7 +270,7 @@ public class EntryCasPlanDetailController {
 //                        "excellentStandard," +
                         "mainOrNext," +
                         "planningWork," +
-                        "times,workOutput," +
+                        "times,planOutput," +
                         "planStartDate," +
                         "planEndDate," +
                         "departmentName," +
@@ -300,7 +300,7 @@ public class EntryCasPlanDetailController {
         fieldMap.put("mainOrNext", "主/次担任");
         fieldMap.put("planningWork", "对应工作事件的计划内容");
         fieldMap.put("times", "频次");
-        fieldMap.put("workOutput", "表单（输出内容）");
+        fieldMap.put("planOutput", "表单（输出内容）");// 来源于自己填写
         fieldMap.put("planStartDate", "计划开始时间");
         fieldMap.put("planEndDate", "计划完成时间");
         fieldMap.put("sjwcsj", "*实际完成时间");

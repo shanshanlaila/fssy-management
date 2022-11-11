@@ -451,7 +451,7 @@ public class EntryCasReviewDetailController {
     @PostMapping("save")
     @ResponseBody
     public SysResult create(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request) {
-        boolean result = entryCasReviewDetailService.saveReviewDetail(entryCasReviewDetail);
+        boolean result = entryCasReviewDetailService.saveOneReviewDetail(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
         }
