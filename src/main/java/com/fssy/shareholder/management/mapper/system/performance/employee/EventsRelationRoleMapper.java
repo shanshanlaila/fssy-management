@@ -17,6 +17,6 @@ import com.fssy.shareholder.management.mapper.manage.common.MyBaseMapper;
  * @author Solomon
  * @since 2022-10-10
  */
-public interface PerformanceEventsRelationRoleMapper extends MyBaseMapper<EventsRelationRole> {
+public interface EventsRelationRoleMapper extends MyBaseMapper<EventsRelationRole> {
 
 }

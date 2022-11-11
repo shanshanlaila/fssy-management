@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -29,7 +30,7 @@ import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
-import com.fssy.shareholder.management.mapper.system.performance.employee.PerformanceEventsRelationRoleMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.role.Role;
 import com.fssy.shareholder.management.pojo.manage.user.User;
@@ -57,7 +58,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 	 * 事件清单岗位关系业务实现类
 	 */
 	@Autowired
-	private PerformanceEventsRelationRoleMapper performanceEventsRelationRoleMapper;
+	private EventsRelationRoleMapper eventsRelationRoleMapper;
 
 	/**
 	 * excel操作业务类
@@ -88,6 +89,9 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
      */
     @Autowired
     private UserMapper userMapper;
+
+	@Autowired
+	private EventsRelationRoleService eventsRelationRoleService;
 
 	@Override
 	@Transactional
@@ -129,7 +133,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 		int successNum = 0;
 		// 检查事件岗位比重map
 		Map<String, BigDecimal> checkProportionMap = new HashMap<>();
-		List<EventsRelationRole> insertList = new ArrayList<>();
 		List<Long> updatedEventsIds = new ArrayList<>();
 		// 循环总行数(不读表头，从第2行开始读，索引从0开始，所以j=1)
 		for (int j = 1; j <= sheet.getLastRowNum(); j++)
@@ -152,7 +155,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				temp.add(res);// 将单元格的值写入行
 			}
 			// 导入结果写入列
-			Cell cell = row.createCell(SheetService.columnToIndex("O"));// 每一行的结果信息上传到O列
+			Cell cell = row.createCell(SheetService.columnToIndex("Q"));// 每一行的结果信息上传到O列
 
 			// region 导入数据校验
 			Long eventsId = null;
@@ -172,28 +175,28 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				cell.setCellValue("事件清单序号不能为空");
 				continue;
 			}
-			String departmentName = temp.get(SheetService.columnToIndex("D"));
+			String departmentName = temp.get(SheetService.columnToIndex("E"));
 			if (ObjectUtils.isEmpty(departmentName))
 			{
 				StringTool.setMsg(sb, String.format("第【%s】行部门名称不能为空", j + 1));
 				cell.setCellValue("部门名称不能为空");
 				continue;
 			}
-			String roleName = temp.get(SheetService.columnToIndex("E"));
+			String roleName = temp.get(SheetService.columnToIndex("F"));
 			if (ObjectUtils.isEmpty(roleName))
 			{
 				StringTool.setMsg(sb, String.format("第【%s】行岗位名称不能为空", j + 1));
 				cell.setCellValue("岗位名称不能为空");
 				continue;
 			}
-			String isMainOrNext = temp.get(SheetService.columnToIndex("G"));
+			String isMainOrNext = temp.get(SheetService.columnToIndex("H"));
 			if (ObjectUtils.isEmpty(isMainOrNext))
 			{
 				StringTool.setMsg(sb, String.format("第【%s】行是否主担不能为空", j + 1));
 				cell.setCellValue("是否主担不能为空");
 				continue;
 			}
-			String userName = temp.get(SheetService.columnToIndex("H"));
+			String userName = temp.get(SheetService.columnToIndex("I"));
 			if (ObjectUtils.isEmpty(userName))
 			{
 				StringTool.setMsg(sb, String.format("第【%s】行职员名称不能为空", j + 1));
@@ -203,7 +206,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			BigDecimal proportion = null;
 			try
 			{
-				proportion = new BigDecimal(temp.get(SheetService.columnToIndex("F")));
+				proportion = new BigDecimal(temp.get(SheetService.columnToIndex("G")));
 			}
 			catch (Exception e)
 			{
@@ -220,7 +223,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			BigDecimal standardValue;
 			try
 			{
-				standardValue = new BigDecimal(temp.get(SheetService.columnToIndex("I")));// 事件标准价值
+				standardValue = new BigDecimal(temp.get(SheetService.columnToIndex("J")));// 事件标准价值
 			}
 			catch (Exception e)
 			{
@@ -237,7 +240,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			BigDecimal delow;
 			try
 			{
-				delow = new BigDecimal(temp.get(SheetService.columnToIndex("J")));
+				delow = new BigDecimal(temp.get(SheetService.columnToIndex("K")));
 			}
 			catch (Exception e)
 			{
@@ -254,7 +257,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			BigDecimal middle;
 			try
 			{
-				middle = new BigDecimal(temp.get(SheetService.columnToIndex("K")));
+				middle = new BigDecimal(temp.get(SheetService.columnToIndex("L")));
 			}
 			catch (Exception e)
 			{
@@ -271,7 +274,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			BigDecimal fine;
 			try
 			{
-				fine = new BigDecimal(temp.get(SheetService.columnToIndex("L")));// 事件标准价值
+				fine = new BigDecimal(temp.get(SheetService.columnToIndex("M")));// 事件标准价值
 			}
 			catch (Exception e)
 			{
@@ -288,7 +291,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			BigDecimal excellent;
 			try
 			{
-				excellent = new BigDecimal(temp.get(SheetService.columnToIndex("M")));// 事件标准价值
+				excellent = new BigDecimal(temp.get(SheetService.columnToIndex("N")));// 事件标准价值
 			}
 			catch (Exception e)
 			{
@@ -302,7 +305,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				cell.setCellValue("优价值不能为空");
 				continue;
 			}
-			String activeDateStr = temp.get(SheetService.columnToIndex("N"));
+			String activeDateStr = temp.get(SheetService.columnToIndex("O"));
 			LocalDate activeDate = null;
 			try
 			{
@@ -339,17 +342,19 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			// 查询岗位关联数据
 			QueryWrapper<EventsRelationRole> relationRoleCheckQueryWrapper = new QueryWrapper<>();
 			relationRoleCheckQueryWrapper.eq("eventsId", eventList.getId()).select("activeDate,id,eventsId");
-			List<EventsRelationRole> checkDataList = performanceEventsRelationRoleMapper.selectList(relationRoleCheckQueryWrapper);
+			List<EventsRelationRole> checkDataList = eventsRelationRoleMapper.selectList(relationRoleCheckQueryWrapper);
 			for (EventsRelationRole eventsRelationRole : checkDataList)
 			{
 				if (activeDate.isEqual(eventsRelationRole.getActiveDate()))
 				{
+					// 如果要导入数的生效日期在数据库中被查出来的话则不能导入
 					activeFlag = false;
 					break;
 				}
 			}
 			if (!activeFlag)
 			{
+				// activeFlag=false
 				StringTool.setMsg(sb, String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入",
 						j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
 				cell.setCellValue(String.format("序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入", eventsId,
@@ -421,6 +426,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			eventsRelationRole.setProportion(proportion);
 			eventsRelationRole.setJobName(temp.get(SheetService.columnToIndex("B")));
 			eventsRelationRole.setWorkEvents(temp.get(SheetService.columnToIndex("C")));
+			eventsRelationRole.setEventsFirstType(temp.get(SheetService.columnToIndex("D")));
 			eventsRelationRole.setEventsType(eventList.getEventsType());
 			eventsRelationRole.setIsMainOrNext(isMainOrNext);
 			eventsRelationRole.setUserName(signUser.getName());
@@ -434,8 +440,10 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			eventsRelationRole.setUpdatedAt(LocalDateTime.now());
 			// endregion
 
-			insertList.add(eventsRelationRole);
+			// 无则更新，有则修改
+			eventsRelationRoleService.saveOrUpdate(eventsRelationRole);
 			updatedEventsIds.add(eventList.getId());
+
 			temps.add(temp);
 			cell.setCellValue("成功");
 			successNum++;
@@ -463,16 +471,11 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 		// endregion
 
 		// region 添加数据并修改对应事件清单的roleComplete字段
-		if (!ObjectUtils.isEmpty(insertList))
-		{
-			performanceEventsRelationRoleMapper.insertBatchSomeColumn(insertList);
-
-			UpdateWrapper<EventList> eventUpdateWrapper = new UpdateWrapper<>();
-			eventUpdateWrapper.in("id", updatedEventsIds).set("roleComplete", CommonConstant.TRUE)
-					.set("updatedId", user.getId()).set("updatedName", user.getName())
-					.set("updatedAt", LocalDateTime.now());
-			eventListMapper.update(null, eventUpdateWrapper);
-		}
+		UpdateWrapper<EventList> eventUpdateWrapper = new UpdateWrapper<>();
+		eventUpdateWrapper.in("id", updatedEventsIds).set("roleComplete", CommonConstant.TRUE)
+				.set("updatedId", user.getId()).set("updatedName", user.getName())
+				.set("updatedAt", LocalDateTime.now());
+		eventListMapper.update(null, eventUpdateWrapper);
 		// endregion
 
 		sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表

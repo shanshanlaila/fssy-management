@@ -129,10 +129,6 @@
             cols: [
                 [
                     {
-                        /* 		type : 'checkbox',
-                                fixed : 'left',
-                                width : 60
-                            }, { */
                         field: 'createDate',
                         title: '编制日期',
                         fixed: 'left',
@@ -187,8 +183,8 @@
                     title: '工作职责',
                     width: 130
                 }, {
-                    field: 'eventsType',
-                    title: '事件类别',
+                    field: 'eventsFirstType',
+                    title: '事件类型',
                     width: 130
                 }, {
                     field: 'roleId',
@@ -232,7 +228,7 @@
             var field = data.field;
             // 导出参数设置-只导出完结状态下的数据-status=“完结”
             data.field.status = '完结';
-            field.url = "/system/performance/employee/eventsList/downloadForCharge";
+            field.url = "/system/performance/employee/events-relation-role/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");
             window.open(url, true);

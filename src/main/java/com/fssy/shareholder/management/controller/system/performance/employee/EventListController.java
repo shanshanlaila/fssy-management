@@ -110,53 +110,6 @@ public class EventListController {
         return result;
     }
 
-
-    /**
-     * excel导出(按钮：导出事件清单填报履职计划)
-     *
-     * @param request  请求
-     * @param response 响应
-     */
-    @GetMapping("downloadForCharge")
-    public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> params = getParams(request);
-        params.put("select",
-                "id," +
-                        "jobName," +
-                        "workEvents," +
-                        "departmentName," +
-                        "standardValue,eventsFirstType"
-        );
-        List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
-
-        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
-        // 需要改背景色的格子
-        fieldMap.put("id", "事件清单序号");
-        fieldMap.put("eventsFirstType", "事务类型");
-        fieldMap.put("jobName", "工作职责");
-        fieldMap.put("workEvents", "流程（工作事件）");
-        fieldMap.put("departmentName", "部门");
-        fieldMap.put("standardValue", "事件价值标准分");
-        // 需要填写的部分
-        fieldMap.put("jixiaoleixing", "*绩效类型");
-        fieldMap.put("dan", "*主/次担");
-        fieldMap.put("duiyingjihuaneirong", "*对应工作事件的计划内容");
-        fieldMap.put("pinci", "*频次");
-        fieldMap.put("biaodan", "*表单（输出内容）");
-        fieldMap.put("jihuakaishishijian", "*计划开始时间");
-        fieldMap.put("jihuawanchengshijian", "*计划完成时间");
-        fieldMap.put("gangweimingcheng", "*岗位名称");
-        fieldMap.put("gangweirenyuanxingming", "*岗位人员姓名");
-        fieldMap.put("shengbaoyuefen", "*申报日期");
-        // 标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
-        SheetOutputService sheetOutputService = new SheetOutputService();
-        if (ObjectUtils.isEmpty(eventLists)) {
-            throw new ServiceException("未查出数据");
-        }
-        sheetOutputService.exportNum("履职管控表", eventLists, fieldMap, response, strList, null);
-    }
-
     /**
      * 事件清单评判标准管理-按钮：导出
      *
@@ -456,18 +409,19 @@ public class EventListController {
     @GetMapping("downloadToCompleteRole")
     public void downloadToCompleteRole(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
-        params.put("select", "id,eventsType,jobName,workEvents");
+        params.put("select", "id,eventsType,jobName,workEvents,eventsFirstType");
         List<Map<String, Object>> eventLists = eventListService
                 .findEventListMapDataByParams(params);
 
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         // 需要改背景色的格子
-        fieldMap.put("id", "清单表序号");
+        fieldMap.put("id", "事件清单序号");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
-        fieldMap.put("departmentName", "*部门名称");
-        fieldMap.put("roleName", "*岗位名称");
-        fieldMap.put("proportion", "*占比");
+        fieldMap.put("eventsFirstType", "事务类型");// D
+        fieldMap.put("departmentName", "*部门名称");// 跨部门
+        fieldMap.put("roleName", "*岗位名称");// 跨岗位
+        fieldMap.put("proportion", "*占比");// 多主担
         fieldMap.put("isMainOrNext", "*主担/次担");
         fieldMap.put("userName", "*职员名称");
         fieldMap.put("standardValue", "*事件标准价值");

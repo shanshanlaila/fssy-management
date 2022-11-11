@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -36,14 +36,14 @@ import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 
 /**
- * @Title: PerformanceEventsRelationRoleAttachmentController.java
+ * @Title: EventsRelationRoleAttachmentController.java
  * @Description: 事件清单岗位关系附件管理控制器
  * @author Solomon
  * @date 2022年10月11日 上午12:40:55
  */
 @Controller
 @RequestMapping("/system/performance/employee/events-role-attachment/")
-public class PerformanceEventsRelationRoleAttachmentController
+public class EventsRelationRoleAttachmentController
 {
 	/**
 	 * 导入场景服务实现类
@@ -65,7 +65,7 @@ public class PerformanceEventsRelationRoleAttachmentController
 
 	/**
 	 * 事件岗位关系附件管理
-	 * 
+	 *
 	 * @param model model对象
 	 * @return
 	 */

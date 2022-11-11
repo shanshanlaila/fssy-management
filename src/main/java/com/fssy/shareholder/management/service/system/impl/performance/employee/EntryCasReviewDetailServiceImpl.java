@@ -9,17 +9,13 @@ import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
-import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
-import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
-import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasReviewDetailMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.*;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.role.Role;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
+import com.fssy.shareholder.management.pojo.system.performance.employee.*;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
@@ -74,6 +70,12 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     @Autowired
     private ViewDepartmentRoleUserMapper viewDepartmentRoleUserMapper;
+
+    @Autowired
+    private EventsRelationRoleMapper eventsRelationRoleMapper;
+
+    @Autowired
+    private EventListMapper eventListMapper;
 
 
     @Override
@@ -428,10 +430,6 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             String eventsFirstType = cells.get(SheetService.columnToIndex("C"));// 事件类型
             String jobName = cells.get(SheetService.columnToIndex("D"));// 工作职责
             String workEvents = cells.get(SheetService.columnToIndex("E"));// 流程（工作事件）
-//            String delowStandard = cells.get(SheetService.columnToIndex("F"));// 不合格标准
-//            String middleStandard = cells.get(SheetService.columnToIndex("G"));// 中标准
-//            String fineStandard = cells.get(SheetService.columnToIndex("H"));// 良标准
-//            String excellentStandard = cells.get(SheetService.columnToIndex("I"));// 优标准
             String eventsForm = cells.get(SheetService.columnToIndex("F"));// 绩效类型
             String standardValue = cells.get(SheetService.columnToIndex("G"));// 事件价值标准分
             String departmentName = cells.get(SheetService.columnToIndex("H"));// 部门名称
@@ -441,11 +439,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             String mainOrNext = cells.get(SheetService.columnToIndex("L"));// 主/次担
             String planningWork = cells.get(SheetService.columnToIndex("M"));// 对应工作事件的计划内容
             String times = cells.get(SheetService.columnToIndex("N"));// 频次
-            String workOutput = cells.get(SheetService.columnToIndex("O"));// 表单（输出内容）
+            String planOutput = cells.get(SheetService.columnToIndex("O"));// 表单（输出内容）
             String planStartDate = cells.get(SheetService.columnToIndex("P"));// 计划开始时间
             String planEndDate = cells.get(SheetService.columnToIndex("Q"));// 计划完成时间
+            // 填写部分
             String actualCompleteDate = cells.get(SheetService.columnToIndex("R"));// 实际完成时间
             String completeDesc = cells.get(SheetService.columnToIndex("S"));// 工作完成描述
+
             // 数据库必填项判断
             if (ObjectUtils.isEmpty(casPlanId)) {
                 setFailedContent(result, String.format("第%s行的履职计划序号为空", j + 1));
@@ -472,26 +472,6 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue("流程（工作事件）不能为空");
                 continue;
             }
-            /*if (ObjectUtils.isEmpty(delowStandard)) {
-                setFailedContent(result, String.format("第%s行的不合格标准为空", j + 1));
-                cell.setCellValue("不合格标准不能为空");
-                continue;
-            }
-            if (ObjectUtils.isEmpty(middleStandard)) {
-                setFailedContent(result, String.format("第%s行的中标准为空", j + 1));
-                cell.setCellValue("中标准不能为空");
-                continue;
-            }
-            if (ObjectUtils.isEmpty(fineStandard)) {
-                setFailedContent(result, String.format("第%s行的良标准为空", j + 1));
-                cell.setCellValue("良标准不能为空");
-                continue;
-            }
-            if (ObjectUtils.isEmpty(excellentStandard)) {
-                setFailedContent(result, String.format("第%s行的优标准为空", j + 1));
-                cell.setCellValue("优标准不能为空");
-                continue;
-            }*/
             if (ObjectUtils.isEmpty(eventsForm)) {
                 setFailedContent(result, String.format("第%s行的绩效类型为空", j + 1));
                 cell.setCellValue("绩效类型不能为空");
@@ -537,7 +517,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue("频次不能为空");
                 continue;
             }
-            if (ObjectUtils.isEmpty(workOutput)) {
+            if (ObjectUtils.isEmpty(planOutput)) {
                 setFailedContent(result, String.format("第%s行的表单（输出内容）为空", j + 1));
                 cell.setCellValue("表单（输出内容）不能为空");
                 continue;
@@ -563,13 +543,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 continue;
             }
             // 数据检查校验
-            // 绩效类型数据校验：基础事件绩效、拓展事件绩效
-            if (!("基础事件绩效".equals(eventsForm) || "拓展事件绩效".equals(eventsForm))) {
+            // 绩效类型数据校验：基础事件绩效、拓展事件绩效、新增工作流
+            if (!(PerformanceConstant.BASICS_EVENT.equals(eventsForm) || PerformanceConstant.EXPAND_EVENT.equals(eventsForm) || PerformanceConstant.EVENTS_FIRST_TYPE_C.equals(eventsForm))) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的绩效类型不为基础事件绩效或者拓展事件绩效，不能导入", j + 1, eventsForm));
                 cell.setCellValue(String.format("履职计划序号为【%s】的事件清单状态不为基础事件绩效或者拓展事件绩效，不能导入", casPlanId));
             }
             // 事务类别数据校验：非事务类、事务类
-            if (!("非事务类".equals(eventsForm) || "事务类".equals(eventsForm))) {
+            if (!(PerformanceConstant.EVENTS_FIRST_TYPE_B.equals(eventsForm) || PerformanceConstant.EVENTS_FIRST_TYPE_A.equals(eventsForm))) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的事务类别不为非事务类效或者事务类，不能导入", j + 1, eventsForm));
                 cell.setCellValue(String.format("履职计划序号为【%s】的事务类别不为非事务类效或者事务类，不能导入", casPlanId));
             }
@@ -588,13 +568,26 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             }
             entryCasReviewDetail.setCasPlanId(Long.valueOf(casPlanId));
             entryCasReviewDetail.setEventsId(Long.valueOf(eventsId));
+            // 设置eventsRoleId
+            LambdaQueryWrapper<EventsRelationRole> eventsRelationRoleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            eventsRelationRoleLambdaQueryWrapper
+                    .eq(EventsRelationRole::getEventsId, eventsId)
+                    .eq(EventsRelationRole::getDepartmentName, departmentName)
+                    .eq(EventsRelationRole::getRoleName, roleName)
+                    .eq(EventsRelationRole::getYear, year)
+                    .eq(EventsRelationRole::getUserName, userName)
+                    .eq(EventsRelationRole::getIsMainOrNext, mainOrNext);
+            List<EventsRelationRole> eventsRelationRoles = eventsRelationRoleMapper.selectList(eventsRelationRoleLambdaQueryWrapper);
+            if (ObjectUtils.isEmpty(eventsRelationRoles)) {
+                StringTool.setMsg(sb, String.format("第【%s】行的事件岗位关系序号在系统中未查找到，不能导入", j + 1));
+                cell.setCellValue(String.format("履职计划序号为【%s】的部门名称未查到，不能导入", casPlanId));
+                continue;
+            }
+            EventsRelationRole eventsRelationRole = eventsRelationRoles.get(0);
+            entryCasReviewDetail.setEventsRoleId(eventsRelationRole.getId());
             entryCasReviewDetail.setEventsFirstType(eventsFirstType);
             entryCasReviewDetail.setJobName(jobName);
             entryCasReviewDetail.setWorkEvents(workEvents);
-//            entryCasReviewDetail.setDelowStandard(delowStandard);
-//            entryCasReviewDetail.setMiddleStandard(middleStandard);
-//            entryCasReviewDetail.setFineStandard(fineStandard);
-//            entryCasReviewDetail.setExcellentStandard(excellentStandard);
             entryCasReviewDetail.setEventsForm(eventsForm);
             entryCasReviewDetail.setStandardValue(new BigDecimal(standardValue));
             entryCasReviewDetail.setDepartmentName(departmentName);
@@ -604,7 +597,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setMainOrNext(mainOrNext);
             entryCasReviewDetail.setPlanningWork(planningWork);
             entryCasReviewDetail.setTimes(times);
-            entryCasReviewDetail.setWorkOutput(workOutput);
+            entryCasReviewDetail.setPlanOutput(planOutput);
+            EventList eventList = eventListMapper.selectById(eventsId);
+            entryCasReviewDetail.setWorkOutput(eventList.getWorkOutput());
             entryCasReviewDetail.setPlanStartDate(LocalDate.parse(planStartDate));
             entryCasReviewDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasReviewDetail.setActualCompleteDate(LocalDate.parse(actualCompleteDate));
@@ -681,8 +676,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             }
             entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
             entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
-            // 更新或新增
-            saveOrUpdate(entryCasReviewDetail);
+            // 新增
+            save(entryCasReviewDetail);
 
             cell.setCellValue("导入成功");
 
@@ -741,7 +736,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     }
 
     @Override
-    public boolean saveReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
+    public boolean saveOneReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
         /*User user = (User) SecurityUtils.getSubject().getPrincipal();
         LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
         viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getUserId, user.getId());
