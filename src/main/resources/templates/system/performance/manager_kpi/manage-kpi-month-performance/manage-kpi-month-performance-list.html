@@ -37,7 +37,7 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="month" placeholder="创建月份查询" autocomplete="off"
-                                   class="layui-input">
+                                   class="layui-input" value="1">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="projectType" placeholder="指标类型查询" autocomplete="off"
@@ -102,13 +102,18 @@
             var field = data.field;
             var companyName = data.field.companyName;
             var year =data.field.year;
+            var month =data.field.month;
+            if(companyName == "")
+            {
+                layer.msg("公司名称未空!");
+                return false;
+            }
             if (year == ""){
                 layer.msg("年份为空！");
                 return false;
             }
-            if(companyName == "")
-            {
-                layer.msg("公司名称未空!");
+            if (month == ""){
+                layer.msg("月份为空！");
                 return false;
             }
             field.url = "/system/performance/manager_kpi/manage-kpi-month-performance/downloadForCharge";
@@ -160,7 +165,7 @@
                     {
                         field: 'companyName',
                         title: '企业名称',
-                        width: 100,
+                        width: 150,
                         align: 'center',
                         rowspan: 2
                     },

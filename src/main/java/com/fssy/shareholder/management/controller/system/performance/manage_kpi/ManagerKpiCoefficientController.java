@@ -145,7 +145,7 @@ public class ManagerKpiCoefficientController {
         if (org.springframework.util.ObjectUtils.isEmpty(importModules))
         {
             System.out.println(importModules);
-            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经理人年度KPI"));
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经理人项目难度系数表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
         return "/system/performance/manager_kpi/manager-kpi-coefficient/manager-kpi-coefficient-attachment-list";
@@ -161,6 +161,16 @@ public class ManagerKpiCoefficientController {
     @PostMapping("uploadFile")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request){
+        //判断是否选择对应的时间
+        Map<String, Object> params = getParams(request);
+        String year = (String) params.get("year");
+        String companyName = (String) params.get("companyName");
+        if (org.springframework.util.ObjectUtils.isEmpty(params.get("companyName"))) {
+            throw new ServiceException("未选择公司，导入失败");
+        }
+        if (org.springframework.util.ObjectUtils.isEmpty(params.get("year"))) {
+            throw new ServiceException("未选择年份，导入失败");
+        }
         //保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -176,7 +186,7 @@ public class ManagerKpiCoefficientController {
         Attachment result = fileAttachmentTool.storeFileToModule(file, module,attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = managerKpiCoefficientService.readManagerKpiCoefficientDataSource(result);
+            Map<String, Object> resultMap = managerKpiCoefficientService.readManagerKpiCoefficientDataSource(result,companyName,year);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));

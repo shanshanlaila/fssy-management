@@ -111,13 +111,13 @@
             var field = data.field;
             var companyName = data.field.companyName;
             var year =data.field.year;
-            if (year == ""){
-                layer.msg("年份为空！");
-                return false;
-            }
             if(companyName == "")
             {
                 layer.msg("公司名称未空!");
+                return false;
+            }
+            if (year == ""){
+                layer.msg("年份为空！");
                 return false;
             }
             field.url = "/system/performance/manager_kpi/manage-kpi-month-aim/downloadForCharge";

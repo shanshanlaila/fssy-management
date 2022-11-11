@@ -78,7 +78,7 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
      */
     @Override
     @Transactional
-    public Map<String, Object> readManagerKpiCoefficientDataSource(Attachment attachment) {
+    public Map<String, Object> readManagerKpiCoefficientDataSource(Attachment attachment, String companyName, String year) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -98,15 +98,22 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
 
-//        //获取年份月份值
-//        Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("F"));
-//        Cell companyCell = sheet.getRow(1).getCell(SheetService.columnToIndex("B"));
-//        String companyCellValue = sheetService.getValue(companyCell);
-//        String yearCellValue = sheetService.getValue(yearCell);
+        //获取年份和公司名称
+        Cell companyCell = sheet.getRow(1).getCell(SheetService.columnToIndex("B"));
+        Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("D"));
+        String companyCellValue = sheetService.getValue(companyCell);
+        String yearCellValue = sheetService.getValue(yearCell);
+        //效验年份、公司名称
+        if (!year.equals(yearCellValue)){
+            throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
+        }
+        if (!companyName.equals(companyCellValue)){
+            throw new ServiceException("导入的公司名称与excel中的年份不一致，导入失败");
+        }
 
         // 循环总行数(不读表的标题，从第1行开始读)
         //sheet.getLastRowNum();返回最后一行的索引，即比行总数小1
-        for (int j = 2; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
+        for (int j = 3; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
             row = sheet.getRow(j);// 获取第j行
             // 获取一行中有多少列 Row：行，cell：列
@@ -130,16 +137,14 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
             }
             //导入结果写入列
             //错误信息提示存入到AD单元格内
-            Cell cell = row.createCell(SheetService.columnToIndex("J"));
+            Cell cell = row.createCell(SheetService.columnToIndex("I"));
 
-            String companyName = cells.get(SheetService.columnToIndex("B"));
-            String year = cells.get(SheetService.columnToIndex("C"));
-            String managerName = cells.get(SheetService.columnToIndex("D"));
-            String position = cells.get(SheetService.columnToIndex("E"));
-            String generalManager = cells.get(SheetService.columnToIndex("F"));
-            String projectDesc = cells.get(SheetService.columnToIndex("G"));
-            String difficultCoefficient = cells.get(SheetService.columnToIndex("H"));
-            String incentiveCoefficient = cells.get(SheetService.columnToIndex("I"));
+            String managerName = cells.get(SheetService.columnToIndex("B"));
+            String position = cells.get(SheetService.columnToIndex("C"));
+            String generalManager = cells.get(SheetService.columnToIndex("D"));
+            String projectDesc = cells.get(SheetService.columnToIndex("E"));
+            String difficultCoefficient = cells.get(SheetService.columnToIndex("F"));
+            String incentiveCoefficient = cells.get(SheetService.columnToIndex("G"));
 
 
             //构建实体类

@@ -55,6 +55,25 @@
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 80px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;公司名称</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="公司名称" id="companyName"
+                                           name="companyName"
+                                           lay-verify="" lay-reqText="公司名称为必填项">
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 50px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;年份</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="年份" id="year" name="year"
+                                           lay-verify="" lay-reqText="年份为必填项">
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
                                 <input type="text" name="importDate" id="importDate" placeholder="导入日期" autocomplete="off"
                                        class="layui-input laydate">
                             </div>
@@ -226,8 +245,8 @@
                 },
                 before : function(obj) {
                     layer.load();
-                    this.data.customerOrderType = $('#customerOrderType').find("option:selected").val();
-                    // this.data.contractId = $('input[name=contractId]').val();
+                    this.data.year = $('input[name=year]').val();
+                    this.data.companyName = $('input[name=companyName]').val();
                     this.data.importDate = $('input[name=importDate]').val();
                     this.data.module = [[${module}]];
                 },
@@ -277,8 +296,8 @@
             },
             before : function(obj) {
                 layer.load();
-                this.data.customerOrderType = $('#customerOrderType').find("option:selected").val();
-                // this.data.contractId = $('input[name=contractId]').val();
+                this.data.year = $('input[name=year]').val();
+                this.data.companyName = $('input[name=companyName]').val();
                 this.data.importDate = $('input[name=importDate]').val();
                 this.data.module = [[${module}]];
 

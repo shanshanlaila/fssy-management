@@ -33,7 +33,7 @@ public interface ManagerKpiCoefficientService extends IService<ManagerKpiCoeffic
      * @param
      * @return 附件map集合
      */
-    Map<String, Object> readManagerKpiCoefficientDataSource(Attachment attachment);
+    Map<String, Object> readManagerKpiCoefficientDataSource(Attachment attachment, String companyName, String year);
 
     /**
      * 通过查询条件查询履职计划map数据，用于导出

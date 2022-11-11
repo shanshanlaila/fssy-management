@@ -52,7 +52,16 @@ public class ViewManagerKpiYear extends BaseModel {
      */
     @TableField("companyName")
     private String companyName;
-
+    /**
+     * 备注
+     */
+    @TableField("note")
+    private String note;
+    /**
+     * 项目类别
+     */
+    @TableField("projectType")
+    private String projectType;
     /**
      * 单位
      */

@@ -118,7 +118,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
 
         //获取公司、年份值
-        Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("H"));
+        Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("F"));
         Cell companyCell = sheet.getRow(1).getCell(SheetService.columnToIndex("C"));
         String companyCellValue = sheetService.getValue(companyCell);
         String yearCellValue = sheetService.getValue(yearCell);
@@ -156,12 +156,13 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             //导入结果写入列
             //错误信息提示存入到AD单元格内
             Cell cell = row.createCell(SheetService.columnToIndex("T"));
-            String projectDesc = cells.get(SheetService.columnToIndex("B"));
-            String dataSource = cells.get(SheetService.columnToIndex("D"));
-            String managerName = cells.get(SheetService.columnToIndex("N"));
-            String generalManager = cells.get(SheetService.columnToIndex("O"));
-            String position = cells.get(SheetService.columnToIndex("P"));
-            String proportion = cells.get(SheetService.columnToIndex("Q"));
+            String projectType =cells.get(SheetService.columnToIndex("B"));
+            String projectDesc = cells.get(SheetService.columnToIndex("C"));
+            String managerName = cells.get(SheetService.columnToIndex("O"));
+            String generalManager = cells.get(SheetService.columnToIndex("P"));
+            String position = cells.get(SheetService.columnToIndex("Q"));
+            String proportion = cells.get(SheetService.columnToIndex("R"));
+            String note =cells.get(SheetService.columnToIndex("S"));
             // 判斷空值
             if (ObjectUtils.isEmpty(companyName)) {
                 companyName = "0";
@@ -210,14 +211,17 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
 
             managerKpiYear.setManageKpiYearId(manageKpiYear.getId());  //经营管理年度指标id
             managerKpiYear.setPerformanceMark(performanceMark);   //经理人年度KPI绩效标识
+            managerKpiYear.setProjectType(projectType);
             managerKpiYear.setCompanyName(companyName);
             managerKpiYear.setYear(Integer.valueOf(year));
             managerKpiYear.setProjectDesc(projectDesc);
-            managerKpiYear.setDataSource(dataSource);
             managerKpiYear.setManagerName(managerName);
             managerKpiYear.setGeneralManager(generalManager);
             managerKpiYear.setPosition(position);
-            managerKpiYear.setProportion(new BigDecimal(proportion));
+            if (!ObjectUtils.isEmpty(position)){
+                managerKpiYear.setProportion(new BigDecimal(proportion));
+            }
+            managerKpiYear.setNote(note);
             // 根据id进行判断，存在则更新，不存在则新增
             managerKpiYearServiceImpl.saveOrUpdate(managerKpiYear);
 
@@ -255,6 +259,9 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         }
         if (params.containsKey("year")) {
             queryWrapper.eq("year", params.get("year"));
+        }
+        if (params.containsKey("projectType")) {
+            queryWrapper.eq("projectType", params.get("projectType"));
         }
         if (params.containsKey("benchmarkCompany")) {
             queryWrapper.like("benchmarkCompany", params.get("benchmarkCompany"));

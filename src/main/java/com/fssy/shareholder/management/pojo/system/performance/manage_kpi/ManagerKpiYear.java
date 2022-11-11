@@ -96,6 +96,11 @@ public class ManagerKpiYear extends BaseModel {
     @TableField("year")
     private Integer year;
     /**
+     * 项目类别
+     */
+    @TableField("projectType")
+    private String projectType;
+    /**
      * KPI项目描述
      */
     @TableField("projectDesc")

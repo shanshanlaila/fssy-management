@@ -103,12 +103,6 @@ public class ViewManageYearMonthScoreController {
     @ResponseBody
     public SysResult updateScore(HttpServletRequest request) {
         Map<String, Object> params = getParams(request);
-        if (ObjectUtils.isEmpty(params.get("year"))) {
-            throw new ServiceException("未选择年份，生成失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("month"))) {
-            throw new ServiceException("未选择月份，生成失败");
-        }
         boolean result = viewManageYearMonthScoreService.createScore(params);
         if (result) {
             return SysResult.ok();
@@ -219,9 +213,6 @@ public class ViewManageYearMonthScoreController {
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
-        String performanceMark = String.valueOf(params.get("performanceMark"));
-
-        System.out.println("*************"+performanceMark);
         //sql语句
         params.put("select", "id,companyName,projectType,projectDesc,unit,year,basicTarget,mustInputTarget," +
                 "reachTarget,challengeTarget,month,monthTarget,monthActualValue,monthTarget,monthActualValue," +
@@ -244,13 +235,14 @@ public class ViewManageYearMonthScoreController {
         fieldMap.put("accumulateActual", "实绩累计值");
         fieldMap.put("scoreAdjust", "人工评分");
 
+
         //标识字符串的列
         List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
         SheetOutputService sheetOutputService = new ManageMonthScoreSheetOutputService();
         if (ObjectUtils.isEmpty(scoreMapDataByParams)) {
             throw new ServiceException("未查出数据");
         }
-        sheetOutputService.exportNum("激励约束项目分数报表", scoreMapDataByParams, fieldMap, response, strList, null);
+        sheetOutputService.exportNum("激励约束项目评分表", scoreMapDataByParams, fieldMap, response, strList, null);
 
     }
 

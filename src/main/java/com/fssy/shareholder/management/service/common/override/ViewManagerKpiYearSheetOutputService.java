@@ -64,7 +64,7 @@ public class ViewManagerKpiYearSheetOutputService extends SheetOutputService {
         //标题
         CellRangeAddress titleRange = new CellRangeAddress(0,0,
                 SheetService.columnToIndex("A"),
-                SheetService.columnToIndex("Q"));
+                SheetService.columnToIndex("S"));
         //副标题：填报企业
         CellRangeAddress setCompanyName = new CellRangeAddress(1,1,
                 SheetService.columnToIndex("A"),
@@ -72,31 +72,16 @@ public class ViewManagerKpiYearSheetOutputService extends SheetOutputService {
         //副标题：企业名称
         CellRangeAddress getCompanyName = new CellRangeAddress(1,1,
                 SheetService.columnToIndex("C"),
-                SheetService.columnToIndex("E"));
-        //副标题：年份
-        CellRangeAddress setYear = new CellRangeAddress(1,1,
-                SheetService.columnToIndex("F"),
-                SheetService.columnToIndex("G"));
-        //副标题：获取年份
-        CellRangeAddress getYear = new CellRangeAddress(1,1,
-                SheetService.columnToIndex("H"),
-                SheetService.columnToIndex("I"));
-//        //副标题：月份
-//        CellRangeAddress setMonth = new CellRangeAddress(1,1,
-//                SheetService.columnToIndex("J"),
-//                SheetService.columnToIndex("K"));
-//        //副标题：获取月份
-//        CellRangeAddress getMonth = new CellRangeAddress(1,1,
-//                SheetService.columnToIndex("L"),
-//                SheetService.columnToIndex("M"));
-//
-//        sheet.addMergedRegion(getMonth);
-        sheet.addMergedRegion(setYear);
-        sheet.addMergedRegion(getYear);
-//        sheet.addMergedRegion(setMonth);
+                SheetService.columnToIndex("D"));
+        //空格
+        CellRangeAddress getBalnt = new CellRangeAddress(1,1,
+                SheetService.columnToIndex("G"),
+                SheetService.columnToIndex("S"));
+
         sheet.addMergedRegion(getCompanyName);
         sheet.addMergedRegion(setCompanyName);
         sheet.addMergedRegion(titleRange);
+        sheet.addMergedRegion(getBalnt);
 
         // 2.写内容
         // 获取数据
@@ -121,36 +106,23 @@ public class ViewManagerKpiYearSheetOutputService extends SheetOutputService {
                 :data.get("companyName").toString());
         //年份
         XSSFCell yearCell = twoRow
-                .createCell(SheetService.columnToIndex("F"));
+                .createCell(SheetService.columnToIndex("E"));
         yearCell.setCellStyle(style);
         yearCell.setCellValue("年份");
         //年份
         XSSFCell setYearCell = twoRow
-                .createCell(SheetService.columnToIndex("H"));
+                .createCell(SheetService.columnToIndex("F"));
         setYearCell.setCellStyle(style);
         setYearCell.setCellValue(ObjectUtils.isEmpty(data.get("year")) ? ""
                 :data.get("year").toString());
-//        //月份
-//        XSSFCell monthCell = twoRow
-//                .createCell(SheetService.columnToIndex("J"));
-//        monthCell.setCellStyle(style);
-//        monthCell.setCellValue("月份");
-//        //月份
-//        XSSFCell setMonthCell = twoRow
-//                .createCell(SheetService.columnToIndex("L"));
-//        setMonthCell.setCellStyle(style);
-//        setMonthCell.setCellValue(ObjectUtils.isEmpty(data.get("month")) ? ""
-//                :data.get("month").toString());
+
 
 //        // 3.设置合并单元格边框
         setRegionBorder(titleRange, sheet);
         setRegionBorder(setCompanyName, sheet);
         setRegionBorder(getCompanyName, sheet);
-        setRegionBorder(setYear,sheet);
-        setRegionBorder(getYear,sheet);
-//        setRegionBorder(setMonth,sheet);
-//        setRegionBorder(getMonth,sheet);
-        //从excel表中的第2行开始读
+        setRegionBorder(getBalnt, sheet);
+
         return 2;
     }
 }
