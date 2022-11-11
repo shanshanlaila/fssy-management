@@ -295,6 +295,7 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
                 if (!ObjectUtils.isEmpty(monthTarget)){
                     manageKpiMonthAim.setMonthTarget(new BigDecimal(monthTarget));
                 }
+                manageKpiMonthAim.setEvaluateMode(manageKpiLib.getEvaluateMode());
 
 
                 // 根据id进行判断，存在则更新，不存在则新增

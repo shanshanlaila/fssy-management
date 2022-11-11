@@ -183,6 +183,7 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             if (manageKpiYearList.size()==1){
                 manageKpiYear.setId(manageKpiYearList.get(0).getId());  //年份id
             }
+
             //前端选择并写入
             manageKpiYear.setYear(Integer.valueOf(year));
             manageKpiYear.setCompanyName(companyName);
@@ -205,6 +206,7 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             manageKpiYear.setPastTwoYearsActual(pastTwoYearsActual);
             manageKpiYear.setPastThreeYearsActual(pastThreeYearsActual);
             manageKpiYear.setKpiDecomposeMode(kpiDecomposeMode);
+            manageKpiYear.setEvaluateMode(manageKpiLib.getEvaluateMode());
 
             // 根据id进行判断，存在则更新，不存在则新增
             saveOrUpdate(manageKpiYear);
