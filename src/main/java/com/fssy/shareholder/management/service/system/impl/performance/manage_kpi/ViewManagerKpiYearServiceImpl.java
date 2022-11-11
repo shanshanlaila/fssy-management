@@ -2,10 +2,12 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthAimMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiYearMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiYearMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ViewManagerKpiYearMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiYear;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiYear;
@@ -47,24 +49,28 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
     private ManageKpiYearMapper manageKpiYearMapper;
     @Autowired
     private ManagerKpiYearMapper managerKpiYearMapper;
-
+    @Autowired
+    private ManageKpiMonthAimMapper manageKpiMonthAimMapper;
     @Autowired
     private ManagerKpiYearServiceImpl managerKpiYearServiceImpl;
     @Autowired
     private ManageKpiYearServiceImpl manageKpiYearServiceImpl;
+    @Autowired
+    private ManageKpiMonthAimServiceImpl manageKpiMonthAimServiceImpl;
 
     /**
      * 通过查询条件 分页 查询列表
+     *
      * @param params 查询条件
      * @return 分页数据
      */
     @Override
     public Page<ViewManagerKpiYear> findViewManagerKpiYearDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ViewManagerKpiYear> queryWrapper = getQueryWrapper(params);
-        int limit = (int)params.get("limit");
-        int page = (int)params.get("page");
-        Page<ViewManagerKpiYear> myPage =new Page<>(page,limit);
-        return viewManagerKpiYearMapper.selectPage(myPage,queryWrapper);
+        int limit = (int) params.get("limit");
+        int page = (int) params.get("page");
+        Page<ViewManagerKpiYear> myPage = new Page<>(page, limit);
+        return viewManagerKpiYearMapper.selectPage(myPage, queryWrapper);
     }
 
     /**
@@ -85,6 +91,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
 
     /**
      * 读取附件数据到数据库表,导入
+     *
      * @param attachment 附件
      * @return 附件map集合
      */
@@ -116,10 +123,10 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         String companyCellValue = sheetService.getValue(companyCell);
         String yearCellValue = sheetService.getValue(yearCell);
         //效验年份、公司名称
-        if (!companyName.equals(companyCellValue)){
+        if (!companyName.equals(companyCellValue)) {
             throw new ServiceException("导入的公司名称与excel中的名称不一致，导入失败");
         }
-        if (!year.equals(yearCellValue)){
+        if (!year.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
         }
         // 循环总行数(不读表的标题，从第1行开始读)
@@ -167,38 +174,40 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             }
 
             //自定义一个绩效标识，同时导入经营管理年度、月度、经理人年度KPI中
-            String performanceMark ="绩效指标";
+            String performanceMark = "绩效指标";
 
             //构建实体类
             ManagerKpiYear managerKpiYear = new ManagerKpiYear();
             //在表中查询是否有相同的id，并导入经理人年度id
             QueryWrapper<ManagerKpiYear> managerKpiYearQueryWrapper = new QueryWrapper<>();
-            managerKpiYearQueryWrapper.eq("managerName",managerName).eq("companyName",companyName)
-                    .eq("year",year).eq("projectDesc",projectDesc);
+            managerKpiYearQueryWrapper.eq("managerName", managerName).eq("companyName", companyName)
+                    .eq("year", year).eq("projectDesc", projectDesc);
             List<ManagerKpiYear> managerKpiYearList = managerKpiYearMapper.selectList(managerKpiYearQueryWrapper);
-            if (managerKpiYearList.size()>1){
+            if (managerKpiYearList.size() > 1) {
                 setFailedContent(result, String.format("第%s行的经理人年度指标id存在多条", j + 1));
                 cell.setCellValue("存在多个经理人年度指标，检查数据是否正确");
                 continue;
             }
-            if (managerKpiYearList.size()==1){
+            if (managerKpiYearList.size() == 1) {
                 managerKpiYear.setId(managerKpiYearList.get(0).getId());   //如果存在id则进行更新，没有就自动递增
             }
             // 根据指标、年份和公司名称找月度报表对应的id，后导入经营管理年度id
             QueryWrapper<ManageKpiYear> manageKpiYearQueryWrapper = new QueryWrapper<>();
-            manageKpiYearQueryWrapper.eq("projectDesc", projectDesc).eq("year", year).eq("companyName",companyName);
+            manageKpiYearQueryWrapper.eq("projectDesc", projectDesc).eq("year", year).eq("companyName", companyName);
             List<ManageKpiYear> manageKpiYears = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper);
-            if (manageKpiYears.size()>1){
+            if (manageKpiYears.size() > 1) {
                 setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));
                 cell.setCellValue("存在多个指标，检查指标、年份和公司名称是否正确");
                 continue;
-            } if(manageKpiYears.size()==0) {
+            }
+            if (manageKpiYears.size() == 0) {
                 setFailedContent(result, String.format("第%s行的指标不存在", j + 1));
                 cell.setCellValue("指标不存在，检查指标、年份和公司名称是否正确");
                 continue;
             }
             //表中存在数据的情况下获取这个MangeKpiYear
             ManageKpiYear manageKpiYear = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper).get(0);
+
             managerKpiYear.setManageKpiYearId(manageKpiYear.getId());  //经营管理年度指标id
             managerKpiYear.setPerformanceMark(performanceMark);   //经理人年度KPI绩效标识
             managerKpiYear.setCompanyName(companyName);
@@ -209,11 +218,10 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             managerKpiYear.setGeneralManager(generalManager);
             managerKpiYear.setPosition(position);
             managerKpiYear.setProportion(new BigDecimal(proportion));
-
             // 根据id进行判断，存在则更新，不存在则新增
             managerKpiYearServiceImpl.saveOrUpdate(managerKpiYear);
 
-            
+            //添加经营年度指标绩效标识
             ManageKpiYear kpiYear = new ManageKpiYear();
             kpiYear.setId(manageKpiYear.getId());         //经营管理年度id
             kpiYear.setPerformanceMark(performanceMark);  //给经营管理年度添加绩效指标标识
@@ -224,8 +232,10 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         sheetService.write(attachment.getPath(), attachment.getFilename());
         return result;
     }
+
     /**
      * 通过查询条件查询履职计划map数据，用于导出
+     *
      * @param params 查询条件
      * @return 数据列表
      */
@@ -234,7 +244,8 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         QueryWrapper<ViewManagerKpiYear> queryWrapper = getQueryWrapper(params);
         return viewManagerKpiYearMapper.selectMaps(queryWrapper);
     }
-    private QueryWrapper<ViewManagerKpiYear> getQueryWrapper(Map<String,Object> params){
+
+    private QueryWrapper<ViewManagerKpiYear> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ViewManagerKpiYear> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("id")) {
             queryWrapper.eq("id", params.get("id"));

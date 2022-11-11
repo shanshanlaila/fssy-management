@@ -48,8 +48,15 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
+                            <select name="status" id="evaluateMode">
+                                <option value="">评分方式</option>
+                                <option value="系统评分">系统评分</option>
+                                <option value="人工评分">人工评分</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
                             <select name="status" id="status">
-                                <option value="">项目状态查询</option>
+                                <option value="未锁定">项目状态查询</option>
                                 <option value="已锁定">已锁定</option>
                                 <option value="未锁定">未锁定</option>
                             </select>
@@ -62,13 +69,18 @@
                                     lay-filter="downloadForCharge" title="年度调整指标库，导出数据修改">导出激励约束项目
                             </button>
                         </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button shiro:haspermission="system:performance:manager_kpi:view-manage-month-score:index"
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入激励约束评分表
+                            </button>
                         </div>
-
-                    <div class="layui-inline layui-show-xs-block">
-                        <button class="layui-btn layui-btn-sm"
-                                lay-submit="" lay-filter="confirmScore">自动生成分数
-                        </button>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn layui-btn-sm"
+                                    lay-submit="" lay-filter="confirmScore">自动生成分数
+                            </button>
+                        </div>
                     </div>
+
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
@@ -103,27 +115,55 @@
             return false
         });
         //监听导出按钮
-        form.on('submit(downloadForCharge)',function (data){
+        form.on('submit(downloadForCharge)', function (data) {
             console.log(data.field)
             var field = data.field;
-            field.url = "/system/performance/manager_kpi/manage-kpi-month-score/downloadForCharge";
+            var companyName = data.field.companyName;
+            var year =data.field.year;
+            var month =data.field.month
+            if(companyName == "")
+            {
+                layer.msg("公司名称未空!");
+                return false;
+            }
+            if (year == ""){
+                layer.msg("年份为空！");
+                return false;
+            }
+            if (month == ""){
+                layer.msg("月份为空！");
+                return false;
+            }
+            field.url = "/system/performance/manager_kpi/view-manage-month-score/downloadForCharge";
             var url = createUrl(field);
-            layer.msg("正在导出经营管理月度项目分数，请稍候");
+            layer.msg("正在导出激励约束项目评分表，请稍候");
             window.open(url, true);
             return false;
         });
+        // 导入按钮
+        form.on('submit(import)', function (data) {
+            var createLayer = layer.open({
+                type: 2,
+                title: "上传激励约束项目评分表",
+                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                content: '/system/performance/manager_kpi/view-manage-month-score/index',
+                scrollbar: true,
+                maxmin: true,
+            });
+            return false;
+        });
         //监听生成分数按钮
-        form.on('submit(confirmScore)',function (data){
+        form.on('submit(confirmScore)', function (data) {
             console.log(data.field)
             var field = data.field;
             $.ajax({
                 type: 'POST',
-                url: '/system/performance/manager_kpi/manage-kpi-month-score/updateScore',
+                url: '/system/performance/manager_kpi/view-manage-month-score/updateScore',
                 data: {
-                    'companyName':field.companyName,
-                    'year':field.year,
-                    'projectType':field.projectType,
-                    'month':field.month,
+                    'companyName': field.companyName,
+                    'year': field.year,
+                    'projectType': field.projectType,
+                    'month': field.month,
 
                 },
                 success: function (result) {
@@ -140,7 +180,7 @@
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/performance/manager_kpi/manage-kpi-month-score/getObjects",
+            url: "/system/performance/manager_kpi/view-manage-month-score/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -148,9 +188,10 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
-            where:{
-                status:'未锁定',
-                monthActualValue:true
+            where: {
+                status: '未锁定',
+                evaluateMode: '系统评分',
+                monthActualValue: true
             },
             cols: [
                 [
@@ -287,14 +328,14 @@
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/performance/manager_kpi/manage-kpi-month-score/edit?id=' + data.id,
+                    content: '/system/performance/manager_kpi/view-manage-month-score/edit?id=' + data.id,
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
                 layer.confirm('确认删除序号为：' + data.id + '的经营管理月度项目分数吗？', function () {
                     $.ajax({
                         type: 'DELETE',
-                        url: '/system/performance/manager_kpi/manage-kpi-month-score/' + data.id,
+                        url: '/system/performance/manager_kpi/view-manage-month-score/' + data.id,
                         success: function (result) {
                             layer.msg(result.msg);
                             if (result.status == 200) {
