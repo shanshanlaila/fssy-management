@@ -91,6 +91,11 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
         result.put("failed", true);
     }
 
+    /**
+     * 导入附件
+     * @param attachment 经理绩效附件
+     * @return
+     */
     @Override
     @Transactional
     public Map<String, Object> readManagerKpiLibDataSource(Attachment attachment) {
@@ -138,21 +143,20 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
             }
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("I"));// 报错信息上传到excel D列（暂未实现）
-         //   String id = cells.get(SheetService.columnToIndex("A"));
             String projectType = cells.get(SheetService.columnToIndex("B"));
             String projectDesc = cells.get(SheetService.columnToIndex("C"));
+            String unit = cells.get(SheetService.columnToIndex("D"));
+            String kpiDefinition = cells.get(SheetService.columnToIndex("E"));
+            String kpiFormula = cells.get(SheetService.columnToIndex("F"));
+            String kpiYear = cells.get(SheetService.columnToIndex("G"));
+            String evaluateMode = cells.get(SheetService.columnToIndex("H"));
+            String note = cells.get(SheetService.columnToIndex("I"));
             // 检查必填项
             if (ObjectUtils.isEmpty(projectDesc)) {
                 setFailedContent(result, String.format("第%s行的项目名称是空的", j + 1));
                 cell.setCellValue("项目名称是空的");
                 throw new ServiceException("表中有空值");
             }
-            String unit = cells.get(SheetService.columnToIndex("D"));
-            String kpiDefinition = cells.get(SheetService.columnToIndex("E"));
-            String kpiFormula = cells.get(SheetService.columnToIndex("F"));
-            String kpiYear = cells.get(SheetService.columnToIndex("G"));
-            String note = cells.get(SheetService.columnToIndex("H"));
-
             //构建实体类
             ManageKpiLib manageKpiLib = new ManageKpiLib();
             //通过指标名称确定唯一的id，存在则更新，不存在则自动递增
@@ -163,6 +167,7 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
                 setFailedContent(result, String.format("第%s行的", j + 1));
                 cell.setCellValue("项目名称是空的");
             }
+            //防止相同数据id自增
             if (kpiLibList.size()==1){
                 manageKpiLib.setId(kpiLibList.get(0).getId());
             }
@@ -172,6 +177,7 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
             manageKpiLib.setKpiDefinition(kpiDefinition);
             manageKpiLib.setKpiFormula(kpiFormula);
             manageKpiLib.setKpiYear(Integer.valueOf(kpiYear));
+            manageKpiLib.setEvaluateMode(evaluateMode);
             manageKpiLib.setNote(note);
 
             // 根据id进行判断，存在则更新，不存在则新增
@@ -210,6 +216,10 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
         // 创建年份
         if (params.containsKey("kpiYear")) {
             queryWrapper.eq("kpiYear", params.get("kpiYear"));
+        }
+        //评分模式
+        if (params.containsKey("evaluateMode")) {
+            queryWrapper.eq("evaluateMode", params.get("evaluateMode"));
         }
         return queryWrapper;
     }
