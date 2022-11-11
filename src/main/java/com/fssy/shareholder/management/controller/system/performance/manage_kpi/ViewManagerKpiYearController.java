@@ -154,6 +154,12 @@ public class ViewManagerKpiYearController {
         if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
             params.put("year", request.getParameter("year"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("projectType"))) {
+            params.put("projectType", request.getParameter("projectType"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("note"))) {
+            params.put("note", request.getParameter("note"));
+        }
         return params;
     }
     /**
@@ -167,9 +173,9 @@ public class ViewManagerKpiYearController {
         Map<String, Object> params = getParams(request);
 
         //Sql语句 companyName,year
-        params.put("select", "id,projectDesc,unit,dataSource,benchmarkCompany,benchmarkValue," +
+        params.put("select", "id,projectDesc,unit,dataSource,projectType,benchmarkCompany,benchmarkValue," +
                 "pastThreeYearsActual,pastTwoYearsActual,pastOneYearActual,basicTarget,mustInputTarget" +
-                "reachTarget,challengeTarget,managerName,generalManager,position,proportion");
+                "reachTarget,challengeTarget,managerName,generalManager,position,proportion,note");
         //查询
         List<Map<String,Object>> viewManagerKpiYearDataByParams = viewManagerKpiYearService.findViewManagerKpiYearDataByParams(params);
 
@@ -178,7 +184,8 @@ public class ViewManagerKpiYearController {
         fieldMap.put("id", "序号");
 //        fieldMap.put("companyName", "填报企业");
 //        fieldMap.put("year", "年份");
-        fieldMap.put("projectDesc", "管理项目");
+        fieldMap.put("projectType", "项目类别");
+        fieldMap.put("projectDesc", "项目名称");
         fieldMap.put("unit", "单位");
         fieldMap.put("dataSource", "数据来源部门");
         fieldMap.put("benchmarkCompany", "对标标杆公司名称");
@@ -194,8 +201,9 @@ public class ViewManagerKpiYearController {
         fieldMap.put("generalManager", "是否总经理");
         fieldMap.put("position", "职位类别");
         fieldMap.put("proportion", "权重");
+        fieldMap.put("note", "备注");
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
+        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18);
         //选用导出模板
         ViewManagerKpiYearSheetOutputService viewManagerKpiYearSheetOutputService = new ViewManagerKpiYearSheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(viewManagerKpiYearDataByParams)) {

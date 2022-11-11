@@ -266,7 +266,7 @@ public class ManageKpiMonthPerformanceController {
         //Sql语句
         params.put("select","id,projectType,projectDesc,kpiFormula,dataSource,unit,benchmarkCompany," +
                 "benchmarkValue,pastThreeYearsActual,pastTwoYearsActual,pastOneYearActual,basicTarget,mustInputTarget,reachTarget,challengeTarget," +
-                "monthTarget,monthActualValue,accumulateTarget,accumulateActual,analyzeRes");
+                "monthTarget,monthActualValue,accumulateTarget,accumulateActual,analyzeRes,month");
         //查询
         List<Map<String,Object>> manageKpiMonthMapDataByParams = manageKpiMonthPerformanceService.findManageKpiMonthDataByParams(params);
         LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();

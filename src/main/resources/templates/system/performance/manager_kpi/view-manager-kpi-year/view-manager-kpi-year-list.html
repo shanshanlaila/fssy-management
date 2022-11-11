@@ -28,7 +28,7 @@
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="benchmarkCompany" placeholder="对标企业名称查询" autocomplete="off"
+                            <input type="text" name="companyName" placeholder="企业名称查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
@@ -37,6 +37,10 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="managerName" placeholder="经理人姓名查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="projectType" placeholder="项目类别查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 130px;">
@@ -93,6 +97,17 @@
         //监听导出按钮
         form.on('submit(downloadForCharge)',function (data){
             var field = data.field;
+            var companyName = data.field.companyName;
+            var year =data.field.year;
+            if(companyName == "")
+            {
+                layer.msg("公司名称未空!");
+                return false;
+            }
+            if (year == ""){
+                layer.msg("年份为空！");
+                return false;
+            }
             field.url = "/system/performance/manager_kpi/view-manager-kpi-year/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出经理人年度KPI指标，请稍候");
@@ -144,14 +159,26 @@
                         width: 130,
                     },
                     {
-                        field: 'year',
-                        title: '年份',
+                        field: 'managerName',
+                        title: '经理人姓名',
                         align: 'center',
-                        width: 80,
+                        width: 100
+                    },
+                    {
+                        field: 'position',
+                        title: '职位',
+                        align: 'center',
+                        width: 100
+                    },
+                    {
+                        field: 'projectType',
+                        title: '项目类别',
+                        align: 'center',
+                        width: 130,
                     },
                     {
                         field: 'projectDesc',
-                        title: '管理项目',
+                        title: '项目名称',
                         align: 'center',
                         width: 130,
                     },
@@ -166,6 +193,12 @@
                         title: '数据来源部门',
                         align: 'center',
                         width: 100
+                    },
+                    {
+                        field: 'year',
+                        title: '年份',
+                        align: 'center',
+                        width: 80,
                     },
                     {
                         field: 'benchmarkCompany',
@@ -220,24 +253,6 @@
                         title: '挑战目标',
                         align: 'center',
                         width: 80
-                    },
-                    {
-                        field: 'managerName',
-                        title: '经理人姓名',
-                        align: 'center',
-                        width: 100
-                    },
-                    {
-                        field: 'position',
-                        title: '职位类别',
-                        align: 'center',
-                        width: 100
-                    },
-                    {
-                        field: 'generalManager',
-                        title: '是否总经理',
-                        align: 'center',
-                        width: 100
                     },
                     {
                         field: 'proportion',

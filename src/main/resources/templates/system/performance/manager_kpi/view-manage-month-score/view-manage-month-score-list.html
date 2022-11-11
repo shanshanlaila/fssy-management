@@ -156,6 +156,22 @@
         form.on('submit(confirmScore)', function (data) {
             console.log(data.field)
             var field = data.field;
+            var companyName = data.field.companyName;
+            var year =data.field.year;
+            var month =data.field.month
+            if(companyName == "")
+            {
+                layer.msg("公司名称未空!");
+                return false;
+            }
+            if (year == ""){
+                layer.msg("年份为空！");
+                return false;
+            }
+            if (month == ""){
+                layer.msg("月份为空！");
+                return false;
+            }
             $.ajax({
                 type: 'POST',
                 url: '/system/performance/manager_kpi/view-manage-month-score/updateScore',
