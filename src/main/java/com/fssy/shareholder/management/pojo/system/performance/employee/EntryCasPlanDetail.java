@@ -293,5 +293,10 @@ public class EntryCasPlanDetail extends BaseModel {
     @TableField("attachmentId")
     private Long attachmentId;
 
+    /**
+     * 事件岗位关系表主键
+     */
+    @TableField("eventsRoleId")
+    private Long eventsRoleId;
 
 }

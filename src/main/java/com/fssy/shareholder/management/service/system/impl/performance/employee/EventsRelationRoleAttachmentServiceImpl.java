@@ -152,7 +152,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				temp.add(res);// 将单元格的值写入行
 			}
 			// 导入结果写入列
-			Cell cell = row.createCell(SheetService.columnToIndex("K"));// 每一行的结果信息上传到S列
+			Cell cell = row.createCell(SheetService.columnToIndex("O"));// 每一行的结果信息上传到O列
 
 			// region 导入数据校验
 			Long eventsId = null;

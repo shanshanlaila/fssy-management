@@ -314,7 +314,7 @@ public class EventListServiceImpl implements EventListService {
     @Override
     @Transactional
     public Map<String, Object> readEventListWithoutStandardDataSource(Attachment attachment) {
-        // 导入无标准事件
+        // 导入基础事件
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -488,7 +488,6 @@ public class EventListServiceImpl implements EventListService {
             eventList.setMonth(Integer.valueOf(month));
             eventList.setCreateDate(new Date());
             eventList.setActiveDate(new Date());
-            eventList.setPerformanceForm("拓展事件绩效");
             eventList.setListCreateUser(user.getName());
             eventList.setListcreateUserId(user.getId());
             eventList.setValueCreateUser(user.getName());

@@ -293,77 +293,20 @@
                         });
                     return false;
                 });
-
-                table.on('rowDouble(materialTable)', function (obj) {
+                // rowDouble实现双击选择
+                table.on('rowDouble(dataTable)', function (obj) {
                     var data = obj.data;
+                    setValue(data['id'], '#id');
+                    setValue(data['strategyFunctions'], '#strategyFunctions');
+                    setValue(data['supportFunctions'], '#supportFunctions');
+                    setValue(data['jobName'], '#jobName');
+                    setValue(data['workEvents'], '#workEvents');
+                    setValue(data['eventsFirstType'], '#eventsFirstType');
+                    setValue(data['workOutput'], '#workOutput');
+                    setValue(data['note'], '#note');
 
-                    // 2022-5-8 委外物料对应关系创建需要两次点击选择物料基础信息
-                    let outsourcedMaterialSelect = $(window.parent.document).find('#outsourcedAddFlag').val();
-                    if (outsourcedMaterialSelect === 1) {
-                        setValue(data['id'], '#newMaterialId');
-                        setValue(data['materialCode'], '#newMaterialCode');
-                        setValue(data['materialName'], '#newMaterialName');
-                        setValue(data['insidePartNumber'], '#newInsidePartNumber');
-                        setValue(data['customerPartNumber'], '#newCustomerPartNumber');
-                        setValue(data['highestShowName'], '#newHighestShowName');
-                    } else {
-                        setValue(data['id'], '#materialId');
-                        setValue(data['materialCode'], '#materialCode');
-                        setValue(data['materialName'], '#materialName');
-                        setValue(data['insidePartNumber'], '#insidePartNumber');
-                        setValue(data['customerPartNumber'], '#customerPartNumber');
-                        setValue(data['oriMaterialCode'], '#oriMaterialCode');
-                        setValue(data['colorType'], '#colorType');
-                        setValue(data['unit'], '#unit');
-                        setValue(data['snp'], '#snp');
-                        setValue(data['highestShowName'], '#highestShowName');
-                        setValue(data['specification'], '#specification');
-                        setValue(data['oriMaterialCode'], '#oriMaterialCode');
-                    }
-
-                    // 清空供应关系和库房信息
-                    setValue("", '#supplierPlantId');
-                    setValue("", '#supplierPlantName');
-                    setValue("", '#supplierPlantCode');
-                    setValue("", '#supplierId');
-                    setValue("", '#supplierName');
-                    setValue("", '#supplierCode');
-                    setValue("", '#warehouseId');
-                    setValue("", '#warehouseName');
-
-                    // 2022-01-12 添加生产计划物料所对应的交付件选择
-                    var deliverySelect = $(window.parent.document).find('#masterHighestShowName');
-                    var deliverySelectEle = deliverySelect[0];
-                    if (deliverySelectEle) {
-                        var param = {
-                            insidePartNumberEq : data['insidePartNumber']
-                        };
-                        $.get('/system/tech/bom-data/getDeliveryDatas', param, function (result) {
-                            $(deliverySelectEle).empty();
-                            if (result.status === 200) {
-                                var resultDatas = result.data;
-                                $(deliverySelectEle).append($('<option value="">请选择交付件名称</option>'))
-                                $(deliverySelectEle).append($('<option value="' + data['highestShowName'] + '">' + data['highestShowName'] + '</option>'))
-                                for (var i = 0; i < resultDatas.length; i++) {
-                                    var highestShowName = resultDatas[i]['highestShowName'];
-                                    highestShowName = highestShowName ? highestShowName : resultDatas[i]['customerPartNumber'];
-                                    $(deliverySelectEle).append($('<option value="' + highestShowName + '">' + highestShowName + '</option>'))
-                                }
-                            }
-                            else {
-                                $(deliverySelectEle).append($('<option value="">请选择交付件名称</option>'))
-                                $(deliverySelectEle).append($('<option value="' + data['highestShowName'] + '">' + data['highestShowName'] + '</option>'))
-                            }
-                            var index = parent.layer.getFrameIndex(window.name);
-                            parent.layer.close(index);
-                            parent.layui.form.render('select');
-                        });
-                    }
-                    else {
-
-                        var index = parent.layer.getFrameIndex(window.name);
-                        parent.layer.close(index);
-                    }
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
                 });
 
                 function setValue(value, id) {
