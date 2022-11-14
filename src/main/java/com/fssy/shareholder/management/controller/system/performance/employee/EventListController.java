@@ -451,4 +451,32 @@ public class EventListController {
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "/system/performance/employee/entry-cas-new-plan-detail-match-event-list";
     }
+    /**
+     * 返回新增单条基础事件页面
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("create")
+    public String createEventList(HttpServletRequest request,Model model) {
+        //1、查询部门列表，用于customerName xm-select插件
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        return "system/performance/events-list-create";
+    }
+
+    /**
+     * 保存eventList表
+     *
+     * @param eventList
+     * @return
+     */
+    @PostMapping("store")
+    @RequiredLog("保存新增单条基础事件")
+    @ResponseBody
+    public SysResult Store(EventList eventList, HttpServletRequest request) {
+        eventListService.insertEventList(eventList);
+        return SysResult.ok();
+    }
 }

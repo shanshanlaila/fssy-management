@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增单条基础事件</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="6" style="background: #f7f7f7; color: black;">新增单条基础事件</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;战略职能:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="strategyFunctions" id="strategyFunctions"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;支持职能:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="supportFunctions" id="supportFunctions"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;工作职责:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="jobName" id="jobName"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;流程（工作事件）:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="workEvents" id="workEvents"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;表单:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="workOutput" id="workOutput"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;事件类型:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <select name="eventsFirstType" lay-verify="required" lay-reqText="事件类型为必填项">
+                            <option value="事务类" >事务类</option>
+                            <option value="非事务类" >非事务类</option>
+                            <option value="新增工作流" >新增工作流</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;月工作标准时长（分）:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="duration" id="duration"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;评价等级:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="level" id="level"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;事件标准价值:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="standardValue" id="standardValue"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;不合格价值:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="delow" id="delow"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;中价值:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="middle" id="middle"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;良价值:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="fine" id="fine"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;优价值:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="excellent" id="excellent"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;部门名称:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <div id="departmentSelect"></div>
+                        </div>
+                    </td>
+
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;科室:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="office" id="office"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">备注</td>
+                    <td colspan="3">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <textarea name="note" rowspan="3" class="layui-textarea" style="width: 100%"></textarea>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+</div>
+
+<!--laui-->
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render({
+                elem: this,
+                //更换触发方式
+                trigger: 'click',
+                type: 'date',
+                value: new Date()
+            });
+        });
+
+
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/performance/employee/eventsList/store',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status == 200) {
+                        layer.msg(result.msg, {icon: 6, time: 2000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        // 部门选择获得器
+        var departmentSelect = xmSelect.render({
+            el: '#departmentSelect',
+            language: 'zn',
+            data: [[${departmentNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择部门',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'departmentId',// 传到后端选择的departmentId集合字符串
+        });
+
+    });
+</script>
+</body>
+</html>
