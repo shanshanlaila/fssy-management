@@ -109,7 +109,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         // 获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【经理人年度KPI指标】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【经理人年度KPI】不存在，无法读取数据，请检查");
         }
         // 获取单价列表数据
         Row row;
@@ -218,7 +218,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             managerKpiYear.setManagerName(managerName);
             managerKpiYear.setGeneralManager(generalManager);
             managerKpiYear.setPosition(position);
-            if (!ObjectUtils.isEmpty(position)){
+            if (!ObjectUtils.isEmpty(proportion)){
                 managerKpiYear.setProportion(new BigDecimal(proportion));
             }
             managerKpiYear.setNote(note);

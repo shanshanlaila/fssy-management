@@ -8,11 +8,13 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManageYearMonthScore;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.ManageMonthScoreSheetOutputService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
+import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiMonthAimService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ViewManageYearMonthScoreService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
@@ -51,6 +53,8 @@ public class ViewManageYearMonthScoreController {
     private AttachmentService attachmentService;
     @Autowired
     private ImportModuleService importModuleService;
+    @Autowired
+    private ManageKpiMonthAimService manageKpiMonthAimService;
     /**
      * 计算经营管理月度分数视图 页面
      *
@@ -246,6 +250,37 @@ public class ViewManageYearMonthScoreController {
 
     }
 
+    /**
+     * 修改分数信息
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("edit")
+    public String edit(HttpServletRequest request, Model model) {
+        String id = request.getParameter("id");
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        Map<String, Object> map = manageKpiMonthAimService.findManageKpiMonthMapDataByParams(params).get(0);
+        model.addAttribute("map", map);
+        return "/system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-edit";
+    }
+
+    /**
+     * 更新分数信息
+     * @param manageKpiMonthAim
+     * @return
+     */
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(ManageKpiMonthAim manageKpiMonthAim) {
+
+        boolean result = viewManageYearMonthScoreService.updateViewManageYearMonthScoreData(manageKpiMonthAim);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "分数信息没有更新，请检查数据后重新尝试");
+    }
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {

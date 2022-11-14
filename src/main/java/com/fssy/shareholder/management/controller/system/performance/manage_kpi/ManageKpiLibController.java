@@ -237,7 +237,7 @@ public class ManageKpiLibController {
     @RequiredLog("数据导出")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
-        params.put("select", "id,projectType,projectDesc,unit,kpiDefinition,kpiFormula,kpiYear,evaluateMode,note");
+        params.put("select", "id,projectType,projectDesc,unit,kpiDefinition,kpiFormula,kpiYear,note");
         List<Map<String, Object>> managerKpiLibList = manageKpiLibService.findManagerKpiLibDataSource(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
 
@@ -249,11 +249,10 @@ public class ManageKpiLibController {
         fieldMap.put("kpiDefinition", "指标定义");
         fieldMap.put("kpiFormula", "指标计算公式");
         fieldMap.put("kpiYear", "年份");
-        fieldMap.put("evaluateMode", "评分模式");
         fieldMap.put("note", "备注");
 
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8);
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
         SheetOutputService sheetOutputService = new SheetOutputService();
         if (ObjectUtils.isEmpty(managerKpiLibList)) {
             throw new ServiceException("未查出数据");
@@ -270,7 +269,6 @@ public class ManageKpiLibController {
     @GetMapping("edit")
     public String edit(HttpServletRequest request, Model model) {
         String id = request.getParameter("id");
-        System.out.println("id = " + id);
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         ManageKpiLib manageKpiLib = manageKpiLibService.findStudentsDataByParams(params).get(0);

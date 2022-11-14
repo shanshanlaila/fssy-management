@@ -239,7 +239,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
     }
 
     /**
-     * 修改学生信息
+     * 修改分数信息
      */
     @Override
     public boolean updateManagerKpiScoreOldData(ManagerKpiScoreOld managerKpiScoreOld) {

@@ -37,7 +37,7 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="month" placeholder="创建月份查询" autocomplete="off"
-                                   class="layui-input" value="1">
+                                   class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="projectType" placeholder="指标类型查询" autocomplete="off"
@@ -103,16 +103,16 @@
             var companyName = data.field.companyName;
             var year =data.field.year;
             var month =data.field.month;
-            if(companyName == "")
+            if(companyName === "")
             {
                 layer.msg("公司名称未空!");
                 return false;
             }
-            if (year == ""){
+            if (year === ""){
                 layer.msg("年份为空！");
                 return false;
             }
-            if (month == ""){
+            if (month === ""){
                 layer.msg("月份为空！");
                 return false;
             }
@@ -239,6 +239,20 @@
                         field: 'monthAnalyzeRes',
                         title: '未达成或劣化原因分析',
                         width: 170,
+                        rowspan: 2
+                    },
+                    {
+                        field: 'performanceMark',
+                        title: '经理人绩效指标标识',
+                        width: 150,
+                        align: 'center',
+                        rowspan: 2
+                    },
+                    {
+                        field: 'evaluateMode',
+                        title: '评分模式',
+                        width: 80,
+                        align: 'center',
                         rowspan: 2
                     },
                     {

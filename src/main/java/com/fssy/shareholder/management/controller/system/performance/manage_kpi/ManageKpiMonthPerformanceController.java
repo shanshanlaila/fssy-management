@@ -122,6 +122,12 @@ public class ManageKpiMonthPerformanceController {
         if (!ObjectUtils.isEmpty(request.getParameter("kpiFormula"))) {
             params.put("kpiFormula", request.getParameter("kpiFormula"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("performanceMark"))) {
+            params.put("performanceMark", request.getParameter("performanceMark"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("evaluateMode"))) {
+            params.put("evaluateMode", request.getParameter("evaluateMode"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("dataSource"))) {
             params.put("dataSource", request.getParameter("dataSource"));
         }
@@ -266,7 +272,7 @@ public class ManageKpiMonthPerformanceController {
         //Sql语句
         params.put("select","id,projectType,projectDesc,kpiFormula,dataSource,unit,benchmarkCompany," +
                 "benchmarkValue,pastThreeYearsActual,pastTwoYearsActual,pastOneYearActual,basicTarget,mustInputTarget,reachTarget,challengeTarget," +
-                "monthTarget,monthActualValue,accumulateTarget,accumulateActual,analyzeRes,month");
+                "monthTarget,monthActualValue,accumulateTarget,accumulateActual,analyzeRes,performanceMark,evaluateMode");
         //查询
         List<Map<String,Object>> manageKpiMonthMapDataByParams = manageKpiMonthPerformanceService.findManageKpiMonthDataByParams(params);
         LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();
@@ -286,13 +292,15 @@ public class ManageKpiMonthPerformanceController {
         fieldMap.put("mustInputTarget", "必达目标");
         fieldMap.put("reachTarget", "达标目标");
         fieldMap.put("challengeTarget", "挑战目标");
+        fieldMap.put("performanceMark", "经理人绩效指标标识");
+        fieldMap.put("evaluateMode","评分模式");
         fieldMap.put("monthTarget", "月度目标值");
         fieldMap.put("monthActualValue", "月度实绩值");
         fieldMap.put("accumulateTarget", "目标值(累计)");
         fieldMap.put("accumulateActual", "实际值(累计)");
         fieldMap.put("analyzeRes", "未达成或劣化原因分析");
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19);
+        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21);
         SheetOutputService sheetOutputService = new ManageKpiMonthPerformanceSheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(manageKpiMonthMapDataByParams)) {
             throw new ServiceException("未查出数据");

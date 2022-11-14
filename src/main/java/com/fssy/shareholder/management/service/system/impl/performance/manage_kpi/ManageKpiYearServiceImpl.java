@@ -148,9 +148,10 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             String mustInputTarget = cells.get(SheetService.columnToIndex("M"));
             String reachTarget = cells.get(SheetService.columnToIndex("N"));
             String challengeTarget = cells.get(SheetService.columnToIndex("O"));
-            String monitorDepartment = cells.get(SheetService.columnToIndex("AB"));
-            String monitorUser = cells.get(SheetService.columnToIndex("AC"));
-            String kpiDecomposeMode = cells.get(SheetService.columnToIndex("AD"));
+            String performanceMark= cells.get(SheetService.columnToIndex("P"));
+            String evaluateMode= cells.get(SheetService.columnToIndex("Q"));
+            String monitorDepartment = cells.get(SheetService.columnToIndex("AD"));
+            String monitorUser = cells.get(SheetService.columnToIndex("AE"));
 
             // 根据项目名称和年份找指标库对应的id，后导入指标库id
             QueryWrapper<ManageKpiLib> manageKpiLibQueryWrapper = new QueryWrapper<>();
@@ -205,8 +206,9 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             manageKpiYear.setPastOneYearActual(pastOneYearActual);
             manageKpiYear.setPastTwoYearsActual(pastTwoYearsActual);
             manageKpiYear.setPastThreeYearsActual(pastThreeYearsActual);
-            manageKpiYear.setKpiDecomposeMode(kpiDecomposeMode);
-            manageKpiYear.setEvaluateMode(manageKpiLib.getEvaluateMode());
+            manageKpiYear.setPerformanceMark(performanceMark);
+            manageKpiYear.setEvaluateMode(evaluateMode);
+
 
             // 根据id进行判断，存在则更新，不存在则新增
             saveOrUpdate(manageKpiYear);

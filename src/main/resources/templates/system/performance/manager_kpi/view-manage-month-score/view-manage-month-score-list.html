@@ -66,12 +66,12 @@
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                             <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
-                                    lay-filter="downloadForCharge" title="年度调整指标库，导出数据修改">导出激励约束项目
+                                    lay-filter="downloadForCharge" title="年度调整指标库，导出数据修改">导出人工评分项目
                             </button>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button shiro:haspermission="system:performance:manager_kpi:view-manage-month-score:index"
-                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入激励约束评分表
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入人工评分表
                             </button>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -86,7 +86,6 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="edit" title="修改经营管理月度项目分数信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除经营管理月度项目分数信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -136,7 +135,7 @@
             }
             field.url = "/system/performance/manager_kpi/view-manage-month-score/downloadForCharge";
             var url = createUrl(field);
-            layer.msg("正在导出激励约束项目评分表，请稍候");
+            layer.msg("正在导出人工评分表，请稍候");
             window.open(url, true);
             return false;
         });
@@ -144,7 +143,7 @@
         form.on('submit(import)', function (data) {
             var createLayer = layer.open({
                 type: 2,
-                title: "上传激励约束项目评分表",
+                title: "上传人工评分表",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
                 content: '/system/performance/manager_kpi/view-manage-month-score/index',
                 scrollbar: true,
@@ -206,7 +205,7 @@
             toolbar: '#toolbar',
             where: {
                 status: '未锁定',
-                evaluateMode: '系统评分',
+                // evaluateMode: '系统评分',
                 monthActualValue: true
             },
             cols: [
@@ -346,19 +345,6 @@
                     ],
                     content: '/system/performance/manager_kpi/view-manage-month-score/edit?id=' + data.id,
                     maxmin: true
-                });
-            } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除序号为：' + data.id + '的经营管理月度项目分数吗？', function () {
-                    $.ajax({
-                        type: 'DELETE',
-                        url: '/system/performance/manager_kpi/view-manage-month-score/' + data.id,
-                        success: function (result) {
-                            layer.msg(result.msg);
-                            if (result.status == 200) {
-                                table.reload('dataTable');
-                            }
-                        }
-                    })
                 });
             }
         });

@@ -172,47 +172,49 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
                 String mustInputTarget = cells.get(SheetService.columnToIndex("M"));
                 String reachTarget = cells.get(SheetService.columnToIndex("N"));
                 String challengeTarget = cells.get(SheetService.columnToIndex("O"));
-                String monitorDepartment = cells.get(SheetService.columnToIndex("AB"));
-                String monitorUser = cells.get(SheetService.columnToIndex("AC"));
-                String kpiDecomposeMode = cells.get(SheetService.columnToIndex("AD"));
+                String performanceMark= cells.get(SheetService.columnToIndex("P"));
+                String evaluateMode= cells.get(SheetService.columnToIndex("Q"));
+                String monitorDepartment = cells.get(SheetService.columnToIndex("AD"));
+                String monitorUser = cells.get(SheetService.columnToIndex("AE"));
+
 
                 int month=i;
                 String monthTarget = null;
                 if (i==1) {
-                    monthTarget = cells.get(SheetService.columnToIndex("P"));
-                }
-                if (i==2) {
-                    monthTarget = cells.get(SheetService.columnToIndex("Q"));
-                }
-                if (i==3) {
                     monthTarget = cells.get(SheetService.columnToIndex("R"));
                 }
-                if (i==4) {
+                if (i==2) {
                     monthTarget = cells.get(SheetService.columnToIndex("S"));
                 }
-                if (i==5) {
+                if (i==3) {
                     monthTarget = cells.get(SheetService.columnToIndex("T"));
                 }
-                if (i==6) {
+                if (i==4) {
                     monthTarget = cells.get(SheetService.columnToIndex("U"));
                 }
-                if (i==7) {
+                if (i==5) {
                     monthTarget = cells.get(SheetService.columnToIndex("V"));
                 }
-                if (i==8) {
+                if (i==6) {
                     monthTarget = cells.get(SheetService.columnToIndex("W"));
                 }
-                if (i==9) {
+                if (i==7) {
                     monthTarget = cells.get(SheetService.columnToIndex("X"));
                 }
-                if (i==10) {
+                if (i==8) {
                     monthTarget = cells.get(SheetService.columnToIndex("Y"));
                 }
-                if (i==11) {
+                if (i==9) {
                     monthTarget = cells.get(SheetService.columnToIndex("Z"));
                 }
-                if (i==12) {
+                if (i==10) {
                     monthTarget = cells.get(SheetService.columnToIndex("AA"));
+                }
+                if (i==11) {
+                    monthTarget = cells.get(SheetService.columnToIndex("AB"));
+                }
+                if (i==12) {
+                    monthTarget = cells.get(SheetService.columnToIndex("AC"));
                 }
                 // 根据项目名称和年份找指标库对应的id，后导入指标库id
                 QueryWrapper<ManageKpiLib> manageKpiLibQueryWrapper = new QueryWrapper<>();
@@ -290,12 +292,13 @@ public class ManageKpiMonthAimServiceImpl extends ServiceImpl<ManageKpiMonthAimM
                 manageKpiMonthAim.setPastOneYearActual(pastOneYearActual);
                 manageKpiMonthAim.setPastTwoYearsActual(pastTwoYearsActual);
                 manageKpiMonthAim.setPastThreeYearsActual(pastThreeYearsActual);
-                manageKpiMonthAim.setKpiDecomposeMode(kpiDecomposeMode);
                 manageKpiMonthAim.setKpiDefinition(kpiDefinition);
                 if (!ObjectUtils.isEmpty(monthTarget)){
                     manageKpiMonthAim.setMonthTarget(new BigDecimal(monthTarget));
                 }
-                manageKpiMonthAim.setEvaluateMode(manageKpiLib.getEvaluateMode());
+                manageKpiMonthAim.setPerformanceMark(performanceMark);
+                manageKpiMonthAim.setEvaluateMode(evaluateMode);
+
 
 
                 // 根据id进行判断，存在则更新，不存在则新增
