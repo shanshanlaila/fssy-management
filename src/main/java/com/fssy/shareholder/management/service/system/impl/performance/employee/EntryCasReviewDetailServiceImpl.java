@@ -726,15 +726,19 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     public boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
-            entryCasReviewDetail.setFinalNontransactionEvaluateLevel(chargeTransactionEvaluateLevel);
-            entryCasReviewDetail.setChargeTransactionEvaluateLevel(chargeTransactionEvaluateLevel);
-            entryCasReviewDetail.setChargeTransactionBelowType(chargeTransactionBelowType);
+            //当事务评价等级为合格，事务类评价不同类型就取值为空，因为事务类评价不同类型是针对事务类评价等级为不合格时的情况。
+            if (chargeTransactionEvaluateLevel.equals(PerformanceConstant.QUALIFIED)){
+                entryCasReviewDetail.setChargeTransactionEvaluateLevel(PerformanceConstant.QUALIFIED);
+                entryCasReviewDetail.setChargeTransactionBelowType("");
+            }else if (chargeTransactionEvaluateLevel.equals(PerformanceConstant.UNQUALIFIED)){
+                entryCasReviewDetail.setChargeTransactionEvaluateLevel(PerformanceConstant.UNQUALIFIED);
+                entryCasReviewDetail.setChargeTransactionBelowType(chargeTransactionBelowType);
+            }
             entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
             entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }
         return true;
     }
-
     @Override
     public boolean saveOneReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
         /*User user = (User) SecurityUtils.getSubject().getPrincipal();
