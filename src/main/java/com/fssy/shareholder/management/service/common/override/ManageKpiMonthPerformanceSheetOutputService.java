@@ -58,7 +58,7 @@ public class ManageKpiMonthPerformanceSheetOutputService extends SheetOutputServ
         //标题
         CellRangeAddress titleRange = new CellRangeAddress(0,0,
                 SheetService.columnToIndex("A"),
-                SheetService.columnToIndex("T"));
+                SheetService.columnToIndex("V"));
         //副标题：填报企业
         CellRangeAddress setCompanyName = new CellRangeAddress(1,1,
                 SheetService.columnToIndex("A"),
@@ -83,6 +83,10 @@ public class ManageKpiMonthPerformanceSheetOutputService extends SheetOutputServ
         CellRangeAddress getMonth = new CellRangeAddress(1,1,
                 SheetService.columnToIndex("L"),
                 SheetService.columnToIndex("M"));
+        //空格
+        CellRangeAddress getBlank = new CellRangeAddress(1,1,
+                SheetService.columnToIndex("N"),
+                SheetService.columnToIndex("V"));
 
         sheet.addMergedRegion(getMonth);
         sheet.addMergedRegion(setYear);
@@ -91,6 +95,7 @@ public class ManageKpiMonthPerformanceSheetOutputService extends SheetOutputServ
         sheet.addMergedRegion(getCompanyName);
         sheet.addMergedRegion(setCompanyName);
         sheet.addMergedRegion(titleRange);
+        sheet.addMergedRegion(getBlank);
 
         // 2.写内容
         // 获取数据
@@ -129,7 +134,7 @@ public class ManageKpiMonthPerformanceSheetOutputService extends SheetOutputServ
                 .createCell(SheetService.columnToIndex("J"));
         monthCell.setCellStyle(style);
         monthCell.setCellValue("月份");
-        //月份
+        //年份
         XSSFCell setMonthCell = twoRow
                 .createCell(SheetService.columnToIndex("L"));
         setMonthCell.setCellStyle(style);
@@ -144,6 +149,7 @@ public class ManageKpiMonthPerformanceSheetOutputService extends SheetOutputServ
         setRegionBorder(getYear,sheet);
         setRegionBorder(setMonth,sheet);
         setRegionBorder(getMonth,sheet);
+        setRegionBorder(getBlank,sheet);
         //从excel表中的第3行开始读
         return 2;
     }

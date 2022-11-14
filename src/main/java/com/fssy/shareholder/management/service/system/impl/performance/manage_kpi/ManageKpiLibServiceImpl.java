@@ -149,8 +149,7 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
             String kpiDefinition = cells.get(SheetService.columnToIndex("E"));
             String kpiFormula = cells.get(SheetService.columnToIndex("F"));
             String kpiYear = cells.get(SheetService.columnToIndex("G"));
-            String evaluateMode = cells.get(SheetService.columnToIndex("H"));
-            String note = cells.get(SheetService.columnToIndex("I"));
+            String note = cells.get(SheetService.columnToIndex("H"));
             // 检查必填项
             if (ObjectUtils.isEmpty(projectDesc)) {
                 setFailedContent(result, String.format("第%s行的项目名称是空的", j + 1));
@@ -177,7 +176,6 @@ public class ManageKpiLibServiceImpl extends ServiceImpl<ManageKpiLibMapper, Man
             manageKpiLib.setKpiDefinition(kpiDefinition);
             manageKpiLib.setKpiFormula(kpiFormula);
             manageKpiLib.setKpiYear(Integer.valueOf(kpiYear));
-            manageKpiLib.setEvaluateMode(evaluateMode);
             manageKpiLib.setNote(note);
 
             // 根据id进行判断，存在则更新，不存在则新增

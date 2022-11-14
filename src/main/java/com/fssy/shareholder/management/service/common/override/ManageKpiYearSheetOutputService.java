@@ -56,11 +56,11 @@ public class ManageKpiYearSheetOutputService extends SheetOutputService {
 
         //1.设置合并单元格
         //标题
-        CellRangeAddress titleRange = new CellRangeAddress(0, 0, SheetService.columnToIndex("A"), SheetService.columnToIndex("AD"));
+        CellRangeAddress titleRange = new CellRangeAddress(0, 0, SheetService.columnToIndex("A"), SheetService.columnToIndex("AE"));
         //副标题：企业名称
         CellRangeAddress getCompanyName = new CellRangeAddress(1, 1, SheetService.columnToIndex("B"), SheetService.columnToIndex("D"));
         //合并空格
-        CellRangeAddress getBlank = new CellRangeAddress(1, 1, SheetService.columnToIndex("G"), SheetService.columnToIndex("AD"));
+        CellRangeAddress getBlank = new CellRangeAddress(1, 1, SheetService.columnToIndex("G"), SheetService.columnToIndex("AE"));
         //序号
         CellRangeAddress id = new CellRangeAddress(2, 3, SheetService.columnToIndex("A"), SheetService.columnToIndex("A"));
         //指标名类别
@@ -91,12 +91,14 @@ public class ManageKpiYearSheetOutputService extends SheetOutputService {
         CellRangeAddress reachTarget = new CellRangeAddress(2, 3, SheetService.columnToIndex("N"), SheetService.columnToIndex("N"));
         //挑战目标
         CellRangeAddress challengeTarget = new CellRangeAddress(2, 3, SheetService.columnToIndex("O"), SheetService.columnToIndex("O"));
+        //经理人绩效指标标识
+        CellRangeAddress performanceMark = new CellRangeAddress(2, 3, SheetService.columnToIndex("P"), SheetService.columnToIndex("P"));
+        //评分模式
+        CellRangeAddress evaluateMode = new CellRangeAddress(2, 3, SheetService.columnToIndex("Q"), SheetService.columnToIndex("Q"));
         //监控部门名称
-        CellRangeAddress monitorDepartment = new CellRangeAddress(2, 3, SheetService.columnToIndex("AB"), SheetService.columnToIndex("AB"));
+        CellRangeAddress monitorDepartment = new CellRangeAddress(2, 3, SheetService.columnToIndex("AD"), SheetService.columnToIndex("AD"));
         //监控人姓名
-        CellRangeAddress monitorUser = new CellRangeAddress(2, 3, SheetService.columnToIndex("AC"), SheetService.columnToIndex("AC"));
-        //月度指标分解方式（月度值、年度值
-        CellRangeAddress kpiDecomposeMode = new CellRangeAddress(2, 3, SheetService.columnToIndex("AD"), SheetService.columnToIndex("AD"));
+        CellRangeAddress monitorUser = new CellRangeAddress(2, 3, SheetService.columnToIndex("AE"), SheetService.columnToIndex("AE"));
 
         sheet.addMergedRegion(pastThreeYearsActual);
         sheet.addMergedRegion(pastTwoYearsActual);
@@ -117,8 +119,9 @@ public class ManageKpiYearSheetOutputService extends SheetOutputService {
         sheet.addMergedRegion(projectType);
         sheet.addMergedRegion(id);
         sheet.addMergedRegion(getCompanyName);
-       sheet.addMergedRegion(kpiDecomposeMode);
         sheet.addMergedRegion(titleRange);
+        sheet.addMergedRegion(evaluateMode);
+        sheet.addMergedRegion(performanceMark);
 
         // 2.写内容
         // 获取数据
@@ -205,117 +208,122 @@ public class ManageKpiYearSheetOutputService extends SheetOutputService {
         XSSFCell challengeTargetCell = threeRow.createCell(SheetService.columnToIndex("O"));
         challengeTargetCell.setCellStyle(style);
         challengeTargetCell.setCellValue("挑战目标");
+        // 挑战目标
+        XSSFCell performanceMarkCell = threeRow.createCell(SheetService.columnToIndex("P"));
+        performanceMarkCell.setCellStyle(style);
+        performanceMarkCell.setCellValue("经理人绩效指标标识");
+        // 评分模式
+        XSSFCell evaluateModeCell = threeRow.createCell(SheetService.columnToIndex("Q"));
+        evaluateModeCell.setCellStyle(style);
+        evaluateModeCell.setCellValue("评分模式");
         // 监控部门名称
-        XSSFCell monitorDepartmentCell = threeRow.createCell(SheetService.columnToIndex("AB"));
+        XSSFCell monitorDepartmentCell = threeRow.createCell(SheetService.columnToIndex("AD"));
         monitorDepartmentCell.setCellStyle(style);
         monitorDepartmentCell.setCellValue("监控部门名称");
         //监控人姓名
-        XSSFCell monitorUserCell = threeRow.createCell(SheetService.columnToIndex("AC"));
+        XSSFCell monitorUserCell = threeRow.createCell(SheetService.columnToIndex("AE"));
         monitorUserCell.setCellStyle(style);
         monitorUserCell.setCellValue("监控人姓名");
-        //监控人姓名
-        XSSFCell kpiDecomposeModeCell = threeRow.createCell(SheetService.columnToIndex("AD"));
-        kpiDecomposeModeCell.setCellStyle(style);
-        kpiDecomposeModeCell.setCellValue("月度指标分解方式（月度值、年度值");
+
 
         //一月
-        XSSFCell JanuaryCell = threeRow.createCell(SheetService.columnToIndex("P"));
+        XSSFCell JanuaryCell = threeRow.createCell(SheetService.columnToIndex("R"));
         JanuaryCell.setCellStyle(style);
         JanuaryCell.setCellValue("一月");
 
         //二月
-        XSSFCell FebruaryCell = threeRow.createCell(SheetService.columnToIndex("Q"));
+        XSSFCell FebruaryCell = threeRow.createCell(SheetService.columnToIndex("S"));
         FebruaryCell.setCellStyle(style);
         FebruaryCell.setCellValue("二月");
         // 三月
-        XSSFCell MarchCell = threeRow.createCell(SheetService.columnToIndex("R"));
+        XSSFCell MarchCell = threeRow.createCell(SheetService.columnToIndex("T"));
         MarchCell.setCellStyle(style);
         MarchCell.setCellValue("三月");
         //四月
-        XSSFCell AprilCell = threeRow.createCell(SheetService.columnToIndex("S"));
+        XSSFCell AprilCell = threeRow.createCell(SheetService.columnToIndex("U"));
         AprilCell.setCellStyle(style);
         AprilCell.setCellValue("四月");
         //五月
-        XSSFCell MayCell = threeRow.createCell(SheetService.columnToIndex("T"));
+        XSSFCell MayCell = threeRow.createCell(SheetService.columnToIndex("V"));
         MayCell.setCellStyle(style);
         MayCell.setCellValue("五月");
         // 六月
-        XSSFCell JuneCell = threeRow.createCell(SheetService.columnToIndex("U"));
+        XSSFCell JuneCell = threeRow.createCell(SheetService.columnToIndex("W"));
         JuneCell.setCellStyle(style);
         JuneCell.setCellValue("六月");
         //七月
-        XSSFCell JulyCell = threeRow.createCell(SheetService.columnToIndex("V"));
+        XSSFCell JulyCell = threeRow.createCell(SheetService.columnToIndex("X"));
         JulyCell.setCellStyle(style);
         JulyCell.setCellValue("七月");
         //八月
-        XSSFCell AugustCell = threeRow.createCell(SheetService.columnToIndex("W"));
+        XSSFCell AugustCell = threeRow.createCell(SheetService.columnToIndex("Y"));
         AugustCell.setCellStyle(style);
         AugustCell.setCellValue("八月");
         //九月
-        XSSFCell SeptemberCell = threeRow.createCell(SheetService.columnToIndex("X"));
+        XSSFCell SeptemberCell = threeRow.createCell(SheetService.columnToIndex("Z"));
         SeptemberCell.setCellStyle(style);
         SeptemberCell.setCellValue("九月");
         //十月
-        XSSFCell OctoberCell = threeRow.createCell(SheetService.columnToIndex("Y"));
+        XSSFCell OctoberCell = threeRow.createCell(SheetService.columnToIndex("AA"));
         OctoberCell.setCellStyle(style);
         OctoberCell.setCellValue("十月");
         // 十一月
-        XSSFCell NovemberCell = threeRow.createCell(SheetService.columnToIndex("Z"));
+        XSSFCell NovemberCell = threeRow.createCell(SheetService.columnToIndex("AB"));
         NovemberCell.setCellStyle(style);
         NovemberCell.setCellValue("十一月");
         //十二月
-        XSSFCell DecemberCell = threeRow.createCell(SheetService.columnToIndex("AA"));
+        XSSFCell DecemberCell = threeRow.createCell(SheetService.columnToIndex("AC"));
         DecemberCell.setCellStyle(style);
         DecemberCell.setCellValue("十二月");
 
         XSSFRow fourRow = sheet.createRow(3);
         //一月
-        XSSFCell JanuaryAimCell = fourRow.createCell(SheetService.columnToIndex("P"));
+        XSSFCell JanuaryAimCell = fourRow.createCell(SheetService.columnToIndex("R"));
         JanuaryAimCell.setCellStyle(style);
         JanuaryAimCell.setCellValue("目标值");
 
         //二月
-        XSSFCell FebruaryAimCell = fourRow.createCell(SheetService.columnToIndex("Q"));
+        XSSFCell FebruaryAimCell = fourRow.createCell(SheetService.columnToIndex("S"));
         FebruaryAimCell.setCellStyle(style);
         FebruaryAimCell.setCellValue("目标值");
         // 三月
-        XSSFCell MarchAimCell = fourRow.createCell(SheetService.columnToIndex("R"));
+        XSSFCell MarchAimCell = fourRow.createCell(SheetService.columnToIndex("T"));
         MarchAimCell.setCellStyle(style);
         MarchAimCell.setCellValue("目标值");
         //四月
-        XSSFCell AprilAimCell = fourRow.createCell(SheetService.columnToIndex("S"));
+        XSSFCell AprilAimCell = fourRow.createCell(SheetService.columnToIndex("U"));
         AprilAimCell.setCellStyle(style);
         AprilAimCell.setCellValue("目标值");
         //五月
-        XSSFCell MayAimCell = fourRow.createCell(SheetService.columnToIndex("T"));
+        XSSFCell MayAimCell = fourRow.createCell(SheetService.columnToIndex("V"));
         MayAimCell.setCellStyle(style);
         MayAimCell.setCellValue("目标值");
         // 六月
-        XSSFCell JuneAimCell = fourRow.createCell(SheetService.columnToIndex("U"));
+        XSSFCell JuneAimCell = fourRow.createCell(SheetService.columnToIndex("W"));
         JuneAimCell.setCellStyle(style);
         JuneAimCell.setCellValue("目标值");
         //七月
-        XSSFCell JulyAimCell = fourRow.createCell(SheetService.columnToIndex("V"));
+        XSSFCell JulyAimCell = fourRow.createCell(SheetService.columnToIndex("X"));
         JulyAimCell.setCellStyle(style);
         JulyAimCell.setCellValue("目标值");
         //八月
-        XSSFCell AugustAimCell = fourRow.createCell(SheetService.columnToIndex("W"));
+        XSSFCell AugustAimCell = fourRow.createCell(SheetService.columnToIndex("Y"));
         AugustAimCell.setCellStyle(style);
         AugustAimCell.setCellValue("目标值");
         //九月
-        XSSFCell SeptemberAimCell = fourRow.createCell(SheetService.columnToIndex("X"));
+        XSSFCell SeptemberAimCell = fourRow.createCell(SheetService.columnToIndex("Z"));
         SeptemberAimCell.setCellStyle(style);
         SeptemberAimCell.setCellValue("目标值");
         //十月
-        XSSFCell OctoberAimCell = fourRow.createCell(SheetService.columnToIndex("Y"));
+        XSSFCell OctoberAimCell = fourRow.createCell(SheetService.columnToIndex("AA"));
         OctoberAimCell.setCellStyle(style);
         OctoberAimCell.setCellValue("目标值");
         // 十一月
-        XSSFCell NovemberAimCell = fourRow.createCell(SheetService.columnToIndex("Z"));
+        XSSFCell NovemberAimCell = fourRow.createCell(SheetService.columnToIndex("AB"));
         NovemberAimCell.setCellStyle(style);
         NovemberAimCell.setCellValue("目标值");
         //十二月
-        XSSFCell DecemberAimCell = fourRow.createCell(SheetService.columnToIndex("AA"));
+        XSSFCell DecemberAimCell = fourRow.createCell(SheetService.columnToIndex("AC"));
         DecemberAimCell.setCellStyle(style);
         DecemberAimCell.setCellValue("目标值");
 
@@ -341,7 +349,9 @@ public class ManageKpiYearSheetOutputService extends SheetOutputService {
         setRegionBorder(challengeTarget, sheet);
         setRegionBorder(monitorDepartment, sheet);
         setRegionBorder(monitorUser, sheet);
-        setRegionBorder(kpiDecomposeMode, sheet);
+        setRegionBorder(performanceMark, sheet);
+
+        setRegionBorder(evaluateMode, sheet);
         return 3;
     }
 }

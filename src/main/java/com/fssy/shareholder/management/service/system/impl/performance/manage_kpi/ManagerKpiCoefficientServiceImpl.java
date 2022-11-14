@@ -142,16 +142,15 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
             String managerName = cells.get(SheetService.columnToIndex("B"));
             String position = cells.get(SheetService.columnToIndex("C"));
             String generalManager = cells.get(SheetService.columnToIndex("D"));
-            String projectDesc = cells.get(SheetService.columnToIndex("E"));
-            String difficultCoefficient = cells.get(SheetService.columnToIndex("F"));
-            String incentiveCoefficient = cells.get(SheetService.columnToIndex("G"));
+            String difficultCoefficient = cells.get(SheetService.columnToIndex("E"));
+            String incentiveCoefficient = cells.get(SheetService.columnToIndex("F"));
 
 
             //构建实体类
             ManagerKpiCoefficient managerKpiCoefficient = new ManagerKpiCoefficient();
             // 根据指标、年份和公司名称找月度报表对应的id，后导入id
             QueryWrapper<ManagerKpiCoefficient> managerKpiCoefficientQueryWrapper = new QueryWrapper<>();
-            managerKpiCoefficientQueryWrapper.eq("projectDesc", projectDesc).eq("companyName", companyName)
+            managerKpiCoefficientQueryWrapper.eq("companyName", companyName)
                     .eq("year",year).eq("managerName",managerName);
             List<ManagerKpiCoefficient> managerKpiCoefficients1 = managerKpiCoefficientMapper.selectList(managerKpiCoefficientQueryWrapper);
             if (managerKpiCoefficients1.size()>1){
@@ -168,7 +167,6 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
             managerKpiCoefficient.setYear(Integer.valueOf(year));
             managerKpiCoefficient.setPosition(position);
             managerKpiCoefficient.setGeneralManager(generalManager);
-            managerKpiCoefficient.setProjectDesc(projectDesc);
             if(!ObjectUtils.isEmpty(difficultCoefficient)){
                 managerKpiCoefficient.setDifficultCoefficient(new BigDecimal(difficultCoefficient));
             }

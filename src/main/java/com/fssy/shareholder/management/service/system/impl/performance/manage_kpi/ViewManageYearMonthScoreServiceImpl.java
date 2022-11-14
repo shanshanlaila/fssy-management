@@ -49,25 +49,6 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Autowired
     private ManageKpiMonthAimServiceImpl manageKpiMonthAimServiceImpl;
 
-
-    private QueryWrapper<ViewManageYearMonthScore> getDownloadForCharge(Map<String, Object> params){
-        QueryWrapper<ViewManageYearMonthScore> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("performanceMark","绩效指标").eq("evaluateMode","人工评分")
-                .eq("status","未锁定");
-        if (params.containsKey("projectType")) {
-            queryWrapper.like("projectType", params.get("projectType"));
-        }
-        if (params.containsKey("companyName")) {
-            queryWrapper.like("companyName", params.get("companyName"));
-        }
-        if (params.containsKey("year")) {
-            queryWrapper.eq("year", params.get("year"));
-        }
-        if (params.containsKey("month")) {
-            queryWrapper.eq("month", params.get("month"));
-        }
-        return queryWrapper;
-    }
     /**
      * 通过查询条件 分页查询列表
      *
@@ -93,8 +74,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Override
     public List<Map<String, Object>> findViewManageYearMonthScoreMapDataByParams(Map<String, Object> params) {
         QueryWrapper<ViewManageYearMonthScore> queryWrapper = getQueryWrapper(params);
-        queryWrapper.eq("performanceMark","绩效指标").eq("evaluateMode","人工评分")
-                .eq("status","未锁定");
+        queryWrapper.eq("performanceMark","绩效指标").eq("evaluateMode","人工评分");
         return viewManageYearMonthScoreMapper.selectMaps(queryWrapper);
     }
 
@@ -331,6 +311,15 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
 
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
         return result;
+    }
+
+    @Override
+    public boolean updateViewManageYearMonthScoreData(ManageKpiMonthAim manageKpiMonthAim) {
+        int result = manageKpiMonthAimMapper.updateById(manageKpiMonthAim);
+        if (result > 0) {
+            return true;
+        }
+        return false;
     }
 
     private QueryWrapper<ViewManageYearMonthScore> getQueryWrapper(Map<String, Object> params) {

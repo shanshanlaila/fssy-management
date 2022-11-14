@@ -199,8 +199,8 @@ public class ManageKpiMonthAimController {
         int month = 1;
         // sql字符串
         StringBuilder selectStr1 = new StringBuilder("id,companyName,projectType,projectDesc,unit,benchmarkCompany," +
-                "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,dataSource," +
-                "challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,kpiDefinition,kpiDecomposeMode");
+                "benchmarkValue,monitorDepartment,monitorUser,year,month,basicTarget,mustInputTarget,reachTarget,dataSource," +
+                "challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,kpiDefinition,kpiDecomposeMode,evaluateMode,performanceMark");
         do
         //12个月目标值的循环
         {
@@ -229,6 +229,8 @@ public class ManageKpiMonthAimController {
         fieldMap.put("mustInputTarget", "必达目标");
         fieldMap.put("reachTarget", "达标目标");
         fieldMap.put("challengeTarget", "挑战目标");
+        fieldMap.put("performanceMark", "经理人绩效指标标识");
+        fieldMap.put("evaluateMode","评分模式");
         fieldMap.put("month1", "目标值");
         fieldMap.put("month2", "目标值");
         fieldMap.put("month3", "目标值");;
@@ -243,11 +245,12 @@ public class ManageKpiMonthAimController {
         fieldMap.put("month12", "目标值");
         fieldMap.put("monitorDepartment", "监控部门名称");
         fieldMap.put("monitorUser", "监控人姓名");
-        fieldMap.put("kpiDecomposeMode", "指标分解方式");
+
 
 
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26,27,28);
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+                20, 21, 22, 23, 24, 25,26,27,28,29);
         SheetOutputService sheetOutputService = new ManageKpiYearSheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(manageKpiMonthAims)) {
             throw new ServiceException("未查出数据");
@@ -301,6 +304,9 @@ public class ManageKpiMonthAimController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("month"))) {
             params.put("month", request.getParameter("month"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("evaluateMode"))) {
+            params.put("evaluateMode", request.getParameter("evaluateMode"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("basicTarget"))) {
             params.put("basicTarget", request.getParameter("basicTarget"));
@@ -382,6 +388,9 @@ public class ManageKpiMonthAimController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("month12"))) {
             params.put("month12", request.getParameter("month12"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("performanceMark"))) {
+            params.put("performanceMark", request.getParameter("performanceMark"));
         }
         return params;
 
