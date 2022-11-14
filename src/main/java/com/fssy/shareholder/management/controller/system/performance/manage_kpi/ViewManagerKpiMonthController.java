@@ -8,8 +8,6 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
-import com.fssy.shareholder.management.service.common.SheetOutputService;
-import com.fssy.shareholder.management.service.common.override.ManageKpiMonthPerformanceSheetOutputService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
@@ -27,7 +25,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -204,9 +201,71 @@ public class ViewManagerKpiMonthController {
         return SysResult.build(500, "分数生成失败");
     }
 
+    /**
+     * 以主键删除分数信息
+     * @param id
+     * @return true/false
+     */
+    @DeleteMapping("{id}")
+    @ResponseBody
+    public SysResult delete(@PathVariable(value = "id") Integer id) {
+        boolean result = managerKpiScoreService.deleteManagerKpiScoreOldDataById(id);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "删除数据失败");
+    }
+
+    /**
+     * 修改分数信息
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("edit")
+    public String edit(HttpServletRequest request, Model model) {
+        String id = request.getParameter("id");
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        Map<String, Object> managerKpiScoreOld = managerKpiScoreService.findManagerKpiScoreOldDataByParams(params).get(0);
+        model.addAttribute("managerKpiScoreOld", managerKpiScoreOld);
+        return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-edit";
+    }
+
+    /**
+     * 更新分数信息
+     * @param managerKpiScoreOld
+     * @return
+     */
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(ManagerKpiScoreOld managerKpiScoreOld) {
+
+        boolean result = managerKpiScoreService.updateManagerKpiScoreOldData(managerKpiScoreOld);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "分数信息没有更新，请检查数据后重新尝试");
+    }
+
+    /**
+     * 分数信息详情页
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("detail")
+    public String detail(HttpServletRequest request, Model model) {
+        String id = request.getParameter("id");
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        Map<String, Object> managerKpiScoreOld = managerKpiScoreService.findManagerKpiScoreOldDataByParams(params).get(0);
+        model.addAttribute("managerKpiScoreOld", managerKpiScoreOld);
+        return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-detail";
+    }
 
 
-    //获取数据库里的数据
+    //获取数据库里的数据,展示数据
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("generalManager"))) {

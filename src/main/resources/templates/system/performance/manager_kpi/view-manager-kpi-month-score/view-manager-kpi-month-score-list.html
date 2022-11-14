@@ -27,10 +27,10 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
-<!--                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">-->
-<!--                            <input type="text" name="managerName" placeholder="经理人姓名" autocomplete="off"-->
-<!--                                   class="layui-input">-->
-<!--                        </div>-->
+                        <!--                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">-->
+                        <!--                            <input type="text" name="managerName" placeholder="经理人姓名" autocomplete="off"-->
+                        <!--                                   class="layui-input">-->
+                        <!--                        </div>-->
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="companyName" placeholder="企业名称" autocomplete="off"
                                    class="layui-input">
@@ -65,20 +65,21 @@
                             <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
                                     lay-filter="downloadForCharge" title="填写经理人KPI分数分析，导出数据修改">导出
                             </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button shiro:haspermission="system:performance:manager_kpi:view-manager-kpi-month-score:index"
-                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
-                                        title="导入填写分析后的附件">导入附件
-                                </button>
-                            </div>
                         </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button shiro:haspermission="system:performance:manager_kpi:view-manager-kpi-month-score:index"
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
+                                    title="导入填写分析后的附件">导入附件
+                            </button>
+                        </div>
+                    </div>
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-                        <a lay-event="edit" title="经理人分数信息明细"><i class="layui-icon">&#xe63c;</i></a>
-<!--                        <a lay-event="delete" title="删除经理人分数信息"><i class="layui-icon">&#xe640;</i></a>-->
+                        <a lay-event="detail" title="经理人分数信息明细"><i class="layui-icon">&#xe63c;</i></a>
+                        <a lay-event="edit" title="经理人分数信息修改"><i class="layui-icon">&#xe642;</i></a>
+                        <a lay-event="delete" title="删除经理人分数信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -286,8 +287,9 @@
         })
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'edit') { // 修改
+            // 修改页面
+            var data = obj.data;//获取当前行数据
+            if (obj.event === 'edit') {
                 layer.open({
                     type: 2,
                     title: data.managerName + '的各项分数信息如下:',
@@ -297,8 +299,31 @@
                     content: '/system/performance/manager_kpi/view-manager-kpi-month-score/edit?id=' + data.id,
                     maxmin: true
                 });
+            } else if (obj.event === 'delete') { // 删除
+                layer.confirm('确认删除【' + data.managerName + '】的分数记录信息吗？', function () {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '/system/performance/manager_kpi/view-manager-kpi-month-score/' + data.id,
+                        success: function (result) {
+                            layer.msg(result.msg);
+                            if (result.status == 200) {
+                                table.reload('dataTable');
+                            }
+                        }
+                    })
+                });
+            } else if (obj.event === 'detail') {
+                layer.open({
+                    type: 2,
+                    title: data.managerName + '的各项分数信息如下:',
+                    area: [
+                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                    ],
+                    content: '/system/performance/manager_kpi/view-manager-kpi-month-score/detail?id=' + data.id,
+                    maxmin: true
+                });
             }
-        });
+        })
     });
 </script>
 </body>
