@@ -40,4 +40,14 @@ public interface ManagerKpiScoreServiceOld extends IService<ManagerKpiScoreOld> 
      * @return 数据列表
      */
     List<Map<String,Object>> findManagerKpiScoreOldDataByParams(Map<String, Object> params);
+
+    /**
+     * 以主键删除 分数记录
+     */
+    public boolean deleteManagerKpiScoreOldDataById(Integer id);
+
+    /**
+     * 修改分数记录
+     */
+    public boolean updateManagerKpiScoreOldData(ManagerKpiScoreOld managerKpiScoreOld);
 }

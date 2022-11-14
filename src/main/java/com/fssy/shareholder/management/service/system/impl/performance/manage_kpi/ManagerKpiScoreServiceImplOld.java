@@ -199,7 +199,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
     }
 
     /**
-     * 查询条件
+     * 传入参数，对参数进行处理(查询条件)
      * @param params
      * @return
      */
@@ -224,5 +224,29 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             queryWrapper.eq("month", params.get("month"));
         }
         return queryWrapper;
+    }
+
+    /**
+     * 删除分数记录
+     */
+    @Override
+    public boolean deleteManagerKpiScoreOldDataById(Integer id) {
+        int result = managerKpiScoreMapper.deleteById(id);
+        if (result > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 修改学生信息
+     */
+    @Override
+    public boolean updateManagerKpiScoreOldData(ManagerKpiScoreOld managerKpiScoreOld) {
+        int result = managerKpiScoreMapper.updateById(managerKpiScoreOld);
+        if (result > 0) {
+            return true;
+        }
+        return false;
     }
 }
