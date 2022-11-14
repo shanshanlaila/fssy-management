@@ -93,13 +93,16 @@
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条基础事件</button>
+                        </div>
+                    </script>
                     <script type="text/html" id="tool">
 
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
 
                         <a lay-event="delete" title="取消"><i class="layui-icon">&#x1007;</i></a>
-                    </script>
-                    <script type="text/html" id="toolbar">
                     </script>
                 </div>
             </div>
@@ -400,6 +403,27 @@
                     layer.msg("正在导出事件列表，请稍候");
                     window.open(url, true);
                     return false;
+                });
+                // 监听头工具栏事件
+                table.on('toolbar(dataTable)', function(obj)
+                {
+                    if (obj.event === 'create') {
+
+                        // 弹出添加页面
+                        layer.open(
+                            {
+                                type: 2,
+                                title: '新增单条基础事件',
+                                area:
+                                    [
+                                        $(window).width() * 0.9 + 'px',
+                                        $(window).height() - 50 + 'px'
+                                    ],
+                                content: '/system/performance/employee/eventsList/create',
+                                scrollbar: true,
+                                maxmin: true
+                            });
+                    }
                 });
             });
 </script>

@@ -22,6 +22,7 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
@@ -445,7 +446,9 @@ public class EventListServiceImpl implements EventListService {
                 continue;
             }
             // 数据校验
-            if (!(eventsFirstType.equals("事务类") || eventsFirstType.equals("非事务类") || eventsFirstType.equals("新增工作流"))) {
+            if (!(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)
+                    || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_B)
+                    || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
                 setFailedContent(result, String.format("第%s行的事务类型填写有误", j + 1));
                 cell.setCellValue("表中事件类型填写有误");
                 continue;
@@ -551,5 +554,42 @@ public class EventListServiceImpl implements EventListService {
         updateWrapper.eq("id", id).set("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
         int update = eventListMapper.update(null, updateWrapper);
         return update == 1;
+    }
+
+    @Override
+    public EventList insertEventList(EventList eventList) {
+        LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        departmentLambdaQueryWrapper.eq(Department::getDepartmentId,eventList.getDepartmentId());
+        List<Department> departments1 = departmentMapper.selectList(departmentLambdaQueryWrapper);
+        if(ObjectUtils.isEmpty(departments1)){
+            throw new ServiceException("不存在科室");
+        }
+        Department department = departmentMapper.selectById(departments1.get(0).getDepartmentId());
+        eventList.setDepartmentName(department.getDepartmentName());
+        LambdaQueryWrapper<Department> departmentLambdaQueryWrapper1 = new LambdaQueryWrapper<>();
+        departmentLambdaQueryWrapper1.eq(Department::getOfficeName, eventList.getOffice());
+        List<Department> departments = departmentMapper.selectList(departmentLambdaQueryWrapper1);
+        if(ObjectUtils.isEmpty(departments)){
+            throw new ServiceException("不存在科室");
+        }
+        eventList.setOfficeId(departments.get(0).getOfficeId());
+        User user = GetTool.getUser();
+        eventList.setListCreateUser(user.getName());
+        eventList.setListcreateUserId(user.getId());
+        eventList.setValueCreateUser(user.getName());
+        eventList.setValueCreateUserId(user.getId());
+        eventList.setValueCreateDate(new Date());
+        Date date = new Date();
+        String format = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String year = Arrays.asList(format.split("-")).get(0);
+        eventList.setYear(InstandTool.stringToInteger(year));
+        String month = Arrays.asList(format.split("-")).get(1);
+        eventList.setMonth(Integer.valueOf(month));
+        eventList.setCreateDate(new Date());
+        eventList.setActiveDate(new Date());
+        eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 不需要填报事件标准，直接完结
+        eventListMapper.insert(eventList);//写入数据库
+        eventListMapper.updateById(eventList);//更新页面
+        return eventList;
     }
 }

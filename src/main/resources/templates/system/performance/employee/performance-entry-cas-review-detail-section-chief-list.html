@@ -34,8 +34,8 @@
                             <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" id = "year" name="year" placeholder="编制年份查询" autocomplete="off"
-                                   class="layui-input">
+                            <input type="text" id = "year" name="year" placeholder="申报年份查询" autocomplete="off"
+                                   class="layui-input ">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 140px;">
                             <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
@@ -139,11 +139,6 @@
                         title: '对应事件清单序号',
                         width: 120,
                         fixed: 'left',
-                    },
-                    {
-                        field: 'eventsType',
-                        title: '事件类别',
-                        width: 80
                     },
                     {
                         field: 'eventsFirstType',
@@ -290,6 +285,11 @@
                         field: 'auditStatus',
                         title: '履职计划审核状态',
                         width: 120
+                    },
+                    {
+                        field: 'eventsType',
+                        title: '事件类别',
+                        width: 80
                     },
                 ]
             ]

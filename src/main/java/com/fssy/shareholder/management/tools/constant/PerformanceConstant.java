@@ -33,6 +33,7 @@ public interface PerformanceConstant {
     String EVENTS_FIRST_TYPE_C="新增工作流";
     String EXCELLENT="优";
     String UNQUALIFIED="不合格";
+    String QUALIFIED="合格";
     String MIDDLE="中";
     String FINE="良";
     String CONFORM="符合";
