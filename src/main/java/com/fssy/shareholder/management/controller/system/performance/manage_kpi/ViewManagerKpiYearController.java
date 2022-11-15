@@ -6,6 +6,8 @@ import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiYear;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiYear;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.ViewManagerKpiYearSheetOutputService;
@@ -88,6 +90,35 @@ public class ViewManagerKpiYearController {
         return result;
     }
     /**
+     * 修改经理人KPI信息
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("edit")
+    public String edit(HttpServletRequest request, Model model) {
+        String id = request.getParameter("id");
+        ViewManagerKpiYear kpiYearServiceById = viewManagerKpiYearService.getById(id);
+        model.addAttribute("kpiYearServiceById", kpiYearServiceById);
+        return "/system/performance/manager_kpi/view-manager-kpi-year/view-manager-kpi-year-edit";
+    }
+
+    /**
+     * 更新经理人KPI信息
+     * @param managerKpiYear
+     * @return
+     */
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(ManagerKpiYear managerKpiYear) {
+
+        boolean result = viewManagerKpiYearService.updateManagerKpiYearData(managerKpiYear);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "分数信息没有更新，请检查数据后重新尝试");
+    }
+    /**
      * 与数据库进行匹配
      * @param request
      * @return
@@ -100,12 +131,6 @@ public class ViewManagerKpiYearController {
         if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))) {
             params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));
         }
-//        if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
-//            params.put("companyName", request.getParameter("companyName"));
-//        }
-//        if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
-//            params.put("year", request.getParameter("year"));
-//        }
         if (!ObjectUtils.isEmpty(request.getParameter("projectDesc"))) {
             params.put("projectDesc", request.getParameter("projectDesc"));
         }

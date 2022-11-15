@@ -102,6 +102,11 @@ public class ManagerKpiCoefficient extends BaseModel {
      */
     @TableField("incentiveCoefficient")
     private BigDecimal incentiveCoefficient;
+    /**
+     * 系数修改原因
+     */
+    @TableField("upCoefficientCause")
+    private String upCoefficientCause;
 
 
 }

@@ -3,6 +3,7 @@ package com.fssy.shareholder.management.service.system.performance.manage_kpi;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiYear;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiYear;
 
 import java.util.List;
@@ -39,4 +40,10 @@ public interface ViewManagerKpiYearService extends IService<ViewManagerKpiYear> 
      * @return 数据列表
      */
     List<Map<String,Object>> findViewManagerKpiYearDataByParams(Map<String, Object> params);
+    /**
+     * 修改经理人权重等信息
+     * @param managerKpiYear
+     * @return
+     */
+    boolean updateManagerKpiYearData(ManagerKpiYear managerKpiYear);
 }

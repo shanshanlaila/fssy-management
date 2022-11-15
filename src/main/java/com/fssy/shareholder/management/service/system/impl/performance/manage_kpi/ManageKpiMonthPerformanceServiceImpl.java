@@ -253,6 +253,19 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
         QueryWrapper<ManageKpiMonthPerformance> queryWrapper = getQueryWrapper(params);
         return manageKpiMonthPerformanceMapper.selectMaps(queryWrapper);
     }
+    /**
+     * 修改（更新）经营管理指标月度实绩值信息
+     * @param manageKpiMonthPerformance
+     * @return
+     */
+    @Override
+    public boolean updateManageKpiMonthPerformanceData(ManageKpiMonthPerformance manageKpiMonthPerformance) {
+        int result = manageKpiMonthPerformanceMapper.updateById(manageKpiMonthPerformance);
+        if (result > 0) {
+            return true;
+        }
+        return false;
+    }
 
     private QueryWrapper<ManageKpiMonthPerformance> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ManageKpiMonthPerformance> queryWrapper = new QueryWrapper<>();

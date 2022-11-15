@@ -2,12 +2,16 @@ package com.fssy.shareholder.management.controller.system.performance.manage_kpi
 
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthPerformanceMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthPerformance;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiCoefficient;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.ManageKpiMonthPerformanceSheetOutputService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
@@ -44,6 +48,8 @@ import java.util.*;
 public class ManageKpiMonthPerformanceController {
     @Autowired
     private ManageKpiMonthPerformanceService manageKpiMonthPerformanceService;
+    @Autowired
+    private ManageKpiMonthPerformanceMapper manageKpiMonthPerformanceMapper;
     @Autowired
     private FileAttachmentTool fileAttachmentTool;
     @Autowired
@@ -90,7 +96,43 @@ public class ManageKpiMonthPerformanceController {
         }
         return result;
     }
+    /**
+     * 修改经营管理指标月度实绩信息
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("edit")
+    public String edit(HttpServletRequest request, Model model) {
+        //前端获取年度id、月份
+        String id = request.getParameter("id");
+        System.out.println("***************"+id);
+//        String month = request.getParameter("month");
+//        //通过年度id、月份查询出写入月份的id
+//        QueryWrapper<ManageKpiMonthPerformance> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("manageKpiYearId",id).eq("month",month);
+//        List<ManageKpiMonthPerformance> manageKpiMonthPerformances = manageKpiMonthPerformanceMapper.selectList(queryWrapper);
+//        //id代入实现类中
+        ManageKpiMonthPerformance byId = manageKpiMonthPerformanceService.getById(id)/*(manageKpiMonthPerformances.get(0).getId())*/;
+        model.addAttribute("manageKpiMonthPerformance", byId);
+        return "/system/performance/manager_kpi/manage-kpi-month-performance/manage-kpi-month-performance-edit";
+    }
 
+    /**
+     * 更新经营管理指标月度实绩信息
+     * @param manageKpiMonthPerformance
+     * @return
+     */
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(ManageKpiMonthPerformance manageKpiMonthPerformance) {
+
+        boolean result = manageKpiMonthPerformanceService.updateManageKpiMonthPerformanceData(manageKpiMonthPerformance);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "分数信息没有更新，请检查数据后重新尝试");
+    }
     /**
      * 与数据库进行匹配
      * @param request

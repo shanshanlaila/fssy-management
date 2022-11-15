@@ -46,4 +46,11 @@ public interface ManageKpiMonthPerformanceService extends IService<ManageKpiMont
      * @return 数据列表
      */
     List<Map<String,Object>> findManageKpiMonthDataByParams(Map<String, Object> params);
+
+    /**
+     * 修改（更新）经营管理指标月度实绩值信息
+     * @param manageKpiMonthPerformance
+     * @return
+     */
+    boolean updateManageKpiMonthPerformanceData(ManageKpiMonthPerformance manageKpiMonthPerformance);
 }
