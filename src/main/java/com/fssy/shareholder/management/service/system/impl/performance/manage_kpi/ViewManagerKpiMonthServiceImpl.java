@@ -250,6 +250,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
      * @return
      */
     private QueryWrapper<ViewManagerKpiMonth> getQueryWrapper(Map<String, Object> params) {
+        //⑤在数据库中根据条件进行查询
         QueryWrapper<ViewManagerKpiMonth> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("select")) {
             queryWrapper.select((String) params.get("select"));
@@ -268,6 +269,9 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
         }
         if (params.containsKey("month")) {
             queryWrapper.eq("month", params.get("month"));
+        }
+        if (params.containsKey("id")) {
+            queryWrapper.eq("id", params.get("id"));
         }
         return queryWrapper;
     }

@@ -266,6 +266,22 @@
         form.on('submit(confirmScore)',function (data) {
             console.log(data.field)
             var field = data.field;
+            var companyName = data.field.companyName;
+            var year =data.field.year;
+            var month =data.field.month;
+            if(companyName == "")
+            {
+                layer.msg("公司名称未空!");
+                return false;
+            }
+            if (year == ""){
+                layer.msg("年份为空！");
+                return false;
+            }
+            if (month == ""){
+                layer.msg("月份为空！");
+                return false;
+            }
             $.ajax({
                 type: 'POST',
                 url: '/system/performance/manager_kpi/view-manager-kpi-month-score/updateScore',
@@ -289,6 +305,7 @@
         table.on('tool(dataTable)', function (obj) {
             // 修改页面
             var data = obj.data;//获取当前行数据
+            console.log(data)
             if (obj.event === 'edit') {
                 layer.open({
                     type: 2,
@@ -312,15 +329,17 @@
                         }
                     })
                 });
-            } else if (obj.event === 'detail') {
+            } else if (obj.event === 'detail') {//分数下钻，查看经理人的分数组成
+                // console.log("list" + data.month)
                 layer.open({
-                    type: 2,
-                    title: data.managerName + '的各项分数信息如下:',
-                    area: [
+                    type : 2,
+                    title : data.managerName + '的各项分数信息如下:' + data.id,
+                    area : [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/performance/manager_kpi/view-manager-kpi-month-score/detail?id=' + data.id,
-                    maxmin: true
+                    //①获取需要查看的此条记录的指定数据
+                    content : '/system/performance/manager_kpi/view-manager-kpi-month-score/search-detail?id=' + data.id + '&month=' + data.month + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
+                    maxmin : true
                 });
             }
         })

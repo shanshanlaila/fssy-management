@@ -1,6 +1,8 @@
 package com.fssy.shareholder.management.pojo.system.performance.manage_kpi;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
 
@@ -26,34 +28,22 @@ public class ViewManagerKpiMonth extends BaseModel {
     private static final long serialVersionUID = 5128806343709986912L;
 
     /**
-     * 经理人姓名
+     * 序号
      */
-    @TableField("managerName")
-    private String managerName;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     /**
-     * 年度目标项目ID：建立与年度关联
-     */
-    @TableField("manageKpiYearId")
-    private Integer manageKpiYearId;
-
-    /**
-     * 企业名称
+     * 填报企业
      */
     @TableField("companyName")
     private String companyName;
 
     /**
-     * 职务
+     * 经理人姓名
      */
-    @TableField("position")
-    private String position;
-
-    /**
-     * 是否总经理:是
-     */
-    @TableField("generalManager")
-    private String generalManager;
+    @TableField("managerName")
+    private String managerName;
 
     /**
      * 年份
@@ -68,22 +58,118 @@ public class ViewManagerKpiMonth extends BaseModel {
     private Integer month;
 
     /**
-     * KPI来源：自我提出;集团提出
+     * 重点工作
      */
-    @TableField("source")
-    private String source;
+    @TableField("projectType")
+    private String projectType;
 
     /**
-     * 经理人KPI项目状态
+     * 管理项目
      */
-    @TableField("status")
-    private String status;
+    @TableField("projectDesc")
+    private String projectDesc;
 
     /**
-     * 权重：%
+     * 管理项目定义
      */
-    @TableField("proportion")
-    private BigDecimal proportion;
+    @TableField("kpiFormula")
+    private String kpiFormula;
+
+    /**
+     * 单位
+     */
+    @TableField("unit")
+    private String unit;
+
+    /**
+     * 数据来源
+     */
+    @TableField("dataSource")
+    private String dataSource;
+
+    /**
+     * 标杆企业名称
+     */
+    @TableField("benchmarkCompany")
+    private String benchmarkCompany;
+
+    /**
+     * 标杆值
+     */
+    @TableField("benchmarkValue")
+    private String benchmarkValue;
+
+    /**
+     * 过去第三年值
+     */
+    @TableField("pastThreeYearsActual")
+    private String pastThreeYearsActual;
+
+    /**
+     * 过去第二年值
+     */
+    @TableField("pastTwoYearsActual")
+    private String pastTwoYearsActual;
+
+    /**
+     * 过去第一年值
+     */
+    @TableField("pastOneYearActual")
+    private String pastOneYearActual;
+
+    /**
+     * 基本目标
+     */
+    @TableField("basicTarget")
+    private String basicTarget;
+
+    /**
+     * 必达目标
+     */
+    @TableField("mustInputTarget")
+    private String mustInputTarget;
+
+    /**
+     * 达标目标
+     */
+    @TableField("reachTarget")
+    private String reachTarget;
+
+    /**
+     * 挑战目标
+     */
+    @TableField("challengeTarget")
+    private String challengeTarget;
+
+    /**
+     * 月度目标
+     */
+    @TableField("monthTarget")
+    private BigDecimal monthTarget;
+
+    /**
+     * 月度实绩
+     */
+    @TableField("monthActualValue")
+    private BigDecimal monthActualValue;
+
+    /**
+     * 目标累积值
+     */
+    @TableField("accumulateTarget")
+    private BigDecimal accumulateTarget;
+
+    /**
+     * 实际完成累积值
+     */
+    @TableField("accumulateActual")
+    private BigDecimal accumulateActual;
+
+    /**
+     * 分析结果
+     */
+    @TableField("analyzeRes")
+    private String analyzeRes;
 
     /**
      * 人工调整分数
@@ -92,16 +178,40 @@ public class ViewManagerKpiMonth extends BaseModel {
     private BigDecimal monthScoreAdjust;
 
     /**
+     * 权重%
+     */
+    @TableField("proportion")
+    private BigDecimal proportion;
+
+    /**
+     * 年度目标项目ID：建立与年度关联
+     */
+    @TableField("manageKpiYearId")
+    private Integer manageKpiYearId;
+
+    /**
+     * 职务
+     */
+    @TableField("position")
+    private String position;
+
+    /**
+     * 是否总经理:是
+     */
+    @TableField("generalManager")
+    private String generalManager;
+
+
+    /**
+     * 经理人KPI项目状态
+     */
+    @TableField("status")
+    private String status;
+
+    /**
      * 系统生成分数
      */
     @TableField("monthScoreAuto")
     private BigDecimal monthScoreAuto;
-
-    /**
-     * 指标类别:经营管理指标、激励约束项目
-     */
-    @TableField("projectType")
-    private String projectType;
-
 
 }
