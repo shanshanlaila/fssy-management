@@ -196,6 +196,15 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
         return managerKpiCoefficientMapper.selectMaps(queryWrapper);
     }
 
+    @Override
+    public boolean updateManagerKpiCoefficientData(ManagerKpiCoefficient managerKpiCoefficient) {
+        int result = managerKpiCoefficientMapper.updateById(managerKpiCoefficient);
+        if (result > 0) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 查询条件
      * @param params

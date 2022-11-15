@@ -249,6 +249,21 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         return viewManagerKpiYearMapper.selectMaps(queryWrapper);
     }
 
+    /**
+     * 修改经理人权重等信息
+     * @param managerKpiYear
+     * @return
+     */
+    @Override
+    public boolean updateManagerKpiYearData(ManagerKpiYear managerKpiYear) {
+
+        int result = managerKpiYearMapper.updateById(managerKpiYear);
+        if (result > 0) {
+            return true;
+        }
+        return false;
+    }
+
     private QueryWrapper<ViewManagerKpiYear> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ViewManagerKpiYear> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("id")) {

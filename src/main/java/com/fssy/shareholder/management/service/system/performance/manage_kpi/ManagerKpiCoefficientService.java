@@ -43,5 +43,12 @@ public interface ManagerKpiCoefficientService extends IService<ManagerKpiCoeffic
      */
     List<Map<String, Object>> findManagerKpiCoefficientMapDataByParams(Map<String, Object> params);
 
+    /**
+     * 修改经理人系数信息
+     * @param managerKpiCoefficient
+     * @return
+     */
+    boolean updateManagerKpiCoefficientData(ManagerKpiCoefficient managerKpiCoefficient);
+
 
 }

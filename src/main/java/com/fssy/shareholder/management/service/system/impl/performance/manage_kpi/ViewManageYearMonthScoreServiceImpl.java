@@ -316,10 +316,12 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
 
     @Override
     public boolean updateViewManageYearMonthScoreData(ManageKpiMonthAim manageKpiMonthAim) {
-        String status = manageKpiMonthAim.getStatus();
-        System.out.println("++++++++++"+status);
+
         if(!manageKpiMonthAim.getStatus().equals("已锁定")){
             throw new ServiceException("分数未生成，请生成后再进行修改分数");
+        }
+        if(!manageKpiMonthAim.getProjectDesc().equals("")){
+
         }
         int result = manageKpiMonthAimMapper.updateById(manageKpiMonthAim);
         if (result > 0) {
@@ -357,13 +359,13 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         }
         if (params.containsKey("status")) {
             queryWrapper.eq("status", params.get("status"));
+            String status = (String) params.get("status");
+            if (status.equals("未锁定")){
+                queryWrapper.isNotNull("monthActualValue");
+            }
         }
         if (params.containsKey("evaluateMode")) {
             queryWrapper.eq("evaluateMode", params.get("evaluateMode"));
-        }
-        //进行非空判断
-        if (params.containsKey("monthActualValue") && Boolean.valueOf(InstandTool.objectToString(params.get("monthActualValue")))) {
-            queryWrapper.isNotNull("monthActualValue");
         }
         return queryWrapper;
     }

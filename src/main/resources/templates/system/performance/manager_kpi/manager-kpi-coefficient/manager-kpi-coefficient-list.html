@@ -191,13 +191,19 @@
                         align: 'center',
                         width: 130
                     },
-                    // {
-                    //     fixed: 'right',
-                    //     title: '操作',
-                    //     width: 100,
-                    //     align: 'center',
-                    //     toolbar: '#tool'
-                    // }
+                    {
+                        field: 'upCoefficientCause',
+                        title: '系数修改原因',
+                        align: 'center',
+                        width: 130
+                    },
+                    {
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    }
                 ]
             ]
         });
@@ -224,7 +230,7 @@
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/performance/manager_kpi/view-manager-kpi-year/edit?id=' + data.id,
+                    content: '/system/performance/manager_kpi/manager-kpi-coefficient/edit?id=' + data.id,
                     maxmin: true
                 });
             }

@@ -356,6 +356,9 @@ public class ViewManagerKpiMonthController {
         if (!ObjectUtils.isEmpty(request.getParameter("scoreAdjust"))) {
             params.put("scoreAdjust", request.getParameter("scoreAdjust"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("kpiFormula"))) {
+            params.put("kpiFormula", request.getParameter("kpiFormula"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("scoreAuto"))) {
             params.put("scoreAuto", request.getParameter("scoreAuto"));
         }

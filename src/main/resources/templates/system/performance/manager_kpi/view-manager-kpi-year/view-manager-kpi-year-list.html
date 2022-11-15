@@ -260,13 +260,19 @@
                         align: 'center',
                         width: 80
                     },
-                    // {
-                    //     fixed: 'right',
-                    //     title: '操作',
-                    //     width: 100,
-                    //     align: 'center',
-                    //     toolbar: '#tool'
-                    // }
+                    {
+                        field: 'note',
+                        title: '备注',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    }
                 ]
             ]
         });
@@ -289,7 +295,7 @@
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title: '序号为：' + data.id + '的经理人年度KPI指标信息修改',
+                    title: '姓名为：' + data.managerName + '的经理人年度KPI指标信息修改',
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
