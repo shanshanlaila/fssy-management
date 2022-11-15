@@ -129,6 +129,12 @@
             cols: [
                 [
                     {
+                        field: 'id',
+                        title: '序号',
+                        fixed: 'left',
+                        width: 80
+                    },
+                    {
                         field: 'createDate',
                         title: '编制日期',
                         fixed: 'left',
@@ -158,15 +164,28 @@
                     field: 'proportion',
                     title: '比重',
                     width: 90
-                }, {
-                    field: 'id',
-                    title: '序号',
-                    width: 80
-                }, {
-                    field: 'score',
-                    title: '价值分',
-                    width: 100
-                }, {
+                },{
+                    field: 'standardValue',
+                    title: '事件标准价值',
+                    width: 90
+                },{
+                    field: 'delow',
+                    title: '不合格价值',
+                    width: 90
+                },{
+                    field: 'middle',
+                    title: '中价值',
+                    width: 90
+                },{
+                    field: 'fine',
+                    title: '良价值',
+                    width: 90
+                },{
+                    field: 'excellent',
+                    title: '优价值',
+                    width: 90
+                },
+                    {
                     field: 'activeDate',
                     title: '生效日期',
                     width: 130

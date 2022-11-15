@@ -260,14 +260,10 @@ public class EntryCasPlanDetailController {
         // 导出履职计划填报月底回顾
         Map<String, Object> params = getParams(request);
         params.put("select",
-                "id,eventsId," +
+                "id,eventsRoleId," +
                         "eventsFirstType," +
                         "jobName," +
                         "workEvents," +
-//                        "delowStandard," +
-//                        "middleStandard," +
-//                        "fineStandard," +
-//                        "excellentStandard," +
                         "mainOrNext," +
                         "planningWork," +
                         "times,planOutput," +
@@ -283,14 +279,10 @@ public class EntryCasPlanDetailController {
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         // 需要改背景色的格子
         fieldMap.put("id", "履职计划序号");
-        fieldMap.put("eventsId", "事件清单序号");
+        fieldMap.put("eventsRoleId", "事件岗位序号");
         fieldMap.put("eventsFirstType", "事件类型");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
-//        fieldMap.put("delowStandard", "不合格标准");
-//        fieldMap.put("middleStandard", "中标准");
-//        fieldMap.put("fineStandard", "良标准");
-//        fieldMap.put("excellentStandard", "优标准");
         fieldMap.put("eventsForm", "绩效类型");
         fieldMap.put("standardValue", "事件价值标准分");
         fieldMap.put("departmentName", "部门名称");
