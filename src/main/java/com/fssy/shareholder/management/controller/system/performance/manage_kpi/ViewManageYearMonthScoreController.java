@@ -246,7 +246,7 @@ public class ViewManageYearMonthScoreController {
         if (ObjectUtils.isEmpty(scoreMapDataByParams)) {
             throw new ServiceException("未查出数据");
         }
-        sheetOutputService.exportNum("激励约束项目评分表", scoreMapDataByParams, fieldMap, response, strList, null);
+        sheetOutputService.exportNum("激励约束项目分数表", scoreMapDataByParams, fieldMap, response, strList, null);
 
     }
 
@@ -259,10 +259,8 @@ public class ViewManageYearMonthScoreController {
     @GetMapping("edit")
     public String edit(HttpServletRequest request, Model model) {
         String id = request.getParameter("id");
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", id);
-        Map<String, Object> map = manageKpiMonthAimService.findManageKpiMonthMapDataByParams(params).get(0);
-        model.addAttribute("map", map);
+        ManageKpiMonthAim manageKpiMonthAim = manageKpiMonthAimService.getById(id);
+        model.addAttribute("map", manageKpiMonthAim);
         return "/system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-edit";
     }
 
@@ -292,6 +290,9 @@ public class ViewManageYearMonthScoreController {
         if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
             params.put("companyName", request.getParameter("companyName"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("scoreAdjustCause"))) {
+            params.put("scoreAdjustCause", request.getParameter("scoreAdjustCause"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("status"))) {
             params.put("status", request.getParameter("status"));
         }
@@ -306,6 +307,9 @@ public class ViewManageYearMonthScoreController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("dataSource"))) {
             params.put("dataSource", request.getParameter("dataSource"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("performanceMark"))) {
+            params.put("performanceMark", request.getParameter("performanceMark"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("benchmarkCompany"))) {
             params.put("benchmarkCompany", request.getParameter("benchmarkCompany"));

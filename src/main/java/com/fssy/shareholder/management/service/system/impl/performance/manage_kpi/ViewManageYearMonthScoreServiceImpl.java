@@ -58,6 +58,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Override
     public Page<ViewManageYearMonthScore> findViewManageYearMonthScoreDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ViewManageYearMonthScore> queryWrapper = getQueryWrapper(params);
+        queryWrapper.eq("performanceMark","绩效指标");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<ViewManageYearMonthScore> myPage = new Page<>(page, limit);
@@ -315,6 +316,11 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
 
     @Override
     public boolean updateViewManageYearMonthScoreData(ManageKpiMonthAim manageKpiMonthAim) {
+        String status = manageKpiMonthAim.getStatus();
+        System.out.println("++++++++++"+status);
+        if(!manageKpiMonthAim.getStatus().equals("已锁定")){
+            throw new ServiceException("分数未生成，请生成后再进行修改分数");
+        }
         int result = manageKpiMonthAimMapper.updateById(manageKpiMonthAim);
         if (result > 0) {
             return true;
@@ -339,6 +345,9 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         }
         if (params.containsKey("year")) {
             queryWrapper.eq("year", params.get("year"));
+        }
+        if (params.containsKey("scoreAdjustCause")) {
+            queryWrapper.eq("scoreAdjustCause", params.get("scoreAdjustCause"));
         }
         if (params.containsKey("month")) {
             queryWrapper.eq("month", params.get("month"));

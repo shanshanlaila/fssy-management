@@ -38,10 +38,10 @@ public class ManageKpiMonthAim extends BaseModel {
     private String status;
 
     /**
-     * 备注
+     * 修改分数原因
      */
-    @TableField("note")
-    private String note;
+    @TableField("scoreAdjustCause")
+    private String scoreAdjustCause;
 
     /**
      * 企业名称

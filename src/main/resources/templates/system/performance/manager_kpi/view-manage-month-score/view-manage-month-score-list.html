@@ -48,7 +48,7 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <select name="status" id="evaluateMode">
+                            <select name="evaluateMode" id="evaluateMode">
                                 <option value="">评分方式</option>
                                 <option value="系统评分">系统评分</option>
                                 <option value="人工评分">人工评分</option>
@@ -223,7 +223,7 @@
                     {
                         field: 'companyName',
                         title: '企业名称',
-                        width: 100
+                        width: 150
                     },
                     {
                         field: 'status',
@@ -311,6 +311,11 @@
                         width: 130
                     },
                     {
+                        field: 'scoreAdjustCause',
+                        title: '分数修改原因',
+                        width: 130
+                    },
+                    {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
@@ -336,10 +341,11 @@
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
+            console.log("viewList"+data.id)
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title: '序号为：' + data.id + '的经营管理月度项目分数信息修改',
+                    title: '名称为：' + data.projectDesc + '的经营管理月度项目分数信息修改',
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],

@@ -148,6 +148,8 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
 
             //构建实体类
             ManagerKpiCoefficient managerKpiCoefficient = new ManagerKpiCoefficient();
+            managerKpiCoefficient.setManagerName(managerName);
+            managerKpiCoefficient.setCompanyName(companyName);
             // 根据指标、年份和公司名称找月度报表对应的id，后导入id
             QueryWrapper<ManagerKpiCoefficient> managerKpiCoefficientQueryWrapper = new QueryWrapper<>();
             managerKpiCoefficientQueryWrapper.eq("companyName", companyName)
@@ -162,8 +164,6 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
                 managerKpiCoefficient.setId(managerKpiCoefficients1.get(0).getId());
             }
 
-            managerKpiCoefficient.setManagerName(managerName);
-            managerKpiCoefficient.setCompanyName(companyName);
             managerKpiCoefficient.setYear(Integer.valueOf(year));
             managerKpiCoefficient.setPosition(position);
             managerKpiCoefficient.setGeneralManager(generalManager);

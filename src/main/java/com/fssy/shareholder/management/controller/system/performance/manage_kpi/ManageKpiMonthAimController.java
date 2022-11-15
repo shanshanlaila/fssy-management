@@ -278,6 +278,9 @@ public class ManageKpiMonthAimController {
         if (!ObjectUtils.isEmpty(request.getParameter("projectDesc"))) {
             params.put("projectDesc", request.getParameter("projectDesc"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("note"))) {
+            params.put("note", request.getParameter("note"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("unit"))) {
             params.put("unit", request.getParameter("unit"));
         }

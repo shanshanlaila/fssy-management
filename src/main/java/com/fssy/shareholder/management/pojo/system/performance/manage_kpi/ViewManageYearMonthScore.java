@@ -35,6 +35,11 @@ public class ViewManageYearMonthScore extends BaseModel {
      */
     @TableField("status")
     private String status;
+     /**
+     * 修改分数原因
+     */
+    @TableField("scoreAdjustCause")
+    private String scoreAdjustCause;
 
     /**
      * 企业名称
