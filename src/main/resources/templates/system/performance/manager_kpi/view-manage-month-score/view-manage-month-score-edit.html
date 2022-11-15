@@ -15,15 +15,17 @@
                 <tr>
                     <td colspan="4" style="background: #f7f7f7; color: black;">修改月度经营管理指标分数信息</td>
                 </tr>
-                <input type="hidden" th:value="${managerKpiScoreOld['id']}" name="id">
+                <input type="hidden" th:value="${map['id']}" name="id" id="id">
+                <input type="hidden" th:value="${map['status']}" name="status" id="status">
+             
 
                 <tr>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;项目名称:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="managerName" id="managerName"
-                                   lay-verify="required" th:value="${managerKpiScoreOld['managerName']}"/>
+                            <input type="text" class="layui-input" name="projectDesc" id="projectDesc"
+                                   lay-verify="required" th:value="${map['projectDesc']}"/>
                         </div>
                     </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;年份:
@@ -31,7 +33,7 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="year" id="year"
-                                   lay-verify="required" th:value="${managerKpiScoreOld['year']}"/>
+                                   lay-verify="required" th:value="${map['year']}"/>
                         </div>
                     </td>
                 </tr>
@@ -42,7 +44,7 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="month" id="month"
-                                   lay-verify="required" th:value="${managerKpiScoreOld['month']}"/>
+                                   lay-verify="required" th:value="${map['month']}"/>
                         </div>
                     </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;调整分数:
@@ -50,18 +52,18 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="scoreAdjust" id="scoreAdjust"
-                                   lay-verify="required" th:value="${managerKpiScoreOld['scoreAdjust']}"/>
+                                   lay-verify="required" th:value="${map['scoreAdjust']}"/>
                         </div>
                     </td>
                 </tr>
 
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;备注:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;修改原因:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="note" id="note"
-                                   lay-verify="required" th:value="${managerKpiScoreOld['note']}"/>
+                            <input type="text" class="layui-input" name="scoreAdjustCause" id="scoreAdjustCause"
+                                   lay-verify="required" th:value="${map['scoreAdjustCause']}"/>
                         </div>
                     </td>
                 </tr>
