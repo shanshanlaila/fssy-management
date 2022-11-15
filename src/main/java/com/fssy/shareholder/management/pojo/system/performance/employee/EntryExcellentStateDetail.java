@@ -59,6 +59,8 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 实际完成时间
      */
     @TableField("actualCompleteDate")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     private LocalDate actualCompleteDate;
 
     /**
@@ -101,6 +103,8 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 编制日期
      */
     @TableField("createDate")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     private LocalDate createDate;
 
     /**
@@ -131,6 +135,8 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 审核日期
      */
     @TableField("auditDate")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     private LocalDate auditDate;
 
     /**
@@ -167,6 +173,8 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 申报日期
      */
     @TableField("applyDate")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     private LocalDate applyDate;
 
     /**
@@ -215,6 +223,8 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 经营管理部主管复核日期
      */
     @TableField("ministerReviewDate")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     private LocalDate ministerReviewDate;
 
     /**
@@ -233,6 +243,8 @@ public class EntryExcellentStateDetail extends BaseModel {
      * 绩效科复核日期
      */
     @TableField("classReviewDate")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     private LocalDate classReviewDate;
 
     /**

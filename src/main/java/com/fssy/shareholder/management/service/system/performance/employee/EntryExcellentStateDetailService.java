@@ -91,7 +91,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
      * @return
      */
 
-    boolean MinisterBtchAudit(List<String> excellentStateDetailIds, String ministerReview);
+    boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview);
 
 
 }

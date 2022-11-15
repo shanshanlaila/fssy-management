@@ -491,7 +491,7 @@ public class EntryExcellentStateDetailController {
     @PostMapping("save")
     @ResponseBody
     public SysResult create(EntryExcellentStateDetail entryExcellentStateDetail, HttpServletRequest request) {
-        if (!(entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A))) {
+        if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A))) {
             return SysResult.build(500, "只能上传待经营管理部审核的回顾评优材料");
         }
         String mainIds = request.getParameter("mainIds");
@@ -518,7 +518,7 @@ public class EntryExcellentStateDetailController {
     @RequiredLog("经营管理部主管评优材料批量审核")
     public SysResult batchAuditByMinister(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds, HttpServletRequest request) {
         String  ministerReview = request.getParameter("ministerReview");
-        boolean result = entryExcellentStateDetailService.MinisterBtchAudit(excellentStateDetailIds,ministerReview);
+        boolean result = entryExcellentStateDetailService.MinisterBatchAudit(excellentStateDetailIds,ministerReview);
         if (result) {
             return SysResult.ok();
         }

@@ -5,6 +5,7 @@
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -237,6 +238,9 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				cell.setCellValue("事件标准价值不能为空");
 				continue;
 			}
+			// 计算事件标准价值分
+			standardValue=(standardValue.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
+
 			BigDecimal delow;
 			try
 			{
@@ -254,6 +258,8 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				cell.setCellValue("事件标准价值不能为空");
 				continue;
 			}
+			delow=(delow.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
+
 			BigDecimal middle;
 			try
 			{
@@ -271,6 +277,8 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				cell.setCellValue("中价值不能为空");
 				continue;
 			}
+			middle=(middle.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
+
 			BigDecimal fine;
 			try
 			{
@@ -288,6 +296,8 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				cell.setCellValue("良价值不能为空");
 				continue;
 			}
+			fine=(fine.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
+
 			BigDecimal excellent;
 			try
 			{
@@ -305,6 +315,8 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 				cell.setCellValue("优价值不能为空");
 				continue;
 			}
+			excellent=(excellent.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
+
 			String activeDateStr = temp.get(SheetService.columnToIndex("O"));
 			LocalDate activeDate = null;
 			try

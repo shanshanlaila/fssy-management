@@ -236,6 +236,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
             entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
             entryCasPlanDetail.setEventsForm(eventsForm);
+            entryCasPlanDetail.setAttachmentId(attachment.getId());
             // 数据库不能为null的字段设置值
             if (!ObjectUtils.isEmpty(eventsId)) {
                 entryCasPlanDetail.setEventsId(Long.valueOf(eventsId));

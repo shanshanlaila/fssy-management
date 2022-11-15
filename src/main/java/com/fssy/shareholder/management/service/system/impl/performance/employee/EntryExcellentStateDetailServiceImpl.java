@@ -551,13 +551,21 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
             }
             EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
-            reviewDetail.setFinalNontransactionEvaluateLevel(classReview);
             entryExcellentStateDetail.setClassReview(classReview);
+            // 修改“classReview”、“classReviewUser”、“classReviewUserId”、“classReviewDate”字段，若classReview为“优”时，status字段为“待经营管理部主管复核”；
             if (classReview.equals(PerformanceConstant.REVIEW_DETAIL_MINISTER_REVIEW_EXCELLENT)) {
                 entryExcellentStateDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN);
             } else {
                 entryExcellentStateDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+                reviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+                // 当review的status值为完结时，设置字段“finalNontransactionEvaluateLevel”=classReview
+                reviewDetail.setFinalNontransactionEvaluateLevel(classReview);
             }
+            entryExcellentStateDetail.setClassReview(classReview);
+            entryExcellentStateDetail.setClassReviewUser(GetTool.getUser().getName());
+            entryExcellentStateDetail.setClassReviewUserId(GetTool.getUser().getId());
+            entryExcellentStateDetail.setClassReviewDate(LocalDate.now());
+
             entryCasReviewDetailMapper.updateById(reviewDetail);
             entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
         }
@@ -565,7 +573,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     }
 
     @Override
-    public boolean MinisterBtchAudit(List<String> excellentStateDetailIds, String ministerReview) {
+    public boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview) {
         //根据Id集合去找对应的实体类集合
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         //遍历entryExcellentStateDetails得到 entryExcellentStateDetail
@@ -581,15 +589,26 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             }
             EntryCasReviewDetail reviewDetai = entryCasReviewDetails.get(0);//查到对应ID的数据，然后取这条数据
             entryExcellentStateDetail.setMinisterReview(ministerReview);
+            // 经营管理部审核为“符合”，设置最终非事务类评价等级为“优”
             if (ministerReview.equals(PerformanceConstant.CONFORM)) {
-                // 经营管理部审核为“符合”，设置最终非事务类评价等级为“优”
+                // 修改“ministerReview”、“ministerReviewUser”、“ministerReviewUserId”、“ministerReviewDate”字段，status字段为“完结”
+                entryExcellentStateDetail.setMinisterReview(ministerReview);
+                entryExcellentStateDetail.setMinisterReviewUser(GetTool.getUser().getName());
+                entryExcellentStateDetail.setMinisterReviewUserId(GetTool.getUser().getId());
+                entryExcellentStateDetail.setMinisterReviewDate(LocalDate.now());
+                entryExcellentStateDetail.setAuditId(GetTool.getUser().getId());
+                entryExcellentStateDetail.setAuditName(GetTool.getUser().getName());
+                entryExcellentStateDetail.setAuditDate(LocalDate.now());
+                // 通过“bs_performance_entry_excellent_state_detail”的字段“casReviewId”修改id为“casReviewId”的“bs_performance_employee_entry_cas_review_detail”表字段“finalNontransactionEvaluateLevel”
                 reviewDetai.setFinalNontransactionEvaluateLevel(PerformanceConstant.EXCELLENT);
+                entryExcellentStateDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 评优材料状态完结
+                reviewDetai.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 设置回顾状态为完结
                 // 计算分数
                 BigDecimal score = GetTool.getScore(reviewDetai, ministerReview);
                 reviewDetai.setAutoScore(score);
                 reviewDetai.setArtifactualScore(score);
             } else {
-                // 经营管理部审为“不符合”;
+                // 经营管理部审为“不符合”,返回绩效科复核;
                 entryExcellentStateDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE);
             }
             entryCasReviewDetailMapper.updateById(reviewDetai);

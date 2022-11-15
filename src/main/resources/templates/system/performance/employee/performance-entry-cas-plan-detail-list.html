@@ -211,7 +211,7 @@
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        width: 50
+                        width: 50,
                     },
                     {
                         field: 'id',
@@ -222,6 +222,20 @@
                         field: 'eventsId',
                         title: '对应事件清单序号',
                         width: 120
+                    },
+                    {
+                        field: 'status',
+                        title: '履职计划状态',
+                        width: 100,
+                        templet: function (d) {
+                            console.log(d.status)
+                            switch (d.status) {
+                                case '待提交审核':
+                                    return '<span class="layui-badge layui-bg">待提交审核</span>';
+                                default:
+                                    return d.status;
+                            }
+                        }
                     },
                     {
                         field: 'eventsFirstType',
@@ -262,11 +276,6 @@
                         field: 'planEndDate',
                         title: '计划完成日期',
                         width: 90
-                    },
-                    {
-                        field: 'status',
-                        title: '履职计划状态',
-                        width: 100
                     },
                     {
                         field: 'eventsForm',
