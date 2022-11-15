@@ -8,6 +8,7 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiMonth;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
@@ -90,12 +91,6 @@ public class ViewManagerKpiMonthController {
     @RequiredLog("经理人KPI分数附件上传")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment) {
-//        //判断是否选择对应年份
-//        Map<String, Object> params = getParams(request);
-//        String year = (String) params.get("year");
-//        if (org.springframework.util.ObjectUtils.isEmpty(params.get("year"))) {
-//            throw new ServiceException("未选择年份，导入失败");
-//        }
         // 保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -175,6 +170,7 @@ public class ViewManagerKpiMonthController {
         return result;
     }
 
+
     /**
      *  自动生成分数
      * @param
@@ -248,21 +244,71 @@ public class ViewManagerKpiMonthController {
         return SysResult.build(500, "分数信息没有更新，请检查数据后重新尝试");
     }
 
+
     /**
-     * 分数信息详情页
-     * @param request
-     * @param model
-     * @return
+     * 返回查看指定经理人的下级分数构成数据页面<br/>
+     * 添加根据给出姓名、公司名称、年份、月份查看所有其对应的分数数据
+     *
+     * @param request 请求实体
+     * @param model   model对象
+     * @return 页面
      */
-    @GetMapping("detail")
-    public String detail(HttpServletRequest request, Model model) {
+    @GetMapping("search-detail")
+    public String searchByAssignFromBtn(HttpServletRequest request, Model model)
+    {
+        //②将获取到的id返回到前端弹出层页面
         String id = request.getParameter("id");
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", id);
-        Map<String, Object> managerKpiScoreOld = managerKpiScoreService.findManagerKpiScoreOldDataByParams(params).get(0);
-        model.addAttribute("managerKpiScoreOld", managerKpiScoreOld);
+        String month = request.getParameter("month");
+        String year = request.getParameter("year");
+        String companyName = request.getParameter("companyName");
+        String managerName = request.getParameter("managerName");
+        model.addAttribute("id", id);
+        model.addAttribute("month", month);
+        model.addAttribute("year", year);
+        model.addAttribute("companyName", companyName);
+        model.addAttribute("managerName", managerName);
         return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-detail";
     }
+
+    /**
+     * 返回指定经理人分数明细表格数据
+     */
+    @GetMapping("getManagerScoreData")
+    @ResponseBody
+    public Map<String, Object> getManagerScoreData(HttpServletRequest request)
+    {
+        //④将传进来的参数交给数据库查，然后返回页面
+        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
+        String managerScoreDataId = request.getParameter("id");
+        System.out.println("managerScoreDataId = " + managerScoreDataId);
+        String managerScoreDataMonth = request.getParameter("month");
+        String managerScoreDataYear = request.getParameter("year");
+        String managerScoreDataCompanyName = request.getParameter("companyName");
+        String managerScoreDataManagerName = request.getParameter("managerName");
+        params.put("id",managerScoreDataId);
+        params.put("month",managerScoreDataMonth);
+        params.put("year",managerScoreDataYear);
+        params.put("companyName",managerScoreDataCompanyName);
+        params.put("managerName",managerScoreDataManagerName);
+        List<Map<String, Object>> managerScoreDataIdList = viewManagerKpiMonthService
+                .findViewManagerKpiMonthMapDataByParams(params);
+        System.out.println(managerScoreDataIdList);
+
+        if (managerScoreDataIdList.size() == 0)
+        {
+            result.put("code", 404);
+            result.put("msg", "未查出数据");
+        }
+        else
+        {
+            result.put("code", 0);
+            result.put("count", managerScoreDataIdList.size());
+            result.put("data", managerScoreDataIdList);
+        }
+        return result;
+    }
+
 
 
     //获取数据库里的数据,展示数据
