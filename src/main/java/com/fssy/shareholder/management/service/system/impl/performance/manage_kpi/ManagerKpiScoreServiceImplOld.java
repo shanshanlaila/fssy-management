@@ -1,6 +1,8 @@
 package com.fssy.shareholder.management.service.system.impl.performance.manage_kpi;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.mapper.Mapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiLib;
@@ -175,8 +177,14 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             managerKpiScoreOld.setRespDepartment(respDepartment);
             managerKpiScoreOld.setGroupImproveAction(groupImproveAction);
 
-            // 根据id进行判断，存在则更新，不存在则新增
-            saveOrUpdate(managerKpiScoreOld);
+            // 根据经理人姓名，年份，月份,公司名称进行判断，存在则更新，不存在则新增
+            UpdateWrapper<ManagerKpiScoreOld> managerKpiScoreOldUpdateWrapper = new UpdateWrapper<>();
+            managerKpiScoreOldUpdateWrapper.set("advantageAnalyze",advantageAnalyze)
+                    .set("disadvantageAnalyze",disadvantageAnalyze).set("riskDesc",riskDesc)
+                    .set("respDepartment",respDepartment).set("groupImproveAction",groupImproveAction)
+                    .eq("managerName",managerName).eq("year",year)
+                    .eq("month",month).eq("companyName",companyName);
+            managerKpiScoreMapper.update(null,managerKpiScoreOldUpdateWrapper);
             cell.setCellValue("导入成功");
 
         }

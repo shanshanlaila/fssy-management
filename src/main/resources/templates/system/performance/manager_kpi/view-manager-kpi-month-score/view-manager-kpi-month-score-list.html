@@ -313,7 +313,7 @@
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/performance/manager_kpi/view-manager-kpi-month-score/edit?id=' + data.id,
+                    content: '/system/performance/manager_kpi/view-manager-kpi-month-score/edit?id=' + data.id + '&managerName=' + data.managerName + '&month=' + data.month + '&year=' + data.year,
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
@@ -333,12 +333,12 @@
                 // console.log("list" + data.month)
                 layer.open({
                     type : 2,
-                    title : data.managerName + '的各项分数信息如下:' + data.id,
+                    title : data.managerName + '的各项分数信息如下:',
                     area : [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
                     //①获取需要查看的此条记录的指定数据
-                    content : '/system/performance/manager_kpi/view-manager-kpi-month-score/search-detail?id=' + data.id + '&month=' + data.month + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
+                    content : '/system/performance/manager_kpi/view-manager-kpi-month-score/search-detail?month=' + data.month + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
                     maxmin : true
                 });
             }

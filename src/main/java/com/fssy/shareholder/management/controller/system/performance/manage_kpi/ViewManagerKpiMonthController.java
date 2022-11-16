@@ -221,8 +221,14 @@ public class ViewManagerKpiMonthController {
     @GetMapping("edit")
     public String edit(HttpServletRequest request, Model model) {
         String id = request.getParameter("id");
+        String managerName = request.getParameter("managerName");
+        String month = request.getParameter("month");
+        String year = request.getParameter("year");
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
+        params.put("managerName", managerName);
+        params.put("month", month);
+        params.put("year", year);
         Map<String, Object> managerKpiScoreOld = managerKpiScoreService.findManagerKpiScoreOldDataByParams(params).get(0);
         model.addAttribute("managerKpiScoreOld", managerKpiScoreOld);
         return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-edit";
@@ -257,12 +263,10 @@ public class ViewManagerKpiMonthController {
     public String searchByAssignFromBtn(HttpServletRequest request, Model model)
     {
         //②将获取到的id返回到前端弹出层页面
-        String id = request.getParameter("id");
         String month = request.getParameter("month");
         String year = request.getParameter("year");
         String companyName = request.getParameter("companyName");
         String managerName = request.getParameter("managerName");
-        model.addAttribute("id", id);
         model.addAttribute("month", month);
         model.addAttribute("year", year);
         model.addAttribute("companyName", companyName);
@@ -280,21 +284,16 @@ public class ViewManagerKpiMonthController {
         //④将传进来的参数交给数据库查，然后返回页面
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> params = new HashMap<>();
-        String managerScoreDataId = request.getParameter("id");
-        System.out.println("managerScoreDataId = " + managerScoreDataId);
         String managerScoreDataMonth = request.getParameter("month");
         String managerScoreDataYear = request.getParameter("year");
         String managerScoreDataCompanyName = request.getParameter("companyName");
         String managerScoreDataManagerName = request.getParameter("managerName");
-        params.put("id",managerScoreDataId);
         params.put("month",managerScoreDataMonth);
         params.put("year",managerScoreDataYear);
         params.put("companyName",managerScoreDataCompanyName);
         params.put("managerName",managerScoreDataManagerName);
         List<Map<String, Object>> managerScoreDataIdList = viewManagerKpiMonthService
                 .findViewManagerKpiMonthMapDataByParams(params);
-        System.out.println(managerScoreDataIdList);
-
         if (managerScoreDataIdList.size() == 0)
         {
             result.put("code", 404);
