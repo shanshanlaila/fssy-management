@@ -108,8 +108,8 @@ public class ManagerKpiYear extends BaseModel {
     /**
      * 绩效标识：识别经营管理指标和绩效指标
      */
-    @TableField("performanceMark")
-    private String performanceMark;
+    @TableField("managerKpiMark")
+    private String managerKpiMark;
     /**
      * 是否是外派经理
      */

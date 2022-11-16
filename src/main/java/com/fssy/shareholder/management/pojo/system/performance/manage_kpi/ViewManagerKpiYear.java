@@ -139,6 +139,11 @@ public class ViewManagerKpiYear extends BaseModel {
      */
     @TableField("position")
     private String position;
+    /**
+     * 经理人标识
+     */
+    @TableField("managerKpiMark")
+    private String managerKpiMark;
 
     /**
      * 年份

@@ -134,12 +134,6 @@ public class ManageKpiMonthPerformanceSheetOutputService extends SheetOutputServ
                 .createCell(SheetService.columnToIndex("J"));
         monthCell.setCellStyle(style);
         monthCell.setCellValue("月份");
-        //年份
-        XSSFCell setMonthCell = twoRow
-                .createCell(SheetService.columnToIndex("L"));
-        setMonthCell.setCellStyle(style);
-        setMonthCell.setCellValue(ObjectUtils.isEmpty(data.get("month")) ? ""
-                :data.get("month").toString());
 
         // 3.设置合并单元格边框
         setRegionBorder(titleRange, sheet);

@@ -175,7 +175,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             }
 
             //自定义一个绩效标识，同时导入经营管理年度、月度、经理人年度KPI中
-            String performanceMark = "绩效指标";
+            String managerKpiMark = "经理人指标";
 
             //构建实体类
             ManagerKpiYear managerKpiYear = new ManagerKpiYear();
@@ -210,7 +210,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             ManageKpiYear manageKpiYear = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper).get(0);
 
             managerKpiYear.setManageKpiYearId(manageKpiYear.getId());  //经营管理年度指标id
-            managerKpiYear.setPerformanceMark(performanceMark);   //经理人年度KPI绩效标识
+            managerKpiYear.setManagerKpiMark(managerKpiMark);   //经理人年度KPI绩效标识
             managerKpiYear.setProjectType(projectType);
             managerKpiYear.setCompanyName(companyName);
             managerKpiYear.setYear(Integer.valueOf(year));
@@ -228,7 +228,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             //添加经营年度指标绩效标识
             ManageKpiYear kpiYear = new ManageKpiYear();
             kpiYear.setId(manageKpiYear.getId());         //经营管理年度id
-            kpiYear.setPerformanceMark(performanceMark);  //给经营管理年度添加绩效指标标识
+            kpiYear.setManagerKpiMark(managerKpiMark);  //给经营管理年度添加绩效指标标识
             cell.setCellValue("导入成功");
             manageKpiYearServiceImpl.saveOrUpdate(kpiYear);
         }
