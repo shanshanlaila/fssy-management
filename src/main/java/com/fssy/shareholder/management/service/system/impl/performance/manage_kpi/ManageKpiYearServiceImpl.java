@@ -148,7 +148,7 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             String mustInputTarget = cells.get(SheetService.columnToIndex("M"));
             String reachTarget = cells.get(SheetService.columnToIndex("N"));
             String challengeTarget = cells.get(SheetService.columnToIndex("O"));
-            String performanceMark= cells.get(SheetService.columnToIndex("P"));
+            String managerKpiMark= cells.get(SheetService.columnToIndex("P"));
             String evaluateMode= cells.get(SheetService.columnToIndex("Q"));
             String monitorDepartment = cells.get(SheetService.columnToIndex("AD"));
             String monitorUser = cells.get(SheetService.columnToIndex("AE"));
@@ -206,7 +206,7 @@ public class ManageKpiYearServiceImpl extends ServiceImpl<ManageKpiYearMapper, M
             manageKpiYear.setPastOneYearActual(pastOneYearActual);
             manageKpiYear.setPastTwoYearsActual(pastTwoYearsActual);
             manageKpiYear.setPastThreeYearsActual(pastThreeYearsActual);
-            manageKpiYear.setPerformanceMark(performanceMark);
+            manageKpiYear.setManagerKpiMark(managerKpiMark);
             manageKpiYear.setEvaluateMode(evaluateMode);
 
 

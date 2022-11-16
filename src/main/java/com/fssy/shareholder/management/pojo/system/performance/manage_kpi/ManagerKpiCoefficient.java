@@ -91,11 +91,6 @@ public class ManagerKpiCoefficient extends BaseModel {
     @TableField("position")
     private String position;
 
-    /**
-     * KPI项目名称
-     */
-    @TableField("projectDesc")
-    private String projectDesc;
 
     /**
      * 绩效考核系数
