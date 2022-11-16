@@ -16,10 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.*;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -92,7 +90,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
     @Transactional
     public boolean createScore(Map<String, Object> params) {
         //获取前端传进来的值
-        Object generalManagerValue = params.get("generalManager");
+        String generalManagerValue = (String) params.get("generalManager");
 
         QueryWrapper<ViewManagerKpiMonth> queryWrapper = getQueryWrapper(params);
         //条件查询出所有数据，对未锁定进行筛选
@@ -114,19 +112,25 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
         if(generalManagerValue.equals("是")){
             //算总经理的分数
             //遍历获取到符合条件的所有记录
+//            System.out.println("filterList = " + filterList.size());
             for (ViewManagerKpiMonth temp : filterList) {
                 //首先看符合条件的记录有几条，那就循环几次计算出所需要算的分数
                 //对执行的每一条
                 //①获取相应条件的记录中的权重和人工调整分数
-                BigDecimal proportion =  new BigDecimal(String.valueOf(temp.getProportion()));
+                BigDecimal proportion =  new BigDecimal(0);
+                if(!ObjectUtils.isEmpty(temp.getProportion())){
+                    proportion =  new BigDecimal(String.valueOf(temp.getProportion()));
+                }else {
+                    proportion =  new BigDecimal(0);
+                }
                 BigDecimal monthScoreAdjust = new BigDecimal(String.valueOf(temp.getMonthScoreAdjust()));
                 //②判断这条记录是哪种类型
                 String projectType = temp.getProjectType();
                 if(projectType.equals("经营管理指标")){
                     //③计算这条记录的经营绩效分数存入临时变量businessScoreTemp
                     //定义百分号
-                    BigDecimal per = new BigDecimal(0.01);
-                    BigDecimal businessScoreTemp = proportion.multiply(monthScoreAdjust).multiply(per);
+//                    BigDecimal per = new BigDecimal(0.01);.multiply(per)
+                    BigDecimal businessScoreTemp = proportion.multiply(monthScoreAdjust);
                     //并且将词条记录的经营绩效分数存入最终经营绩效分数,如果下调记录类型还是1，就可以进行分数求和
                     businessScore = businessScore.add(businessScoreTemp);
                 } else if(projectType.equals("激励约束项目")){
@@ -161,83 +165,115 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
         }else if (generalManagerValue.equals("否")) {
             //算分管经理的分数
             /**
-             * step1：拿businessScore + managerName
+             * step1：先拿businessScore
              */
-            //首先需要进行判断此公司是否计算经理人分数，如果没有则需要计算经理人分数
-            //所以需要拿出本公司总经理分数
-            params.put("generalManager","是");
+            //需要拿出本公司总经理分数，所以先设置generalManager=是
+            params.put("generalManager", "是");
+            //获取总经理的记录
             QueryWrapper<ManagerKpiScoreOld> newQueryWrapper = newGetQueryWrapper(params);
             List<ManagerKpiScoreOld> NewManagerKpiScoreOlds = managerKpiScoreMapper.selectList(newQueryWrapper);
             List<ManagerKpiScoreOld> newFilterList = NewManagerKpiScoreOlds.stream()
                     .filter(j -> j.getGeneralManager().equals("是")).collect(Collectors.toList());
             if (ObjectUtils.isEmpty(newFilterList)) {
-                throw new ServiceException("没有查出数据或已生成！生成失败！");
+                throw new ServiceException("没有查出数据或已生成或没有计算总经理的分数！生成失败！");
             }
             //现在已经查出本年本月本公司的总经理数据记录，并拿出businessScore
             BigDecimal newBusinessScore = newFilterList.get(0).getBusinessScore();
-            //拿出分管经理人姓名
-            String newManagerName = filterList.get(0).getManagerName();
-            /**
-             * step2：拿difficultCoefficient
-             */
+
+            //拿出他下面的分管经理人姓名，用的是最上面查询出来的数据filterList，在98行
+            HashSet<String> setManageName = new HashSet<>();
+            //将人名存入set中
+            for (int j = 0; j < filterList.size(); j++) {
+                setManageName.add(filterList.get(j).getManagerName());
+            }
+            //将set转为list,方便拿姓名
+            ArrayList<String> listManagerName = new ArrayList<>(setManageName);
             params.remove("month");
-            params.put("generalManager","否");
-            System.out.println(params);
-            //还需要拿出difficultyCoefficient,通过下面两条语句拿出系数表中的值
-            QueryWrapper<ManagerKpiCoefficient> newQueryWrappers = newGetQueryWrappers(params);
-            List<ManagerKpiCoefficient> ManagerKpiCoefficients = managerKpiCoefficientMapper.selectList(newQueryWrappers);
-            BigDecimal difficultCoefficient = ManagerKpiCoefficients.get(0).getDifficultCoefficient();
+            params.put("generalManager", "否");
+
             /**
-             * step3：计算businessScore + incentiveScore + scoreSys
+             * step3：计算businessScore & incentiveScore & scoreSys
              */
             //计算分管经理分
-            //遍历获取到符合条件的所有记录
-            for (ViewManagerKpiMonth temp : filterList) {
-                //首先看符合条件的记录有几条，那就循环几次计算出所需要算的分数
-                //对执行的每一条
-                //①获取相应条件的记录中的权重和人工调整分数
-                BigDecimal proportion =  new BigDecimal(String.valueOf(temp.getProportion()));
-                BigDecimal monthScoreAdjust = new BigDecimal(String.valueOf(temp.getMonthScoreAdjust()));
-                //②判断这条记录是哪种类型
-                String projectType = temp.getProjectType();
-                if(projectType.equals("经营管理指标")){
-                    //③计算这条记录的经营绩效分数存入临时变量businessScoreTemp
-                    //定义百分号
-                    BigDecimal per = new BigDecimal(0.01);
-                    BigDecimal businessScoreTemp = proportion.multiply(monthScoreAdjust).multiply(per);
-                    //并且将词条记录的经营绩效分数存入最终经营绩效分数,如果下调记录类型还是1，就可以进行分数求和
-                    businessScore = businessScore.add(businessScoreTemp);
-                } else if(projectType.equals("激励约束项目")){
-                    //④计算这条记录的激励约束分数存入临时变量incentiveScoreTemp
-                    //将人工生成分数直接赋值给临时变量
-                    BigDecimal incentiveScoreTemp = monthScoreAdjust;
-                    //并且将词条记录的激励约束分数存入最终激励约束分数,如果下调记录类型还是2，就可以进行分数求和
-                    incentiveScore = incentiveScore.add(incentiveScoreTemp);
+            //按人进行计算
+            for (String name : listManagerName) {
+                //对要计算的变量再次进行初始化
+                businessScore = new BigDecimal(0);
+                incentiveScore = new BigDecimal(0);
+                scoreSys = new BigDecimal(0);
+                scoreSysTemp = new BigDecimal(0);
+                sumTemp = new BigDecimal(0);
+                //首先进行查询获取到此(name)分管经理的所有记录
+                QueryWrapper<ViewManagerKpiMonth> queryWrappers = getQueryWrapper(params);
+                List<ViewManagerKpiMonth> NewViewManagerKpiMonths = viewManagerKpiMonthMapper.selectList(queryWrappers);
+                List<ViewManagerKpiMonth> newFilterLists = NewViewManagerKpiMonths.stream()
+                        .filter(k -> k.getStatus().equals("已锁定") && (k.getManagerName().equals(name))).collect(Collectors.toList());
+                if (ObjectUtils.isEmpty(newFilterLists)) {
+                    throw new ServiceException("没有查出数据或已生成！生成失败！");
                 }
-                i--;
-                //⑤计算系统生成分数也就是分管经理分数
-                BigDecimal temp1 = new BigDecimal(0.6);
-                scoreSysTemp = businessScore.add(incentiveScore);
-                sumTemp = scoreSysTemp.multiply(difficultCoefficient);
-                scoreSys = newBusinessScore.multiply(temp1).add(sumTemp);
-                //⑥向数据库插入数据
-                if(i == 0){
-                    //对score表插入数据
-                    ManagerKpiScoreOld managerKpiScore = new ManagerKpiScoreOld();
-                    managerKpiScore.setManagerName(temp.getManagerName());
-                    managerKpiScore.setCompanyName(temp.getCompanyName());
-                    managerKpiScore.setYear(temp.getYear());
-                    managerKpiScore.setPosition(temp.getPosition());
-                    managerKpiScore.setGeneralManager(temp.getGeneralManager());
-                    managerKpiScore.setMonth(temp.getMonth());
-                    managerKpiScore.setBusinessScore(businessScore);
-                    managerKpiScore.setIncentiveScore(incentiveScore);
-                    managerKpiScore.setScoreAuto(scoreSys);
-                    managerKpiScore.setScoreAdjust(scoreSys);
-                    managerKpiScore.setDifficultyCoefficient(difficultCoefficient);
-                    managerKpiScore.setGeneralManagerScore(newBusinessScore);
-                    //插入数据
-                    managerKpiScoreMapper.insert(managerKpiScore);
+                //其次拿出不同分管经理人的难度系数
+                /**
+                 * step2：拿difficultCoefficient
+                 */
+                //还需要拿出difficultyCoefficient,通过下面两条语句拿出系数表中的值
+                QueryWrapper<ManagerKpiCoefficient> newQueryWrappers = newGetQueryWrappers(params);
+                List<ManagerKpiCoefficient> ManagerKpiCoefficients = managerKpiCoefficientMapper.selectList(newQueryWrappers);
+                List<ManagerKpiCoefficient> newFilterListss = ManagerKpiCoefficients.stream()
+                        .filter(k -> k.getManagerName().equals(name)).collect(Collectors.toList());
+                BigDecimal difficultCoefficient = newFilterListss.get(0).getDifficultCoefficient();
+                //获取长度
+                int j = newFilterLists.size();
+                //遍历获取到符合条件的所有记录
+                for (ViewManagerKpiMonth temp : newFilterLists) {
+                    //①获取相应条件的记录中的权重和人工调整分数
+                    BigDecimal proportion = new BigDecimal(0);
+                    if (!ObjectUtils.isEmpty(temp.getProportion())) {
+                        proportion = new BigDecimal(String.valueOf(temp.getProportion()));
+                    } else {
+                        proportion = new BigDecimal(0);
+                    }
+                    BigDecimal monthScoreAdjust = new BigDecimal(String.valueOf(temp.getMonthScoreAdjust()));
+                    //②判断这条记录是哪种类型
+                    String projectType = temp.getProjectType();
+                    if (projectType.equals("经营管理指标")) {
+                        //③计算这条记录的经营绩效分数存入临时变量businessScoreTemp
+
+                        BigDecimal businessScoreTemp = proportion.multiply(monthScoreAdjust);
+                        //并且将词条记录的经营绩效分数存入最终经营绩效分数,如果下调记录类型还是1，就可以进行分数求和
+                        businessScore = businessScore.add(businessScoreTemp);
+                    } else if (projectType.equals("激励约束项目")) {
+                        //④计算这条记录的激励约束分数存入临时变量incentiveScoreTemp
+                        //将人工生成分数直接赋值给临时变量
+                        BigDecimal incentiveScoreTemp = monthScoreAdjust;
+                        //并且将词条记录的激励约束分数存入最终激励约束分数,如果下调记录类型还是2，就可以进行分数求和
+                        incentiveScore = incentiveScore.add(incentiveScoreTemp);
+                    }
+                    j--;
+                    //⑤计算系统生成分数也就是分管经理分数
+                    BigDecimal temp1 = new BigDecimal(0.6);
+                    scoreSysTemp = businessScore.add(incentiveScore);
+                    sumTemp = scoreSysTemp.multiply(difficultCoefficient);
+                    scoreSys = newBusinessScore.multiply(temp1).add(sumTemp);
+                    //⑥向数据库插入数据
+                    if (j == 0) {
+                        //对score表插入数据
+                        ManagerKpiScoreOld managerKpiScore = new ManagerKpiScoreOld();
+                        managerKpiScore.setManagerName(temp.getManagerName());
+                        managerKpiScore.setCompanyName(temp.getCompanyName());
+                        managerKpiScore.setYear(temp.getYear());
+                        managerKpiScore.setPosition(temp.getPosition());
+                        managerKpiScore.setGeneralManager(temp.getGeneralManager());
+                        managerKpiScore.setMonth(temp.getMonth());
+                        managerKpiScore.setBusinessScore(businessScore);
+                        managerKpiScore.setIncentiveScore(incentiveScore);
+                        managerKpiScore.setScoreAuto(scoreSys);
+                        managerKpiScore.setScoreAdjust(scoreSys);
+                        managerKpiScore.setDifficultyCoefficient(difficultCoefficient);
+                        managerKpiScore.setGeneralManagerScore(newBusinessScore);
+                        //插入数据
+                        managerKpiScoreMapper.insert(managerKpiScore);
+                    }
+
                 }
             }
         }
