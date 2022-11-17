@@ -31,6 +31,9 @@
                             <input type="text" name="companyName" placeholder="公司名称查询" autocomplete="off"
                                    class="layui-input">
                         </div>
+<!--                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">-->
+<!--                            <div id="companyName"></div>-->
+<!--                        </div>-->
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="year" placeholder="创建年份查询" autocomplete="off"
                                    class="layui-input">
@@ -40,8 +43,11 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="projectType" placeholder="指标类型查询" autocomplete="off"
-                                   class="layui-input">
+                            <select name="projectType" id="projectType">
+                                <option value="">指标类别查询</option>
+                                <option value="激励约束项目">激励约束项目</option>
+                                <option value="经营管理指标">经营管理指标</option>
+                            </select>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="projectDesc" placeholder="项目名称查询" autocomplete="off"
@@ -60,17 +66,17 @@
                             </button>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <button shiro:haspermission="system:performance:manager_kpi:manage-kpi-year:index"
+                            <button shiro:haspermission="system:performance:manager_kpi:view-manage-year:yearIndex"
                                     class="layui-btn layui-btn-sm" lay-submit="" lay-filter="yearImport">导入年度经营管理指标附件
                             </button>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <button shiro:haspermission="system:performance:manager_kpi:manage-kpi-month-aim:index"
+                            <button shiro:haspermission="system:performance:manager_kpi:view-manage-month-aim:monthAimIndex"
                                     class="layui-btn layui-btn-sm" lay-submit="" lay-filter="monthAimImport">导入月度目标附件
                             </button>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <button shiro:haspermission="system:performance:manager_kpi:manage-kpi-month-performance:index"
+                            <button shiro:haspermission="system:performance:manager_kpi:view-manage-month-performance:monthPerformanceIndex"
                                     class="layui-btn layui-btn-sm" lay-submit="" lay-filter="monthPerformanceImport">
                                 导入月度实绩附件
                             </button>
@@ -138,7 +144,7 @@
                 type: 2,
                 title: "上传经营管理年度指标",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/performance/manager_kpi/manage-kpi-year/yearIndex',
+                content: '/system/performance/manager_kpi/view-manage-month-performance/yearIndex',
                 scrollbar: true,
                 maxmin: true,
             });
@@ -150,7 +156,7 @@
                 type: 2,
                 title: "上传经营管理月度目标",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/performance/manager_kpi/manage-kpi-month-aim/monthAimIndex',
+                content: '/system/performance/manager_kpi/view-manage-month-performance/monthAimIndex',
                 scrollbar: true,
                 maxmin: true,
             });
@@ -162,12 +168,30 @@
                 type: 2,
                 title: "上传经营管理月度实绩指标",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/performance/manager_kpi/manage-kpi-month-performance/monthPerformanceIndex',
+                content: '/system/performance/manager_kpi/view-manage-month-performance/monthPerformanceIndex',
                 scrollbar: true,
                 maxmin: true,
             });
             return false;
         });
+        // // 岗位查询下拉列表
+        // let companyName = xmSelect.render({
+        //     el: '#companyName', // 绑定
+        //     language: 'zn',
+        //     data: [[${roleNameList}]],// model过来的
+        //     filterable: true,
+        //     // radio: true,// 是否是单选
+        //     tips: '企业名称查询',
+        //     toolbar: {
+        //         show: true
+        //     },
+        //     paging: true, // 分页
+        //     pageSize: 30,
+        //     style: {
+        //         width: '160px', 'min-height': '28px', 'line-height': '28px',
+        //     },
+        //     name: 'companyId',// 传到后端选择的roleId集合字符串
+        // });
         // 实例表格
         var dataTable = table.render({
             elem: '#dataTable',
@@ -192,6 +216,7 @@
                     {
                         field: 'manageKpiYearId',
                         title: '序号',
+                        fixed: 'left',
                         align: 'center',
                         width: 80,
                         rowspan: 2
@@ -201,35 +226,39 @@
                         title: '企业名称',
                         width: 150,
                         align: 'center',
-                        rowspan: 2
+                        rowspan: 2,
+                        fixed: 'left'
                     },
                     {
                         field: 'projectType',
-                        title: '重点工作',
+                        title: '指标类别',
                         align: 'center',
                         width: 130,
-                        rowspan: 2
+                        rowspan: 2,
+                        fixed: 'left'
                     },
                     {
                         field: 'projectDesc',
-                        title: '管理项目',
+                        title: '指标名称',
                         align: 'center',
                         width: 130,
-                        rowspan: 2
+                        rowspan: 2,
+                        fixed: 'left'
                     },
                     {
                         field: 'kpiDefinition',
                         title: '管理项目定义',
                         align: 'center',
                         width: 170,
-                        rowspan: 2
+                        rowspan: 2,
+                        fixed: 'left'
                     },
                     {
                         field: 'dataSource',
                         title: '数据来源部门',
                         align: 'center',
                         width: 100,
-                        rowspan: 2
+                        rowspan: 2,
                     },
                     {
                         field: 'unit',

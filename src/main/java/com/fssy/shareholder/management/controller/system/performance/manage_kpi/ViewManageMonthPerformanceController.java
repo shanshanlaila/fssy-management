@@ -101,7 +101,7 @@ public class ViewManageMonthPerformanceController {
         //Sql语句
         params.put("select", "id,projectType,projectDesc,kpiFormula,dataSource,unit,benchmarkCompany," +
                 "benchmarkValue,pastThreeYearsActual,pastTwoYearsActual,pastOneYearActual,basicTarget,mustInputTarget,reachTarget,challengeTarget," +
-                "monthTarget,monthActualValue,accumulateTarget,accumulateActual,analyzeRes,performanceMark,evaluateMode");
+                "monthTarget,monthActualValue,month,accumulateTarget,accumulateActual,analyzeRes,performanceMark,evaluateMode");
         //查询
         List<Map<String, Object>> viewManageMonthPerformanceMapDataByParams = viewManageMonthPerformanceService.findViewManageMonthPerformanceMapDataByParams(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
@@ -142,7 +142,7 @@ public class ViewManageMonthPerformanceController {
      * @param model
      * @return 页面
      */
-    @RequiredLog("附件上传")
+    @RequiredLog("年度附件上传")
     @GetMapping("yearIndex")
     @RequiresPermissions("system:performance:manager_kpi:view-manage-year:yearIndex")
     public String yearDataAttachmentIndex(Model model) {
@@ -231,7 +231,7 @@ public class ViewManageMonthPerformanceController {
      * @param model
      * @return 页面
      */
-    @RequiredLog("附件上传")
+    @RequiredLog("月度目标附件上传")
     @GetMapping("monthAimIndex")
     @RequiresPermissions("system:performance:manager_kpi:view-manage-month-aim:monthAimIndex")
     public String monthAimDataAttachmentIndex(Model model) {
@@ -250,7 +250,7 @@ public class ViewManageMonthPerformanceController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度目标数据"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/view-manage-month-aim/view-manage-month-aim-attachment-list";
+        return "/system/performance/manager_kpi/view-manage-month-performance/view-manage-month-aim-attachment-list";
     }
     /**
      * 附件上传 （月度目标）
@@ -319,7 +319,7 @@ public class ViewManageMonthPerformanceController {
      * @param model
      * @return 页面
      */
-    @RequiredLog("附件上传")
+    @RequiredLog("月度实绩附件上传")
     @RequiresPermissions("system:performance:manager_kpi:view-manage-month-performance:monthPerformanceIndex")
     @GetMapping("monthPerformanceIndex")
     public String monthPerformanceDataAttachmentIndex(Model model) {

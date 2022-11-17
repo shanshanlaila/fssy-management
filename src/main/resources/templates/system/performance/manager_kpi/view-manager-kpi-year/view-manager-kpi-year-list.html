@@ -40,8 +40,11 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="projectType" placeholder="项目类别查询" autocomplete="off"
-                                   class="layui-input">
+                            <select name="projectType" id="projectType">
+                                <option value="">指标类别查询</option>
+                                <option value="激励约束项目">激励约束项目</option>
+                                <option value="经营管理指标">经营管理指标</option>
+                            </select>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 130px;">
                             <input type="text" name="dataSource" placeholder="数据来源部门查询" autocomplete="off"
@@ -149,11 +152,13 @@
                     {
                         field: 'id',
                         title: '序号',
+                        fixed: 'left',
                         align: 'center',
                         width: 80
                     },
                     {
                         field: 'companyName',
+                        fixed: 'left',
                         title: '企业名称',
                         align: 'center',
                         width: 130,
@@ -161,12 +166,14 @@
                     {
                         field: 'managerName',
                         title: '经理人姓名',
+                        fixed: 'left',
                         align: 'center',
                         width: 100
                     },
                     {
                         field: 'position',
                         title: '职位',
+                        fixed: 'left',
                         align: 'center',
                         width: 100
                     },

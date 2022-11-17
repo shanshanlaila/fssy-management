@@ -28,8 +28,11 @@
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="projectDesc" placeholder="指标类别查询" autocomplete="off"
-                                   class="layui-input">
+                            <select name="projectType" id="projectType">
+                                <option value="">指标类别查询</option>
+                                <option value="激励约束项目">激励约束项目</option>
+                                <option value="经营管理指标">经营管理指标</option>
+                            </select>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="projectDesc" placeholder="指标名称查询" autocomplete="off"

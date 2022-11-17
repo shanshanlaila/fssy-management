@@ -40,8 +40,11 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="projectType" placeholder="指标类型查询" autocomplete="off"
-                                   class="layui-input">
+                            <select name="projectType" id="projectType">
+                                <option value="">指标类别查询</option>
+                                <option value="激励约束项目">激励约束项目</option>
+                                <option value="经营管理指标">经营管理指标</option>
+                            </select>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="projectDesc" placeholder="项目名称查询" autocomplete="off"
@@ -158,6 +161,7 @@
                     {
                         field: 'manageKpiYearId',
                         title: '序号',
+                        fixed: 'left',
                         align: 'center',
                         width: 80,
                         rowspan: 2
@@ -165,6 +169,7 @@
                     {
                         field: 'companyName',
                         title: '企业名称',
+                        fixed: 'left',
                         width: 150,
                         align: 'center',
                         rowspan: 2
@@ -172,13 +177,15 @@
                     {
                         field: 'projectType',
                         title: '指标类别',
+                        fixed: 'left',
                         align: 'center',
                         width: 130,
                         rowspan: 2
                     },
                     {
-                        field: '指标名称',
-                        title: '管理项目',
+                        field: 'projectDesc',
+                        title: '指标名称',
+                        fixed: 'left',
                         align: 'center',
                         width: 130,
                         rowspan: 2
@@ -186,6 +193,7 @@
                     {
                         field: 'kpiDefinition',
                         title: '管理项目定义',
+                        fixed: 'left',
                         align: 'center',
                         width: 170,
                         rowspan: 2
