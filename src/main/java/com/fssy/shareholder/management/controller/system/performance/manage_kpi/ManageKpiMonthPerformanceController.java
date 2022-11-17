@@ -1,7 +1,6 @@
 package com.fssy.shareholder.management.controller.system.performance.manage_kpi;
 
 
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
@@ -59,6 +58,7 @@ public class ManageKpiMonthPerformanceController {
 
     /**
      * 经营管理月度实绩管理页面
+     *
      * @param model
      * @return
      */
@@ -72,54 +72,59 @@ public class ManageKpiMonthPerformanceController {
 
     /**
      * 返回经营管理月度实绩管理数据
+     *
      * @param request
      * @return
      */
     @GetMapping("getObjects")
     @ResponseBody
-    public Map<String,Object> getManageKpiMonthDatas(HttpServletRequest request){
-        String month = request.getParameter("month");
-        Map<String,Object> result = new HashMap<>();
-        Map<String,Object> params = getParams(request);
+    public Map<String, Object> getManageKpiMonthDatas(HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> params = getParams(request);
         int limit = Integer.parseInt(request.getParameter("limit"));
         int page = Integer.parseInt(request.getParameter("page"));
-        params.put("limit",limit);
-        params.put("page",page);
-        Page<Map<String,Object>> manageKpiMonthPage = manageKpiMonthPerformanceService.findManageKpiMonthDataMapListPerPageByParams(params);
-        if (manageKpiMonthPage.getTotal()==0){
-            result.put("code",404);
-            result.put("msg","未查出数据");
-        }else {
-            result.put("code",0);
-            result.put("count",manageKpiMonthPage.getTotal());
-            result.put("data",manageKpiMonthPage.getRecords());
+        params.put("limit", limit);
+        params.put("page", page);
+        Page<Map<String, Object>> manageKpiMonthPage = manageKpiMonthPerformanceService.findManageKpiMonthDataMapListPerPageByParams(params);
+        if (manageKpiMonthPage.getTotal() == 0) {
+            result.put("code", 404);
+            result.put("msg", "未查出数据");
+        } else {
+            result.put("code", 0);
+            result.put("count", manageKpiMonthPage.getTotal());
+            result.put("data", manageKpiMonthPage.getRecords());
         }
         return result;
     }
+
     /**
      * 修改经营管理指标月度实绩信息
+     *
      * @param request
      * @param model
      * @return
      */
     @GetMapping("edit")
     public String edit(HttpServletRequest request, Model model) {
-        //前端获取年度id、月份
-        String id = request.getParameter("id");
-        System.out.println("***************"+id);
+        //前端获取年度id
+        String manageKpiYearId = request.getParameter("manageKpiYearId");
+        //System.out.println("***************"+manageKpiYearId);
 //        String month = request.getParameter("month");
 //        //通过年度id、月份查询出写入月份的id
 //        QueryWrapper<ManageKpiMonthPerformance> queryWrapper = new QueryWrapper<>();
 //        queryWrapper.eq("manageKpiYearId",id).eq("month",month);
 //        List<ManageKpiMonthPerformance> manageKpiMonthPerformances = manageKpiMonthPerformanceMapper.selectList(queryWrapper);
 //        //id代入实现类中
-        ManageKpiMonthPerformance byId = manageKpiMonthPerformanceService.getById(id)/*(manageKpiMonthPerformances.get(0).getId())*/;
+//        Map<String, Object> params = getParams(request);
+//        Page<Map<String, Object>> mapListPerPageByParams = manageKpiMonthPerformanceMapper.selectMapsPage(params);
+        ManageKpiMonthPerformance byId = manageKpiMonthPerformanceService.getById(manageKpiYearId);
         model.addAttribute("manageKpiMonthPerformance", byId);
         return "/system/performance/manager_kpi/manage-kpi-month-performance/manage-kpi-month-performance-edit";
     }
 
     /**
      * 更新经营管理指标月度实绩信息
+     *
      * @param manageKpiMonthPerformance
      * @return
      */
@@ -133,24 +138,26 @@ public class ManageKpiMonthPerformanceController {
         }
         return SysResult.build(500, "分数信息没有更新，请检查数据后重新尝试");
     }
+
     /**
      * 与数据库进行匹配
+     *
      * @param request
      * @return
      */
-    private Map<String,Object> getParams(HttpServletRequest request){
-        Map<String,Object> params =new HashMap<>();
+    private Map<String, Object> getParams(HttpServletRequest request) {
+        Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
             params.put("id", request.getParameter("id"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("monthATarget"))){
-            params.put("monthATarget",request.getParameter("monthATarget"));
+        if (!ObjectUtils.isEmpty(request.getParameter("monthATarget"))) {
+            params.put("monthATarget", request.getParameter("monthATarget"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("monthAActual"))){
-            params.put("monthAActual",request.getParameter("monthAActual"));
+        if (!ObjectUtils.isEmpty(request.getParameter("monthAActual"))) {
+            params.put("monthAActual", request.getParameter("monthAActual"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))) {
-                params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));
+            params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("kpiDefinition"))) {
             params.put("kpiDefinition", request.getParameter("kpiDefinition"));
@@ -304,20 +311,21 @@ public class ManageKpiMonthPerformanceController {
 
     /**
      * excel 导出
-     * @param request 请求
+     *
+     * @param request  请求
      * @param response 响应
      */
     @RequiredLog("数据导出")
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
-        Map<String,Object> params = getParams(request);
+        Map<String, Object> params = getParams(request);
         //Sql语句
-        params.put("select","id,projectType,projectDesc,kpiFormula,dataSource,unit,benchmarkCompany," +
+        params.put("select", "id,projectType,projectDesc,kpiFormula,dataSource,unit,benchmarkCompany," +
                 "benchmarkValue,pastThreeYearsActual,pastTwoYearsActual,pastOneYearActual,basicTarget,mustInputTarget,reachTarget,challengeTarget," +
                 "monthTarget,monthActualValue,accumulateTarget,accumulateActual,analyzeRes,performanceMark,evaluateMode");
         //查询
-        List<Map<String,Object>> manageKpiMonthMapDataByParams = manageKpiMonthPerformanceService.findManageKpiMonthDataByParams(params);
-        LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();
+        List<Map<String, Object>> manageKpiMonthMapDataByParams = manageKpiMonthPerformanceService.findManageKpiMonthDataByParams(params);
+        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         //需要改变背景的格子
         fieldMap.put("id", "序号");
         fieldMap.put("projectType", "重点工作");
@@ -335,14 +343,14 @@ public class ManageKpiMonthPerformanceController {
         fieldMap.put("reachTarget", "达标目标");
         fieldMap.put("challengeTarget", "挑战目标");
         fieldMap.put("performanceMark", "经理人绩效指标标识");
-        fieldMap.put("evaluateMode","评分模式");
+        fieldMap.put("evaluateMode", "评分模式");
         fieldMap.put("monthTarget", "月度目标值");
         fieldMap.put("monthActualValue", "月度实绩值");
         fieldMap.put("accumulateTarget", "目标值(累计)");
         fieldMap.put("accumulateActual", "实际值(累计)");
         fieldMap.put("analyzeRes", "未达成或劣化原因分析");
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21);
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
         SheetOutputService sheetOutputService = new ManageKpiMonthPerformanceSheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(manageKpiMonthMapDataByParams)) {
             throw new ServiceException("未查出数据");
@@ -352,13 +360,14 @@ public class ManageKpiMonthPerformanceController {
 
     /**
      * 返回附件上传页面
+     *
      * @param model
      * @return 页面
      */
     @RequiredLog("附件上传")
     @RequiresPermissions("system:performance:manager_kpi:manage-kpi-month-performance:index")
     @GetMapping("index")
-    public String materialDataAttachmentIndex(Model model){
+    public String materialDataAttachmentIndex(Model model) {
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
@@ -370,8 +379,7 @@ public class ManageKpiMonthPerformanceController {
         params.put("noteEq", "经营管理月度实绩项目");
         List<ImportModule> importModules = importModuleService
                 .findImportModuleDataListByParams(params);
-        if (ObjectUtils.isEmpty(importModules))
-        {
+        if (ObjectUtils.isEmpty(importModules)) {
             System.out.println(importModules);
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度实绩项目"));
         }
@@ -381,7 +389,8 @@ public class ManageKpiMonthPerformanceController {
 
     /**
      * 附件上传
-     * @param file 前台传来的附件数据
+     *
+     * @param file       前台传来的附件数据
      * @param attachment 附件表的实体类
      * @param request
      * @return 附件id
@@ -389,7 +398,7 @@ public class ManageKpiMonthPerformanceController {
     @RequiredLog("经营管理月度实绩项目指标附件上传")
     @PostMapping("uploadFile")
     @ResponseBody
-    public SysResult uploadFile(@RequestParam("file")MultipartFile file, Attachment attachment, HttpServletRequest request){
+    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request) {
         //判断是否选择对应公司、年份
         Map<String, Object> params = getParams(request);
         String year = (String) params.get("year");
@@ -410,16 +419,15 @@ public class ManageKpiMonthPerformanceController {
         // 查询导入场景对象
         ImportModule module = importModuleService
                 .findById(InstandTool.integerToLong(attachment.getModule()));
-        if (ObjectUtils.isEmpty(module))
-        {
+        if (ObjectUtils.isEmpty(module)) {
             throw new ServiceException(
                     String.format("序号为【%s】的导入场景未维护，不允许导入", attachment.getModule()));
         }
         // 上传文件至数据库的类别，主要目的是分类展示
-        Attachment result = fileAttachmentTool.storeFileToModule(file, module,attachment);
+        Attachment result = fileAttachmentTool.storeFileToModule(file, module, attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = manageKpiMonthPerformanceService.readManageKpiMonthDataSource(result,companyName,year,month);
+            Map<String, Object> resultMap = manageKpiMonthPerformanceService.readManageKpiMonthDataSource(result, companyName, year, month);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));

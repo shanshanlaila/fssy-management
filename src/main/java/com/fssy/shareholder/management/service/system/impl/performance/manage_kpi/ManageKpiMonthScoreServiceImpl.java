@@ -86,7 +86,7 @@ public class ManageKpiMonthScoreServiceImpl extends ServiceImpl<ManageKpiMonthAi
         //条件查询出所有数据，进行未锁定和绩效指标进行筛选
         List<ManageKpiMonthAim> manageKpiMonthAims = manageKpiMonthAimMapper.selectList(queryWrapper);
         List<ManageKpiMonthAim> filterList = manageKpiMonthAims.stream()
-                .filter(i -> i.getStatus().equals("未锁定") && "绩效指标".equals(i.getPerformanceMark())).collect(Collectors.toList());
+                .filter(i -> i.getStatus().equals("未锁定") && "经理人指标".equals(i.getManagerKpiMark())).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(filterList)) {
             throw new ServiceException("没有查出数据或已生成！生成失败！");
         }

@@ -64,17 +64,7 @@ public class ManagerKpiCoefficientSheetOutputService extends SheetOutputService 
         //标题
         CellRangeAddress titleRange = new CellRangeAddress(0,0,
                 SheetService.columnToIndex("A"),
-                SheetService.columnToIndex("G"));
-
-        //副标题：企业名称
-        CellRangeAddress getCompanyName = new CellRangeAddress(1,1,
-                SheetService.columnToIndex("B"),
-                SheetService.columnToIndex("D"));
-
-
-
-
-        sheet.addMergedRegion(getCompanyName);
+                SheetService.columnToIndex("F"));
         sheet.addMergedRegion(titleRange);
 
         // 2.写内容
@@ -100,19 +90,18 @@ public class ManagerKpiCoefficientSheetOutputService extends SheetOutputService 
                 :data.get("companyName").toString());
         //年份
         XSSFCell yearCell = twoRow
-                .createCell(SheetService.columnToIndex("E"));
+                .createCell(SheetService.columnToIndex("C"));
         yearCell.setCellStyle(style);
         yearCell.setCellValue("年份");
         //年份
         XSSFCell setYearCell = twoRow
-                .createCell(SheetService.columnToIndex("F"));
+                .createCell(SheetService.columnToIndex("D"));
         setYearCell.setCellStyle(style);
         setYearCell.setCellValue(ObjectUtils.isEmpty(data.get("year")) ? ""
                 :data.get("year").toString());
 
         // 3.设置合并单元格边框
         setRegionBorder(titleRange, sheet);
-        setRegionBorder(getCompanyName, sheet);
         //从excel表中的第2行开始读
         return 2;
     }

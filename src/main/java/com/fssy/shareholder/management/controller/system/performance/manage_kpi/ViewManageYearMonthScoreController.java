@@ -308,8 +308,8 @@ public class ViewManageYearMonthScoreController {
         if (!ObjectUtils.isEmpty(request.getParameter("dataSource"))) {
             params.put("dataSource", request.getParameter("dataSource"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("performanceMark"))) {
-            params.put("performanceMark", request.getParameter("performanceMark"));
+        if (!ObjectUtils.isEmpty(request.getParameter("managerKpiMark"))) {
+            params.put("managerKpiMark", request.getParameter("managerKpiMark"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("benchmarkCompany"))) {
             params.put("benchmarkCompany", request.getParameter("benchmarkCompany"));

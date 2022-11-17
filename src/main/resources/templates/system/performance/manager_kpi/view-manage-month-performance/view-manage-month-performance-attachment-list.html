@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>经营管理月度实绩项目指标附件列表</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+
+<body>
+
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">经理人绩效管理</a> <a href="">经营指标管理</a>
+		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+                   onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+                                                              style="line-height: 30px"></i>
+</a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body">
+                        <div class="layui-inline layui-show-xs-block" style="width: 155px;">
+                            <input type="text" name="filename" placeholder="文件名称查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 155px;">
+                            <input type="text" name="importDateStart" placeholder="导入日期起" id="importDateStart"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 155px;">
+                            <input type="text" name="importDateEnd" placeholder="导入日期止" id="importDateEnd"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body ">
+                    <table class="layui-table layui-form" id="dataTable"
+                           lay-filter="dataTable"></table>
+                    <script type="text/html" id="tool">
+                        {{# if(d.status == 1) { }}
+                        <a lay-event="download" title="下载"><i class="layui-icon">&#xe601;</i></a>
+                        <a lay-event="delete" title="删除"><i class="layui-icon">&#xe640;</i></a>
+                        {{# } }}
+                    </script>
+                    <script type="text/html" id="toolbar">
+
+                        <form class="layui-form layui-col-space5">
+
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 80px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;公司名称</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="公司名称" id="companyName"
+                                           name="companyName"
+                                           lay-verify="" lay-reqText="公司名称为必填项">
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 50px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;年份</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="年份" id="year" name="year"
+                                           lay-verify="" lay-reqText="年份为必填项">
+                                </div>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 50px; line-height: 1.1; padding: 9px 0px;">
+                                    <span style="color: red;font-weight: bolder;"></span>&nbsp;月份</label>
+                                <div class="layui-input-inline" style="width: 140px;">
+                                    <input class="layui-input" placeholder="月份" id="month" name="month"
+                                           lay-verify="" lay-reqText="年份为必填项">
+                                </div>
+                            </div>
+
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="importDate" id="importDate" placeholder="导入日期" autocomplete="off"
+                                       class="layui-input laydate">
+                            </div>
+                            <!--添加导出弹窗字段-->
+
+                            <div class="layui-inline layui-show-xs-block">
+                                <button type="button" class="layui-btn layui-btn-sm" id="chooseFile">选择文件</button>
+                                <button class="layui-btn layui-btn-sm" lay-submit id="importAccountStatement" lay-filter="importAccountStatement">导入</button>
+                            </div>
+                        </form>
+
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['table', 'form', 'layer', 'laydate', 'upload','element'
+    ], function () {
+        var $ = layui.$,
+            table = layui.table,
+            form = layui.form,
+            layer = layui.layer,
+            laydate = layui.laydate,
+            upload = layui.upload, element = layui.element;
+        element.init();
+
+        // 实例表格
+        table.render({
+            elem: '#dataTable',
+            id: 'dataTable',
+            url: "/system/config/attachment/getObjects?module=[[${module}]]",
+            page: true,
+            size: 'sm',
+            height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            limit: 10,
+            limits: [10, 20, 30, 50],
+            toolbar: '#toolbar',
+            where: {
+                importDateStart: [[${importDateStart}]]
+            },
+            cols: [
+                [
+                    {
+                        field: 'id',
+                        title: '序号',
+                        width: 60,
+                        fixed: 'left'
+                    },
+                    {
+                        field: 'status',
+                        title: '文件状态',
+                        width: 100,
+                        templet: function (d) {
+                            switch (d.status) {
+                                case 0:
+                                    return '<span class="layui-badge layui-bg">文件失效</span>';
+                                case 1:
+                                    return '<span class="layui-badge layui-bg-green">文件有效</span>';
+                                default:
+                                    return '无对应状态';
+                            }
+                        }
+                    },
+                    {
+                        field: 'importStatus',
+                        title: '导入状态',
+                        width: 100,
+                        templet: function (d) {
+                            switch (d.importStatus) {
+                                case 0:
+                                    return '<span class="layui-badge layui-bg-gray">等待导入</span>';
+                                case 1:
+                                    return '<span class="layui-badge layui-bg-green">导入成功</span>';
+                                case 2:
+                                    return '<span class="layui-badge layui-bg-orange">导入失败</span>';
+                                default:
+                                    return '无对应状态';
+                            }
+                        }
+                    },
+                    {
+                        field: 'filename', title: '文件名称', width: 180
+                    },
+                    {
+                        field: 'createdAt',
+                        title: '导入时间',
+                        width: 160
+                    },
+                    {
+                        field: 'note',
+                        title: '备注',
+                        width: 200
+                    },
+                    {
+                        field: 'createdName',
+                        title: '导入人名称',
+                        width: 100
+                    },
+                    {
+                        field: 'importDate',
+                        title: '导入日期',
+                        width: 100
+                    },
+                    {
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    }
+                ]
+            ]
+        });
+
+        // 重新重置日期控件
+        laydate.render(
+            {
+                elem: '#importDateStart',
+                trigger: 'click',
+                type: 'date',
+                value: new Date()
+            });
+        laydate.render(
+            {
+                elem: '#importDateEnd',
+                trigger: 'click',
+                type: 'date'
+            });
+
+        // 重新重置日期控件
+        laydate.render(
+            {
+                elem: '#importDate',
+                trigger: 'click',
+                type: 'date',
+                value: moment().format("YYYY-MM-DD")
+            });
+
+        // 监听搜索按钮
+        form.on('submit(search)', function (data) {
+            // 重新加载表格
+            table.reload('dataTable',
+                {
+                    where: data.field,
+                    page:
+                        {
+                            curr: 1
+                        }
+                });
+            // 重新重置日期控件
+            laydate.render(
+                {
+                    elem: '#importDate',
+                    trigger: 'click',
+                    type: 'date',
+                    value: moment().format("YYYY-MM-DD")
+                });
+
+            upload.render({
+                elem : '#chooseFile',
+                url : "/system/performance/manager_kpi/view-manage-month-performance/upMonthPerformanceLoadFile",
+                auto : false,
+                accept : 'file' //允许上传所有文件
+                ,
+                exts : 'xlxs|xls|xlsm|xlsx',
+                bindAction : '#importAccountStatement',
+                data : {
+                    '_token' : "{{csrf_token()}}"
+                },
+                before : function(obj) {
+                    layer.load();
+                    this.data.year = $('input[name=year]').val();
+                    this.data.companyName = $('input[name=companyName]').val();
+                    this.data.month = $('input[name=month]').val();
+                    this.data.importDate = $('input[name=importDate]').val();
+                    this.data.module = [[${module}]];
+                },
+                done : function(result) {
+                    layer.closeAll();
+                    if (result.status === 200) {
+                        layer.msg(result.msg, {
+                            icon : 6,
+                            time : 2000
+                        });
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            // 重新重置日期控件
+                            laydate.render(
+                                {
+                                    elem: '#importDate',
+                                    trigger: 'click',
+                                    type: 'date',
+                                    value: moment().format("YYYY-MM-DD")
+                                });
+                        }, 2000)
+                    } else {
+                        layer.msg(result.msg, {
+                            icon : 5,
+                            time : 4000
+                        });
+                        table.reload('dataTable');
+                    }
+                }
+            });
+            return false;
+        });
+
+        // 重新重置日期控件
+        upload.render({
+            elem : '#chooseFile',
+            url : "/system/performance/manager_kpi/view-manage-month-performance/upMonthPerformanceLoadFile",
+            auto : false,
+            accept : 'file' //允许上传所有文件
+            ,
+            exts : 'xlxs|xls|xlsm|xlsx',
+            bindAction : '#importAccountStatement',
+            data : {
+                '_token' : "{{csrf_token()}}"
+            },
+            before : function(obj) {
+                layer.load();
+                this.data.year = $('input[name=year]').val();
+                this.data.companyName = $('input[name=companyName]').val();
+                this.data.month = $('input[name=month]').val();
+                this.data.importDate = $('input[name=importDate]').val();
+                this.data.module = [[${module}]];
+
+
+            },
+            done : function(result) {
+                layer.closeAll();
+                if (result.status === 200) {
+                    layer.msg(result.msg, {
+                        icon : 6,
+                        time : 2000
+                    });
+                    setTimeout(function () {
+                        parent.layui.table.reload('dataTable');
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        // 重新重置日期控件
+                        laydate.render(
+                            {
+                                elem: '#importDate',
+                                trigger: 'click',
+                                type: 'date',
+                                value: moment().format("YYYY-MM-DD")
+                            });
+                    }, 2000)
+                } else {
+                    layer.msg(result.msg, {
+                        icon : 5,
+                        time : 4000
+                    });
+                    table.reload('dataTable');
+                }
+            }
+        });
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function() {
+            laydate.render({
+                elem : this,
+                //更换触发方式
+                trigger : 'click',
+                type : 'date',
+                value: new Date()
+            });
+        });
+
+        form.on('submit(importAccountStatement)', function(data) {
+            // 上传文件已经做了提交，这里不需要再进行表单提交
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        // 监听行工具事件
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'delete') {
+                layer.confirm('确认删除吗？',
+                    {
+                        icon: 3,
+                        title: '提示'
+                    }, function (index) {
+                        $.ajax(
+                            {
+                                url: '/system/config/attachment/' + data.id,
+                                type: 'DELETE',
+                                headers:
+                                    {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                            'content')
+                                    },
+                                success: function (result) {
+                                    layer.msg(result.msg);
+                                    if (result.status) {
+                                        setTimeout(function () {
+                                            table.reload('dataTable');
+                                            // 重新重置日期控件
+                                            laydate.render(
+                                                {
+                                                    elem: '#importDate',
+                                                    trigger: 'click',
+                                                    type: 'date',
+                                                    value: moment().format("YYYY-MM-DD")
+                                                });
+                                        }, 2000)
+                                    }
+                                }
+                            });
+                        layer.close(index);
+                    })
+            } else if (obj.event === 'download') {
+                window.location.href = '/system/config/attachment/downloadFile?id=' + data.id + '&md5Path=' + data.md5Path;
+            }
+        });
+
+    });
+
+</script>
+</body>
+</html>

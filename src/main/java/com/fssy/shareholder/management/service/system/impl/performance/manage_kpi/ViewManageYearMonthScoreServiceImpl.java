@@ -6,13 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthAimMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ViewManageYearMonthScoreMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiLib;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManageYearMonthScore;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ViewManageYearMonthScoreService;
-import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -58,7 +55,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Override
     public Page<ViewManageYearMonthScore> findViewManageYearMonthScoreDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ViewManageYearMonthScore> queryWrapper = getQueryWrapper(params);
-        queryWrapper.eq("performanceMark","绩效指标");
+        queryWrapper.eq("managerKpiMark","经理人指标");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<ViewManageYearMonthScore> myPage = new Page<>(page, limit);
@@ -75,7 +72,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Override
     public List<Map<String, Object>> findViewManageYearMonthScoreMapDataByParams(Map<String, Object> params) {
         QueryWrapper<ViewManageYearMonthScore> queryWrapper = getQueryWrapper(params);
-        queryWrapper.eq("performanceMark","绩效指标").eq("evaluateMode","人工评分");
+        queryWrapper.eq("managerKpiMark","经理人指标").eq("evaluateMode","人工评分");
         return viewManageYearMonthScoreMapper.selectMaps(queryWrapper);
     }
 
@@ -92,7 +89,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         //条件查询出所有数据，进行未锁定和绩效指标进行筛选
         List<ViewManageYearMonthScore> viewManageYearMonthScoreList = viewManageYearMonthScoreMapper.selectList(queryWrapper);
         List<ViewManageYearMonthScore> filterList = viewManageYearMonthScoreList.stream()
-                .filter(i -> i.getStatus().equals("未锁定") && "绩效指标".equals(i.getPerformanceMark()) && "系统评分".equals(i.getEvaluateMode())).collect(Collectors.toList());
+                .filter(i -> i.getStatus().equals("未锁定") && "经理人指标".equals(i.getManagerKpiMark()) && "系统评分".equals(i.getEvaluateMode())).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(filterList)) {
             throw new ServiceException("没有查出数据或已生成！生成失败！");
         }
