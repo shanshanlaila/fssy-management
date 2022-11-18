@@ -47,19 +47,41 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
     private ManagerKpiScoreMapperOld managerKpiScoreMapper;
 
     /**
-     * 通过查询条件 分页 查询列表
+     * 通过查询条件 分页 查询列表(绩效分数）
      *
      * @param params 查询条件
      * @return 分页数据
      */
     @Override
-    public Page<ManagerKpiScoreOld> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
+    public Page<ManagerKpiScoreOld> findManagerKpiScoreOldDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
         int limit = (int)params.get("limit");
         int page = (int)params.get("page");
         Page<ManagerKpiScoreOld> myPage = new Page<>(page,limit);
         return managerKpiScoreMapper.selectPage(myPage, queryWrapper);
     }
+
+    /**
+     * 通过查询条件 分页 查询列表（年度推移）
+     *
+     * @param params 查询条件
+     * @return 分页数据
+     */
+    @Override
+    public Page<Map<String,Object>> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
+        QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
+        StringBuilder stringBuilder = new StringBuilder("companyName, managerName,position,SUM( scoreAdjust ) AS newYear," +
+                "( SELECT SUM( scoreAdjust ) FROM bs_manager_kpi_score AS a WHERE a.YEAR = bs_manager_kpi_score.YEAR - 1 ) AS 'oneYear'," +
+                "( SELECT SUM( scoreAdjust ) FROM bs_manager_kpi_score AS b WHERE b.YEAR = bs_manager_kpi_score.YEAR - 2 ) AS 'twoYear'," +
+                "( SELECT SUM( scoreAdjust ) FROM bs_manager_kpi_score AS c WHERE c.YEAR = bs_manager_kpi_score.YEAR - 3 ) AS 'threeYear' ");
+        queryWrapper.select(stringBuilder.toString()).groupBy("year,managerName");
+        int limit = (int)params.get("limit");
+        int page = (int)params.get("page");
+        Page<Map<String,Object>> myPage = new Page<>(page,limit);
+        return managerKpiScoreMapper.selectMapsPage(myPage, queryWrapper);
+    }
+
+
 
     /**
      * 设置失败的内容
@@ -257,4 +279,6 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
         }
         return false;
     }
+
+
 }

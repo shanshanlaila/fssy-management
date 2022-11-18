@@ -16,12 +16,12 @@
 				<div class="layui-card-body ">
 					<table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
 				</div>
+				<script type="text/html" id="toolbar"></script>
 				<script th:inline="javascript">
 					layui.use([
-						'layer', 'table'
+						'table', 'form', 'layer', 'laydate'
 					], function() {
-						// console.log("detail" + [[${month}]])
-						var $ = layui.$, table = layui.table, layer = layui.layer;
+						var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
 						// 实例表格
 						table.render(
 						{
@@ -29,51 +29,51 @@
 							id : 'dataTable',
 							//③在弹出页面将获取到的此条记录的值交给数据库去查
 							url : "/system/performance/manager_kpi/view-manager-kpi-month-score/getManagerScoreData?month=" + [[${month}]] + '&year=' + [[${year}]] + '&companyName=' + [[${companyName}]] + '&managerName=' + [[${managerName}]],
+							totalRow: true,
+							size: 'sm',
 							height : 'full-100' ,// 设置高度，使数据置于滚动条控制下,
-							toolbar : '#toolbar',
-							defaultToolbar:['filter'],
+							toolbar: '#toolbar',
+							// defaultToolbar:['filter'],
 							page:false,
-							size : 'sm',
 							cols:
 								[
 									[
-										{
-											field: 'companyName',
-											title: '企业名称',
-											align: 'center',
-											fixed: 'left',
-											width: 130,
-										},
 										{
 											field: 'managerName',
 											title: '经理人姓名',
 											align: 'center',
 											fixed: 'left',
-											width: 130
-										},
-										{
-											field: 'year',
-											title: '年份',
-											align: 'center',
-											width: 100
-										},{
-											field: 'month',
-											title: '月份',
-											align: 'center',
-											width: 100
+											width: 120
 										},
 										{
 											field: 'projectType',
 											title: '重点工作',
 											align: 'center',
-											width: 130,
+											fixed: 'left',
+											width: 120,
 										},
 										{
 											field: 'projectDesc',
 											title: '管理项目',
 											align: 'center',
-											width: 130,
-										},{
+											fixed: 'left',
+											width: 200,
+										},
+										{
+											field: 'monthScoreAdjust',
+											title: '月度得分',
+											align: 'center',
+											fixed: 'left',
+											width: 80
+										},
+										{
+											field: 'proportion',
+											title: '权重',
+											align: 'center',
+											fixed: 'left',
+											width: 80
+										},
+										{
 											field: 'kpiFormula',
 											title: '管理项目定义',
 											align: 'center',
@@ -174,23 +174,10 @@
 											title: '分析结果',
 											align: 'center',
 											width: 80
-										},
-										{
-											field: 'monthScoreAdjust',
-											title: '月度得分',
-											align: 'center',
-											width: 80
-										},
-										{
-											field: 'proportion',
-											title: '权重',
-											align: 'center',
-											width: 80
-										},
+										}
 									]
 								]
 							});
-
 					});
 				</script>
 			</div>

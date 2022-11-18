@@ -158,7 +158,7 @@ public class ViewManagerKpiMonthController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
-        Page<ManagerKpiScoreOld> managerKpiScorePage = managerKpiScoreService.findViewManagerKpiMonthDataListPerPageByParams(params);
+        Page<ManagerKpiScoreOld> managerKpiScorePage = managerKpiScoreService.findManagerKpiScoreOldDataListPerPageByParams(params);
         if (managerKpiScorePage.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");

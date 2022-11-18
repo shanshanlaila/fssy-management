@@ -20,12 +20,19 @@ import java.util.Map;
 public interface ManagerKpiScoreServiceOld extends IService<ManagerKpiScoreOld> {
 
     /**
-     * 通过查询条件 分页查询列表
+     * 通过查询条件 分页查询列表（绩效分数计算）
      *
      * @param params 查询条件
      * @return 分页数据
      */
-    Page<ManagerKpiScoreOld> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params);
+    Page<ManagerKpiScoreOld> findManagerKpiScoreOldDataListPerPageByParams(Map<String, Object> params);
+    /**
+     * 通过查询条件 分页查询列表（年度推移）
+     *
+     * @param params 查询条件
+     * @return 分页数据
+     */
+    Page<Map<String,Object>> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params);
 
     /**
      * 读取附件数据到数据库表
@@ -50,4 +57,6 @@ public interface ManagerKpiScoreServiceOld extends IService<ManagerKpiScoreOld> 
      * 修改分数记录
      */
     public boolean updateManagerKpiScoreOldData(ManagerKpiScoreOld managerKpiScoreOld);
+
+
 }
