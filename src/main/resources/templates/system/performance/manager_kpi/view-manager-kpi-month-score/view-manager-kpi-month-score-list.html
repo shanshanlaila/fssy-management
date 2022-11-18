@@ -27,10 +27,6 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
-                        <!--                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">-->
-                        <!--                            <input type="text" name="managerName" placeholder="经理人姓名" autocomplete="off"-->
-                        <!--                                   class="layui-input">-->
-                        <!--                        </div>-->
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="companyName" placeholder="企业名称" autocomplete="off"
                                    class="layui-input">
@@ -166,6 +162,7 @@
                         field: 'position',
                         title: '职务',
                         align: 'center',
+                        fixed: 'left',
                         width: 80,
                     },
                     {
@@ -335,7 +332,7 @@
                 // console.log("list" + data.month)
                 layer.open({
                     type : 2,
-                    title : data.managerName + '的各项分数信息如下:',
+                    title : data.year + '年' + data.month  + '月--' + data.managerName + '--的各项分数信息如下:',
                     area : [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
