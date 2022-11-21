@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>人力资源部 审核新增工作流</cite></a>
+            <a> <cite>人力资源部审核新增工作流</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -83,9 +83,11 @@
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="yes">属于</button>
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="no" style="background-color: coral">不属于
-                                </button>
+                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="yes">属于新增工作流</button>
+                                <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit="" lay-filter="no">不属于新增工作流</button>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <span style="font-size: xx-small;color: grey">请对计划判断是否属于新增工作流,选择对应的操作按钮</span>
                             </div>
                         </form>
                     </script>
@@ -133,7 +135,16 @@
                     {
                         field: 'eventsId',
                         title: '对应事件清单序号',
-                        width: 120
+                        width: 120,
+                        fixed: 'left',
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
                     },
                     {
                         field: 'eventsFirstType',

@@ -221,14 +221,22 @@
                     {
                         field: 'eventsId',
                         title: '对应事件清单序号',
-                        width: 120
+                        width: 120,
+                        fixed: 'left',
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
                     },
                     {
                         field: 'status',
                         title: '履职计划状态',
                         width: 100,
                         templet: function (d) {
-                            console.log(d.status)
                             switch (d.status) {
                                 case '待提交审核':
                                     return '<span class="layui-badge layui-bg">待提交审核</span>';

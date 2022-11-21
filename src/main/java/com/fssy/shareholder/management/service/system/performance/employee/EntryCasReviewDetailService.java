@@ -68,20 +68,22 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
 
     /**
      * 批量审核-计划工作完成情况评价（部长）
+     *
      * @param entryReviewDetailIds 履职回顾的dis
-     * @param ministerReview 部长复核
+     * @param ministerReview       部长复核
      * @return 审核结果
      */
-    boolean batchAudit(List<String> entryReviewDetailIds,String ministerReview);
+    boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview);
 
     /**
      * 批量审核-计划工作完成评价（科长）
-     * @param entryReviewDetailIds  履职回顾的Ids
-     * @param chargeTransactionEvaluateLevel  事务类评价等级
-     * @param chargeTransactionBelowType 事务类评价不同类型
+     *
+     * @param entryReviewDetailIds           履职回顾的Ids
+     * @param chargeTransactionEvaluateLevel 事务类评价等级
+     * @param chargeTransactionBelowType     事务类评价不同类型
      * @return
      */
-    boolean batchAudit(List<String> entryReviewDetailIds,String chargeTransactionEvaluateLevel,String chargeTransactionBelowType);
+    boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType);
 
     /**
      * 新增单履职回顾
@@ -90,4 +92,12 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
      * @return
      */
     boolean saveOneReviewDetail(EntryCasReviewDetail entryCasReviewDetail);
+
+    /**
+     * 不根据计划创建履职回顾
+     *
+     * @param entryCasReviewDetail 回顾
+     * @return 结果
+     */
+    Boolean storeReviewNotPlan(EntryCasReviewDetail entryCasReviewDetail);
 }

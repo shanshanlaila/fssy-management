@@ -133,7 +133,16 @@
                     {
                         field: 'eventsId',
                         title: '对应事件清单序号',
-                        width: 120
+                        width: 120,
+                        fixed: "left",
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
                     },
                     {
                         field: 'eventsFirstType',

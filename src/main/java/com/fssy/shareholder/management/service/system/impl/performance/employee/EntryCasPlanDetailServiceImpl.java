@@ -15,6 +15,7 @@ import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.role.Role;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
@@ -22,6 +23,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCas
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -147,7 +149,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("Z"));// 每一行的结果信息上传到S列
             // 检查必填项
-            String id = cells.get(SheetService.columnToIndex("A"));// 岗位关系序号
+            String eventsRoleId = cells.get(SheetService.columnToIndex("A"));// 岗位关系序号
             String eventsId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
             String eventsFirstType = cells.get(SheetService.columnToIndex("C"));//事务类别
             String jobName = cells.get(SheetService.columnToIndex("D"));//工作职责
@@ -157,15 +159,15 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             String standardValue = cells.get(SheetService.columnToIndex("G"));// 事件价值标准分
             String mainOrNext = cells.get(SheetService.columnToIndex("H"));// 主/次担
             // 填写的数据
-            String eventsForm = cells.get(SheetService.columnToIndex("I"));//绩效类型
-            String planningWork = cells.get(SheetService.columnToIndex("J"));// 对应工作事件的计划内容
-            String times = cells.get(SheetService.columnToIndex("K"));// 频次
-            String planOutput = cells.get(SheetService.columnToIndex("L"));// 表单（输出内容）
-            String planStartDateStr = cells.get(SheetService.columnToIndex("M"));// 计划开始时间
-            String planEndDateStr = cells.get(SheetService.columnToIndex("N"));// 计划完成时间
-            String roleName = cells.get(SheetService.columnToIndex("O"));// 岗位名称
-            String userName = cells.get(SheetService.columnToIndex("P"));// 岗位人员姓名
-            String applyDateStr = cells.get(SheetService.columnToIndex("Q"));// 申报月份
+            //String eventsForm = cells.get(SheetService.columnToIndex("I"));//绩效类型
+            String planningWork = cells.get(SheetService.columnToIndex("I"));// 对应工作事件的计划内容
+            String times = cells.get(SheetService.columnToIndex("J"));// 频次
+            String planOutput = cells.get(SheetService.columnToIndex("K"));// 表单（输出内容）
+            String planStartDateStr = cells.get(SheetService.columnToIndex("L"));// 计划开始时间
+            String planEndDateStr = cells.get(SheetService.columnToIndex("M"));// 计划完成时间
+            //String roleName = cells.get(SheetService.columnToIndex("N"));// 岗位名称
+            String userName = cells.get(SheetService.columnToIndex("N"));// 岗位人员姓名
+            //String applyDateStr = cells.get(SheetService.columnToIndex("Q"));// 申报日期
             // 检查必填项
             //2022/11/7，当事件类型为新增工作流式，事件清单序号可以为空
                /* if (ObjectUtils.isEmpty(eventsId)) {
@@ -179,24 +181,25 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 cell.setCellValue("部门名称不能为空");
                 continue;
             }
-            if (StringUtils.isEmpty(roleName)) {
+            /*if (StringUtils.isEmpty(roleName)) {
                 setFailedContent(result, String.format("第%s行的岗位名称为空", j + 1));
                 cell.setCellValue("岗位名称不能为空");
                 continue;
-            }
+            }*/
             if (StringUtils.isEmpty(userName)) {
                 setFailedContent(result, String.format("第%s行的员工名称为空", j + 1));
                 cell.setCellValue("员工名称不能为空");
                 continue;
             }
-            if (StringUtils.isEmpty(applyDateStr)) {
+            /*if (StringUtils.isEmpty(applyDateStr)) {
                 setFailedContent(result, String.format("第%s行的申报日期为空", j + 1));
                 cell.setCellValue("申报日期不能为空");
                 continue;
-            }
-            String applyDate = applyDateStr.trim().substring(0, 10);
+            }*/
+
+            /*String applyDate = applyDateStr.trim().substring(0, 10);
             String year = Arrays.asList(applyDate.split("-")).get(0);
-            String month = Arrays.asList(applyDate.split("-")).get(1);
+            String month = Arrays.asList(applyDate.split("-")).get(1);*/
             if (StringUtils.isEmpty(planStartDateStr)) {
                 setFailedContent(result, String.format("第%s行的计划开始时间为空", j + 1));
                 cell.setCellValue("计划开始时间不能为空");
@@ -215,15 +218,21 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 cell.setCellValue(String.format("序号为【%s】的事件清单状态不为完结，不能导入", eventsId));
                 continue;
             }*/
-            if (!(eventsForm.equals(PerformanceConstant.BASICS_EVENT)||eventsForm.equals(PerformanceConstant.EXPAND_EVENT))){
+            /*if (!(eventsForm.equals(PerformanceConstant.BASICS_EVENT) || eventsForm.equals(PerformanceConstant.EXPAND_EVENT))) {
                 setFailedContent(result, String.format("第%s行的绩效类型填写错误", j + 1));
                 cell.setCellValue("绩效类型填写错误");
                 continue;
-            }
+            }*/
 
             // 构建实体类
             EntryCasPlanDetail entryCasPlanDetail = new EntryCasPlanDetail();
-            entryCasPlanDetail.setEventsRoleId(Long.valueOf(id));
+            // 查询当前登录用户
+            User user = (User) SecurityUtils.getSubject().getPrincipal();
+            // 查询视图
+            ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(user);
+            if (!ObjectUtils.isEmpty(eventsRoleId)) {
+                entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
+            }
             entryCasPlanDetail.setEventsFirstType(eventsFirstType);
             entryCasPlanDetail.setJobName(jobName);
             entryCasPlanDetail.setWorkEvents(workEvents);
@@ -235,7 +244,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
             entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
-            entryCasPlanDetail.setEventsForm(eventsForm);
+            //entryCasPlanDetail.setEventsForm(eventsForm);
             entryCasPlanDetail.setAttachmentId(attachment.getId());
             // 数据库不能为null的字段设置值
             if (!ObjectUtils.isEmpty(eventsId)) {
@@ -251,16 +260,16 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 continue;
             }
             entryCasPlanDetail.setDepartmentId(departments.get(0).getId());
-            LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            roleLambdaQueryWrapper.eq(Role::getName, roleName);
+            //LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            /*roleLambdaQueryWrapper.eq(Role::getName, roleName);
             List<Role> roles = roleMapper.selectList(roleLambdaQueryWrapper);
             if (ObjectUtils.isEmpty(roles)) {
                 setFailedContent(result, String.format("第%s行的岗位名称未维护", j + 1));
                 cell.setCellValue("表中岗位名称未维护");
                 continue;
-            }
-            entryCasPlanDetail.setRoleName(roleName);
-            entryCasPlanDetail.setRoleId(roles.get(0).getId());
+            }*/
+            entryCasPlanDetail.setRoleName(departmentRoleByUser.getRoleName());
+            entryCasPlanDetail.setRoleId(departmentRoleByUser.getRoleId());
             entryCasPlanDetail.setUserName(userName);
             List<User> users = userMapper.selectList(new LambdaQueryWrapper<User>().eq(User::getName, userName));
             if (ObjectUtils.isEmpty(users)) {
@@ -269,10 +278,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 continue;
             }
             entryCasPlanDetail.setUserId(users.get(0).getId());
-            entryCasPlanDetail.setApplyDate(LocalDate.parse(applyDate));
-            entryCasPlanDetail.setYear(Integer.valueOf(year));
-            entryCasPlanDetail.setMonth(Integer.valueOf(month));
-            User user = (User) SecurityUtils.getSubject().getPrincipal();
+            entryCasPlanDetail.setApplyDate(LocalDate.now());
+            entryCasPlanDetail.setYear(LocalDate.now().getYear());
+            entryCasPlanDetail.setMonth(LocalDate.now().getMonthValue());
             entryCasPlanDetail.setCreatedAt(LocalDateTime.now());
             entryCasPlanDetail.setCreateId(user.getId());
             entryCasPlanDetail.setCreateDate(LocalDate.now());
@@ -281,9 +289,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
             entryCasMergeLambdaQueryWrapper
                     .eq(EntryCasMerge::getDepartmentName, departmentName)
-                    .eq(EntryCasMerge::getYear, year);
+                    .eq(EntryCasMerge::getYear, LocalDate.now().getYear());
 
-            String key = departmentName + ":" + year;
+            String key = departmentName + ":" + LocalDate.now().getYear();
             EntryCasMerge entryCasMerge;
             if (mergeMap.containsKey(key)) // 缓存存在则获取
             {
@@ -306,14 +314,14 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                     entryCasMerge.setAuditName(null);
                     entryCasMerge.setAuditId(null);
                     entryCasMerge.setAuditDate(null);
-                    entryCasMerge.setRoleId(roles.get(0).getId());
-                    entryCasMerge.setRoleName(roles.get(0).getName());
+                    entryCasMerge.setRoleId(departmentRoleByUser.getRoleId());
+                    entryCasMerge.setRoleName(departmentRoleByUser.getRoleName());
                     entryCasMerge.setUserId(user.getId());
                     entryCasMerge.setUserName(user.getName());
                     // mergeNo
-                    entryCasMerge.setApplyDate(LocalDate.parse(applyDate));
-                    entryCasMerge.setYear(Integer.valueOf(year));
-                    entryCasMerge.setMonth(Integer.valueOf(month));
+                    entryCasMerge.setApplyDate(LocalDate.now());
+                    entryCasMerge.setYear(LocalDate.now().getYear());
+                    entryCasMerge.setMonth(LocalDate.now().getMonthValue());
                     entryCasMerge.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
                     // serial
                     entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryCasMerge);
@@ -475,10 +483,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("statusCancel")) {
             queryWrapper.ne("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
         }
-        if (params.containsKey("twoStatus")){
+        if (params.containsKey("twoStatus")) {
             queryWrapper
-                    .eq("status",PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
-                    .and(item->item.eq("eventsFirstType",PerformanceConstant.EVENTS_FIRST_TYPE_B).or().eq("eventsFirstType",PerformanceConstant.EVENTS_FIRST_TYPE_C));
+                    .eq("status", PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
+                    .and(item -> item.eq("eventsFirstType", PerformanceConstant.EVENTS_FIRST_TYPE_B).or().eq("eventsFirstType", PerformanceConstant.EVENTS_FIRST_TYPE_C));
         }
         return queryWrapper;
     }
@@ -624,12 +632,12 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 }
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
-        }
-        else if (event.equals("no")) {
-            for (EntryCasPlanDetail entryCasPlanDetail :entryCasPlanDetails) {
+        } else if (event.equals("no")) {
+            for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR)) {
                     entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SELECT);
-                }entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
+                }
+                entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
         }
         return true;
