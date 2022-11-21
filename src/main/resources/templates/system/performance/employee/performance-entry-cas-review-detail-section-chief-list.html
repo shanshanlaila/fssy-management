@@ -23,16 +23,33 @@
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
+        <div class="layui-col-md2">
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
-                            <div id="departmentSelect"></div>
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
+                        <div class="layui-inline layui-show-xs-block" >
+                            <button class="layui-btn" lay-submit lay-filter="search1">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body ">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="toolbar1" th:inline="none">
+                        <form class="layui-form layui-col-space5">
+                        </form>
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md10">
+            <div class="layui-card">
+                <div class="layui-card-body ">
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input ">
@@ -62,7 +79,7 @@
                     </div>
                 </form>
                 <div class="layui-card-body">
-                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <table class="layui-table layui-form" id="dataTableRight" lay-filter="dataTableRight"></table>
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
@@ -109,11 +126,43 @@
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
 
-        // 实例表格
+
+        // 实例表格（左）
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/entry-cas-review-detail/getObjects",
+            page: true,
+            totalRow: true,
+            size: 'sm',
+            width:'50px',
+            height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            toolbar: '#5',
+            limit: 50,
+            limits: [50, 100, 200, 500],
+            where: {
+                // 向controller传入额外参数
+                eventsFirstType: '事务类',
+                status: '待科长审核',
+            },
+            cols: [
+                [
+                    {
+                        field: 'status',
+                        title: '履职计划状态',
+                        width: 110
+                    },
+                    {
+                        field: 'userName',
+                        title: '员工姓名',
+                        width: 100
+                    },
+                ]
+            ]
+        });
+        // 实例表格(右)
+            var dataTableRight = table.render({
+            elem: '#dataTableRight',
+            id: 'dataTableRight',
             page: true,
             totalRow: true,
             size: 'sm',
@@ -334,10 +383,17 @@
             }
         });
 
-        // 监听搜索按钮
-        form.on('submit(search)', function (data) {
+        // 监听搜索按钮(左)
+        form.on('submit(search1)', function (data) {
+            // 必填项控制
+            var roleIds = data.field.roleIds;
+            if (!roleIds) {
+                layer.msg("岗位名称为必填项，请选择岗位名称", {icon: 5, time: 4000});
+                return false;
+            }
             // 重新加载表格
             table.reload('dataTable', {
+                url: "/system/entry-cas-review-detail/getObjects",
                 where: data.field,
                 page: {
                     curr: 1
@@ -345,7 +401,37 @@
             });
             return false
         });
+        // 监听搜索按钮(右)
+        form.on('submit(search)', function (data) {
+            console.log('------------',data
+            )
+            // 重新加载表格
+            table.reload('dataTableRight', {
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false
+        });
+        //当下双击所选择的履职回顾id
+        var entryReviewDetailIds = null;
+        // 双击事件
+        table.on('rowDouble(dataTable)', function(obj) {
+            var data = obj.data;
+            bomListId = data.id;
 
+            // 重新加载表格
+            table.reload('dataTableRight', {
+                url : "/system/entry-cas-plan-detail/getObjects?entryReviewDetailIds=" + data.id,
+                // done:function (res) {
+                //     var arrayData = res.data;
+                //     arrayData.sort(function (a,b) {
+                //         return b.hierarchy - a.hierarchy;
+                //     })
+                // }
+            });
+        });
 
         // 导出
         form.on('submit(export)', function (data) {
@@ -371,7 +457,7 @@
         });
         // 一键审核
         form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
+            var checkStatus = table.checkStatus(dataTableRight.config.id),
                 data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
@@ -396,7 +482,7 @@
                     layer.closeAll();
                     layer.msg(result.msg);
                     if (result.status === 200) {
-                        table.reload('dataTable');
+                        table.reload('dataTableRight');
                     }
                 }
             });
@@ -404,24 +490,6 @@
         });
     });
 
-    // 部门查询下拉列表
-    let departmentSelect = xmSelect.render({
-        el: '#departmentSelect',
-        language: 'zn',
-        data: [[${departmentNameList}]],
-        filterable: true,
-        // radio: true,
-        tips: '部门查询',
-        toolbar: {
-            show: true
-        },
-        paging: true, // 分页
-        pageSize: 20,
-        style: {
-            width: '160px', 'min-height': '28px', 'line-height': '28px',
-        },
-        name: 'departmentIds',// 传到后端选择的departmentId集合字符串
-    });
     // 岗位查询下拉列表
     let roleSelect = xmSelect.render({
         el: '#roleSelect', // 绑定
