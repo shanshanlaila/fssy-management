@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>事件关联岗位数据管理</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="x-nav">
+		<span class="layui-breadcrumb">
+			<a> <cite>回顾关联事件岗位配比</cite></a>
+		</span>
+    <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right" onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height: 30px"></i>
+</a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body">
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label> <input
+                                type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
+                                autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="createDateEnd" placeholder="编制日期止" id="createDateEnd"
+                                   autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">生效日期</label> <input
+                                type="text" name="activeDateStart" placeholder="生效日期起" id="activeDateStart"
+                                autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
+                                   autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="departmentSelect"></div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="roleSelect"></div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="year" placeholder="编制年份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="month" placeholder="编制月份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="eventsType" placeholder="事件类别查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="userName" placeholder="用户查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use([
+        'table', 'form', 'layer', 'laydate'
+    ], function () {
+        var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+
+        // 监听搜索按钮
+        form.on('submit(search)', function (data) {
+            // 重新加载表格
+            table.reload('dataTable', {
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false
+        });
+
+        // 实例表格
+        var dataTable = table.render({
+            elem: '#dataTable',
+            id: 'dataTable',
+            url: "/system/performance/employee/events-relation-role/getObjects",
+            page: true,
+            totalRow: true,
+            size: 'sm',
+            height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            limit: 50,
+            limits: [
+                50, 100, 200, 500
+            ],
+            toolbar: '#toolbar',
+            where: {
+                idDesc: true
+            },
+            cols: [
+                [
+                    {
+                        field: 'id',
+                        title: '序号',
+                        fixed: 'left',
+                        width: 80
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        fixed: 'left',
+                        width: 130
+                    }, {
+                    field: 'workEvents',
+                    title: '工作事件',
+                    fixed: 'left',
+                    width: 150
+                }, {
+                    field: 'userName',
+                    title: '用户名称',
+                    width: 120
+                }, {
+                    field: 'roleName',
+                    title: '岗位名称',
+                    width: 100
+                }, {
+                    field: 'departmentName',
+                    title: '部门名称',
+                    width: 140
+                }, {
+                    field: 'isMainOrNext',
+                    title: '主担/次担',
+                    width: 110
+                }, {
+                    field: 'proportion',
+                    title: '比重',
+                    width: 90
+                },{
+                    field: 'standardValue',
+                    title: '事件标准价值',
+                    width: 90
+                },{
+                    field: 'delow',
+                    title: '不合格价值',
+                    width: 90
+                },{
+                    field: 'middle',
+                    title: '中价值',
+                    width: 90
+                },{
+                    field: 'fine',
+                    title: '良价值',
+                    width: 90
+                },{
+                    field: 'excellent',
+                    title: '优价值',
+                    width: 90
+                },
+                    {
+                    field: 'activeDate',
+                    title: '生效日期',
+                    width: 130
+                }, {
+                    field: 'year',
+                    title: '编制年份',
+                    width: 110
+                }, {
+                    field: 'month',
+                    title: '编制月份',
+                    width: 110
+                }, {
+                    field: 'jobName',
+                    title: '工作职责',
+                    width: 130
+                }, {
+                    field: 'eventsFirstType',
+                    title: '事件类型',
+                    width: 130
+                }, {
+                    field: 'roleId',
+                    title: '岗位序号',
+                    width: 80,
+                }, {
+                    field: 'eventsId',
+                    title: '事件序号',
+                    width: 80
+                }
+                ]
+            ]
+        });
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render(
+                {
+                    elem: this,
+                    //更换触发方式
+                    trigger: 'click',
+                    type: 'date'
+                });
+        });
+
+        // rowDouble实现双击选择
+        table.on('rowDouble(dataTable)', function (obj) {
+            var data = obj.data;
+            setValue(data['id'], '#eventsRoleId');
+            setValue(data['strategyFunctions'], '#strategyFunctions');
+            setValue(data['supportFunctions'], '#supportFunctions');
+            setValue(data['jobName'], '#jobName');
+            setValue(data['workEvents'], '#workEvents');
+            setValue(data['eventsFirstType'], '#eventsFirstType');
+            setValue(data['workOutput'], '#workOutput');
+            setValue(data['standardValue'], '#standardValue');
+            setValue(data['departmentName'], '#departmentName');
+            setValue(data['roleName'], '#roleName');
+            setValue(data['userName'], '#userName');
+            setValue(data['isMainOrNext'], '#isMainOrNext');
+            setValue(data['isMainOrNext'], '#mainOrNext');
+
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+        });
+
+        // value为本页面字段的数值，id为上一级页面字段的id值
+        function setValue(value, id) {
+            $(window.parent.document).find(id).val(value);
+        }
+
+        // 部门查询下拉列表
+        let departmentSelect = xmSelect.render({
+            el: '#departmentSelect',
+            language: 'zn',
+            data: [[${departmentList}]],
+            filterable: true,
+            // radio: true,
+            tips: '部门查询',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px'
+            },
+            name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+        });
+
+        // 岗位查询下拉列表
+        let roleSelect = xmSelect.render({
+            el: '#roleSelect',
+            language: 'zn',
+            data: [[${roleList}]],
+            filterable: true,
+            // radio: true,
+            tips: '岗位查询',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px'
+            },
+            name: 'roleIds',// 传到后端选择的departmentId集合字符串
+        });
+    });
+</script>
+</body>
+</html>

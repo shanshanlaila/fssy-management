@@ -14,11 +14,11 @@
 <!-- 引入zTree -->
 <div class="x-nav">
 		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">绩效系统</a> <a href="">员工绩效管理</a><a>
-				<cite>无标准事件管理</cite>
+				<cite>基础事件管理</cite>
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                                style="line-height: 30px"></i></a>
+                                                              style="line-height: 30px"></i></a>
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
@@ -30,7 +30,7 @@
                             <div id="departmentSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <input  type="text"  id = "year" name="year" placeholder="编制年份"
+                            <input type="text" id="year" name="year" placeholder="编制年份"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -68,7 +68,7 @@
 
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
-                                <select name="status" >
+                                <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="完结">完结</option>
                                     <option value="待填报价值">待填报价值</option>
@@ -85,9 +85,12 @@
                                 <i class="layui-icon">&#xe601</i>下载填写基础事件清单模板
                             </a>
                             <button shiro:hasPermission="system:performance:employee:event:attachment:withoutStandardImport"
-                            		lay-submit lay-filter="import" class="layui-btn">导入基础事件</button>
+                                    lay-submit lay-filter="import" class="layui-btn">导入基础事件
+                            </button>
                             <button shiro:hasPermission="system:performance:employee:event:attachment:importToCompleteRole"
-                            		lay-submit lay-filter="importToCompleteRole" class="layui-btn" title="请在系统自动打分前完成事件岗位分配情况，否则系统无法计算得分">导出事件清单维护事件岗位配比</button>
+                                    lay-submit lay-filter="importToCompleteRole" class="layui-btn"
+                                    title="请在系统自动打分前完成事件岗位分配情况，否则系统无法计算得分">导出事件清单维护事件岗位配比
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -132,7 +135,7 @@
                 //年选择器
                 laydate.render({
                     elem: '#year'
-                    ,type: 'year'
+                    , type: 'year'
                 });
                 // 实例表格
                 table
@@ -151,10 +154,10 @@
                                 ],
                             toolbar: '#toolbar',
                             size: 'sm',
-                             where: {
+                            where: {
                                 // 向controller传入额外参数
-                                 statusCancel:true,//不显示状态为取消的基础事件
-                                 departmentName:[[${departmentName}]]//初始化只显示当前登录人用户的所在部门的基础事件
+                                statusCancel: true,//不显示状态为取消的基础事件
+                                departmentName: [[${departmentName}]]//初始化只显示当前登录人用户的所在部门的基础事件
                             },
                             cols:
                                 [
@@ -285,11 +288,11 @@
                                             width: 130
                                         },
                                         {
-                                            fixed : 'right',
-                                            title : '操作',
-                                            width : 100,
-                                            align : 'center',
-                                            toolbar : '#tool'
+                                            fixed: 'right',
+                                            title: '操作',
+                                            width: 100,
+                                            align: 'center',
+                                            toolbar: '#tool'
                                         }
                                     ]
                                 ]
@@ -322,6 +325,16 @@
                     return false;
                 });
 
+                // 双击显示详情
+                table.on('rowDouble(dataTable)', function (obj) {
+                    let data = obj.data;
+                    layer.open({
+                        type: 2,
+                        content: '/system/performance/employee/eventsList/details/' + data.id,
+                        area:['1500px', '700px']
+                    })
+                })
+
                 // 部门查询下拉列表
                 let departmentSelect = xmSelect.render({
                     el: '#departmentSelect',
@@ -342,11 +355,9 @@
                 });
 
                 // 监听行工具事件
-                table.on('tool(dataTable)', function(obj)
-                {
+                table.on('tool(dataTable)', function (obj) {
                     var data = obj.data;
-                    if (obj.event === 'edit')
-                    { // 修改
+                    if (obj.event === 'edit') { // 修改
                         // if (data.status == '取消') {
                         //     layer.msg('不能修改取消状态的事件清单');
                         //     return false;
@@ -354,30 +365,25 @@
 
                         layer.open(
                             {
-                                type : 2,
-                                title : data.id + ':无标准事件信息修改',
-                                area :
+                                type: 2,
+                                title: data.id + ':无标准事件信息修改',
+                                area:
                                     [
                                         $(window).width() * 0.9 + 'px',
                                         $(window).height() - 50 + 'px'
                                     ],
-                                content : '/system/performance/employee/eventsList/edit?id=' + data.id,
-                                maxmin : true
+                                content: '/system/performance/employee/eventsList/edit?id=' + data.id,
+                                maxmin: true
                             });
-                    }
-                    else if (obj.event === 'delete')
-                    { // 删除/取消
-                        layer.confirm('真的取消：' + data.id + '吗？', function()
-                        {
+                    } else if (obj.event === 'delete') { // 删除/取消
+                        layer.confirm('真的取消：' + data.id + '吗？', function () {
                             $.ajax(
                                 {
-                                    type : 'DELETE',
-                                    url : '/system/performance/employee/eventsList/' + data.id,
-                                    success : function(result)
-                                    {
+                                    type: 'DELETE',
+                                    url: '/system/performance/employee/eventsList/' + data.id,
+                                    success: function (result) {
                                         layer.msg(result.msg);
-                                        if (result.status == 200)
-                                        {
+                                        if (result.status == 200) {
                                             table.reload('dataTable');
                                         }
                                     }
@@ -389,14 +395,11 @@
                 // 监听导出按钮
                 form.on('submit(importToCompleteRole)', function (data) {
                     var field = data.field;
-                    // 导出状态为完结且部门名称为当前登录用户所在部门的事件清单
-                    field.status = '完结';
-                    field.departmentName = [[${departmentName}]];
                     // 必填项控制
                     var year = data.field.year;
                     if (!year) {
-                    	layer.msg("编制年份为必须项，请选择编制年份", {icon: 5, time: 4000});
-                    	return false;
+                        layer.msg("编制年份为必须项，请选择编制年份", {icon: 5, time: 4000});
+                        return false;
                     }
                     field.url = "/system/performance/employee/eventsList/downloadToCompleteRole";
                     var url = createUrl(field);
@@ -405,8 +408,7 @@
                     return false;
                 });
                 // 监听头工具栏事件
-                table.on('toolbar(dataTable)', function(obj)
-                {
+                table.on('toolbar(dataTable)', function (obj) {
                     if (obj.event === 'create') {
 
                         // 弹出添加页面

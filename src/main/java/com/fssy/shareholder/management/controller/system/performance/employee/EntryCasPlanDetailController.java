@@ -12,6 +12,7 @@ import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
@@ -272,7 +273,7 @@ public class EntryCasPlanDetailController {
                         "departmentName," +
                         "roleName," +
                         "userName," +
-                        "applyDate,eventsForm,standardValue"
+                        "applyDate,standardValue"
         );
         List<Map<String, Object>> eventLists = entryCasPlanDetailService.findEntryCasPlanDetailMapDataByParams(params);
 
@@ -283,7 +284,7 @@ public class EntryCasPlanDetailController {
         fieldMap.put("eventsFirstType", "事件类型");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
-        fieldMap.put("eventsForm", "绩效类型");
+        //fieldMap.put("eventsForm", "绩效类型");
         fieldMap.put("standardValue", "事件价值标准分");
         fieldMap.put("departmentName", "部门名称");
         fieldMap.put("roleName", "岗位名称");
@@ -300,7 +301,7 @@ public class EntryCasPlanDetailController {
         // 标识字符串的列
         List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
         SheetOutputService sheetOutputService = new SheetOutputService();
-        if (org.apache.commons.lang3.ObjectUtils.isEmpty(eventLists)) {
+        if (ObjectUtils.isEmpty(eventLists)) {
             throw new ServiceException("未查出数据");
         }
         sheetOutputService.exportNum("导出履职计划填报月底回顾", eventLists, fieldMap, response, strList, null);

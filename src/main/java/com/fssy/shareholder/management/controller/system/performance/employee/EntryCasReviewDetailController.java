@@ -52,8 +52,8 @@ public class EntryCasReviewDetailController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-review-detail-list";
     }
 
@@ -241,6 +241,9 @@ public class EntryCasReviewDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("ministerReview"))) {
             params.put("ministerReview", request.getParameter("ministerReview"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("eventsFirstTypeNe"))) {
+            params.put("eventsFirstTypeNe", request.getParameter("eventsFirstTypeNe"));
+        }
         return params;
     }
 
@@ -309,8 +312,8 @@ public class EntryCasReviewDetailController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-review-detail-minister-list";
     }
 
@@ -328,8 +331,8 @@ public class EntryCasReviewDetailController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-entry-cas-review-detail-section-chief-list";
     }
 
@@ -352,6 +355,7 @@ public class EntryCasReviewDetailController {
 
     /**
      * 工作计划完成情况审核（科长）-修改按钮
+     *
      * @param id id
      * @return 路径
      */
@@ -426,20 +430,21 @@ public class EntryCasReviewDetailController {
         }
         return SysResult.build(500, "批量审核失败");
     }
+
     /**
      * 工作计划完成情况批量审核（科长，事物类）
      */
     @RequestMapping("sectionBatchAudit")
     @ResponseBody
     @RequiredLog("科长事物类批量审核")
-    public SysResult sectionBatchAudit(@RequestParam(value = "entryReviewDetailIds[]")List<String> entryReviewDetailIds,HttpServletRequest request) {
+    public SysResult sectionBatchAudit(@RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds, HttpServletRequest request) {
         String chargeTransactionEvaluateLevel = request.getParameter("chargeTransactionEvaluateLevel");
         String chargeTransactionBelowType = request.getParameter("chargeTransactionBelowType");
-        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds,chargeTransactionEvaluateLevel,chargeTransactionBelowType);
+        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType);
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500,"批量审核失败");
+        return SysResult.build(500, "批量审核失败");
     }
 
     /**
@@ -450,11 +455,50 @@ public class EntryCasReviewDetailController {
      */
     @PostMapping("save")
     @ResponseBody
-    public SysResult create(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request) {
+    public SysResult create(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
         boolean result = entryCasReviewDetailService.saveOneReviewDetail(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
         }
         return SysResult.build(500, "创建失败");
+    }
+
+    /**
+     * 新增回顾-不需要根据计划创建
+     *
+     * @return 路径
+     */
+    @GetMapping("chooseEventRole")
+    public String createReview(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);
+
+        return "/system/performance/employee/entry-cas-review-detail-create-new";
+    }
+
+    @GetMapping("matchReview")
+    public String matchReview(Model model){
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);
+        return "/system/performance/employee/event-relation-role-choose-list";
+    }
+
+
+    @PostMapping("createReviewNotPlan")
+    @ResponseBody
+    public SysResult createReviewNotPlan(EntryCasReviewDetail entryCasReviewDetail) {
+        Boolean result = entryCasReviewDetailService.storeReviewNotPlan(entryCasReviewDetail);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "新增失败");
     }
 }

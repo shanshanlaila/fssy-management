@@ -61,8 +61,8 @@ public class EventListController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-event-list";
     }
 
@@ -77,8 +77,8 @@ public class EventListController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         return "/system/performance/employee/performance-event-manage-list";
     }
 
@@ -121,14 +121,14 @@ public class EventListController {
         Map<String, Object> params = getParams(request);
         params.put("select",
                 "id," +
-                "eventsFirstType," +
-                "jobName," +
-                "workEvents," +
-                "delowStandard," +
-                "middleStandard," +
-                "fineStandard," +
-                "excellentStandard," +
-                "status"
+                        "eventsFirstType," +
+                        "jobName," +
+                        "workEvents," +
+                        "delowStandard," +
+                        "middleStandard," +
+                        "fineStandard," +
+                        "excellentStandard," +
+                        "status"
         );
         List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
 
@@ -307,8 +307,8 @@ public class EventListController {
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "system/performance/events-list-list";
@@ -341,7 +341,8 @@ public class EventListController {
     }
 
     /**
-     *更新保存无标准事件清单
+     * 更新保存无标准事件清单
+     *
      * @param eventList
      * @return
      */
@@ -356,6 +357,7 @@ public class EventListController {
 
     /**
      * 取消无标准事件清单状态变为取消
+     *
      * @param id
      * @return
      */
@@ -370,6 +372,7 @@ public class EventListController {
 
     /**
      * 修改事件清单评判标准事件清单
+     *
      * @param request
      * @param model
      * @return
@@ -386,6 +389,7 @@ public class EventListController {
 
     /**
      * 更新保存修改事件清单评判标准事件清单
+     *
      * @param eventList
      * @return
      */
@@ -409,7 +413,17 @@ public class EventListController {
     @GetMapping("downloadToCompleteRole")
     public void downloadToCompleteRole(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
-        params.put("select", "id,eventsType,jobName,workEvents,eventsFirstType");
+        params.put("select",
+                "id," +
+                        "eventsType," +
+                        "jobName," +
+                        "workEvents," +
+                        "eventsFirstType," +
+                        "standardValue," +
+                        "delow," +
+                        "middle," +
+                        "fine," +
+                        "excellent");
         List<Map<String, Object>> eventLists = eventListService
                 .findEventListMapDataByParams(params);
 
@@ -424,11 +438,11 @@ public class EventListController {
         fieldMap.put("proportion", "*占比");// 多主担
         fieldMap.put("isMainOrNext", "*主担/次担");
         fieldMap.put("userName", "*职员名称");
-        fieldMap.put("standardValue", "*事件标准价值");
-        fieldMap.put("delow", "*不合格价值");
-        fieldMap.put("middle", "*中价值");
-        fieldMap.put("fine", "*良价值");
-        fieldMap.put("excellent", "*优价值");
+        fieldMap.put("standardValue", "事件标准价值");
+        fieldMap.put("delow", "不合格价值");
+        fieldMap.put("middle", "中价值");
+        fieldMap.put("fine", "良价值");
+        fieldMap.put("excellent", "优价值");
         fieldMap.put("activeDate", "*生效日期");
         // 标识字符串的列
         List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
@@ -440,17 +454,18 @@ public class EventListController {
     }
 
     @GetMapping("matchEventList")
-    public String showMatchEventList(Model model){
+    public String showMatchEventList(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String,Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams,new ArrayList<>());
-        model.addAttribute("roleNameList",roleNameList);//传到前端去
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "/system/performance/employee/entry-cas-new-plan-detail-match-event-list";
     }
+
     /**
      * 返回新增单条基础事件页面
      *
@@ -458,7 +473,7 @@ public class EventListController {
      * @return
      */
     @GetMapping("create")
-    public String createEventList(HttpServletRequest request,Model model) {
+    public String createEventList(HttpServletRequest request, Model model) {
         //1、查询部门列表，用于customerName xm-select插件
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -478,5 +493,19 @@ public class EventListController {
     public SysResult Store(EventList eventList, HttpServletRequest request) {
         eventListService.insertEventList(eventList);
         return SysResult.ok();
+    }
+
+    /**
+     * 显示基础事件详情
+     *
+     * @param id    基础事件id
+     * @param model 数据模型
+     * @return 详情页面
+     */
+    @GetMapping("details/{id}")
+    public String details(@PathVariable Long id, Model model) {
+        EventList eventList = eventListService.getById(id);
+        model.addAttribute("eventList", eventList);
+        return "/system/performance/employee/events-list-details";
     }
 }

@@ -85,8 +85,8 @@
                                     <select lay-filter="chargeTransactionBelowType"
                                             name="chargeTransactionBelowType"
                                             id="chargeTransactionBelowType">
-                                        <option value="time">时间不合格</option>
-                                        <option value="quality">质量不合格</option>
+                                        <option value="时间不合格">时间不合格</option>
+                                        <option value="质量不合格">质量不合格</option>
                                     </select>
                                 </div>
                             </div>
@@ -144,6 +144,14 @@
                         title: '对应事件清单序号',
                         width: 120,
                         fixed: 'left',
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
                     },
                     {
                         field: 'eventsFirstType',

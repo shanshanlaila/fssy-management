@@ -289,15 +289,15 @@ public class EventsRelationRoleController
 		fieldMap.put("standardValue", "事件价值标准分");
 		fieldMap.put("isMainOrNext", "主/次担");
 		// 需要填写的部分
-		fieldMap.put("jixiaoleixing", "*绩效类型");
+		//fieldMap.put("jixiaoleixing", "*绩效类型");
 		fieldMap.put("duiyingjihuaneirong", "*对应工作事件的计划内容");// planningWork
-		fieldMap.put("pinci", "*频次");
+		fieldMap.put("pinci", "频次");
 		fieldMap.put("biaodan", "*表单（输出内容）");// planOutput
 		fieldMap.put("jihuakaishishijian", "*计划开始时间");
 		fieldMap.put("jihuawanchengshijian", "*计划完成时间");
-		fieldMap.put("gangweimingcheng", "*岗位名称");
+		//fieldMap.put("gangweimingcheng", "*岗位名称");
 		fieldMap.put("gangweirenyuanxingming", "*岗位人员姓名");
-		fieldMap.put("shengbaoyuefen", "*申报日期");
+		//fieldMap.put("shengbaoyuefen", "*申报日期");
 		// 标识字符串的列
 		List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
 		SheetOutputService sheetOutputService = new SheetOutputService();

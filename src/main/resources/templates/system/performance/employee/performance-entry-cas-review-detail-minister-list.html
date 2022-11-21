@@ -120,7 +120,7 @@
             toolbar: '#toolbar',
             where: {
                 // 向controller传入额外参数
-                eventsFirstType: '非事务类',
+                eventsFirstTypeNe: true,
                 status: '待部长审核'
             },
             cols: [
@@ -141,6 +141,14 @@
                         title: '对应事件清单序号',
                         width: 120,
                         fixed: 'left',
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
                     },
                     {
                         field: 'eventsFirstType',

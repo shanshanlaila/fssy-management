@@ -34,14 +34,14 @@
                             <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" id = "year" name="year" placeholder="审核年份查询" autocomplete="off"
+                            <input type="text" id="year" name="year" placeholder="审核年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 90px;">
-                            <input type="text" id= "createDate" name="createDate" placeholder="编制日期查询" autocomplete="off"
-                                   class="layui-input laydate search-laydate" >
+                            <input type="text" id="createDate" name="createDate" placeholder="编制日期查询" autocomplete="off"
+                                   class="layui-input laydate search-laydate">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" >
+                        <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="workEvents" placeholder="流程（工作事件）"
                                    autocomplete="off" class="layui-input">
                         </div>
@@ -51,7 +51,7 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
-                                <select  id = “status” name="status">
+                                <select id=“status” name="status">
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="待提交审核">待提交审核</option>
                                     <option value="待部长审核">待部长审核</option>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <label>
-                                <select id = “mainOrNext” name="mainOrNext">
+                                <select id=“mainOrNext” name="mainOrNext">
                                     <option style="display: none" value="">请选择主担/次担</option>
                                     <option value="主担">主担</option>
                                     <option value="次担">次担</option>
@@ -85,7 +85,7 @@
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="toolbar">
-                        <form class="layui-form layui-col-space5">
+                        <form class="layui-form layui-col-space5" style="float: left">
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="confirm">提交审核
                                 </button>
@@ -96,6 +96,9 @@
                                 </button>
                             </div>
                         </form>
+                        <div class="layui-btn-container" style="float: left;margin-left: 10px">
+                            <button class="layui-btn layui-btn-sm" lay-event="chooseEventRole">新增回顾</button>
+                        </div>
                     </script>
                     <script type="text/html" id="tool">
                         {{# if(d.status != '取消') {}}
@@ -152,9 +155,8 @@
         //年选择器
         laydate.render({
             elem: '#year'
-            ,type: 'year'
+            , type: 'year'
         });
-
 
 
         // 实例表格
@@ -191,6 +193,28 @@
                         title: '对应事件清单序号',
                         width: 120,
                         fixed: 'left',
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
+                    },
+                    {
+                        field: 'status',
+                        title: '履职计划状态',
+                        width: 90,
+                        fixed: 'left',
+                        templet: function (d) {
+                            switch (d.status) {
+                                case '待提交审核':
+                                    return '<span class="layui-badge layui-bg">待提交审核</span>';
+                                default:
+                                    return d.status;
+                            }
+                        }
                     },
                     {
                         field: 'eventsFirstType',
@@ -247,11 +271,6 @@
                         field: 'times',
                         title: '频次',
                         width: 50
-                    },
-                    {
-                        field: 'status',
-                        title: '履职计划状态',
-                        width: 90
                     },
                     {
                         field: 'eventsForm',
@@ -354,6 +373,7 @@
             ]
         });
 
+        // 提交审核
         form.on('submit(confirm)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
                 data = checkStatus.data;
@@ -390,6 +410,27 @@
             return false;
         });
 
+        // 监听头工具栏事件
+        // 新增回顾
+        table.on('toolbar(dataTable)', function (obj) {
+            if (obj.event === 'chooseEventRole') {
+                // 弹出添加页面
+                layer.open(
+                    {
+                        type: 2,
+                        title: '双击选择事件岗位配比随后创建履职回顾',
+                        area:
+                            [
+                                $(window).width() * 0.9 + 'px',
+                                $(window).height() - 50 + 'px'
+                            ],
+                        content: '/system/entry-cas-review-detail/chooseEventRole',
+                        scrollbar: true,
+                        maxmin: true
+                    });
+            }
+        });
+
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
@@ -414,6 +455,7 @@
             }
         });
 
+        // 撤销提交
         form.on('submit(retreat)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id),
                 data = checkStatus.data;
@@ -425,7 +467,7 @@
             let msg = "";
             var reviewDetailIds = [];
             data.forEach(function (item) {
-                if (item.status == 5) {
+                if (item.status === 5) {
                     msg = msg ? msg + ',' + item.noticeNo : item.noticeNo;
                     flag = true;
                 }
@@ -440,7 +482,7 @@
                     },
                     success: function (result) {
                         layer.msg(result.msg);
-                        if (result.status == 200) {
+                        if (result.status === 200) {
                             table.reload('dataTable');
                             laydate.render(
                                 {

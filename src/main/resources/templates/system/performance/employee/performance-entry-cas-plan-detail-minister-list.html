@@ -84,7 +84,7 @@
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="pass">审核通过</button>
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="noPass" style="background-color: coral">审核拒绝
+                                <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit="" lay-filter="noPass">审核不通过
                                 </button>
                             </div>
                         </form>
@@ -134,7 +134,16 @@
                     {
                         field: 'eventsId',
                         title: '对应事件清单序号',
-                        width: 120
+                        width: 120,
+                        fixed: 'left',
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
                     },
                     {
                         field: 'eventsFirstType',

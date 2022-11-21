@@ -106,6 +106,9 @@ public class GetTool {
     public static BigDecimal getScore (EntryCasReviewDetail entryCasReviewDetail, String ministerReview) {
         // 通过事件清单序号（eventsId）找对应的事件清单，delow、middle、fine、excellent，
         EventsRelationRole eventsRelationRole = eventsRelationRoleMappers.selectById(entryCasReviewDetail.getEventsRoleId());
+        if (ObjectUtils.isEmpty(eventsRelationRole)){
+            throw new ServiceException(String.format("没有id为【%s】的事件岗位配比数据",entryCasReviewDetail.getEventsRoleId()));
+        }
         BigDecimal autoScore;
         switch (ministerReview) {
             case PerformanceConstant.UNQUALIFIED:
