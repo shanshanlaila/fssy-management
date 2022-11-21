@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
+import com.fssy.shareholder.management.service.system.performance.manage_kpi.ViewManagerKpiMonthService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +33,8 @@ import java.util.Map;
 public class ManagerKpiYearScoreController {
     @Autowired
     private ManagerKpiScoreServiceOld managerKpiScoreServiceOld;
+    @Autowired
+    private ViewManagerKpiMonthService viewManagerKpiMonthService;
 
     /**
      * 经理人年度KPI分数管理界面
@@ -67,6 +71,64 @@ public class ManagerKpiYearScoreController {
             result.put("code", 0);
             result.put("count", managerKpiScorePage.getTotal());
             result.put("data", managerKpiScorePage.getRecords());
+        }
+        return result;
+    }
+
+
+    /**
+     * 返回查看指定经理人的下级分数构成数据页面<br/>
+     * 添加根据给出姓名、公司名称、年份、月份查看所有其对应的分数数据
+     *
+     * @param request 请求实体
+     * @param model   model对象
+     * @return 页面
+     */
+    @GetMapping("search-detail")
+    public String searchByAssignFromBtn(HttpServletRequest request, Model model)
+    {
+        //②将获取到的id返回到前端弹出层页面
+        String month = "12";
+        String year = request.getParameter("year");
+        String companyName = request.getParameter("companyName");
+        String managerName = request.getParameter("managerName");
+        model.addAttribute("month", month);
+        model.addAttribute("year", year);
+        model.addAttribute("companyName", companyName);
+        model.addAttribute("managerName", managerName);
+        return "/system/performance/manager_kpi/view-manager-kpi-year-score/view-manager-kpi-year-score-detail";
+    }
+
+    /**
+     * 返回指定经理人分数明细表格数据
+     */
+    @GetMapping("getManagerScoreData")
+    @ResponseBody
+    public Map<String, Object> getManagerScoreData(HttpServletRequest request)
+    {
+        //④将传进来的参数交给数据库查，然后返回页面
+        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
+        String managerScoreDataMonth = request.getParameter("month");
+        String managerScoreDataYear = request.getParameter("year");
+        String managerScoreDataCompanyName = request.getParameter("companyName");
+        String managerScoreDataManagerName = request.getParameter("managerName");
+        params.put("month",managerScoreDataMonth);
+        params.put("year",managerScoreDataYear);
+        params.put("companyName",managerScoreDataCompanyName);
+        params.put("managerName",managerScoreDataManagerName);
+        List<Map<String, Object>> managerScoreDataIdList = viewManagerKpiMonthService
+                .findViewManagerKpiMonthMapDataByParams(params);
+        if (managerScoreDataIdList.size() == 0)
+        {
+            result.put("code", 404);
+            result.put("msg", "未查出数据");
+        }
+        else
+        {
+            result.put("code", 0);
+            result.put("count", managerScoreDataIdList.size());
+            result.put("data", managerScoreDataIdList);
         }
         return result;
     }

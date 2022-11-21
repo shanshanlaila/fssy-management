@@ -53,7 +53,7 @@
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-                        <a lay-event="edit" title="查看经理人年度绩效分数信息"><i class="layui-icon">详情</i></a>
+                        <a lay-event="detail" title="经理人分数信息明细"><i class="layui-icon">&#xe63c;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -117,6 +117,11 @@
                         width: 80,
                     },
                     {
+                        field: 'year',
+                        title: '年份',
+                        width: 80,
+                    },
+                    {
                         field: 'threeYear',
                         title: 'n-3年值',
                         width: 80
@@ -162,15 +167,17 @@
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'edit') { // 修改
+            if (obj.event === 'detail') {//分数下钻，查看经理人的分数组成
+                // console.log("list" + data.month)
                 layer.open({
-                    type: 2,
-                    title: '序号为：' + data.id + '的经理人年度绩效分数信息修改',
-                    area: [
+                    type : 2,
+                    title : data.year + '年' + '--的各项分数信息如下:',
+                    area : [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/manage/manager-month-score/edit?id=' + data.id,
-                    maxmin: true
+                    //①获取需要查看的此条记录的指定数据
+                    content : '/system/performance/manager_kpi/view-manager-kpi-year-score/search-detail?month=' + data.month + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
+                    maxmin : true
                 });
             }
         });
