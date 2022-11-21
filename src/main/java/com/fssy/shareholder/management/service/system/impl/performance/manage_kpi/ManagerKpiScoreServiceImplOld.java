@@ -21,8 +21,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,18 +74,16 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
     @Override
     public Page<Map<String,Object>> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
-        StringBuilder stringBuilder = new StringBuilder("companyName, managerName,position,SUM( scoreAdjust ) AS newYear," +
-                "( SELECT SUM( scoreAdjust ) FROM bs_manager_kpi_score AS a WHERE a.YEAR = bs_manager_kpi_score.YEAR - 1 ) AS 'oneYear'," +
-                "( SELECT SUM( scoreAdjust ) FROM bs_manager_kpi_score AS b WHERE b.YEAR = bs_manager_kpi_score.YEAR - 2 ) AS 'twoYear'," +
-                "( SELECT SUM( scoreAdjust ) FROM bs_manager_kpi_score AS c WHERE c.YEAR = bs_manager_kpi_score.YEAR - 3 ) AS 'threeYear' ");
+        StringBuilder stringBuilder = new StringBuilder("companyName, managerName,position,year,SUM( scoreAdjust ) AS newYear," +
+                "( SELECT scoreAdjust FROM bs_manager_kpi_score AS a WHERE a.YEAR = bs_manager_kpi_score.YEAR - 1 and month =12 and a.managerName=bs_manager_kpi_score.managerName ) AS 'oneYear'," +
+                "( SELECT scoreAdjust FROM bs_manager_kpi_score AS b WHERE b.YEAR = bs_manager_kpi_score.YEAR - 2 and month =12 and b.managerName=bs_manager_kpi_score.managerName ) AS 'twoYear'," +
+                "(  SELECT scoreAdjust FROM bs_manager_kpi_score AS c WHERE c.YEAR = bs_manager_kpi_score.YEAR - 3 and month =12 and c.managerName=bs_manager_kpi_score.managerName ) AS 'threeYear' ");
         queryWrapper.select(stringBuilder.toString()).groupBy("year,managerName");
         int limit = (int)params.get("limit");
         int page = (int)params.get("page");
         Page<Map<String,Object>> myPage = new Page<>(page,limit);
         return managerKpiScoreMapper.selectMapsPage(myPage, queryWrapper);
     }
-
-
 
     /**
      * 设置失败的内容
