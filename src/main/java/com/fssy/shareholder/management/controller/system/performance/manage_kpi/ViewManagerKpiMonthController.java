@@ -262,7 +262,7 @@ public class ViewManagerKpiMonthController {
     @GetMapping("search-detail")
     public String searchByAssignFromBtn(HttpServletRequest request, Model model)
     {
-        //②将获取到的id返回到前端弹出层页面
+        //②将获取到的姓名、公司名称、年份、月份返回到前端弹出层页面
         String month = request.getParameter("month");
         String year = request.getParameter("year");
         String companyName = request.getParameter("companyName");

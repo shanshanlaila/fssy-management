@@ -11,10 +11,54 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="layui-fluid">
 	<div class="layui-row layui-col-space15">
+<!--		<form class="layui-form" style="margin: 5px;">-->
+<!--			<h3 style="margin: 10px;">经理人绩效得分抬头信息</h3>-->
+<!--			<table class="layui-table" lay-size="sm" style="table-layout: fixed">-->
+<!--				<colgroup>-->
+<!--					<col width="80px">-->
+<!--					<col width="160px">-->
+<!--					<col width="80px">-->
+<!--					<col width="160px">-->
+<!--				</colgroup>-->
+<!--				<tr>-->
+<!--					<td>经营绩效分数</td>-->
+<!--					<td>-->
+<!--						<div class="layui-input-inline">-->
+<!--							<input type="text" class="layui-input" name="businessScore" id="businessScore"-->
+<!--								   readonly th:value="${managerKpiScoreOld['businessScore']}">-->
+<!--						</div>-->
+<!--					</td>-->
+<!--					<td>激励约束分数</td>-->
+<!--					<td>-->
+<!--						<div class="layui-input-inline">-->
+<!--							<input type="text" class="layui-input" name="incentiveScore" id="incentiveScore"-->
+<!--								   readonly th:value="${managerKpiScoreOld['incentiveScore']}">-->
+<!--						</div>-->
+<!--					</td>-->
+<!--				</tr>-->
+<!--				<tr>-->
+<!--					<td>总经理经营绩效分数</td>-->
+<!--					<td>-->
+<!--						<div class="layui-input-inline" style="width: 100%;">-->
+<!--							<input type="text" name="supplierName" class="layui-input" name="generalManagerScore" id="generalManagerScore"-->
+<!--								   readonly th:value="${managerKpiScoreOld['generalManagerScore']}">-->
+<!--						</div>-->
+<!--					</td>-->
+<!--					<td>难度系数</td>-->
+<!--					<td>-->
+<!--						<div class="layui-input-inline" style="width: 100%;">-->
+<!--							<input type="text" name="supplierPlantName" class="layui-input" name="difficultyCoefficient" id="difficultyCoefficient"-->
+<!--								   readonly th:value="${managerKpiScoreOld['difficultyCoefficient']}">-->
+<!--						</div>-->
+<!--					</td>-->
+<!--				</tr>-->
+<!--			</table>-->
+<!--		</form>-->
 		<div class="layui-col-md12">
 			<div class="layui-card">
 				<div class="layui-card-body ">
-					<table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+					<table class="layui-table layui-form" id="dataTable1" lay-filter="dataTable1"></table>
+<!--					<table class="layui-table layui-form" id="dataTable2" lay-filter="dataTable2"></table>-->
 				</div>
 				<script type="text/html" id="toolbar"></script>
 				<script th:inline="javascript">
@@ -22,162 +66,318 @@
 						'table', 'form', 'layer', 'laydate'
 					], function() {
 						var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
-						// 实例表格
-						table.render(
-						{
-							elem : '#dataTable',
-							id : 'dataTable',
-							//③在弹出页面将获取到的此条记录的值交给数据库去查
-							url : "/system/performance/manager_kpi/view-manager-kpi-month-score/getManagerScoreData?month=" + [[${month}]] + '&year=' + [[${year}]] + '&companyName=' + [[${companyName}]] + '&managerName=' + [[${managerName}]],
-							totalRow: true,
-							size: 'sm',
-							height : 'full-100' ,// 设置高度，使数据置于滚动条控制下,
-							toolbar: '#toolbar',
-							// defaultToolbar:['filter'],
-							page:false,
-							cols:
+					// 实例表格
+					table.render(
+					{
+						elem : '#dataTable1',
+						id : 'dataTable1',
+						//③在弹出页面将获取到的此条记录的值交给数据库去查
+						url : "/system/performance/manager_kpi/view-manager-kpi-month-score/getManagerScoreData?month=" + [[${month}]] + '&year=' + [[${year}]] + '&companyName=' + [[${companyName}]] + '&managerName=' + [[${managerName}]],
+						totalRow: true,
+						size: 'sm',
+						height : 'full-100' ,// 设置高度，使数据置于滚动条控制下,
+						toolbar: '#toolbar',
+						// defaultToolbar:['filter'],
+						page:false,
+						cols:
+							[
 								[
-									[
-										{
-											field: 'managerName',
-											title: '经理人姓名',
-											align: 'center',
-											fixed: 'left',
-											width: 120
-										},
-										{
-											field: 'projectType',
-											title: '重点工作',
-											align: 'center',
-											fixed: 'left',
-											width: 120,
-										},
-										{
-											field: 'projectDesc',
-											title: '管理项目',
-											align: 'center',
-											fixed: 'left',
-											width: 200,
-										},
-										{
-											field: 'monthScoreAdjust',
-											title: '月度得分',
-											align: 'center',
-											fixed: 'left',
-											width: 80
-										},
-										{
-											field: 'proportion',
-											title: '权重',
-											align: 'center',
-											fixed: 'left',
-											width: 80
-										},
-										{
-											field: 'kpiFormula',
-											title: '管理项目定义',
-											align: 'center',
-											width: 130,
-										},
-										{
-											field: 'unit',
-											title: '单位',
-											align: 'center',
-											width: 80
-										},
-										{
-											field: 'dataSource',
-											title: '数据来源部门',
-											align: 'center',
-											width: 100
-										},
-										{
-											field: 'benchmarkCompany',
-											title: '标杆企业名称',
-											align: 'center',
-											width: 130,
-										},
-										{
-											field: 'benchmarkValue',
-											title: '标杆值',
-											align: 'center',
-											width: 100
-										},
-										{
-											field: 'pastThreeYearsActual',
-											title: '过去第三年值',
-											align: 'center',
-											width: 100
-										},
-										{
-											field: 'pastTwoYearsActual',
-											title: '过去第二年值',
-											align: 'center',
-											width: 100
-										},
-										{
-											field: 'pastOneYearActual',
-											title: '过去第一年值',
-											align: 'center',
-											width: 100
-										},
-										{
-											field: 'basicTarget',
-											title: '基本目标',
-											align: 'center',
-											width: 80
-										},
-										{
-											field: 'mustInputTarget',
-											title: '必达目标',
-											align: 'center',
-											width: 80,
-										},
-										{
-											field: 'reachTarget',
-											title: '达标目标',
-											align: 'center',
-											width: 80
-										},
-										{
-											field: 'challengeTarget',
-											title: '挑战目标',
-											align: 'center',
-											width: 80
-										},
-										{
-											field: 'monthTarget',
-											title: '月度目标',
-											align: 'center',
-											width: 80
-										},
-										{
-											field: 'monthActualValue',
-											title: '月度实绩',
-											align: 'center',
-											width: 80
-										},
-										{
-											field: 'accumulateTarget',
-											title: '目标累积值',
-											align: 'center',
-											width: 80
-										},
-										{
-											field: 'accumulateActual',
-											title: '实际完成累积值',
-											align: 'center',
-											width: 100
-										},
-										{
-											field: 'analyzeRes',
-											title: '分析结果',
-											align: 'center',
-											width: 80
-										}
-									]
+									{
+										field: 'managerName',
+										title: '经理人姓名',
+										align: 'center',
+										fixed: 'left',
+										width: 120
+									},
+									{
+										field: 'projectType',
+										title: '重点工作',
+										align: 'center',
+										fixed: 'left',
+										width: 120,
+									},
+									{
+										field: 'projectDesc',
+										title: '管理项目',
+										align: 'center',
+										fixed: 'left',
+										width: 200,
+									},
+									{
+										field: 'monthScoreAdjust',
+										title: '月度得分',
+										align: 'center',
+										fixed: 'left',
+										width: 80
+									},
+									{
+										field: 'proportion',
+										title: '权重',
+										align: 'center',
+										fixed: 'left',
+										width: 80
+									},
+									{
+										field: 'kpiFormula',
+										title: '管理项目定义',
+										align: 'center',
+										width: 130,
+									},
+									{
+										field: 'unit',
+										title: '单位',
+										align: 'center',
+										width: 80
+									},
+									{
+										field: 'dataSource',
+										title: '数据来源部门',
+										align: 'center',
+										width: 100
+									},
+									{
+										field: 'benchmarkCompany',
+										title: '标杆企业名称',
+										align: 'center',
+										width: 130,
+									},
+									{
+										field: 'benchmarkValue',
+										title: '标杆值',
+										align: 'center',
+										width: 100
+									},
+									{
+										field: 'pastThreeYearsActual',
+										title: '过去第三年值',
+										align: 'center',
+										width: 100
+									},
+									{
+										field: 'pastTwoYearsActual',
+										title: '过去第二年值',
+										align: 'center',
+										width: 100
+									},
+									{
+										field: 'pastOneYearActual',
+										title: '过去第一年值',
+										align: 'center',
+										width: 100
+									},
+									{
+										field: 'basicTarget',
+										title: '基本目标',
+										align: 'center',
+										width: 80
+									},
+									{
+										field: 'mustInputTarget',
+										title: '必达目标',
+										align: 'center',
+										width: 80,
+									},
+									{
+										field: 'reachTarget',
+										title: '达标目标',
+										align: 'center',
+										width: 80
+									},
+									{
+										field: 'challengeTarget',
+										title: '挑战目标',
+										align: 'center',
+										width: 80
+									},
+									{
+										field: 'monthTarget',
+										title: '月度目标',
+										align: 'center',
+										width: 80
+									},
+									{
+										field: 'monthActualValue',
+										title: '月度实绩',
+										align: 'center',
+										width: 80
+									},
+									{
+										field: 'accumulateTarget',
+										title: '目标累积值',
+										align: 'center',
+										width: 80
+									},
+									{
+										field: 'accumulateActual',
+										title: '实际完成累积值',
+										align: 'center',
+										width: 100
+									},
+									{
+										field: 'analyzeRes',
+										title: '分析结果',
+										align: 'center',
+										width: 80
+									}
 								]
-							});
+							]
+						});
+						// 实例表格
+						// table.render(
+						// {
+						// 	elem : '#dataTable2',
+						// 	id : 'dataTable2',
+						// 	//③在弹出页面将获取到的此条记录的值交给数据库去查
+						// 	url : "/system/performance/manager_kpi/view-manager-kpi-month-score/getManagerScoreData?month=" + [[${month}]] + '&year=' + [[${year}]] + '&companyName=' + [[${companyName}]] + '&managerName=' + [[${managerName}]],
+						// 	totalRow: true,
+						// 	size: 'sm',
+						// 	height : 'full-100' ,// 设置高度，使数据置于滚动条控制下,
+						// 	toolbar: '#toolbar',
+						// 	// defaultToolbar:['filter'],
+						// 	page:false,
+						// 	cols:
+						// 	[
+						// 		[
+						// 			{
+						// 				field: 'managerName',
+						// 				title: '经理人姓名',
+						// 				align: 'center',
+						// 				fixed: 'left',
+						// 				width: 120
+						// 			},
+						// 			{
+						// 				field: 'projectType',
+						// 				title: '重点工作',
+						// 				align: 'center',
+						// 				fixed: 'left',
+						// 				width: 120,
+						// 			},
+						// 			{
+						// 				field: 'projectDesc',
+						// 				title: '管理项目',
+						// 				align: 'center',
+						// 				fixed: 'left',
+						// 				width: 200,
+						// 			},
+						// 			{
+						// 				field: 'monthScoreAdjust',
+						// 				title: '月度得分',
+						// 				align: 'center',
+						// 				fixed: 'left',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'proportion',
+						// 				title: '权重',
+						// 				align: 'center',
+						// 				fixed: 'left',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'kpiFormula',
+						// 				title: '管理项目定义',
+						// 				align: 'center',
+						// 				width: 130,
+						// 			},
+						// 			{
+						// 				field: 'unit',
+						// 				title: '单位',
+						// 				align: 'center',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'dataSource',
+						// 				title: '数据来源部门',
+						// 				align: 'center',
+						// 				width: 100
+						// 			},
+						// 			{
+						// 				field: 'benchmarkCompany',
+						// 				title: '标杆企业名称',
+						// 				align: 'center',
+						// 				width: 130,
+						// 			},
+						// 			{
+						// 				field: 'benchmarkValue',
+						// 				title: '标杆值',
+						// 				align: 'center',
+						// 				width: 100
+						// 			},
+						// 			{
+						// 				field: 'pastThreeYearsActual',
+						// 				title: '过去第三年值',
+						// 				align: 'center',
+						// 				width: 100
+						// 			},
+						// 			{
+						// 				field: 'pastTwoYearsActual',
+						// 				title: '过去第二年值',
+						// 				align: 'center',
+						// 				width: 100
+						// 			},
+						// 			{
+						// 				field: 'pastOneYearActual',
+						// 				title: '过去第一年值',
+						// 				align: 'center',
+						// 				width: 100
+						// 			},
+						// 			{
+						// 				field: 'basicTarget',
+						// 				title: '基本目标',
+						// 				align: 'center',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'mustInputTarget',
+						// 				title: '必达目标',
+						// 				align: 'center',
+						// 				width: 80,
+						// 			},
+						// 			{
+						// 				field: 'reachTarget',
+						// 				title: '达标目标',
+						// 				align: 'center',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'challengeTarget',
+						// 				title: '挑战目标',
+						// 				align: 'center',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'monthTarget',
+						// 				title: '月度目标',
+						// 				align: 'center',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'monthActualValue',
+						// 				title: '月度实绩',
+						// 				align: 'center',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'accumulateTarget',
+						// 				title: '目标累积值',
+						// 				align: 'center',
+						// 				width: 80
+						// 			},
+						// 			{
+						// 				field: 'accumulateActual',
+						// 				title: '实际完成累积值',
+						// 				align: 'center',
+						// 				width: 100
+						// 			},
+						// 			{
+						// 				field: 'analyzeRes',
+						// 				title: '分析结果',
+						// 				align: 'center',
+						// 				width: 80
+						// 			}
+						// 		]
+						// 	]
+						// });
 					});
 				</script>
 			</div>

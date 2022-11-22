@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiMonthScoreOldService;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,9 +32,8 @@ public class ManagerKpiMonthScoreOldController {
     @Autowired
     private ManagerKpiMonthScoreOldService managerKpiMonthScoreOldService;
 
-    //--------------------------------↓↓关于经理人绩效报表1的代码↓↓-------------------------------------------
     /**
-     * 经理人绩效报表1 管理页面
+     * 经理人绩效月度推移 管理页面
      *
      * @param model
      * @return
@@ -48,7 +46,7 @@ public class ManagerKpiMonthScoreOldController {
         return "/system/performance/manager_kpi/manager-kpi-month-score-old/manager-kpi-month-score-old-list";
     }
     /**
-     * 返回经理人绩效报表1的表格
+     * 返回经理人绩效月度推移的表格
      *
      * @param request
      * @return
@@ -187,5 +185,4 @@ public class ManagerKpiMonthScoreOldController {
         }
         return params;
     }
-    //--------------------------------↑↑关于经理人绩效报表1的代码↑↑-------------------------------------------
 }
