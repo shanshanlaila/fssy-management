@@ -14,11 +14,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
@@ -39,6 +41,8 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -64,6 +68,9 @@ public class EventListServiceImpl implements EventListService {
 
     @Autowired
     private RoleMapper roleMapper;
+
+    @Autowired
+    private EntryCasPlanDetailMapper entryCasPlanDetailMapper;
 
     @Override
     public Page<EventList> findDataListByParams(Map<String, Object> params) {
@@ -557,11 +564,11 @@ public class EventListServiceImpl implements EventListService {
     }
 
     @Override
-    public EventList insertEventList(EventList eventList) {
+    public boolean insertEventList(EventList eventList) {
         LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        departmentLambdaQueryWrapper.eq(Department::getDepartmentId,eventList.getDepartmentId());
+        departmentLambdaQueryWrapper.eq(Department::getDepartmentId, eventList.getDepartmentId());
         List<Department> departments1 = departmentMapper.selectList(departmentLambdaQueryWrapper);
-        if(ObjectUtils.isEmpty(departments1)){
+        if (ObjectUtils.isEmpty(departments1)) {
             throw new ServiceException("不存在科室");
         }
         Department department = departmentMapper.selectById(departments1.get(0).getDepartmentId());
@@ -569,7 +576,7 @@ public class EventListServiceImpl implements EventListService {
         LambdaQueryWrapper<Department> departmentLambdaQueryWrapper1 = new LambdaQueryWrapper<>();
         departmentLambdaQueryWrapper1.eq(Department::getOfficeName, eventList.getOffice());
         List<Department> departments = departmentMapper.selectList(departmentLambdaQueryWrapper1);
-        if(ObjectUtils.isEmpty(departments)){
+        if (ObjectUtils.isEmpty(departments)) {
             throw new ServiceException("不存在科室");
         }
         eventList.setOfficeId(departments.get(0).getOfficeId());
@@ -590,6 +597,35 @@ public class EventListServiceImpl implements EventListService {
         eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 不需要填报事件标准，直接完结
         eventListMapper.insert(eventList);//写入数据库
         eventListMapper.updateById(eventList);//更新页面
-        return eventList;
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean insertEventByPlan(EventList eventList, Long id) {
+        EntryCasPlanDetail planDetail = entryCasPlanDetailMapper.selectById(id);
+        eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+        eventList.setYear(LocalDate.now().getYear());
+        eventList.setMonth(LocalDate.now().getMonthValue());
+        eventList.setCreatedAt(LocalDateTime.now());
+        eventList.setCreateDate(new Date());
+        eventList.setActiveDate(new Date());
+        User user = GetTool.getUser();
+        eventList.setListCreateUser(user.getName());
+        eventList.setListcreateUserId(user.getId());
+        eventList.setValueCreateUser(user.getName());
+        eventList.setValueCreateUserId(user.getId());
+        eventList.setValueCreateDate(new Date());
+        Department department = departmentMapper.selectById(planDetail.getDepartmentId());
+        if (ObjectUtils.isEmpty(department)) {
+            throw new ServiceException("不存在部门");
+        }
+        eventList.setDepartmentId(department.getDepartmentId());
+        int result = eventListMapper.insert(eventList);// 新增event
+        planDetail.setEventsId(eventList.getId());
+        planDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+        planDetail.setNewStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+        entryCasPlanDetailMapper.updateById(planDetail);// 更新plan
+        return result > 0;
     }
 }

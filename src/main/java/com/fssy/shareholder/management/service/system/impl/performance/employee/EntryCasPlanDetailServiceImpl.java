@@ -213,16 +213,12 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             }
             String planEndDate = planEndDateStr.trim().substring(0, 10);
             // 数据校验
-            /*if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
-                StringTool.setMsg(sb, String.format("第【%s】行状态为【%s】的事件清单不为完结，不能导入", j + 1, status));
-                cell.setCellValue(String.format("序号为【%s】的事件清单状态不为完结，不能导入", eventsId));
+            if (!(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_B) || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_A) || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
+                setFailedContent(result, String.format("第%s行的事件类型填写错误", j + 1));
+                cell.setCellValue("事件类型填写错误");
                 continue;
-            }*/
-            /*if (!(eventsForm.equals(PerformanceConstant.BASICS_EVENT) || eventsForm.equals(PerformanceConstant.EXPAND_EVENT))) {
-                setFailedContent(result, String.format("第%s行的绩效类型填写错误", j + 1));
-                cell.setCellValue("绩效类型填写错误");
-                continue;
-            }*/
+            }
+            // 如果事件类型为新增工作流，设置字段isNewEvent为是
 
             // 构建实体类
             EntryCasPlanDetail entryCasPlanDetail = new EntryCasPlanDetail();
@@ -233,6 +229,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             if (!ObjectUtils.isEmpty(eventsRoleId)) {
                 entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
             }
+            // 如果事件类型为新增工作流，设置字段isNewEvent为是
+            if (eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+                entryCasPlanDetail.setIsNewEvent(PerformanceConstant.YES);
+            } else entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
             entryCasPlanDetail.setEventsFirstType(eventsFirstType);
             entryCasPlanDetail.setJobName(jobName);
             entryCasPlanDetail.setWorkEvents(workEvents);
@@ -483,6 +483,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("statusCancel")) {
             queryWrapper.ne("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
         }
+        if (params.containsKey("newStatus")) {
+            queryWrapper.eq("newStatus", params.get("newStatus"));
+        }
         if (params.containsKey("twoStatus")) {
             queryWrapper
                     .eq("status", PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
@@ -532,14 +535,16 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     public boolean submitAudit(List<String> planDetailIds) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-            // 只能提交 待提交审核 状态的事件清单
+            // 如果计划的状态为’待提交审核‘
             if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
                 LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+                // 如果事件类型为’事务类‘
                 if (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)) {
                     entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG);
                     entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
                     entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
                 } else {
+                    // 如果事件类型为’非事务类’或者‘新增工作流‘
                     entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER);
                     entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
                     entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
@@ -589,18 +594,22 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (event.equals("pass")) {
             // 部长、科长审核通过
             for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                // 部长通过
+                // 部长通过（状态为’待部长审核‘，且事件类型为’非事务类‘的）
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
                         && (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_B))) {
+                    // 设置他的状态为’待填报回顾‘
                     entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-                } else if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
-                        && (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR);
-                }
-                // 科长通过
-                else if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-                }
+                } else
+                    // 部长通过（状态为’待部长审核‘，且事件类型为’新增工作流‘的）
+                    if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
+                            && (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
+                        // 设置他的状态为’待填报回顾‘
+                        entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR);
+                    }
+                    // 科长通过
+                    else if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG)) {
+                        entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+                    }
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
         }
@@ -625,20 +634,18 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     @Override
     public boolean HRAffirmStore(List<String> planDetailIds, String event) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
-        if (event.equals("yes")) {
-            for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+        for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR)) {
+                if (event.equals("yes")) {
+                    // 属于新增工作流,设置新状态为待创建基础事件
+                    entryCasPlanDetail.setNewStatus(PerformanceConstant.WAIT_CREATE_EVENT);
+                } else if (event.equals("no")) {
+                    // 不属于新增工作流，设置状态为待选择基础事件
+                    entryCasPlanDetail.setNewStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SELECT);
                 }
-                entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
-        } else if (event.equals("no")) {
-            for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SELECT);
-                }
-                entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
-            }
+            entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+            entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
         }
         return true;
     }

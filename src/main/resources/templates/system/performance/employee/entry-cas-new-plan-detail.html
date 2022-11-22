@@ -20,7 +20,7 @@
                     <td style="width: 15%;text-align: right">事件清单序号 :</td>
                     <td style="width: 35%">
                         <input type="hidden" name="planId" id="planId" th:value="${planId}">
-                        <input type="text" class="layui-input" name="id" placeholder="选择对应的事件清单序号"
+                        <input type="text" class="layui-input" name="id" placeholder="点击选择对应的事件清单序号"
                                id="id" autocomplete="off"
                                readonly lay-reqText="事件清单序号为必填项" lay-verify="required">
                     </td>
@@ -54,7 +54,6 @@
                     <td style="width: 15%;text-align: right">流程（工作事件）:</td>
                     <td style="width: 35%">
                         <div class="layui-input-inline" style="width: 100%">
-                            <span></span>
                             <input type="text" class="layui-input" name="workEvents" placeholder="流程（工作事件）"
                                    id="workEvents" autocomplete="off" lay-verify="" lay-reqText="流程（工作事件）为必填项" readonly>
                         </div>

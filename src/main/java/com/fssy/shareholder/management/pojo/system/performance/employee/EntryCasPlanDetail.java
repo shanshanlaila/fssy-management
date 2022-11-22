@@ -299,4 +299,16 @@ public class EntryCasPlanDetail extends BaseModel {
     @TableField("eventsRoleId")
     private Long eventsRoleId;
 
+    /**
+     *
+     */
+    @TableField("isNewEvent")
+    private String isNewEvent;
+
+    /**
+     * 新增工作流的状态标识
+     */
+    @TableField("newStatus")
+    private String newStatus;
+
 }

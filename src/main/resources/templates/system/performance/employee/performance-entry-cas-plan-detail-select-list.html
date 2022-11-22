@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>待选择关联事件清单</cite></a>
+            <a><cite>待选择关联事件清单</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -113,14 +113,15 @@
             where: {
                 // 向controller传入额外参数
                 eventsFirstType: '新增工作流',
-                status: '待选择事件清单'
+                newStatus: '待选择基础事件'
             },
             cols: [
                 [
                     {
                         field: 'id',
                         title: '序号',
-                        width: 50
+                        width: 50,
+                        fixed: 'left'
                     },
                     {
                         field: 'eventsId',
@@ -143,14 +144,13 @@
                         width: 80
                     },
                     {
-                        field: 'status',
+                        field: 'newStatus',
                         title: '状态',
                         width: 100,
                         templet: function (d) {
-                            console.log(d.status)
-                            switch (d.status) {
-                                case '待选择事件清单':
-                                    return '<span class="layui-badge layui-bg">待选择事件清单</span>';
+                            switch (d.newStatus) {
+                                case '待选择基础事件':
+                                    return '<span class="layui-badge layui-bg">待选择基础事件</span>';
                                 default:
                                     return '<span class="layui-badge layui-bg-green">待填报回顾</span>';
                             }
@@ -308,7 +308,7 @@
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'edit') { // 修改
+            if (obj.event === 'edit') { // 选择基础事件
                 layer.open({
                     type: 2,
                     title: '序号为' + data.id + '的待选择关联事件清单操作',
@@ -323,7 +323,24 @@
                 });
             }
         });
+        // 双击打开选择关联事件清单页面
+        table.on('rowDouble(dataTable)', function (obj) {
+            obj.data
+            layer.open({
+                type: 2,
+                title: '序号为' + data.id + '的待选择关联事件清单操作',
+                area:
+                    [
+                        $(window).width() * 0.9 + 'px',
+                        $(window).height() - 210 + 'px'
+                    ],
+                content: '/system/entry-cas-plan-detail/AssociateEvents/' + data.id,
+                maxmin: true,
+                scrollbar: true
+            })
+        });
     });
+
 
     // 部门查询下拉列表
     let departmentSelect = xmSelect.render({

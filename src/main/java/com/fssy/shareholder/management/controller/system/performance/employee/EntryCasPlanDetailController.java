@@ -247,6 +247,9 @@ public class EntryCasPlanDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("twoStatus"))) {
             params.put("twoStatus", request.getParameter("twoStatus"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("newStatus"))) {
+            params.put("newStatus", request.getParameter("newStatus"));
+        }
         return params;
     }
 
@@ -468,6 +471,13 @@ public class EntryCasPlanDetailController {
         return "/system/performance/employee/performance-entry-cas-plan-detail-HR-list";
     }
 
+    /**
+     * 判断新增工作流
+     *
+     * @param planDetailIds 计划ids
+     * @param request       请求
+     * @return 结果
+     */
     @PostMapping("HRAffirmStore")
     @ResponseBody
     public SysResult HRAffirmStore(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds, HttpServletRequest request) {
@@ -526,7 +536,7 @@ public class EntryCasPlanDetailController {
     }
 
     /**
-     * 展示事件详情页面
+     * 点击选择基础事件展示事件详情页面
      *
      * @return 页面路径
      */
@@ -536,16 +546,56 @@ public class EntryCasPlanDetailController {
         return "/system/performance/employee/entry-cas-new-plan-detail";
     }
 
+    /**
+     * 新增工作选择关联基础事件
+     *
+     * @param event  事件
+     * @param planId 计划id
+     * @return 结果
+     */
     @PostMapping("match/{planId}")
     @ResponseBody
     public SysResult match(EventList event, @PathVariable String planId) {
-        System.out.println(planId);
         EntryCasPlanDetail planDetail = entryCasPlanDetailService.getById(planId);
         planDetail.setEventsId(event.getId());
         planDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+        planDetail.setNewStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
         boolean result = entryCasPlanDetailService.updateById(planDetail);
         if (result) {
             return SysResult.build(200, "关联基础事件成功");
         } else return SysResult.build(500, "关联基础事件失败");
+    }
+
+    /**
+     * 转发到待创建关联基础事件
+     *
+     * @param model 模型
+     * @return 路径
+     */
+    @GetMapping("createEventPlan")
+    @RequiredLog("待创建关联基础事件")
+    public String createEventPlan(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>();
+        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        return "/system/performance/employee/plan/entry-cas-plan-detail-create-event-list";
+    }
+
+    /**
+     * 转发到填写事件清单表单
+     *
+     * @return 路径
+     */
+    @GetMapping("showEventForm/{id}")
+    public String showEventAndRoleForm(@PathVariable Long id, Model model) {
+        EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
+        model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
+        Map<String, Object> departmentParams = new HashMap<>();
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        return "/system/performance/employee/plan/plan-create-event-list-form";
     }
 }
