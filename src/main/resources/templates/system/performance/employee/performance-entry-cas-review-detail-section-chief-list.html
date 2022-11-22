@@ -31,7 +31,7 @@
                             <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" >
-                            <button class="layui-btn" lay-submit lay-filter="search1">
+                            <button class="layui-btn" lay-submit lay-filter="searchLeft">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                         </div>
@@ -49,7 +49,8 @@
 
         <div class="layui-col-md10">
             <div class="layui-card">
-                <div class="layui-card-body ">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body ">
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input ">
@@ -126,7 +127,6 @@
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
 
-
         // 实例表格（左）
         var dataTable = table.render({
             elem: '#dataTable',
@@ -159,8 +159,8 @@
                 ]
             ]
         });
-        // 实例表格(右)
-            var dataTableRight = table.render({
+        // 实例表格（右）
+        var dataTable = table.render({
             elem: '#dataTableRight',
             id: 'dataTableRight',
             page: true,
@@ -183,24 +183,14 @@
                         width: 50
                     },
                     {
-                        field: 'id',
-                        title: '序号',
-                        width: 50,
-                        fixed: 'left',
+                        field: 'actualCompleteDate',
+                        title: '实际完成时间',
+                        width: 90
                     },
                     {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 120,
-                        fixed: 'left',
-                        templet: function (d) {
-                            let eventsId = d.eventsId;
-                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
-                                return d.eventsId
-                            } else {
-                                return "无"
-                            }
-                        }
+                        field: 'completeDesc',
+                        title: '工作完成描述',
+                        width: 90
                     },
                     {
                         field: 'eventsFirstType',
@@ -241,16 +231,6 @@
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 90
-                    },
-                    {
-                        field: 'actualCompleteDate',
-                        title: '实际完成时间',
-                        width: 90
-                    },
-                    {
-                        field: 'completeDesc',
-                        title: '工作完成描述',
                         width: 90
                     },
                     {
@@ -384,7 +364,7 @@
         });
 
         // 监听搜索按钮(左)
-        form.on('submit(search1)', function (data) {
+        form.on('submit(searchLeft)', function (data) {
             // 必填项控制
             var roleIds = data.field.roleIds;
             if (!roleIds) {
@@ -457,7 +437,7 @@
         });
         // 一键审核
         form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTableRight.config.id),
+            var checkStatus = table.checkStatus(dataTable.config.id),
                 data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
@@ -482,7 +462,7 @@
                     layer.closeAll();
                     layer.msg(result.msg);
                     if (result.status === 200) {
-                        table.reload('dataTableRight');
+                        table.reload('dataTable');
                     }
                 }
             });

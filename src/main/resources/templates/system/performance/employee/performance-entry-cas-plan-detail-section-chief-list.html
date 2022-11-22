@@ -31,7 +31,7 @@
                             <div id="roleSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" >
-                            <button class="layui-btn" lay-submit lay-filter="search1">
+                            <button class="layui-btn" lay-submit lay-filter="searchLeft">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                         </div>
@@ -49,7 +49,8 @@
 
         <div class="layui-col-md10">
             <div class="layui-card">
-                <div class="layui-card-body ">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body ">
                     <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                         <input type="text" id = "year" name="year" placeholder="申报年份查询" autocomplete="off"
                                class="layui-input">
@@ -89,10 +90,12 @@
                         </label>
                     </div>
                     <div class="layui-inline layui-show-xs-block" >
-                        <button class="layui-btn" lay-submit lay-filter="search">
+                        <button class="layui-btn" lay-submit lay-filter="searchRight">
                             <i class="layui-icon">&#xe615;</i>
                         </button>
                     </div>
+                </form>
+                <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTableRight" lay-filter="dataTableRight"></table>
                     <script type="text/html" id="toolbar" th:inline="none"><!DOCTYPE html>
                     <form class="layui-form layui-col-space5">
@@ -258,7 +261,7 @@
         });
 
         // 监听搜索按钮(左)
-        form.on('submit(search1)', function (data) {
+        form.on('submit(searchLeft)', function (data) {
             // 必填项控制
             var roleIds = data.field.roleIds;
             if (!roleIds) {
@@ -276,7 +279,7 @@
             return false
         });
         // 监听搜索按钮(右)
-        form.on('submit(search)', function (data) {
+        form.on('submit(searchRight)', function (data) {
             console.log('------------',data
             )
             // 重新加载表格
