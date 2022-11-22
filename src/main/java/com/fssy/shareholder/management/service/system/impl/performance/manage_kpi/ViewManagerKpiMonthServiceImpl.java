@@ -219,7 +219,6 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
             }
             //将set转为list,方便拿姓名
             ArrayList<String> listManageName = new ArrayList<>(setManageName);
-            params.remove("month");
             params.put("generalManager", "否");
 
             /**
