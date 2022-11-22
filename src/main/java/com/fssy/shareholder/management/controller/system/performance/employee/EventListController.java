@@ -508,4 +508,22 @@ public class EventListController {
         model.addAttribute("eventList", eventList);
         return "/system/performance/employee/events-list-details";
     }
+
+    /**
+     * 属于新增工作流的履职计划创建关联基础事件
+     *
+     * @param eventList 基础事件
+     * @param planId    计划id
+     * @return 结果
+     */
+    @PostMapping("storeOnNewPlan/{planId}")
+    @RequiredLog("创建关联事件清单")
+    @ResponseBody
+    public SysResult storeOnNewPlan(EventList eventList, @PathVariable Long planId) {
+        boolean result = eventListService.insertEventByPlan(eventList, planId);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "创建关联基础事件失败");
+    }
 }

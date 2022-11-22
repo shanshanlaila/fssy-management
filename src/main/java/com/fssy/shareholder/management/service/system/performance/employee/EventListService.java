@@ -99,5 +99,14 @@ public interface EventListService {
      * 新增单条基础事件
      * @param eventList 基础事件实体
      */
-    EventList insertEventList(EventList eventList);
+    boolean insertEventList(EventList eventList);
+
+    /**
+     * 属于新增工作流的履职计划创建关联基础事件
+     *
+     * @param eventList 基础事件
+     * @param id        计划id
+     * @return 结果
+     */
+    boolean insertEventByPlan(EventList eventList, Long id);
 }

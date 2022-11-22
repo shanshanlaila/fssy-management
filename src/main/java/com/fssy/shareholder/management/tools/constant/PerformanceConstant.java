@@ -26,8 +26,7 @@ public interface PerformanceConstant {
     String REVIEW_DETAIL_STATUS_AUDIT_A="待经营管理部审核";
     String REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN="待经营管理部主管复核";
     String PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE="待绩效科复核";
-    String PLAN_DETAIL_STATUS_SELECT="待选择事件清单";
-    String PLAN_DETAIL_STATUS_ALREADY_SELECT="已选择事件清单";
+    String PLAN_DETAIL_STATUS_SELECT="待选择基础事件";
     String EVENTS_FIRST_TYPE_A="事务类";
     String EVENTS_FIRST_TYPE_B="非事务类";
     String EVENTS_FIRST_TYPE_C="新增工作流";
@@ -40,4 +39,7 @@ public interface PerformanceConstant {
     String NON_CONFORM="不符合";
     String BASICS_EVENT="基础事件绩效";
     String EXPAND_EVENT="拓展事件绩效";
+    String WAIT_CREATE_EVENT="待创建基础事件";
+    String YES="是";
+    String NO="否";
 }
