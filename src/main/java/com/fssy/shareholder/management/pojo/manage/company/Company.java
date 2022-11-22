@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
+import org.openxmlformats.schemas.officeDocument.x2006.docPropsVTypes.I4Document;
 
 /**
  * 公司实体类</br>
@@ -21,7 +22,7 @@ public class Company extends BaseModel
 	private static final long serialVersionUID = -6080195749539778878L;
 
 	@TableId(type = IdType.AUTO)
-	private Long id;
+	private Integer id;
 
 	private String name;
 
@@ -36,17 +37,17 @@ public class Company extends BaseModel
 				'}';
 	}
 
-	public Company(Long id, String name, String shortName) {
+	public Company(Integer id, String name, String shortName) {
 		this.id = id;
 		this.name = name;
 		this.shortName = shortName;
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

@@ -3,8 +3,10 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiCoefficientMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiScoreMapperOld;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiCoefficient;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiMonth;
@@ -34,10 +36,10 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
 
     @Autowired
     private ViewManagerKpiMonthMapper viewManagerKpiMonthMapper;
-
+    @Autowired
+    private CompanyMapper companyMapper;
     @Autowired
     private ManagerKpiScoreMapperOld managerKpiScoreMapper;
-
     @Autowired
     private ManagerKpiCoefficientMapper managerKpiCoefficientMapper;
 
@@ -168,6 +170,14 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                     if(i == 0){
                         //对score表插入数据
                         ManagerKpiScoreOld managerKpiScore = new ManagerKpiScoreOld();
+                        //从前端获取公司名称
+                        String companyName = (String) params.get("companyName");
+                        //前端获取公司名称与公司表中的简称对应找出id值并写入
+                        QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+                        companyQueryWrapper.eq("shortName",companyName);
+                        List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+                        Integer companyId = companyList.get(0).getId();
+                        managerKpiScore.setCompanyId(companyId);  //写入公司id
                         managerKpiScore.setManagerName(temp.getManagerName());
                         managerKpiScore.setCompanyName(temp.getCompanyName());
                         managerKpiScore.setYear(temp.getYear());
