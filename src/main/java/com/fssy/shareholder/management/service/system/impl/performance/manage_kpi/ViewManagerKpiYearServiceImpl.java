@@ -25,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -286,6 +283,15 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         }
         if (params.containsKey("managerName")) {
             queryWrapper.like("managerName", params.get("managerName"));
+        }
+        //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
+        Object companyId = params.get("companyIds");
+        if (!ObjectUtils.isEmpty(companyId)) {
+            if (params.containsKey("companyId")) {
+                String companyIds = (String) params.get("companyId");
+                List<String> strings = Arrays.asList(companyIds.split(","));
+                queryWrapper.in("companyId", strings);
+            }
         }
         return queryWrapper;
     }

@@ -11,6 +11,7 @@ import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.Manage
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiYear;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.ViewManagerKpiYearSheetOutputService;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ViewManagerKpiYearService;
@@ -51,6 +52,8 @@ public class ViewManagerKpiYearController {
     private AttachmentService attachmentService;
     @Autowired
     private ImportModuleService importModuleService;
+    @Autowired
+    private CompanyService companyService;
 
     /**
      * 经理人年度KPI管理页面
@@ -62,6 +65,8 @@ public class ViewManagerKpiYearController {
     @GetMapping("index1")
     public String manageIndex(Model model){
         Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("companyNameList",companyNameList);
         return "/system/performance/manager_kpi/view-manager-kpi-year/view-manager-kpi-year-list";
     }
     /**
@@ -78,6 +83,9 @@ public class ViewManagerKpiYearController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
+        //获取前端公司查询的主键
+        String companyIds = request.getParameter("companyIds");
+        params.put("companyId",companyIds);
         Page<ViewManagerKpiYear> viewManagerKpiYearPage = viewManagerKpiYearService.findViewManagerKpiYearDataListPerPageByParams(params);
         if (viewManagerKpiYearPage.getTotal() == 0) {
             result.put("code", 404);
@@ -184,6 +192,12 @@ public class ViewManagerKpiYearController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("note"))) {
             params.put("note", request.getParameter("note"));
+        }
+        if (!com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            params.put("companyIds", request.getParameter("companyIds"));
+        }
+        if (!com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isEmpty(request.getParameter("companyList"))) {
+            params.put("companyList", request.getParameter("companyList"));
         }
         return params;
     }

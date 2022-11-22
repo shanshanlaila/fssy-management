@@ -7,6 +7,7 @@ package com.fssy.shareholder.management.controller.system.performance.manage_kpi
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiMonthScoreOldService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +34,8 @@ import java.util.Map;
 public class ManagerKpiMonthScoreOldController {
     @Autowired
     private ManagerKpiMonthScoreOldService managerKpiMonthScoreOldService;
-
+    @Autowired
+    private CompanyService companyService;
     /**
      * 经理人绩效月度推移 管理页面
      *
@@ -43,6 +47,8 @@ public class ManagerKpiMonthScoreOldController {
     @GetMapping("index1")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("companyNameList",companyNameList);
         return "/system/performance/manager_kpi/manager-kpi-month-score-old/manager-kpi-month-score-old-list";
     }
     /**
@@ -60,6 +66,9 @@ public class ManagerKpiMonthScoreOldController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
+        //获取前端公司查询的主键
+        String companyIds = request.getParameter("companyIds");
+        params.put("companyId",companyIds);
         Page<Map<String, Object>> managerKpiMonthScoreOldPage = managerKpiMonthScoreOldService.findManageKpiMonthScoreOldDataMapListPerPageByParams(params);
         if (managerKpiMonthScoreOldPage.getTotal() == 0) {
             result.put("code", 404);
@@ -183,6 +192,13 @@ public class ManagerKpiMonthScoreOldController {
         if (!ObjectUtils.isEmpty(request.getParameter("month12"))) {
             params.put("month12", request.getParameter("month12"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            params.put("companyIds", request.getParameter("companyIds"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyList"))) {
+            params.put("companyList", request.getParameter("companyList"));
+        }
+
         return params;
     }
 }
