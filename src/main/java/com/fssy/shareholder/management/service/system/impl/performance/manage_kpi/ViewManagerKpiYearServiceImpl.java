@@ -2,10 +2,12 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthAimMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiYearMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiYearMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ViewManagerKpiYearMapper;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
@@ -46,6 +48,8 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
     private ManageKpiYearMapper manageKpiYearMapper;
     @Autowired
     private ManagerKpiYearMapper managerKpiYearMapper;
+    @Autowired
+    private CompanyMapper companyMapper;
     @Autowired
     private ManageKpiMonthAimMapper manageKpiMonthAimMapper;
     @Autowired
@@ -206,6 +210,24 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             //表中存在数据的情况下获取这个MangeKpiYear
             ManageKpiYear manageKpiYear = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper).get(0);
 
+            //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
+            QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+            companyQueryWrapper.eq("shortName",companyName);
+            List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+            if (companyList.size() > 1) {
+                setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
+                cell.setCellValue("存在多个公司名称，公司名称是否正确");
+                continue;
+            }
+            if (companyList.size() == 0) {
+                setFailedContent(result, String.format("第%s行的公司不存在", j + 1));
+                cell.setCellValue("公司名称不存在，公司名称是否正确");
+                continue;
+            }
+            //公司表中存在数据，获取这个公司名称的id
+            Company company = companyMapper.selectList(companyQueryWrapper).get(0);
+
+            managerKpiYear.setCompanyId(company.getId());      //公司id
             managerKpiYear.setManageKpiYearId(manageKpiYear.getId());  //经营管理年度指标id
             managerKpiYear.setManagerKpiMark(managerKpiMark);   //经理人年度KPI绩效标识
             managerKpiYear.setProjectType(projectType);

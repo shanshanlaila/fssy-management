@@ -4,7 +4,9 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiCoefficientMapper;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.*;
 import com.fssy.shareholder.management.service.common.SheetService;
@@ -37,6 +39,8 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
     private SheetService sheetService;
     @Autowired
     private ManagerKpiCoefficientMapper managerKpiCoefficientMapper;
+    @Autowired
+    private CompanyMapper companyMapper;
 
     /**
      * 分页查询
@@ -145,8 +149,27 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
 
             //构建实体类
             ManagerKpiCoefficient managerKpiCoefficient = new ManagerKpiCoefficient();
+            //前端获取数据直接导入
             managerKpiCoefficient.setManagerName(managerName);
             managerKpiCoefficient.setCompanyName(companyName);
+            //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
+            QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+            companyQueryWrapper.eq("shortName",companyName);
+            List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+            if (companyList.size() > 1) {
+                setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
+                cell.setCellValue("存在多个公司名称，公司名称是否正确");
+                continue;
+            }
+            if (companyList.size() == 0) {
+                setFailedContent(result, String.format("第%s行的公司不存在", j + 1));
+                cell.setCellValue("公司名称不存在，公司名称是否正确");
+                continue;
+            }
+            //公司表中存在数据，获取这个公司名称的id
+            Company company = companyMapper.selectList(companyQueryWrapper).get(0);
+            managerKpiCoefficient.setCompanyId(company.getId());      //公司id
+
             // 根据指标、年份和公司名称找月度报表对应的id，后导入id
             QueryWrapper<ManagerKpiCoefficient> managerKpiCoefficientQueryWrapper = new QueryWrapper<>();
             managerKpiCoefficientQueryWrapper.eq("companyName", companyName)
