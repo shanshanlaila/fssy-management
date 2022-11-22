@@ -39,15 +39,8 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="kpiYear" placeholder="创建年份查询" autocomplete="off"
-                                   class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <select name="evaluateMode" id="evaluateMode">
-                                <option value="">请选择评分模式</option>
-                                <option value="人工评分">人工评分</option>
-                                <option value="系统评分">系统评分</option>
-                            </select>
+                            <input type="text" name="kpiYear" placeholder="查询年份" id="kpiYear"
+                                   autocomplete="off" class="layui-input laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
@@ -81,7 +74,13 @@
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
-
+        // 重新重置日期控件
+        laydate.render({
+            elem : '#kpiYear',
+            trigger : 'click',
+            type : 'year',
+            value : moment().format("YYYY")
+        });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
             console.log(data.field)
@@ -151,7 +150,7 @@
                         field: 'projectDesc',
                         title: '指标名称',
                         align: 'center',
-                        width: 130
+                        width: 180
                     },
                     {
                         field: 'unit',

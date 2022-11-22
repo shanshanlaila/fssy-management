@@ -27,20 +27,12 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
-                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="companyName" placeholder="公司名称查询" autocomplete="off"
-                                   class="layui-input">
-                        </div>
-<!--                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">-->
-<!--                            <div id="companyName"></div>-->
-<!--                        </div>-->
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="创建年份查询" autocomplete="off"
-                                   class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 250px;">
+                            <div id="companyNameSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="month" placeholder="创建月份查询" autocomplete="off"
-                                   class="layui-input">
+                            <input type="text" name="yearMonth" placeholder="查询年月份" id="yearMonth"
+                                   autocomplete="off" class="layui-input laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <select name="projectType" id="projectType">
@@ -101,7 +93,13 @@
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
-
+        // 重新重置日期控件
+        laydate.render({
+            elem : '#yearMonth',
+            trigger : 'click',
+            type : 'month',
+            value : moment().subtract(3,"months").format("YYYY-MM")
+        });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
             console.log(data.field)
@@ -113,6 +111,25 @@
                 },
             });
             return false
+        });
+        //企业名称下拉框
+        let companyNameSelect = xmSelect.render({
+            el: '#companyNameSelect',
+            language: 'zn',
+            data: [[${companyNameList}]],
+            filterable: true,
+            // radio: true,
+            tips: '公司名称查询',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '250px', 'min-height': '28px', 'line-height': '28px',
+            },
+            // clickClose: true,
+            name: 'companyIds',
         });
         //监听导出按钮
         form.on('submit(downloadForCharge)', function (data) {
@@ -174,24 +191,6 @@
             });
             return false;
         });
-        // // 岗位查询下拉列表
-        // let companyName = xmSelect.render({
-        //     el: '#companyName', // 绑定
-        //     language: 'zn',
-        //     data: [[${roleNameList}]],// model过来的
-        //     filterable: true,
-        //     // radio: true,// 是否是单选
-        //     tips: '企业名称查询',
-        //     toolbar: {
-        //         show: true
-        //     },
-        //     paging: true, // 分页
-        //     pageSize: 30,
-        //     style: {
-        //         width: '160px', 'min-height': '28px', 'line-height': '28px',
-        //     },
-        //     name: 'companyId',// 传到后端选择的roleId集合字符串
-        // });
         // 实例表格
         var dataTable = table.render({
             elem: '#dataTable',
@@ -251,7 +250,6 @@
                         align: 'center',
                         width: 170,
                         rowspan: 2,
-                        fixed: 'left'
                     },
                     {
                         field: 'dataSource',

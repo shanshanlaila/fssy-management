@@ -32,8 +32,8 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="创建年份查询" autocomplete="off"
-                                   class="layui-input">
+                            <input type="text" name="year" placeholder="查询年份" id="year"
+                                   autocomplete="off" class="layui-input laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="managerName" placeholder="经理人姓名查询" autocomplete="off"
@@ -84,7 +84,13 @@
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
-
+        // 重新重置日期控件
+        laydate.render({
+            elem : '#year',
+            trigger : 'click',
+            type : 'year',
+            value : moment().format("YYYY")
+        });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
             console.log(data.field)
@@ -201,24 +207,18 @@
                         align: 'center',
                         width: 100
                     },
-                    {
-                        field: 'year',
-                        title: '年份',
-                        align: 'center',
-                        width: 80,
-                    },
-                    {
-                        field: 'benchmarkCompany',
-                        title: '对标企业名称',
-                        align: 'center',
-                        width: 130
-                    },
-                    {
-                        field: 'benchmarkValue',
-                        title: '标杆值',
-                        align: 'center',
-                        width: 100
-                    },
+                    // {
+                    //     field: 'benchmarkCompany',
+                    //     title: '对标企业名称',
+                    //     align: 'center',
+                    //     width: 130
+                    // },
+                    // {
+                    //     field: 'benchmarkValue',
+                    //     title: '标杆值',
+                    //     align: 'center',
+                    //     width: 100
+                    // },
                     {
                         field: 'pastThreeYearsActual',
                         title: '过去第三年值',
@@ -272,6 +272,12 @@
                         title: '备注',
                         align: 'center',
                         width: 80
+                    },
+                    {
+                        field: 'year',
+                        title: '年份',
+                        align: 'center',
+                        width: 80,
                     },
                     {
                         fixed: 'right',

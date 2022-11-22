@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -174,6 +175,14 @@ public class ManageKpiMonthScoreServiceImpl extends ServiceImpl<ManageKpiMonthAi
         //进行非空判断
         if (params.containsKey("monthActualValue") && Boolean.valueOf(InstandTool.objectToString(params.get("monthActualValue")))) {
             queryWrapper.isNotNull("monthActualValue");
+        }
+        //拆分前端的年月份的字符串，进行年月的查询
+        String yearMonth = (String) params.get("yearMonth");
+        if (!ObjectUtils.isEmpty(yearMonth)) {
+            if (params.containsKey("yearMonth")) {
+                List<String> strings = Arrays.asList(yearMonth.split("-"));
+                queryWrapper.eq("month", strings.get(1)).eq("year", strings.get(0));
+            }
         }
         return queryWrapper;
     }

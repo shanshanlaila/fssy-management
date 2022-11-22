@@ -53,6 +53,11 @@ public class ViewManagerKpiYear extends BaseModel {
     @TableField("companyName")
     private String companyName;
     /**
+     * 企业id
+     */
+    @TableField("companyId")
+    private Integer companyId;
+    /**
      * 备注
      */
     @TableField("note")
