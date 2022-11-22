@@ -14,7 +14,10 @@ import com.fssy.shareholder.management.service.system.performance.manage_kpi.Man
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,6 +77,15 @@ public class ManagerKpiMonthScoreOldServiceImpl extends ServiceImpl<ManagerKpiSc
         }
         if (params.containsKey("month")) {
             queryWrapper.eq("month", params.get("month"));
+        }
+        //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
+        Object companyId = params.get("companyIds");
+        if (!ObjectUtils.isEmpty(companyId)) {
+            if (params.containsKey("companyId")) {
+                String companyIds = (String) params.get("companyId");
+                List<String> strings = Arrays.asList(companyIds.split(","));
+                queryWrapper.in("companyId", strings);
+            }
         }
         return queryWrapper;
     }

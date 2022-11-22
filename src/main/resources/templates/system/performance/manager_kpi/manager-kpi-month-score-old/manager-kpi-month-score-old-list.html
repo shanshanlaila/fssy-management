@@ -31,9 +31,8 @@
                             <input type="text" name="managerName" placeholder="经理人姓名" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="companyName" placeholder="企业名称" autocomplete="off"
-                                   class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 250px;">
+                            <div id="companyNameSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="year" placeholder="查询年份" id="year"
@@ -84,6 +83,25 @@
                 }
             });
             return false
+        });
+        //企业名称下拉框
+        let companyNameSelect = xmSelect.render({
+            el: '#companyNameSelect',
+            language: 'zn',
+            data: [[${companyNameList}]],
+            filterable: true,
+            // radio: true,
+            tips: '公司名称查询',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '250px', 'min-height': '28px', 'line-height': '28px',
+            },
+            // clickClose: true,
+            name: 'companyIds',
         });
         // 实例表格
         var dataTable = table.render({
