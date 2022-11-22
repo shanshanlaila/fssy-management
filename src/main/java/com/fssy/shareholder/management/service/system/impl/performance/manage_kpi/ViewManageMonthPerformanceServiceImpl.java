@@ -19,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -581,8 +578,26 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
     }
     private QueryWrapper<ViewManageMonthPerformance> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ViewManageMonthPerformance> queryWrapper = new QueryWrapper<>();
-        //获取前端传来的默认值，12，依次递减
-        int month= Integer.valueOf((String) params.get("month"));
+        //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
+        Object companyId = params.get("companyIds");
+        if (!ObjectUtils.isEmpty(companyId)) {
+            if (params.containsKey("companyId")) {
+                String companyIds = (String) params.get("companyId");
+                List<String> strings = Arrays.asList(companyIds.split(","));
+                queryWrapper.in("companyId", strings);
+            }
+        }
+        //拆分前端的年月份的字符串，进行年月的查询
+        int month=0;
+        int year=0;
+        String yearMonth = (String) params.get("yearMonth");
+        if (!ObjectUtils.isEmpty(yearMonth)) {
+            if (params.containsKey("yearMonth")) {
+                List<String> strings = Arrays.asList(yearMonth.split("-"));
+                year=Integer.parseInt(strings.get(0));
+                month= Integer.parseInt(strings.get(1));
+            }
+        }
         //设置月份常量，十二月一共循环十二次，与数据查询的月份无关联
         int MONTH=12;
         // 达成数量
@@ -597,7 +612,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                     + ", sum(if(MONTH =" + MONTH + ",monthActualValue,null)) AS 'monthActual" + MONTH + "'");
             MONTH--;
         } while (MONTH>0);
-        queryWrapper.select(selectStr1.toString())
+        queryWrapper.select(selectStr1.toString()).eq("year",year)
                 .groupBy("manageKpiYearId");
 
         if (params.containsKey("companyName")) {

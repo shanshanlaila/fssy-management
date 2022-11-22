@@ -21,10 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -354,6 +351,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         if (params.containsKey("projectDesc")) {
             queryWrapper.like("projectDesc", params.get("projectDesc"));
         }
+        //判断指标状态为未锁定且累计实绩值不为空的数据
         if (params.containsKey("status")) {
             queryWrapper.eq("status", params.get("status"));
             String status = (String) params.get("status");
@@ -363,6 +361,14 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         }
         if (params.containsKey("evaluateMode")) {
             queryWrapper.eq("evaluateMode", params.get("evaluateMode"));
+        }
+        //拆分前端的年月份的字符串，进行年月的查询
+        String yearMonth = (String) params.get("yearMonth");
+        if (!ObjectUtils.isEmpty(yearMonth)) {
+            if (params.containsKey("yearMonth")) {
+                List<String> strings = Arrays.asList(yearMonth.split("-"));
+                queryWrapper.eq("month", strings.get(1)).eq("year", strings.get(0));
+            }
         }
         return queryWrapper;
     }

@@ -158,6 +158,8 @@ public class ViewManagerKpiMonthController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
+        String yearMonth = request.getParameter("yearMonth");
+        params.put("yearMonth",yearMonth);
         Page<ManagerKpiScoreOld> managerKpiScorePage = managerKpiScoreService.findManagerKpiScoreOldDataListPerPageByParams(params);
         if (managerKpiScorePage.getTotal() == 0) {
             result.put("code", 404);
@@ -315,6 +317,9 @@ public class ViewManagerKpiMonthController {
         Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("generalManager"))) {
             params.put("generalManager", request.getParameter("generalManager"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("yearMonth"))) {
+            params.put("yearMonth", request.getParameter("yearMonth"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))) {
             params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));

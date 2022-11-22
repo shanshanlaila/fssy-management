@@ -32,12 +32,8 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="创建年份查询" autocomplete="off"
-                                   class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="month" placeholder="创建月份查询" autocomplete="off"
-                                   class="layui-input">
+                            <input type="text" name="yearMonth" placeholder="查询年月份" id="yearMonth"
+                                   autocomplete="off" class="layui-input laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="projectType" placeholder="指标类型查询" autocomplete="off"
@@ -89,7 +85,13 @@
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
-
+        // 重新重置日期控件
+        laydate.render({
+            elem : '#yearMonth',
+            trigger : 'click',
+            type : 'month',
+            value : moment().format("YYYY-MM")
+        });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
             console.log(data.field)
@@ -162,7 +164,7 @@
                     {
                         field: 'id',
                         title: '序号',
-                        width: 40
+                        width: 20
                     },
                     {
                         field: 'companyName',

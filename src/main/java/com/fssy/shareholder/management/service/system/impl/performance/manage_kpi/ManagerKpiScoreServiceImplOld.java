@@ -28,10 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -59,9 +56,9 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
     @Override
     public Page<ManagerKpiScoreOld> findManagerKpiScoreOldDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
-        int limit = (int)params.get("limit");
-        int page = (int)params.get("page");
-        Page<ManagerKpiScoreOld> myPage = new Page<>(page,limit);
+        int limit = (int) params.get("limit");
+        int page = (int) params.get("page");
+        Page<ManagerKpiScoreOld> myPage = new Page<>(page, limit);
         return managerKpiScoreMapper.selectPage(myPage, queryWrapper);
     }
 
@@ -72,16 +69,16 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
      * @return 分页数据
      */
     @Override
-    public Page<Map<String,Object>> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
+    public Page<Map<String, Object>> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
         StringBuilder stringBuilder = new StringBuilder("companyName, managerName,position,year,SUM( scoreAdjust ) AS newYear," +
                 "( SELECT scoreAdjust FROM bs_manager_kpi_score AS a WHERE a.YEAR = bs_manager_kpi_score.YEAR - 1 and month =12 and a.managerName=bs_manager_kpi_score.managerName ) AS 'oneYear'," +
                 "( SELECT scoreAdjust FROM bs_manager_kpi_score AS b WHERE b.YEAR = bs_manager_kpi_score.YEAR - 2 and month =12 and b.managerName=bs_manager_kpi_score.managerName ) AS 'twoYear'," +
                 "(  SELECT scoreAdjust FROM bs_manager_kpi_score AS c WHERE c.YEAR = bs_manager_kpi_score.YEAR - 3 and month =12 and c.managerName=bs_manager_kpi_score.managerName ) AS 'threeYear' ");
         queryWrapper.select(stringBuilder.toString()).groupBy("year,managerName");
-        int limit = (int)params.get("limit");
-        int page = (int)params.get("page");
-        Page<Map<String,Object>> myPage = new Page<>(page,limit);
+        int limit = (int) params.get("limit");
+        int page = (int) params.get("page");
+        Page<Map<String, Object>> myPage = new Page<>(page, limit);
         return managerKpiScoreMapper.selectMapsPage(myPage, queryWrapper);
     }
 
@@ -103,6 +100,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
 
     /**
      * 导入附件
+     *
      * @param attachment 附件
      * @return
      */
@@ -203,12 +201,12 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
 
             // 根据经理人姓名，年份，月份,公司名称进行判断，存在则更新，不存在则新增
             UpdateWrapper<ManagerKpiScoreOld> managerKpiScoreOldUpdateWrapper = new UpdateWrapper<>();
-            managerKpiScoreOldUpdateWrapper.set("advantageAnalyze",advantageAnalyze)
-                    .set("disadvantageAnalyze",disadvantageAnalyze).set("riskDesc",riskDesc)
-                    .set("respDepartment",respDepartment).set("groupImproveAction",groupImproveAction)
-                    .eq("managerName",managerName).eq("year",year)
-                    .eq("month",month).eq("companyName",companyName);
-            managerKpiScoreMapper.update(null,managerKpiScoreOldUpdateWrapper);
+            managerKpiScoreOldUpdateWrapper.set("advantageAnalyze", advantageAnalyze)
+                    .set("disadvantageAnalyze", disadvantageAnalyze).set("riskDesc", riskDesc)
+                    .set("respDepartment", respDepartment).set("groupImproveAction", groupImproveAction)
+                    .eq("managerName", managerName).eq("year", year)
+                    .eq("month", month).eq("companyName", companyName);
+            managerKpiScoreMapper.update(null, managerKpiScoreOldUpdateWrapper);
             cell.setCellValue("导入成功");
 
         }
@@ -232,6 +230,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
 
     /**
      * 传入参数，对参数进行处理(查询条件)
+     *
      * @param params
      * @return
      */
@@ -254,6 +253,23 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
         }
         if (params.containsKey("month")) {
             queryWrapper.eq("month", params.get("month"));
+        }
+        //拆分前端的年月份的字符串，进行年月的查询
+        String yearMonth = (String) params.get("yearMonth");
+        if (!ObjectUtils.isEmpty(yearMonth)) {
+            if (params.containsKey("yearMonth")) {
+                List<String> strings = Arrays.asList(yearMonth.split("-"));
+                queryWrapper.eq("month", strings.get(1)).eq("year", strings.get(0));
+            }
+        }
+        //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
+        Object companyId = params.get("companyIds");
+        if (!ObjectUtils.isEmpty(companyId)) {
+            if (params.containsKey("companyId")) {
+                String companyIds = (String) params.get("companyId");
+                List<String> strings = Arrays.asList(companyIds.split(","));
+                queryWrapper.in("companyId", strings);
+            }
         }
         return queryWrapper;
     }

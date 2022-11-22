@@ -8,6 +8,7 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.ManageKpiMonthPerformanceSheetOutputService;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ViewManageMonthPerformanceService;
@@ -48,7 +49,8 @@ public class ViewManageMonthPerformanceController {
     private ImportModuleService importModuleService;
     @Autowired
     private ViewManageMonthPerformanceService viewManageMonthPerformanceService;
-
+    @Autowired
+    private CompanyService companyService;
     /**
      * 经营管理指标 管理页面
      *
@@ -60,6 +62,8 @@ public class ViewManageMonthPerformanceController {
     @GetMapping("index1")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("companyNameList",companyNameList);
         return "/system/performance/manager_kpi/view-manage-month-performance/view-manage-month-performance-list";
     }
     /**
@@ -77,6 +81,12 @@ public class ViewManageMonthPerformanceController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
+        //获取前端年月查询的字符串
+        String yearMonth = request.getParameter("yearMonth");
+        params.put("yearMonth",yearMonth);
+        //获取前端公司查询的主键
+        String companyIds = request.getParameter("companyIds");
+        params.put("companyId",companyIds);
         Page<Map<String, Object>> manageKpiMonthPage = viewManageMonthPerformanceService.findManageKpiMonthDataMapListPerPageByParams(params);
         if (manageKpiMonthPage.getTotal() == 0) {
             result.put("code", 404);
@@ -416,6 +426,9 @@ public class ViewManageMonthPerformanceController {
         if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))) {
             params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("yearMonth"))) {
+            params.put("yearMonth", request.getParameter("yearMonth"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
             params.put("companyName", request.getParameter("companyName"));
         }
@@ -580,6 +593,12 @@ public class ViewManageMonthPerformanceController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("monthActual12"))) {
             params.put("monthActual12", request.getParameter("monthActual12"));
+        }
+        if (!com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            params.put("companyIds", request.getParameter("companyIds"));
+        }
+        if (!com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isEmpty(request.getParameter("companyList"))) {
+            params.put("companyList", request.getParameter("companyList"));
         }
         return params;
     }
