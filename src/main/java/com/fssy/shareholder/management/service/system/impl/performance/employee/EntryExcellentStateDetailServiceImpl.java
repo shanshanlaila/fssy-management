@@ -571,7 +571,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             // 经营管理部审核为“符合”，设置最终非事务类评价等级为“优”
             if (ministerReview.equals(PerformanceConstant.CONFORM)) {
                 // 修改“ministerReview”、“ministerReviewUser”、“ministerReviewUserId”、“ministerReviewDate”字段，status字段为“完结”
-                entryExcellentStateDetail.setMinisterReview(ministerReview);
+                entryExcellentStateDetail.setMinisterReview(ministerReview);// classReview
                 entryExcellentStateDetail.setMinisterReviewUser(GetTool.getUser().getName());
                 entryExcellentStateDetail.setMinisterReviewUserId(GetTool.getUser().getId());
                 entryExcellentStateDetail.setMinisterReviewDate(LocalDate.now());
@@ -583,7 +583,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 entryExcellentStateDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 评优材料状态完结
                 reviewDetai.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 设置回顾状态为完结
                 // 计算分数
-                BigDecimal score = GetTool.getScore(reviewDetai, ministerReview);
+                BigDecimal score = GetTool.getScore(reviewDetai, ministerReview);// classReview
                 reviewDetai.setAutoScore(score);
                 reviewDetai.setArtifactualScore(score);
             } else {

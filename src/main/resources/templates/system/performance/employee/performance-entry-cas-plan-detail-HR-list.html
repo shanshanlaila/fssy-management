@@ -130,7 +130,8 @@
                     {
                         field: 'id',
                         title: '序号',
-                        width: 50
+                        width: 50,
+                        fixed: 'left'
                     },
                     {
                         field: 'eventsId',
@@ -307,11 +308,6 @@
                 data.forEach(function (item) {
                     planDetailIds.push(item.id);
                 });
-                // 弹框填写表单
-                layer.open({
-                    type:2,
-                    content:'/system/entry-cas-plan-detail/showEventAndRoleForm',
-                })
                 $.ajax({
                     type: 'POST',
                     url: '/system/entry-cas-plan-detail/HRAffirmStore?event=yes',

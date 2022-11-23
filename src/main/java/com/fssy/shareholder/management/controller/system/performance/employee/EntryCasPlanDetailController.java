@@ -11,6 +11,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
@@ -20,6 +22,7 @@ import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -250,6 +253,12 @@ public class EntryCasPlanDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("newStatus"))) {
             params.put("newStatus", request.getParameter("newStatus"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("groupByUserName"))) {
+            params.put("groupByUserName", request.getParameter("groupByUserName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("userNameRight"))) {
+            params.put("userNameRight", request.getParameter("userNameRight"));
+        }
         return params;
     }
 
@@ -429,6 +438,8 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("departmentName",departmentRoleByUser.getDepartmentName());
         return "/system/performance/employee/performance-entry-cas-plan-detail-minister-list";
     }
 

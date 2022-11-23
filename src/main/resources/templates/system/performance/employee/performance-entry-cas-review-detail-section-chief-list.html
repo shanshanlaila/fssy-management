@@ -30,7 +30,7 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" >
+                        <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="searchLeft">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
@@ -38,7 +38,7 @@
                     </div>
                 </form>
                 <div class="layui-card-body ">
-                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <table class="layui-table layui-form" id="dataTableLeft" lay-filter="dataTableLeft"></table>
                     <script type="text/html" id="toolbar1" th:inline="none">
                         <form class="layui-form layui-col-space5">
                         </form>
@@ -128,13 +128,14 @@
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
 
         // 实例表格（左）
-        var dataTable = table.render({
-            elem: '#dataTable',
-            id: 'dataTable',
+        var dataTableLeft = table.render({
+            elem: '#dataTableLeft',
+            id: 'dataTableLeft',
+            url: "/system/entry-cas-review-detail/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
-            width:'50px',
+            width: '50px',
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
             toolbar: '#5',
             limit: 50,
@@ -143,6 +144,7 @@
                 // 向controller传入额外参数
                 eventsFirstType: '事务类',
                 status: '待科长审核',
+                groupByUserName: true
             },
             cols: [
                 [
@@ -159,8 +161,10 @@
                 ]
             ]
         });
+
+
         // 实例表格（右）
-        var dataTable = table.render({
+        var dataTableRight = table.render({
             elem: '#dataTableRight',
             id: 'dataTableRight',
             page: true,
@@ -244,11 +248,6 @@
                         width: 90
                     },
                     {
-                        field: 'eventsForm',
-                        title: '绩效类型',
-                        width: 90
-                    },
-                    {
                         field: 'standardValue',
                         title: '事件标准价值',
                         width: 100
@@ -303,21 +302,6 @@
                         title: '编制人',
                         width: 80
                     },
-                    /*{
-                        field: 'auditName',
-                        title: '审核人',
-                        width: 80
-                    },
-                    {
-                        field: 'auditDate',
-                        title: '审核日期',
-                        width: 80
-                    },
-                    {
-                        field: 'auditNote',
-                        title: '审核意见',
-                        width: 130
-                    }*/
                     {
                         field: 'mergeNo',
                         title: '员工月度履职计划表编号',
@@ -347,10 +331,11 @@
                     type: 'date'
                 });
         });
+
         //年选择器
         laydate.render({
-            elem: '#year'
-            , type: 'year'
+            elem: '#year',
+            type: 'year'
         });
 
         //事务类评价不同类型出现条件，根据
@@ -372,8 +357,7 @@
                 return false;
             }
             // 重新加载表格
-            table.reload('dataTable', {
-                url: "/system/entry-cas-review-detail/getObjects",
+            table.reload('dataTableLeft', {
                 where: data.field,
                 page: {
                     curr: 1
@@ -383,8 +367,6 @@
         });
         // 监听搜索按钮(右)
         form.on('submit(search)', function (data) {
-            console.log('------------',data
-            )
             // 重新加载表格
             table.reload('dataTableRight', {
                 where: data.field,
@@ -394,22 +376,13 @@
             });
             return false
         });
-        //当下双击所选择的履职回顾id
-        var entryReviewDetailIds = null;
-        // 双击事件
-        table.on('rowDouble(dataTable)', function(obj) {
-            var data = obj.data;
-            bomListId = data.id;
 
+        // 双击事件
+        table.on('rowDouble(dataTableLeft)', function (obj) {
+            let data = obj.data;
             // 重新加载表格
             table.reload('dataTableRight', {
-                url : "/system/entry-cas-plan-detail/getObjects?entryReviewDetailIds=" + data.id,
-                // done:function (res) {
-                //     var arrayData = res.data;
-                //     arrayData.sort(function (a,b) {
-                //         return b.hierarchy - a.hierarchy;
-                //     })
-                // }
+                url: "/system/entry-cas-review-detail/getObjects?userNameRight=" + data.userName,
             });
         });
 
@@ -437,34 +410,36 @@
         });
         // 一键审核
         form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
+            var checkStatus = table.checkStatus(dataTableRight.config.id);
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
             }
-            // 履职回顾id列表
-            var entryReviewDetailIds = [];
-            data.forEach(function (item) {
-                entryReviewDetailIds.push(item.id);
-            });
-            layer.load();
-            $.ajax({
-                type: 'POST',
-                url: '/system/entry-cas-review-detail/sectionBatchAudit',
-                data: {
-                    'entryReviewDetailIds': entryReviewDetailIds,
-                    'chargeTransactionEvaluateLevel': $('#chargeTransactionEvaluateLevel').find("option:selected").val(),
-                    'chargeTransactionBelowType': $('#chargeTransactionBelowType').find("option:selected").val(),
+            layer.confirm('确定审核吗？', {icon: 3, title: '提示'}, function (index) {
+                // 履职回顾id列表
+                var entryReviewDetailIds = [];
+                data.forEach(function (item) {
+                    entryReviewDetailIds.push(item.id);
+                });
+                layer.load();
+                $.ajax({
+                    type: 'POST',
+                    url: '/system/entry-cas-review-detail/sectionBatchAudit',
+                    data: {
+                        'entryReviewDetailIds': entryReviewDetailIds,
+                        'chargeTransactionEvaluateLevel': $('#chargeTransactionEvaluateLevel').find("option:selected").val(),
+                        'chargeTransactionBelowType': $('#chargeTransactionBelowType').find("option:selected").val(),
 
-                },
-                success: function (result) {
-                    layer.closeAll();
-                    layer.msg(result.msg);
-                    if (result.status === 200) {
-                        table.reload('dataTable');
+                    },
+                    success: function (result) {
+                        layer.closeAll();
+                        layer.msg(result.msg);
+                        if (result.status === 200) {
+                            table.reload('dataTableRight');
+                        }
                     }
-                }
+                });
             });
             return false;
         });

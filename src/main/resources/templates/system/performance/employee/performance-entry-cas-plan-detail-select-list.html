@@ -325,7 +325,7 @@
         });
         // 双击打开选择关联事件清单页面
         table.on('rowDouble(dataTable)', function (obj) {
-            obj.data
+            let data = obj.data;
             layer.open({
                 type: 2,
                 title: '序号为' + data.id + '的待选择关联事件清单操作',

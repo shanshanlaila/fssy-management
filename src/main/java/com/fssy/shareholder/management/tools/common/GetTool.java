@@ -105,6 +105,7 @@ public class GetTool {
      */
     public static BigDecimal getScore (EntryCasReviewDetail entryCasReviewDetail, String ministerReview) {
         // 通过事件清单序号（eventsId）找对应的事件清单，delow、middle、fine、excellent，
+        // 获取方式改变：查询条件为部门review的departmentId、roleId、userId、year、month找事件岗位配比表，生效日期是year+month+当月最后一天之前（生效日期《=），取最近的那个（倒序，get（0））
         EventsRelationRole eventsRelationRole = eventsRelationRoleMappers.selectById(entryCasReviewDetail.getEventsRoleId());
         if (ObjectUtils.isEmpty(eventsRelationRole)){
             throw new ServiceException(String.format("没有id为【%s】的事件岗位配比数据",entryCasReviewDetail.getEventsRoleId()));
@@ -125,6 +126,7 @@ public class GetTool {
                 break;
             default:
                 // ministerReview=‘优或者合格’excellent，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                // 结果为符合，以绩效科的审核结果为准
                 autoScore = eventsRelationRole.getExcellent();
                 break;
         }

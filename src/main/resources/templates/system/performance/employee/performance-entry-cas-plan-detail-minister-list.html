@@ -29,7 +29,7 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" >
+                        <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="searchLeft">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
@@ -37,7 +37,7 @@
                     </div>
                 </form>
                 <div class="layui-card-body ">
-                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <table class="layui-table layui-form" id="dataTableLeft" lay-filter="dataTableLeft"></table>
                     <script type="text/html" id="toolbar1" th:inline="none">
                         <form class="layui-form layui-col-space5">
                         </form>
@@ -50,57 +50,58 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body ">
-                    <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                        <input type="text" id = "year" name="year" placeholder="申报年份查询" autocomplete="off"
-                               class="layui-input">
-                    </div>
-                    <div class="layui-inline layui-show-xs-block" style="width: 140px;">
-                        <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
-                               class="layui-input laydate search-laydate" id="createDate">
-                    </div>
-                    <div class="layui-inline layui-show-xs-block">
-                        <input type="text" name="workEvents" placeholder="按流程（工作事件）查询"
-                               autocomplete="off" class="layui-input">
-                    </div>
-                    <div class="layui-inline layui-show-xs-block">
-                        <input type="text" name="planOutput" placeholder="按表单查询"
-                               autocomplete="off" class="layui-input">
-                    </div>
-                    <div class="layui-inline layui-show-xs-block">
-                        <input type="text" name="jobName" placeholder="按工作职责查询"
-                               autocomplete="off" class="layui-input">
-                    </div>
-                    <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                        <input type="text" name="times" placeholder="按频次查询"
-                               autocomplete="off" class="layui-input">
-                    </div>
-                    <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                        <input type="text" name="id" placeholder="按序号查询"
-                               autocomplete="off" class="layui-input">
-                    </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
+                            <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
+                                   class="layui-input laydate search-laydate" id="createDate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="workEvents" placeholder="按流程（工作事件）查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="planOutput" placeholder="按表单查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="jobName" placeholder="按工作职责查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
+                            <input type="text" name="times" placeholder="按频次查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
+                            <input type="text" name="id" placeholder="按序号查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <label>
-                                <select id = “mainOrNext” name="mainOrNext" class="layui-select">
+                                <select id=“mainOrNext” name="mainOrNext" class="layui-select">
                                     <option style="display: none" value="">请选择主担/次担</option>
                                     <option value="主担">主担</option>
                                     <option value="次担">次担</option>
                                 </select>
                             </label>
                         </div>
-                    <div class="layui-inline layui-show-xs-block" >
-                        <button class="layui-btn" lay-submit lay-filter="searchRight">
-                            <i class="layui-icon">&#xe615;</i>
-                        </button>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit lay-filter="searchRight">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTableRight" lay-filter="dataTableRight"></table>
                     <script type="text/html" id="toolbar" th:inline="none"><!DOCTYPE html>
                     <form class="layui-form layui-col-space5">
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="pass">审核通过</button>
-                            <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="noPass" style="background-color: coral">审核拒绝
+                            <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit="" lay-filter="noPass">
+                                审核拒绝
                             </button>
                         </div>
                     </form>
@@ -119,13 +120,14 @@
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
 
         // 实例表格（左）
-        var dataTable = table.render({
-            elem: '#dataTable',
-            id: 'dataTable',
+        var dataTableLeft = table.render({
+            elem: '#dataTableLeft',
+            id: 'dataTableLeft',
+            url: "/system/entry-cas-plan-detail/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
-            width:'50px',
+            width: '50px',
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
             toolbar: '#5',
             limit: 50,
@@ -134,8 +136,9 @@
                 // 向controller传入额外参数
                 /*eventsFirstType: '非事务类',
                 status: '待部长审核'*/
-                twoStatus:true,
-                role:true
+                twoStatus: true,
+                departmentName: [[${departmentName}]],
+                groupByUserName: true
             },
             cols: [
                 [
@@ -155,20 +158,20 @@
 
         // 实例表格(右)
         var dataTableRight = table.render({
-            elem : '#dataTableRight',
-            id : 'dataTableRight',
-            page : false,
-            height : 'full-100', // 设置高度，使数据置于滚动条控制下
-            size : 'sm',
-            autoSort:false,
-            toolbar : '#toolbar',
+            elem: '#dataTableRight',
+            id: 'dataTableRight',
+            page: false,
+            height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            size: 'sm',
+            autoSort: false,
+            toolbar: '#toolbar',
             where: {
                 // 向controller传入额外参数
                 /*eventsFirstType: '非事务类',
                 status: '待部长审核'*/
-                twoStatus:true
+                twoStatus: true
             },
-            cols : [
+            cols: [
                 [
                     {
                         type: 'checkbox',
@@ -176,9 +179,9 @@
                         width: 50
                     },
                     {
-                        field : 'id',
-                        title : 'ID',
-                        width : 50,
+                        field: 'id',
+                        title: 'ID',
+                        width: 50,
                         fixed: 'left',
                     },
                     {
@@ -247,7 +250,7 @@
         //年选择器
         laydate.render({
             elem: '#year'
-            ,type: 'year'
+            , type: 'year'
         });
 
         // 监听搜索按钮(左)
@@ -259,8 +262,8 @@
                 return false;
             }
             // 重新加载表格
-            table.reload('dataTable', {
-                url: "/system/entry-cas-plan-detail/getObjects",
+            table.reload('dataTableLeft', {
+
                 where: data.field,
                 page: {
                     curr: 1
@@ -272,8 +275,6 @@
 
         // 监听搜索按钮(右)
         form.on('submit(searchRight)', function (data) {
-            console.log('------------',data
-            )
             // 重新加载表格
             table.reload('dataTableRight', {
                 // url: "/system/entry-cas-plan-detail/getObjects",
@@ -286,22 +287,13 @@
         });
 
 
-        //当下双击所选择的履职计划id
-        var planDetailIds = null;
         // 双击事件
-        table.on('rowDouble(dataTable)', function(obj) {
+        table.on('rowDouble(dataTableLeft)', function (obj) {
             var data = obj.data;
-            bomListId = data.id;
 
             // 重新加载表格
             table.reload('dataTableRight', {
-                url : "/system/entry-cas-plan-detail/getObjects?planDetailIds=" + data.id,
-                // done:function (res) {
-                //     var arrayData = res.data;
-                //     arrayData.sort(function (a,b) {
-                //         return b.hierarchy - a.hierarchy;
-                //     })
-                // }
+                url: "/system/entry-cas-plan-detail/getObjects?userNameRight=" + data.userName,
             });
         });
 
