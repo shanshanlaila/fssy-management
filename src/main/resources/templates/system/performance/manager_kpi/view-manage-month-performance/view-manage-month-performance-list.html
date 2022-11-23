@@ -98,13 +98,15 @@
             elem : '#yearMonth',
             trigger : 'click',
             type : 'month',
-            value : moment().subtract(3,"months").format("YYYY-MM")
+            //当前日期往前挪1个月
+            value : moment().subtract(1,"months").format("YYYY-MM")
         });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
             console.log(data.field)
             // 重新加载表格
             table.reload('dataTable', {
+                url: "/system/performance/manager_kpi/view-manage-month-performance/getObjects",
                 where: data.field,
                 page: {
                     curr: 1
@@ -195,7 +197,6 @@
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/performance/manager_kpi/view-manage-month-performance/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -394,14 +395,6 @@
                         width: 160,
                         align: 'center',
                     }
-                    // {
-                    //     fixed: 'right',
-                    //     title: '操作',
-                    //     width: 80,
-                    //     align: 'center',
-                    //     toolbar: '#tool',
-                    //     rowspan: 2
-                    // }
                 ],
                 [
                     //项目对标标杆
@@ -691,6 +684,17 @@
                 });
             }
         });
+        //界面初始化的时候进行加载
+        $(document).ready(function() {
+            console.log($("#year").val())
+            table.reload('dataTable', {
+                url: "/system/performance/manager_kpi/view-manage-month-performance/getObjects?year=" + moment().format("YYYY") + "&month=" + moment().month(),
+                // where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+        })
     });
 </script>
 </body>
