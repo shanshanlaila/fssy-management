@@ -273,6 +273,14 @@ public class ViewManagerKpiMonthController {
         model.addAttribute("year", year);
         model.addAttribute("companyName", companyName);
         model.addAttribute("managerName", managerName);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("month",month);
+        params.put("year",year);
+        params.put("companyName",companyName);
+        params.put("managerName",managerName);
+        Map<String, Object> managerKpiScoreOld = managerKpiScoreService.findManagerKpiScoreOldDataByParams(params).get(0);
+        model.addAttribute("managerKpiScoreOld", managerKpiScoreOld);
         return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-detail";
     }
 

@@ -39,7 +39,6 @@
                                    autocomplete="off" class="layui-input laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
@@ -59,12 +58,10 @@
 </div>
 
 <script th:inline="javascript">
-
     layui.use([
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
-
         // 重新重置日期控件
         laydate.render({
             elem : '#year',
@@ -72,11 +69,15 @@
             type : 'year',
             value : moment().format("YYYY")
         });
+        //获取指定input的value的两种方法
+        // var obj = $("#year").val();
+        // // var obj = $('input[name=year]').val();
+        // console.log(obj)
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
-            console.log(data.field)
-            // 重新加载表格
             table.reload('dataTable', {
+                // 重新加载表格
+                url: "/system/performance/manager_kpi/manager-kpi-month-score-old/getObjects",
                 where: data.field,
                 page: {
                     curr: 1
@@ -108,7 +109,6 @@
             elem: '#dataTable',
             id: 'dataTable',
             //修改地方4,获取数据,在viewController
-            url: "/system/performance/manager_kpi/manager-kpi-month-score-old/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -256,14 +256,13 @@
             ]
         });
 
+
         // 监听表格单击事件
         table.on('tool(dataTable)', function(obj)
         {
             // 行数据
             var data = obj.data;
             var url = '';
-            // var month = [data.month1,data.month2,data.month3,data.month4,data.month5,data.month6,data.month7,data.month8,
-            //     data.month9,data.month10,data.month11,data.month12,]
             for (var i = 1; i < 13; i++) {
                 if (obj.event === 'month' + i) {
                     url = '/system/performance/manager_kpi/view-manager-kpi-month-score/search-detail?month=' + i + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName;
@@ -275,6 +274,17 @@
                 xadmin.open(data.managerName+'---月份分数详情', url);
             }
         });
+        //界面初始化的时候进行加载
+        $(document).ready(function() {
+            console.log($("#year").val())
+            table.reload('dataTable', {
+                url: "/system/performance/manager_kpi/manager-kpi-month-score-old/getObjects?year=" + moment().format("YYYY"),
+                // where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+        })
     });
 </script>
 </body>
