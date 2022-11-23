@@ -142,37 +142,33 @@
                         width: 80,
                     },
                     {
-                        field: 'year',
-                        title: '年份',
-                        width: 80,
-                    },
-                    {
                         field: 'threeYear',
-                        title: 'n-3年值',
+                        title: '2020年',
+                        sort: true,
+                        event:'2020年',
                         width: 80
                     },
                     {
                         field: 'twoYear',
-                        title: 'n-2年值',
+                        title: '2021年',
+                        sort: true,
+                        event:'2021年',
                         width: 80
                     },
                     {
                         field: 'oneYear',
-                        title: 'n-1年值',
+                        title: '2022年',
+                        sort: true,
+                        event:'2022年',
                         width: 80
-                    },
-                    {
-                        field: 'newYear',
-                        title: '今年值',
-                        width: 80
-                    },
-                    {
-                        fixed: 'right',
-                        title: '操作',
-                        width: 100,
-                        align: 'center',
-                        toolbar: '#tool'
                     }
+                    // {
+                    //     fixed: 'right',
+                    //     title: '操作',
+                    //     width: 100,
+                    //     align: 'center',
+                    //     toolbar: '#tool'
+                    // }
                 ]
             ]
         });
@@ -189,23 +185,40 @@
                 });
             return false;
         });
-        // 监听行工具事件
-        table.on('tool(dataTable)', function (obj) {
+        // 监听表格单击事件
+        table.on('tool(dataTable)', function(obj)
+        {
+            // 行数据
             var data = obj.data;
-            if (obj.event === 'detail') {//分数下钻，查看经理人的分数组成
-                // console.log("list" + data.month)
-                layer.open({
-                    type : 2,
-                    title : data.year + '年' + '--的各项分数信息如下:',
-                    area : [
-                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
-                    ],
-                    //①获取需要查看的此条记录的指定数据
-                    content : '/system/performance/manager_kpi/view-manager-kpi-year-score/search-detail?month=' + data.month + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
-                    maxmin : true
-                });
+            var url = '';
+            for (var i = 2020; i < 2023; i++) {
+                if (obj.event === i+'年') {
+                    url = '/system/performance/manager_kpi/view-manager-kpi-year-score/search-detail?month=12' + '&year=' + i + '&companyName=' + data.companyName + '&managerName=' + data.managerName;
+                    break;
+                }
+            }
+            // 打开生产计划查询页面
+            if (url) {
+                xadmin.open(data.managerName+'---月份分数详情', url);
             }
         });
+        // // 监听行工具事件
+        // table.on('tool(dataTable)', function (obj) {
+        //     var data = obj.data;
+        //     if (obj.event === 'detail') {//分数下钻，查看经理人的分数组成
+        //         // console.log("list" + data.month)
+        //         layer.open({
+        //             type : 2,
+        //             title : data.year + '年' + '--的各项分数信息如下:',
+        //             area : [
+        //                 $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+        //             ],
+        //             //①获取需要查看的此条记录的指定数据
+        //             content : '/system/performance/manager_kpi/view-manager-kpi-year-score/search-detail?month=' + data.month + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
+        //             maxmin : true
+        //         });
+        //     }
+        // });
     });
 </script>
 </body>
