@@ -30,7 +30,7 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" >
+                        <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search1">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
@@ -38,7 +38,7 @@
                     </div>
                 </form>
                 <div class="layui-card-body ">
-                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <table class="layui-table layui-form" id="dataTableLeft" lay-filter="dataTableLeft"></table>
                     <script type="text/html" id="toolbar1" th:inline="none">
                         <form class="layui-form layui-col-space5">
                         </form>
@@ -50,22 +50,22 @@
         <div class="layui-col-md10">
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
-                <div class="layui-card-body ">
+                    <div class="layui-card-body ">
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" id = "year" name="year" placeholder="审核年份查询" autocomplete="off"
+                            <input type="text" id="year" name="year" placeholder="审核年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 140px;">
                             <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" >
+                        <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="workEvents" placeholder="流程（工作事件）"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <label>
-                                <select id = “mainOrNext” name="mainOrNext">
+                                <select id=“mainOrNext” name="mainOrNext">
                                     <option style="display: none" value="">请选择主担/次担</option>
                                     <option value="主担">主担</option>
                                     <option value="次担">次担</option>
@@ -97,7 +97,7 @@
                                 <label class="layui-form-label"
                                        style="width: 110px; line-height: 1.1; padding: 9px 0px;">部长复核&nbsp;&nbsp;</label>
                                 <div class="layui-input-inline" style="width: 140px;">
-                                    <select name="ministerReview" id="ministerReview">
+                                    <select class="layui-select" name="ministerReview" id="ministerReview">
                                         <option value="合格">合格</option>
                                         <option value="中">中</option>
                                         <option value="良" selected>良</option>
@@ -125,13 +125,14 @@
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
 
         // 实例表格（左）
-        var dataTable = table.render({
-            elem: '#dataTable',
-            id: 'dataTable',
+        var dataTableLeft = table.render({
+            elem: '#dataTableLeft',
+            id: 'dataTableLeft',
+            url: "/system/entry-cas-review-detail/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
-            width:'50px',
+            width: '50px',
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
             toolbar: '#5',
             limit: 50,
@@ -140,6 +141,8 @@
                 // 向controller传入额外参数
                 eventsFirstType: '非事务类',
                 status: '待部长审核',
+                // 按人名分组
+                groupByUserName: true
             },
             cols: [
                 [
@@ -156,6 +159,8 @@
                 ]
             ]
         });
+
+
         // 实例表格（右）
         var dataTableRight = table.render({
             elem: '#dataTableRight',
@@ -169,7 +174,7 @@
             toolbar: '#toolbar',
             where: {
                 // 向controller传入额外参数
-                eventsFirstTypeNe: true,
+                eventsFirstTypeNe: true,//
                 status: '待部长审核'
             },
             cols: [
@@ -320,21 +325,6 @@
                         title: '编制人',
                         width: 80
                     },
-                    /*{
-                        field: 'auditName',
-                        title: '审核人',
-                        width: 80
-                    },
-                    {
-                        field: 'auditDate',
-                        title: '审核日期',
-                        width: 80
-                    },
-                    {
-                        field: 'auditNote',
-                        title: '审核意见',
-                        width: 130
-                    }*/
                     {
                         field: 'mergeNo',
                         title: '员工月度履职计划表编号',
@@ -374,7 +364,7 @@
         //年选择器
         laydate.render({
             elem: '#year'
-            ,type: 'year'
+            , type: 'year'
         });
 
         // 监听搜索按钮(左)
@@ -386,8 +376,7 @@
                 return false;
             }
             // 重新加载表格
-            table.reload('dataTable', {
-                url: "/system/entry-cas-review-detail/getObjects",
+            table.reload('dataTableLeft', {
                 where: data.field,
                 page: {
                     curr: 1
@@ -397,8 +386,6 @@
         });
         // 监听搜索按钮(右)
         form.on('submit(search)', function (data) {
-            console.log('------------',data
-            )
             // 重新加载表格
             table.reload('dataTableRight', {
                 where: data.field,
@@ -408,53 +395,47 @@
             });
             return false
         });
-        //当下双击所选择的履职回顾id
-        var entryReviewDetailIds = null;
-        // 双击事件
-        table.on('rowDouble(dataTable)', function(obj) {
-            var data = obj.data;
-            bomListId = data.id;
 
+        // 双击左侧表格数据，右侧显示对应数据
+        table.on('rowDouble(dataTableLeft)', function (obj) {
+            var data = obj.data;
             // 重新加载表格
             table.reload('dataTableRight', {
-                url : "/system/entry-cas-plan-detail/getObjects?entryReviewDetailIds=" + data.id,
-                // done:function (res) {
-                //     var arrayData = res.data;
-                //     arrayData.sort(function (a,b) {
-                //         return b.hierarchy - a.hierarchy;
-                //     })
-                // }
+                url: "/system/entry-cas-review-detail/getObjects?userNameRight=" + data.userName,
             });
         });
 
         // 一键审核
         form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTableRight.config.id),
-                data = checkStatus.data;
+            var checkStatus = table.checkStatus(dataTableRight.config.id);
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
             }
-            // 履职回顾id列表
-            var entryReviewDetailIds = [];
-            data.forEach(function (item) {
-                entryReviewDetailIds.push(item.id);
-            });
-            layer.load();
-            $.ajax({
-                type: 'POST',
-                url: '/system/entry-cas-review-detail/batchAudit',
-                data: {
-                    "entryReviewDetailIds": entryReviewDetailIds,
-                    "ministerReview": $('#ministerReview').find("option:selected").val(),
-                },
-                success: function (result) {
-                    layer.closeAll();
-                    layer.msg(result.msg);
-                    if (result.status === 200) {
-                        table.reload('dataTableRight');
+            layer.confirm('确定审核吗？', {icon: 3, title: '提示'}, function (index) {
+                // 履职回顾id列表
+                var entryReviewDetailIds = [];
+                data.forEach(function (item) {
+                    entryReviewDetailIds.push(item.id);
+                });
+                layer.load();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/system/entry-cas-review-detail/batchAudit',
+                    data: {
+                        "entryReviewDetailIds": entryReviewDetailIds,
+                        "ministerReview": $('#ministerReview').find("option:selected").val(),
+                    },
+                    success: function (result) {
+                        layer.closeAll();
+                        layer.msg(result.msg);
+                        if (result.status === 200) {
+                            table.reload('dataTableRight');
+                        }
                     }
-                }
+                });
             });
             return false;
         });

@@ -244,6 +244,12 @@ public class EntryCasReviewDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("eventsFirstTypeNe"))) {
             params.put("eventsFirstTypeNe", request.getParameter("eventsFirstTypeNe"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("groupByUserName"))) {
+            params.put("groupByUserName", request.getParameter("groupByUserName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("userNameRight"))) {
+            params.put("userNameRight", request.getParameter("userNameRight"));
+        }
         return params;
     }
 

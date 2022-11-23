@@ -154,12 +154,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             String eventsFirstType = cells.get(SheetService.columnToIndex("C"));//事务类别
             String jobName = cells.get(SheetService.columnToIndex("D"));//工作职责
             String workEvents = cells.get(SheetService.columnToIndex("E"));//流程（工作事件）
-//            String status = cells.get(SheetService.columnToIndex("E"));//状态
             String departmentName = cells.get(SheetService.columnToIndex("F"));//部门
             String standardValue = cells.get(SheetService.columnToIndex("G"));// 事件价值标准分
             String mainOrNext = cells.get(SheetService.columnToIndex("H"));// 主/次担
             // 填写的数据
-            //String eventsForm = cells.get(SheetService.columnToIndex("I"));//绩效类型
             String planningWork = cells.get(SheetService.columnToIndex("I"));// 对应工作事件的计划内容
             String times = cells.get(SheetService.columnToIndex("J"));// 频次
             String planOutput = cells.get(SheetService.columnToIndex("K"));// 表单（输出内容）
@@ -244,7 +242,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
             entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
-            //entryCasPlanDetail.setEventsForm(eventsForm);
             entryCasPlanDetail.setAttachmentId(attachment.getId());
             // 数据库不能为null的字段设置值
             if (!ObjectUtils.isEmpty(eventsId)) {
@@ -490,6 +487,14 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             queryWrapper
                     .eq("status", PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
                     .and(item -> item.eq("eventsFirstType", PerformanceConstant.EVENTS_FIRST_TYPE_B).or().eq("eventsFirstType", PerformanceConstant.EVENTS_FIRST_TYPE_C));
+        }
+        // 审核页面，左侧表格按人名分组
+        if (params.containsKey("groupByUserName")) {
+            queryWrapper.groupBy("userName");
+        }
+        // 审核页面，右侧表格根据左侧双击选择的名字显示
+        if (params.containsKey("userNameRight")) {
+            queryWrapper.eq("userName",params.get("userNameRight"));
         }
         return queryWrapper;
     }
