@@ -69,7 +69,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Override
     public List<Map<String, Object>> findViewManageYearMonthScoreMapDataByParams(Map<String, Object> params) {
         QueryWrapper<ViewManageYearMonthScore> queryWrapper = getQueryWrapper(params);
-        queryWrapper.eq("managerKpiMark","经理人指标").eq("evaluateMode","人工评分");
+        queryWrapper.eq("managerKpiMark","经理人指标").eq("evaluateMode","人工评分").eq("status","未锁定");
         return viewManageYearMonthScoreMapper.selectMaps(queryWrapper);
     }
 
@@ -351,13 +351,13 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         if (params.containsKey("projectDesc")) {
             queryWrapper.like("projectDesc", params.get("projectDesc"));
         }
-        //判断指标状态为未锁定且累计实绩值不为空的数据
+        //判断指标状态为未锁定且累计实绩值不为空的数据？
         if (params.containsKey("status")) {
             queryWrapper.eq("status", params.get("status"));
-            String status = (String) params.get("status");
-            if (status.equals("未锁定")){
-                queryWrapper.isNotNull("monthActualValue");
-            }
+//            String status = (String) params.get("status");
+//            if (status.equals("未锁定")){
+//                queryWrapper.isNotNull("monthActualValue");
+//            }
         }
         if (params.containsKey("evaluateMode")) {
             queryWrapper.eq("evaluateMode", params.get("evaluateMode"));

@@ -71,11 +71,11 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
     @Override
     public Page<Map<String, Object>> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
-        StringBuilder stringBuilder = new StringBuilder("companyName, managerName,position,year,SUM( scoreAdjust ) AS newYear," +
-                "( SELECT scoreAdjust FROM bs_manager_kpi_score AS a WHERE a.YEAR = bs_manager_kpi_score.YEAR - 1 and month =12 and a.managerName=bs_manager_kpi_score.managerName ) AS 'oneYear'," +
-                "( SELECT scoreAdjust FROM bs_manager_kpi_score AS b WHERE b.YEAR = bs_manager_kpi_score.YEAR - 2 and month =12 and b.managerName=bs_manager_kpi_score.managerName ) AS 'twoYear'," +
-                "(  SELECT scoreAdjust FROM bs_manager_kpi_score AS c WHERE c.YEAR = bs_manager_kpi_score.YEAR - 3 and month =12 and c.managerName=bs_manager_kpi_score.managerName ) AS 'threeYear' ");
-        queryWrapper.select(stringBuilder.toString()).groupBy("year,managerName");
+        StringBuilder stringBuilder = new StringBuilder("companyName, managerName,position," +
+                "( SELECT scoreAdjust  FROM bs_manager_kpi_score AS a WHERE a.YEAR = 2020 and month=12 and a.companyName=bs_manager_kpi_score.companyName and a.managerName=bs_manager_kpi_score.managerName ) AS 'oneYear'," +
+                "( SELECT scoreAdjust  FROM bs_manager_kpi_score AS b WHERE b.YEAR = 2019 and month=12 and b.companyName=bs_manager_kpi_score.companyName and b.managerName=bs_manager_kpi_score.managerName ) AS 'twoYear'," +
+                "(  SELECT scoreAdjust  FROM bs_manager_kpi_score AS c WHERE c.YEAR = 2018 and month=12 and c.companyName=bs_manager_kpi_score.companyName and c.managerName=bs_manager_kpi_score.managerName ) AS 'threeYear' ");
+        queryWrapper.select(stringBuilder.toString()).groupBy("managerName");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<Map<String, Object>> myPage = new Page<>(page, limit);
