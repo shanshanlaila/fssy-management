@@ -192,5 +192,16 @@ public class ManagerKpiScoreOld extends BaseModel {
      */
     @TableField("groupImproveAction")
     private String groupImproveAction;
+    /**
+     * 绩效分数异常标识
+     */
+    @TableField("anomalyMark")
+    private String anomalyMark;
+
+    /**
+     * 绩效异常类别
+     */
+    @TableField("anomalyType")
+    private String anomalyType;
 
 }

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -150,7 +151,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
                 cells.add(res);// 将单元格的值写入行
             }
             // 导入结果写入列
-            Cell cell = row.createCell(SheetService.columnToIndex("R"));// 报错信息上传到excel R列（暂未实现）
+            Cell cell = row.createCell(SheetService.columnToIndex("T"));// 报错信息上传到excel R列（暂未实现）
             String year = cells.get(SheetService.columnToIndex("A"));
             String managerName = cells.get(SheetService.columnToIndex("B"));
             String companyName = cells.get(SheetService.columnToIndex("C"));
@@ -168,6 +169,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             String riskDesc = cells.get(SheetService.columnToIndex("O"));
             String respDepartment = cells.get(SheetService.columnToIndex("P"));
             String groupImproveAction = cells.get(SheetService.columnToIndex("Q"));
+            String anomalyType = cells.get(SheetService.columnToIndex("R"));
             // 检查必填项
             if (ObjectUtils.isEmpty(companyName)) {
                 setFailedContent(result, String.format("第%s行的经理人姓名是空的", j + 1));
@@ -198,14 +200,17 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             managerKpiScoreOld.setRiskDesc(riskDesc);
             managerKpiScoreOld.setRespDepartment(respDepartment);
             managerKpiScoreOld.setGroupImproveAction(groupImproveAction);
+            managerKpiScoreOld.setAnomalyType(anomalyType);
 
             // 根据经理人姓名，年份，月份,公司名称进行判断，存在则更新，不存在则新增
             UpdateWrapper<ManagerKpiScoreOld> managerKpiScoreOldUpdateWrapper = new UpdateWrapper<>();
             managerKpiScoreOldUpdateWrapper.set("advantageAnalyze", advantageAnalyze)
                     .set("disadvantageAnalyze", disadvantageAnalyze).set("riskDesc", riskDesc)
                     .set("respDepartment", respDepartment).set("groupImproveAction", groupImproveAction)
+                    .set("anomalyType",anomalyType)
                     .eq("managerName", managerName).eq("year", year)
                     .eq("month", month).eq("companyName", companyName);
+            managerKpiScoreOldUpdateWrapper.set("anomalyMark","异常").ne("anomalyType","");
             managerKpiScoreMapper.update(null, managerKpiScoreOldUpdateWrapper);
             cell.setCellValue("导入成功");
 

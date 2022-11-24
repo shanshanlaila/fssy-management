@@ -98,12 +98,11 @@
             elem : '#yearMonth',
             trigger : 'click',
             type : 'month',
-            //当前日期往前挪1个月
-            value : moment().subtract(1,"months").format("YYYY-MM")
+            //当前日期往前挪3个月
+            value : moment().subtract(3,"months").format("YYYY-MM")
         });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
-            console.log(data.field)
             // 重新加载表格
             table.reload('dataTable', {
                 url: "/system/performance/manager_kpi/view-manage-month-performance/getObjects",
@@ -204,7 +203,7 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
-            where: {month: '12'},
+            // where: {month: '12'},
             cols: [
                 [
                     {
@@ -656,19 +655,7 @@
                 ]
             ]
         });
-        // 监听搜索按钮
-        form.on('submit(search)', function (data) {
-            // 重新加载表格
-            table.reload('dataTable',
-                {
-                    where: data.field,
-                    page:
-                        {
-                            curr: 1
-                        }
-                });
-            return false;
-        });
+
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
@@ -688,7 +675,8 @@
         $(document).ready(function() {
             console.log($("#year").val())
             table.reload('dataTable', {
-                url: "/system/performance/manager_kpi/view-manage-month-performance/getObjects?year=" + moment().format("YYYY") + "&month=" + moment().month(),
+                // url: "/system/performance/manager_kpi/view-manage-month-performance/getObjects?year=" + moment().format("YYYY") + "&month=" + (moment().month()-2),
+                url: "/system/performance/manager_kpi/view-manage-month-performance/getObjects?yearMonth=" + moment().subtract(3,"months").format("YYYY-MM"),
                 // where: data.field,
                 page: {
                     curr: 1

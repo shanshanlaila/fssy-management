@@ -47,7 +47,7 @@ public class ManagerKpiScoreControllerOld {
         //Sql语句
         params.put("select","year,managerName,companyName,position,generalManager,month," +
                 "businessScore,incentiveScore,difficultyCoefficient,generalManagerScore,scoreAdjust,scoreAuto," +
-                "advantageAnalyze,disadvantageAnalyze,riskDesc,respDepartment,groupImproveAction");
+                "advantageAnalyze,disadvantageAnalyze,riskDesc,respDepartment,groupImproveAction,anomalyType");
         //查询
         List<Map<String,Object>> managerKpiScoreOldDataByParams = managerKpiScoreServiceOld.findManagerKpiScoreOldDataByParams(params);
         LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();
@@ -70,8 +70,9 @@ public class ManagerKpiScoreControllerOld {
         fieldMap.put("riskDesc", "绩效风险");
         fieldMap.put("respDepartment", "总部管控责任部门");
         fieldMap.put("groupImproveAction", "管控措施");
+        fieldMap.put("anomalyType", "绩效异常类别");
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17);
         SheetOutputService sheetOutputService = new SheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(managerKpiScoreOldDataByParams)) {
             throw new ServiceException("未查出数据");
@@ -154,9 +155,12 @@ public class ManagerKpiScoreControllerOld {
         if (!ObjectUtils.isEmpty(request.getParameter("groupImproveAction"))) {
             params.put("groupImproveAction", request.getParameter("groupImproveAction"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("anomalyMark"))) {
+            params.put("anomalyMark", request.getParameter("anomalyMark"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("anomalyType"))) {
+            params.put("anomalyType", request.getParameter("anomalyType"));
+        }
         return params;
     }
-
-
-
 }

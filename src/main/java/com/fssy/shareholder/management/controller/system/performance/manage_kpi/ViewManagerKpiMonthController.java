@@ -144,7 +144,7 @@ public class ViewManagerKpiMonthController {
     }
 
     /**
-     * 返回 经理人月度KPI分数数据表格
+     * 返回 经理人绩效分数数据表格
      *
      * @param request
      * @return
@@ -158,8 +158,6 @@ public class ViewManagerKpiMonthController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
-        String yearMonth = request.getParameter("yearMonth");
-        params.put("yearMonth",yearMonth);
         Page<ManagerKpiScoreOld> managerKpiScorePage = managerKpiScoreService.findManagerKpiScoreOldDataListPerPageByParams(params);
         if (managerKpiScorePage.getTotal() == 0) {
             result.put("code", 404);
@@ -385,6 +383,12 @@ public class ViewManagerKpiMonthController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("generalManagerScore"))) {
             params.put("generalManagerScore", request.getParameter("generalManagerScore"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("anomalyMark"))) {
+            params.put("anomalyMark", request.getParameter("anomalyMark"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("anomalyType"))) {
+            params.put("anomalyType", request.getParameter("anomalyType"));
         }
         return params;
     }
