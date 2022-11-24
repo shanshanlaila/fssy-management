@@ -49,7 +49,7 @@
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button shiro:haspermission="system:performance:manager_kpi:manager-kpi-coefficient:index"
-                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入附件
+                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入经理人项目系数附件
                                 </button>
                             </div>
                         </div>
@@ -58,7 +58,6 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="edit" title="修改经理人年度KPI项目信息"><i class="layui-icon">&#xe642;</i></a>
-<!--                        <a lay-event="delete" title="删除经理人年度KPI项目信息"><i class="layui-icon">&#xe640;</i></a>-->
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -82,9 +81,9 @@
         });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
-            console.log(data.field)
             // 重新加载表格
             table.reload('dataTable', {
+                url: "/system/performance/manager_kpi/manager-kpi-coefficient/getObjects",
                 where: data.field,
                 page: {
                     curr: 1
@@ -147,7 +146,6 @@
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/performance/manager_kpi/manager-kpi-coefficient/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -223,19 +221,6 @@
                 ]
             ]
         });
-        // 监听搜索按钮
-        form.on('submit(search)', function (data) {
-            // 重新加载表格
-            table.reload('dataTable',
-                {
-                    where: data.field,
-                    page:
-                        {
-                            curr: 1
-                        }
-                });
-            return false;
-        });
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
@@ -251,6 +236,17 @@
                 });
             }
         });
+        //界面初始化的时候进行加载
+        $(document).ready(function() {
+            console.log($("#year").val())
+            table.reload('dataTable', {
+                url: "/system/performance/manager_kpi/manager-kpi-coefficient/getObjects?year=" + moment().format("YYYY"),
+                // where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+        })
     });
 </script>
 </body>

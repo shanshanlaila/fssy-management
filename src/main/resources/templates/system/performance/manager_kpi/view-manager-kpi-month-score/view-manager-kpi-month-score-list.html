@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>经理人月度KPI分数管理</title>
+    <title>经理人绩效分数管理</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -13,7 +13,7 @@
 <!-- 引入xadmin -->
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">经理人绩效管理</a> <a href="">经理人月度KPI分数管理</a>
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">经理人绩效管理</a> <a href="">经理人绩效分数管理</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
                                                               style="line-height: 30px"></i>
@@ -33,11 +33,11 @@
                         </div>
 
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="年份" autocomplete="off"
+                            <input type="text" name="year" id="year" placeholder="年份" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="month" placeholder="月份" autocomplete="off"
+                            <input type="text" name="month" id="month" placeholder="月份" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -65,7 +65,7 @@
                         <div class="layui-inline layui-show-xs-block">
                             <button shiro:haspermission="system:performance:manager_kpi:view-manager-kpi-month-score:index"
                                     class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
-                                    title="导入填写分析后的附件">导入附件
+                                    title="导入填写分析后的附件">导入经理人绩效分数附件
                             </button>
                         </div>
                     </div>
@@ -93,9 +93,9 @@
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
-            console.log(data.field)
             // 重新加载表格
             table.reload('dataTable', {
+                url: "/system/performance/manager_kpi/view-manager-kpi-month-score/getObjects",
                 where: data.field,
                 page: {
                     curr: 1
@@ -128,7 +128,6 @@
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/performance/manager_kpi/view-manager-kpi-month-score/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -245,6 +244,12 @@
                         width: 120
                     },
                     {
+                        field: 'anomalyType',
+                        title: '绩效异常类别',
+                        align: 'center',
+                        width: 120
+                    },
+                    {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
@@ -336,6 +341,17 @@
                     maxmin : true
                 });
             }
+        })
+        //界面初始化的时候进行加载
+        $(document).ready(function() {
+            console.log($("#year").val())
+            table.reload('dataTable', {
+                url: "/system/performance/manager_kpi/view-manager-kpi-month-score/getObjects?year=" + moment().format("YYYY") + "&month=" + moment().month(),
+                // where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
         })
     });
 </script>

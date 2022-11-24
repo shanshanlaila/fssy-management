@@ -61,7 +61,6 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="edit" title="修改经营管理指标库信息"><i class="layui-icon">&#xe642;</i></a>
-<!--                        <a lay-event="delete" title="删除经理人KPI指标库信息"><i class="layui-icon">&#xe640;</i></a>-->
                     </script>
                 </div>
             </div>
@@ -93,7 +92,6 @@
             });
             return false
         });
-
         //监听导出按钮
         form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
@@ -191,19 +189,6 @@
                 ]
             ]
         });
-        // 监听搜索按钮
-        form.on('submit(search)', function (data) {
-            // 重新加载表格
-            table.reload('dataTable',
-                {
-                    where: data.field,
-                    page:
-                        {
-                            curr: 1
-                        }
-                });
-            return false;
-        });
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
@@ -223,7 +208,7 @@
         $(document).ready(function() {
             console.log($("#year").val())
             table.reload('dataTable', {
-                url: "/system/performance/manager_kpi/manage-kpi-lib/getObjects?year=" + moment().format("YYYY"),
+                url: "/system/performance/manager_kpi/manage-kpi-lib/getObjects?kpiYear=" + moment().format("YYYY"),
                 // where: data.field,
                 page: {
                     curr: 1
