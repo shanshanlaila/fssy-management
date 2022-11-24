@@ -279,7 +279,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
-            queryWrapper.eq("userName",params.get("userNameRight"));
+            queryWrapper.eq("userName", params.get("userNameRight"));
         }
         return queryWrapper;
 
@@ -729,12 +729,14 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
             if (ministerReview.equals(PerformanceConstant.EXCELLENT)) {
                 entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
+                entryCasReviewDetail.setIsExcellent(PerformanceConstant.YES);
             } else {
                 entryCasReviewDetail.setFinalNontransactionEvaluateLevel(ministerReview);
-                entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+                entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 完结
                 BigDecimal actualAutoScore = GetTool.getScore(entryCasReviewDetail, ministerReview);
                 entryCasReviewDetail.setAutoScore(actualAutoScore);
                 entryCasReviewDetail.setArtifactualScore(actualAutoScore);
+                entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
             }
             entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }

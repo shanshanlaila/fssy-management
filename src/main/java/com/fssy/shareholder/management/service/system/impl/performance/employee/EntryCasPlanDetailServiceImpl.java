@@ -483,6 +483,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("newStatus")) {
             queryWrapper.eq("newStatus", params.get("newStatus"));
         }
+        // 状态为’待部长审核‘和事件类型为’非实物类‘或’新增工作流‘
         if (params.containsKey("twoStatus")) {
             queryWrapper
                     .eq("status", PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
@@ -599,7 +600,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (event.equals("pass")) {
             // 部长、科长审核通过
             for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                // 部长通过（状态为’待部长审核‘，且事件类型为’非事务类‘的）
+                /*// 部长通过（状态为’待部长审核‘，且事件类型为’非事务类‘的）
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
                         && (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_B))) {
                     // 设置他的状态为’待填报回顾‘
@@ -609,19 +610,20 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                     if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
                             && (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
                         // 设置他的状态为’待填报回顾‘
-                        entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR);
+                        entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
                     }
                     // 科长通过
                     else if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG)) {
                         entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-                    }
+                    }*/
+                entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
         }
         // 部长、科长审核拒绝
         else if (event.equals("noPass")) {
             for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                // 科长审核拒绝
+                /*// 科长审核拒绝
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG)
                         && entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)) {
                     entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
@@ -629,7 +631,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 // 部长审核拒绝
                 if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
                     entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
-                }
+                }*/
+                entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
         }

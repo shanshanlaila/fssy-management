@@ -60,7 +60,7 @@ public class GetTool {
         viewDepartmentRoleUserMappers = viewDepartmentRoleUserMapper;
         eventListMappers = eventListMapper;
         entryCasReviewDetailMappers = entryCasReviewDetailMapper;
-        eventsRelationRoleMappers=eventsRelationRoleMapper;
+        eventsRelationRoleMappers = eventsRelationRoleMapper;
     }
 
 
@@ -103,13 +103,28 @@ public class GetTool {
      * @param ministerReview       部长审核结果
      * @return 分数
      */
-    public static BigDecimal getScore (EntryCasReviewDetail entryCasReviewDetail, String ministerReview) {
+    public static BigDecimal getScore(EntryCasReviewDetail entryCasReviewDetail, String ministerReview) {
         // 通过事件清单序号（eventsId）找对应的事件清单，delow、middle、fine、excellent，
+        //EventsRelationRole eventsRelationRole = eventsRelationRoleMappers.selectById(entryCasReviewDetail.getEventsRoleId());
         // 获取方式改变：查询条件为部门review的departmentId、roleId、userId、year、month找事件岗位配比表，生效日期是year+month+当月最后一天之前（生效日期《=），取最近的那个（倒序，get（0））
-        EventsRelationRole eventsRelationRole = eventsRelationRoleMappers.selectById(entryCasReviewDetail.getEventsRoleId());
-        if (ObjectUtils.isEmpty(eventsRelationRole)){
-            throw new ServiceException(String.format("没有id为【%s】的事件岗位配比数据",entryCasReviewDetail.getEventsRoleId()));
+        if (ObjectUtils.isEmpty(entryCasReviewDetail.getEventsRoleId())) {
+            return null;
         }
+        LambdaQueryWrapper<EventsRelationRole> relationRoleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        relationRoleLambdaQueryWrapper
+                .eq(EventsRelationRole::getDepartmentId, entryCasReviewDetail.getDepartmentId())
+                .eq(EventsRelationRole::getRoleId, entryCasReviewDetail.getRoleId())
+                .eq(EventsRelationRole::getUserId, entryCasReviewDetail.getUserId())
+                .eq(EventsRelationRole::getYear, entryCasReviewDetail.getYear())
+                .eq(EventsRelationRole::getMonth, entryCasReviewDetail.getMonth())
+                // 取当月最新的事件岗位配比数据
+                .le(EventsRelationRole::getActiveDate, DateTool.getLastDayOfTodayString(entryCasReviewDetail.getYear(), entryCasReviewDetail.getMonth()))
+                .orderByDesc(EventsRelationRole::getActiveDate);
+        List<EventsRelationRole> eventsRelationRoles = eventsRelationRoleMappers.selectList(relationRoleLambdaQueryWrapper);
+        if (ObjectUtils.isEmpty(eventsRelationRoles)) {
+            throw new ServiceException("不存在该事件的岗位配比数据");
+        }
+        EventsRelationRole eventsRelationRole = eventsRelationRoles.get(0);
         BigDecimal autoScore;
         switch (ministerReview) {
             case PerformanceConstant.UNQUALIFIED:
