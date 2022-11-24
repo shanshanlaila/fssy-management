@@ -31,7 +31,7 @@
                             <div id="departmentSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" id = "year" name="year" placeholder="申报年份查询" autocomplete="off"
+                            <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 140px;">
@@ -116,7 +116,7 @@
         //年选择器
         laydate.render({
             elem: '#year'
-            ,type: 'year'
+            , type: 'year'
         });
 
         // 监听搜索按钮
@@ -133,32 +133,34 @@
         });
         // 一键审核
         form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
+            var checkStatus = table.checkStatus(dataTable.config.id)
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
             }
-            // 评优材料id列表
-            var excellentStateDetailIds = [];
-            data.forEach(function (item) {
-                excellentStateDetailIds.push(item.id);
-            });
-            layer.load();
-            $.ajax({
-                type: 'POST',
-                url: '/system/entry-excellent-state-detail/MinsterBatchAudit',
-                data: {
-                    "excellentStateDetailIds": excellentStateDetailIds,
-                    "ministerReview": $('#ministerReview').find("option:selected").val(),
-                },
-                success: function (result) {
-                    layer.closeAll();
-                    layer.msg(result.msg);
-                    if (result.status === 200) {
-                        table.reload('dataTable');
+            layer.confirm('确定提交审核吗？', {icon: 3, title: '提示'}, function (index) {
+                // 评优材料id列表
+                var excellentStateDetailIds = [];
+                data.forEach(function (item) {
+                    excellentStateDetailIds.push(item.id);
+                });
+                layer.load();
+                $.ajax({
+                    type: 'POST',
+                    url: '/system/entry-excellent-state-detail/MinsterBatchAudit',
+                    data: {
+                        "excellentStateDetailIds": excellentStateDetailIds,
+                        "ministerReview": $('#ministerReview').find("option:selected").val(),
+                    },
+                    success: function (result) {
+                        layer.closeAll();
+                        layer.msg(result.msg);
+                        if (result.status === 200) {
+                            table.reload('dataTable');
+                        }
                     }
-                }
+                })
             });
             return false;
         });
@@ -183,93 +185,93 @@
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        align:'center',
+                        align: 'center',
                         width: 80,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'departmentName',
                         title: '部门',
-                        align:'center',
+                        align: 'center',
                         width: 80,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'workEvents',
                         title: '工作事件',
-                        align:'center',
+                        align: 'center',
                         width: 130,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'mainUserName',
                         title: '主担',
-                        align:'center',
+                        align: 'center',
                         width: 50,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'nextUserName',
                         title: '次担',
-                        align:'center',
+                        align: 'center',
                         width: 50,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'actualCompleteDate',
                         title: '实际完成时间',
-                        align:'center',
+                        align: 'center',
                         width: 130,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: '',
                         title: '创新或超越预期的成果展示',
-                        align:'center',
+                        align: 'center',
                         width: 600,
-                        colspan:3
+                        colspan: 3
                     },
                     {
                         field: 'auditNote',
                         title: '审核意见',
                         width: 130,
-                        align:'center',
-                        rowspan:2
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'note',
                         title: '备注',
                         width: 50,
-                        align:'center',
-                        rowspan:2
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'createName',
                         title: '编制人',
                         width: 50,
-                        align:'center',
-                        rowspan:2
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'auditName',
                         title: '审核人',
                         width: 50,
-                        align:'center',
-                        rowspan:2
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'auditDate',
                         title: '审核日期',
                         width: 90,
-                        align:'center',
-                        rowspan:2
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
                         width: 90,
-                        align:'center',
-                        rowspan:2
+                        align: 'center',
+                        rowspan: 2
                     },
                     {
                         fixed: 'right',
@@ -277,26 +279,26 @@
                         width: 100,
                         align: 'center',
                         toolbar: '#tool',
-                        rowspan:2
+                        rowspan: 2
                     }
                 ],
                 [
                     {
                         field: 'oriTarget',
                         title: '原设定目标',
-                        align:'center',
+                        align: 'center',
                         width: 200
                     },
                     {
                         field: 'actualTarget',
                         title: '实际达成目标',
-                        align:'center',
+                        align: 'center',
                         width: 200
                     },
                     {
                         field: 'innovative',
                         title: '岗位开展的有价值的创新工作描述',
-                        align:'center',
+                        align: 'center',
                         width: 200
                     }
                 ]

@@ -567,11 +567,10 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
             }
             EntryCasReviewDetail reviewDetai = entryCasReviewDetails.get(0);//查到对应ID的数据，然后取这条数据
-            entryExcellentStateDetail.setMinisterReview(ministerReview);
             // 经营管理部审核为“符合”，设置最终非事务类评价等级为“优”
             if (ministerReview.equals(PerformanceConstant.CONFORM)) {
                 // 修改“ministerReview”、“ministerReviewUser”、“ministerReviewUserId”、“ministerReviewDate”字段，status字段为“完结”
-                entryExcellentStateDetail.setMinisterReview(ministerReview);// classReview
+                entryExcellentStateDetail.setMinisterReview(entryExcellentStateDetail.getClassReview());// classReview
                 entryExcellentStateDetail.setMinisterReviewUser(GetTool.getUser().getName());
                 entryExcellentStateDetail.setMinisterReviewUserId(GetTool.getUser().getId());
                 entryExcellentStateDetail.setMinisterReviewDate(LocalDate.now());
@@ -581,9 +580,13 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 // 通过“bs_performance_entry_excellent_state_detail”的字段“casReviewId”修改id为“casReviewId”的“bs_performance_employee_entry_cas_review_detail”表字段“finalNontransactionEvaluateLevel”
                 reviewDetai.setFinalNontransactionEvaluateLevel(PerformanceConstant.EXCELLENT);
                 entryExcellentStateDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 评优材料状态完结
+                User user = GetTool.getUser();
+                reviewDetai.setAuditId(user.getId());
+                reviewDetai.setAuditName(user.getName());
+                reviewDetai.setAuditDate(LocalDate.now());
                 reviewDetai.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 设置回顾状态为完结
                 // 计算分数
-                BigDecimal score = GetTool.getScore(reviewDetai, ministerReview);// classReview
+                BigDecimal score = GetTool.getScore(reviewDetai, entryExcellentStateDetail.getClassReview());// classReview
                 reviewDetai.setAutoScore(score);
                 reviewDetai.setArtifactualScore(score);
             } else {

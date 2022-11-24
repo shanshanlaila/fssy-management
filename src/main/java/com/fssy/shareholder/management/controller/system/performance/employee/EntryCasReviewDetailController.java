@@ -425,6 +425,13 @@ public class EntryCasReviewDetailController {
         return SysResult.build(500, "履职明细更新失败");
     }
 
+    /**
+     * 回顾审核-部长
+     *
+     * @param entryReviewDetailIds 回顾的ids
+     * @param request              请求
+     * @return 结果
+     */
     @PostMapping("batchAudit")
     @ResponseBody
     @RequiredLog("批量审核")
@@ -487,7 +494,7 @@ public class EntryCasReviewDetailController {
     }
 
     @GetMapping("matchReview")
-    public String matchReview(Model model){
+    public String matchReview(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);

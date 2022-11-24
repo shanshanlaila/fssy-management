@@ -433,8 +433,7 @@ public class EntryExcellentStateDetailController {
             if (ObjectUtils.isEmpty(eventList)) {
                 throw new ServiceException("不存在对应的事件,请联系管理员");
             }
-        }
-        else {
+        } else {
             if (ObjectUtils.isEmpty(eventList)) {
                 eventList = new EventList();
             }
@@ -513,6 +512,13 @@ public class EntryExcellentStateDetailController {
         return SysResult.build(500, "上传失败");
     }
 
+    /**
+     * 绩效科评优材料批量审核
+     *
+     * @param excellentStateDetailIds 评优材料ids
+     * @param request                 请求
+     * @return 审核结果
+     */
     @PostMapping("batchAudit")
     @ResponseBody
     @RequiredLog("绩效科评优材料批量审核")
@@ -525,6 +531,13 @@ public class EntryExcellentStateDetailController {
         return SysResult.build(500, "批量审核失败");
     }
 
+    /**
+     * 经营管理部主管评优材料批量审核
+     *
+     * @param excellentStateDetailIds 评优材料ids
+     * @param request                 请求
+     * @return 结果
+     */
     @PostMapping("MinsterBatchAudit")
     @ResponseBody
     @RequiredLog("经营管理部主管评优材料批量审核")
