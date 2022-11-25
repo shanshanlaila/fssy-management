@@ -16,7 +16,6 @@ import com.fssy.shareholder.management.mapper.system.performance.employee.EntryC
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
-import com.fssy.shareholder.management.pojo.manage.role.Role;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
@@ -595,44 +594,21 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
      * @return 通过/拒绝
      */
     @Override
-    public boolean affirmStore(List<String> planDetailIds, String event) {
+    public boolean affirmStore(List<String> planDetailIds, String event, List<String> auditNotes) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
-        if (event.equals("pass")) {
-            // 部长、科长审核通过
-            for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                /*// 部长通过（状态为’待部长审核‘，且事件类型为’非事务类‘的）
-                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
-                        && (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_B))) {
-                    // 设置他的状态为’待填报回顾‘
-                    entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-                } else
-                    // 部长通过（状态为’待部长审核‘，且事件类型为’新增工作流‘的）
-                    if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
-                            && (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
-                        // 设置他的状态为’待填报回顾‘
-                        entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-                    }
-                    // 科长通过
-                    else if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG)) {
-                        entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-                    }*/
+        for (int i = 0; i < entryCasPlanDetails.size(); i++) {
+            String auditNote = auditNotes.get(i);
+            EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetails.get(i);
+            if (event.equals("pass")) {
+                // 部长、科长审核通过
                 entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+                entryCasPlanDetail.setAuditNote(auditNote);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
-        }
-        // 部长、科长审核拒绝
-        else if (event.equals("noPass")) {
-            for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-                /*// 科长审核拒绝
-                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG)
-                        && entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
-                }
-                // 部长审核拒绝
-                if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
-                }*/
+            // 部长、科长审核拒绝
+            else if (event.equals("noPass")) {
                 entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+                entryCasPlanDetail.setAuditNote(auditNote);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
         }

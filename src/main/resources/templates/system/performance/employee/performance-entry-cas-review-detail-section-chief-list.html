@@ -187,6 +187,26 @@
                         width: 50
                     },
                     {
+                        field: 'id',
+                        title: '序号',
+                        width: 50,
+                        fixed: 'left',
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 120,
+                        fixed: 'left',
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
+                    },
+                    {
                         field: 'actualCompleteDate',
                         title: '实际完成时间',
                         width: 90
@@ -258,65 +278,27 @@
                         width: 90
                     },
                     {
-                        field: 'createDate',
-                        title: '编制日期',
-                        width: 100
-                    },
-                    {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                    },
-                    {
                         field: 'note',
                         title: '备注',
                         width: 50
                     },
                     {
-                        field: 'roleName',
-                        title: '岗位（角色）名称',
-                        width: 110
+                        field: 'auditNote',
+                        title: '审核意见',
+                        width: 130,
+                        align: 'center',
+                        edit: 'text',
+                        event: 'auditNote',
+                        style: 'cursor:pointer;background-color: pink;',
+
                     },
                     {
-                        field: 'userName',
-                        title: '员工姓名',
-                        width: 80
-                    },
-                    {
-                        field: 'applyDate',
-                        title: '申报日期',
-                        width: 80
-                    },
-                    {
-                        field: 'year',
-                        title: '申报年份',
-                        width: 80
-                    },
-                    {
-                        field: 'month',
-                        title: '申报月份',
-                        width: 80
-                    },
-                    {
-                        field: 'createName',
-                        title: '编制人',
-                        width: 80
-                    },
-                    {
-                        field: 'mergeNo',
-                        title: '员工月度履职计划表编号',
-                        width: 150
-                    },
-                    {
-                        field: 'auditStatus',
-                        title: '履职计划审核状态',
-                        width: 120
-                    },
-                    {
-                        field: 'eventsType',
-                        title: '事件类别',
-                        width: 80
-                    },
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    }
                 ]
             ]
         });
@@ -419,6 +401,7 @@
             layer.confirm('确定审核吗？', {icon: 3, title: '提示'}, function (index) {
                 // 履职回顾id列表
                 var entryReviewDetailIds = [];
+
                 data.forEach(function (item) {
                     entryReviewDetailIds.push(item.id);
                 });

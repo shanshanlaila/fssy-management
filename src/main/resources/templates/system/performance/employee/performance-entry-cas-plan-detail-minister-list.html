@@ -230,6 +230,16 @@
                         title: '主担/次担',
                         width: 90
                     },
+                    {
+                        field: 'auditNote',
+                        title: '审核意见',
+                        width: 130,
+                        align: 'center',
+                        edit : 'text',
+                        event  : 'auditNote',
+                        style  : 'cursor:pointer;background-color: pink;',
+
+                    },
                 ]
             ]
         });
@@ -305,8 +315,10 @@
 
             layer.confirm('确定审核通过吗？', {icon: 3, title: '提示'}, function (index) {
                 var planDetailIds = [];
+                var auditNotes = [];
                 data.forEach(function (item) {
                     planDetailIds.push(item.id);
+                    auditNotes.push(item.auditNote)
                 });
 
                 $.ajax({
@@ -314,6 +326,7 @@
                     url: '/system/entry-cas-plan-detail/affirmStore?event=pass',
                     data: {
                         "planDetailIds": planDetailIds,
+                        "auditNotes":auditNotes,
                     },
                     success: function (result) {
                         layer.msg(result.msg);
@@ -337,8 +350,10 @@
 
             layer.confirm('确认审核不通过吗？', {icon: 3, title: '提示'}, function (index) {
                 var planDetailIds = [];
+                var auditNotes = [];
                 data.forEach(function (item) {
                     planDetailIds.push(item.id);
+                    auditNotes.push(item.auditNote)
                 });
 
                 $.ajax({
@@ -346,6 +361,7 @@
                     url: '/system/entry-cas-plan-detail/affirmStore?event=noPass',
                     data: {
                         "planDetailIds": planDetailIds,
+                        "auditNotes":auditNotes,
                     },
                     success: function (result) {
                         layer.msg(result.msg);

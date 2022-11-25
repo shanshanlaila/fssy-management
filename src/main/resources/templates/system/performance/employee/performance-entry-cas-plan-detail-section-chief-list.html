@@ -241,6 +241,16 @@
                         title: '主担/次担',
                         width: 100
                     },
+                    {
+                        field: 'auditNote',
+                        title: '审核意见',
+                        width: 130,
+                        align: 'center',
+                        edit: 'text',
+                        event: 'auditNote',
+                        style: 'cursor:pointer;background-color: pink;',
+
+                    },
                 ]
             ]
         });
@@ -301,16 +311,18 @@
 
         // 审核通过按钮
         form.on('submit(pass)', function (data) {
-            var checkStatus = table.checkStatus(dataTableRight.config.id),
-                data = checkStatus.data;
+            var checkStatus = table.checkStatus(dataTableRight.config.id)
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
             }
             layer.confirm('确定审核通过吗？', {icon: 3, title: '提示'}, function (index) {
                 var planDetailIds = [];
+                var auditNotes = [];
                 data.forEach(function (item) {
                     planDetailIds.push(item.id);
+                    auditNotes.push(item.auditNote);
                 });
 
                 $.ajax({
@@ -318,6 +330,7 @@
                     url: '/system/entry-cas-plan-detail/affirmStore?event=pass',
                     data: {
                         "planDetailIds": planDetailIds,
+                        "auditNotes": auditNotes,
                     },
                     success: function (result) {
                         layer.msg(result.msg);
@@ -331,8 +344,8 @@
         });
 
         form.on('submit(noPass)', function (data) {
-            var checkStatus = table.checkStatus(dataTableRight.config.id),
-                data = checkStatus.data;
+            var checkStatus = table.checkStatus(dataTableRight.config.id)
+            data = checkStatus.data;
 
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
@@ -341,8 +354,11 @@
 
             layer.confirm('确认审核不通过吗？', {icon: 3, title: '提示'}, function (index) {
                 var planDetailIds = [];
+                var auditNotes = [];
                 data.forEach(function (item) {
                     planDetailIds.push(item.id);
+                    auditNotes.push(item.auditNote)
+
                 });
 
                 $.ajax({
@@ -350,6 +366,7 @@
                     url: '/system/entry-cas-plan-detail/affirmStore?event=noPass',
                     data: {
                         "planDetailIds": planDetailIds,
+                        "auditNotes": auditNotes,
                     },
                     success: function (result) {
                         layer.msg(result.msg);

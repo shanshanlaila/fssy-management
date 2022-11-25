@@ -82,7 +82,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
      * @param classReview
      * @return
      */
-    boolean batchAudit(List<String> excellentStateDetailIds, String classReview);
+    boolean batchAudit(List<String> excellentStateDetailIds, String classReview,List<String> auditNotes);
 
     /**
      * 经营管理部主管评优材料批量审核
@@ -91,7 +91,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
      * @return
      */
 
-    boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview);
+    boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview,List<String> auditNotes);
 
 
 }

@@ -376,5 +376,10 @@ public class EntryCasReviewDetail extends BaseModel {
      */
     @TableField("eventsRoleId")
     private Long eventsRoleId;
+    /**
+     * 标识是否为新增工作流，取值：是，否
+     */
+    @TableField("isNewEvent")
+    private String isNewEvent;
 
 }
