@@ -5,16 +5,12 @@
  */
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
-import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
-import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
@@ -413,9 +409,11 @@ public class EntryCasPlanDetailController {
      */
     @PostMapping("affirmStore")
     @ResponseBody
-    public SysResult affirm(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds, HttpServletRequest request) {
+    public SysResult affirm(HttpServletRequest request,
+                            @RequestParam(value = "planDetailIds[]") List<String> planDetailIds,
+                            @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String event = request.getParameter("event");
-        boolean res = entryCasPlanDetailService.affirmStore(planDetailIds, event);
+        boolean res = entryCasPlanDetailService.affirmStore(planDetailIds, event,auditNotes);
         if (res) {
             return SysResult.ok();
         }

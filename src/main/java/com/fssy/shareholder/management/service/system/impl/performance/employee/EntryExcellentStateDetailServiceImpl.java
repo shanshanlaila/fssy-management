@@ -532,12 +532,13 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     }
 
     @Override
-    public boolean batchAudit(List<String> excellentStateDetailIds, String classReview) {
+    public boolean batchAudit(List<String> excellentStateDetailIds, String classReview, List<String> auditNotes) {
 
         //根据ID集合去找对应的实体类集合
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
-        //遍历entryExcellentStateDetails得到 entryExcellentStateDetail
-        for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
+        for (int i = 0; i < entryExcellentStateDetails.size(); i++) {
+            String auditNote = auditNotes.get(i);
+            EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetails.get(i);
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
                 throw new ServiceException("不能审核此状态下的评优材料");
             }
@@ -546,17 +547,18 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             entryExcellentStateDetail.setClassReviewUser(GetTool.getUser().getName());
             entryExcellentStateDetail.setClassReviewUserId(GetTool.getUser().getId());
             entryExcellentStateDetail.setClassReviewDate(LocalDate.now());
+            entryExcellentStateDetail.setAuditNote(auditNote);
             entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
         }
         return true;
     }
-
     @Override
-    public boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview) {
+    public boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview,List<String> auditNotes) {
         //根据Id集合去找对应的实体类集合
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
-        //遍历entryExcellentStateDetails得到 entryExcellentStateDetail
-        for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
+        for (int i = 0; i < entryExcellentStateDetails.size(); i++) {
+            String auditNote = auditNotes.get(i);
+            EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetails.get(i);
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
                 throw new ServiceException("不能审核完结状态的评优材料");
             }
@@ -593,6 +595,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 // 经营管理部审为“不符合”,返回绩效科复核;
                 entryExcellentStateDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE);
             }
+            entryExcellentStateDetail.setAuditNote(auditNote);
             entryCasReviewDetailMapper.updateById(reviewDetai);
             entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
         }

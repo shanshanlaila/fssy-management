@@ -73,7 +73,7 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
      * @param ministerReview       部长复核
      * @return 审核结果
      */
-    boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview);
+    boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview,List<String> auditNotes);
 
     /**
      * 批量审核-计划工作完成评价（科长）
@@ -83,7 +83,7 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
      * @param chargeTransactionBelowType     事务类评价不同类型
      * @return
      */
-    boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType);
+    boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType,List<String> auditNotes);
 
     /**
      * 新增单履职回顾

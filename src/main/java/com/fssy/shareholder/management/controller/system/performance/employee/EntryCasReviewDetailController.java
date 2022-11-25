@@ -435,9 +435,11 @@ public class EntryCasReviewDetailController {
     @PostMapping("batchAudit")
     @ResponseBody
     @RequiredLog("批量审核")
-    public SysResult batchAudit(@RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds, HttpServletRequest request) {
+    public SysResult batchAudit(HttpServletRequest request,
+                                @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
+                                @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String ministerReview = request.getParameter("ministerReview");
-        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, ministerReview);
+        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, ministerReview,auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -450,10 +452,12 @@ public class EntryCasReviewDetailController {
     @RequestMapping("sectionBatchAudit")
     @ResponseBody
     @RequiredLog("科长事物类批量审核")
-    public SysResult sectionBatchAudit(@RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds, HttpServletRequest request) {
+    public SysResult sectionBatchAudit( HttpServletRequest request,
+                                        @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
+                                        @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String chargeTransactionEvaluateLevel = request.getParameter("chargeTransactionEvaluateLevel");
         String chargeTransactionBelowType = request.getParameter("chargeTransactionBelowType");
-        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType);
+        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType,auditNotes);
         if (result) {
             return SysResult.ok();
         }

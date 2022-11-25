@@ -17,7 +17,6 @@ import com.fssy.shareholder.management.service.system.performance.employee.Entry
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
-import com.fssy.shareholder.management.tools.common.DateTool;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -522,9 +521,12 @@ public class EntryExcellentStateDetailController {
     @PostMapping("batchAudit")
     @ResponseBody
     @RequiredLog("绩效科评优材料批量审核")
-    public SysResult batchAudit(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds, HttpServletRequest request) {
+    public SysResult batchAudit( HttpServletRequest request,
+                                 @RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds,
+                                 @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
+        System.out.println("auditNotes = " + auditNotes);
         String classReview = request.getParameter("classReview");
-        boolean result = entryExcellentStateDetailService.batchAudit(excellentStateDetailIds, classReview);
+        boolean result = entryExcellentStateDetailService.batchAudit(excellentStateDetailIds, classReview,auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -541,9 +543,11 @@ public class EntryExcellentStateDetailController {
     @PostMapping("MinsterBatchAudit")
     @ResponseBody
     @RequiredLog("经营管理部主管评优材料批量审核")
-    public SysResult batchAuditByMinister(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds, HttpServletRequest request) {
+    public SysResult batchAuditByMinister(HttpServletRequest request,
+                                          @RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds,
+                                          @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String ministerReview = request.getParameter("ministerReview");
-        boolean result = entryExcellentStateDetailService.MinisterBatchAudit(excellentStateDetailIds, ministerReview);
+        boolean result = entryExcellentStateDetailService.MinisterBatchAudit(excellentStateDetailIds, ministerReview,auditNotes);
         if (result) {
             return SysResult.ok();
         }

@@ -145,14 +145,17 @@
             layer.confirm('确定审核吗？', {icon: 3, title: '提示'}, function (index) {
                 // 评优材料id列表
                 var excellentStateDetailIds = [];
+                var auditNotes = [];//审核意见列表
                 data.forEach(function (item) {
                     excellentStateDetailIds.push(item.id);
+                    auditNotes.push(item.auditNote);
                 });
                 layer.load();
                 $.ajax({
                     type: 'POST',
                     url: '/system/entry-excellent-state-detail/batchAudit',
                     data: {
+                        "auditNotes":auditNotes,
                         "excellentStateDetailIds": excellentStateDetailIds,
                         "classReview": $('#classReview').find("option:selected").val(),
                     },
@@ -238,6 +241,9 @@
                         title: '审核意见',
                         width: 130,
                         align: 'center',
+                        edit : 'text',
+                        event  : 'auditNote',
+                        style  : 'cursor:pointer;background-color: pink;',
                         rowspan: 2
                     },
                     {
