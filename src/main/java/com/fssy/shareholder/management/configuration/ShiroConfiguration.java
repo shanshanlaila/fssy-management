@@ -12,6 +12,7 @@
 package com.fssy.shareholder.management.configuration;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -228,8 +229,10 @@ public class ShiroConfiguration
 		shiroFilterFactoryBean.setLoginUrl("/login");
 		// 设置首页
 		shiroFilterFactoryBean.setSuccessUrl("/index");
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<String, String>();//2022-11-25将HashMap更改为了LinkedHashMap有序map
 		// 设置登出路径，不用额外写退出的控制器
+		//2022-11-25 OA访问过来忽略
+		map.put("/oaLogin", "anon");
 		// 2021-11-29 开放login的登录方法，否则永远执行一次登录请求
 		map.put("/login", "anon");
 		map.put("/logout", "logout");

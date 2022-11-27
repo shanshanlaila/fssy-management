@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fssy.shareholder.management.mapper.system.sso.SsoKeyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fssy.shareholder.management.pojo.system.sso.SsoKey">
+        <id column="id" property="id" />
+        <result column="createdAt" property="createdAt" />
+        <result column="createdId" property="createdId" />
+        <result column="createdName" property="createdName" />
+        <result column="updatedAt" property="updatedAt" />
+        <result column="updatedId" property="updatedId" />
+        <result column="updatedName" property="updatedName" />
+        <result column="note" property="note" />
+        <result column="status" property="status" />
+        <result column="publicKey" property="publicKey" />
+        <result column="privateKey" property="privateKey" />
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>单点登录密钥管理</title>
+
+</head>
+<body>
+<!-- 引入jquery -->
+<div th:replace="~{common/jquery :: jquery}"></div>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<!-- 引入zTree -->
+<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">单点登录</a> <a>
+				<cite>密钥管理</cite>
+		</a>
+		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+                   onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+                                                              style="line-height: 30px"></i></a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body ">
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="publicKey" placeholder="输入密钥"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body ">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="tool">
+                        <a lay-event="delete" title="重新生成密钥对"><i class="layui-icon">&#xe9aa;</i></a>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui
+        .use(
+            [
+                'laydate', 'layer', 'table', 'form'
+            ],
+            function () {
+                var $ = layui.$, laydate = layui.laydate, table = layui.table, layer =
+                    layui.layer, form = layui.form;
+
+                // 每个标签加一个class，名为laydate
+                $(".laydate").each(function () {
+                    laydate.render(
+                        {
+                            elem: this,
+                            //更换触发方式
+                            trigger: 'click',
+                            type: 'date'
+                        });
+                });
+
+                // 实例表格
+                table
+                    .render(
+                        {
+                            elem: '#dataTable',
+                            id: 'dataTable',
+                            url: "/system/sso/getObjects",
+                            page: true,
+                            height: 'full-100' // 设置高度，使数据置于滚动条控制下
+                            ,
+                            limit: 50,
+                            limits:
+                                [
+                                    10, 20, 30, 50
+                                ],
+                            toolbar: '#toolbar',
+                            size: 'sm',
+                            cols:
+                                [
+                                    [
+                                        {field: 'id', title: 'id', width:"10%"},
+                                        {field: 'publicKey', title: '公钥', width: "80%",
+                                        },
+                                        {fixed: 'right', title: '操作', width: "10%", align: 'center', toolbar: '#tool'}
+                                    ]
+                                ]
+                        });
+
+
+
+                // 监听搜索按钮
+                form.on('submit(search)', function (data) {
+                    // 重新加载表格
+                    table.reload('dataTable',
+                        {
+                            where: data.field,
+                            page:
+                                {
+                                    curr: 1
+                                }
+                        });
+                    return false;
+                });
+
+                // 监听行工具事件
+                table.on('tool(dataTable)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event === 'delete') { // 删除
+                        layer.confirm('确定要重新生成密钥对吗？重新生成后需要更新主系统公钥，否则单点登录不成功', function () {
+                            $.ajax({
+                                type: 'DELETE',
+                                url: '/system/sso/' + data.id,
+                                success: function (result) {
+                                    layer.msg(result.msg);
+                                    if (result.status == 200) {
+                                        table.reload('dataTable');
+                                    }
+                                }
+                            })
+                        });
+                    }
+                });
+
+            });
+</script>
+</body>
+</html>

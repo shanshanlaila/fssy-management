@@ -9,8 +9,11 @@ import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
+import com.fssy.shareholder.management.pojo.system.sso.SsoKey;
+import com.fssy.shareholder.management.service.system.sso.SsoKeyService;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.shiro.HttpClientUtil;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
@@ -19,9 +22,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.crypto.Cipher;
 import javax.servlet.http.HttpServletRequest;
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +54,9 @@ public class LoginController
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private SsoKeyService ssoKeyService;
 
     /**
      * 返回登录页面
@@ -212,4 +224,132 @@ public class LoginController
         }
         return openid;
     }
+
+    /**
+     * oa跳转至新系统测试
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("oaLogin")
+    public ModelAndView oaLogin(HttpServletRequest request) throws Exception {
+        // 获取ssoToken
+        String ssoToken = request.getParameter("ssoToken");
+
+        //1、查找合同类别
+        Map<String, Object> res = new HashMap<>();
+        SsoKey ssoKey = ssoKeyService.findSsoKeyDataParams(res).get(0);
+        String privateKey=ssoKey.getPrivateKey();
+
+//        String privateKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJCY96nS10H3Z77yMKhsPgTh5PoTdJOGltDJmwtbS5PCkttItTbiDOAGUUdOXhfckDNqEgF3+8OYLlGNkmCPxaNkkXy90c8tRCIJ5v8wT24TnpIpvMnXoeCXgl1Rior5Lc287iNEfs4bDC8Ias/H2j0HNOUY91HfbQxdZ/yQf/rJAgMBAAECgYEAgKpc1pRyTpSjkFlZysRme1m2sn/VX+CHGsoKWJSoL5cXrmCIP4nuAvocIOMu/vSYq+dalkv5jxY/QPpEof/M0DXApQhNUmvFs5Le+gmCxPiWW7mzwGqOYFUr2fqmwYdtK1jUVhradyqMAgKuCp3UsPEd0VzLmzpx9L+OovL6HMECQQDsziYl3V6qafEbVi2lXm4Ww20kCpEu1HO3qyNScdfbOmumWI/a49IRxcNFjmIAMwExKEay61F1Nr/oPleHU7TtAkEAnFFz4PB6BgnwNH53APkMgq4RaHP/qy2jgQTDFw/dz+eJLzi+UF6xodXurEv/CFzx4peb4Eq5XDHFmBLb5vZdzQJAJZT+BupgGMmhg0YlDmazMBep3ZtzuSvshYy6mV4J9PgLl6Xchs+7SijJueND+GYf3U5YEhM4pVKgGFq0h3yobQJAbaeBxzhKEPRlyR0xs8AA86bR1VkR722bdcT2abYanl5IUJTYhB55MxKUU88XvzEcCRzbHrKsZq0PdEc+dT07vQJAXYsonHNB5DjYejmAFXLZtuprJyVs0HfHDeQch34QJZjxX08vPQMgB4Hdg2ZUmFeY3oBN85g6n1JuZgFmwYYQSQ==";
+        // 解密
+        String account = decrypt(ssoToken, privateKey);
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account);
+        List<User> userList = userMapper.selectList(userQueryWrapper);
+        if (ObjectUtils.isEmpty(userList)) {
+            throw new UnknownAccountException("登录的账号不存在");
+        }
+        if (userList.size()>1) {
+            throw new UnknownAccountException("账号不唯一，请联系管理员更正账号");
+        }
+
+        Subject subject = SecurityUtils.getSubject();
+        User userOri = userList.get(0);
+        UsernamePasswordToken token = new UsernamePasswordToken(userOri.getAccount(), userOri.getPassword(), false, "wx");
+
+        /**
+         * 正常的登录
+         */
+        try
+        {
+            // 密码认证
+            subject.login(token);
+        }
+        catch (UnknownAccountException e)
+        {
+            throw new UnknownAccountException("登录的账号不存在");
+        }
+        catch (IncorrectCredentialsException e)
+        {
+            throw new IncorrectCredentialsException("登录密码错误");
+        }
+        catch (LockedAccountException e)
+        {
+            throw new LockedAccountException("登录的账号已经被锁定，需要解锁");
+        }
+        catch (ExpiredCredentialsException e)
+        {
+            throw new ExpiredCredentialsException("密码已经过期");
+        }
+        catch (DisabledAccountException e)
+        {
+            throw new DisabledAccountException("登录账号已被禁止使用");
+        }
+        catch (ExcessiveAttemptsException e)
+        {
+            throw new ExcessiveAttemptsException("登录次数超过限制");
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+        // 设置session
+        // 将用户保存到session中，移到realm中
+        // 2021-9-26登录认证用了缓存，放在realm中就不能再保存到session了，需要放在这
+        SecurityUtils.getSubject().getSession().setAttribute("currentUser",
+                subject.getPrincipal());
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        // 2021-12-11 判断跳转的系统
+        // 查询登录用户的角色和组织信息
+        QueryWrapper<ViewDepartmentRoleUser> userRelationQueryWrapper = new QueryWrapper<>();
+        userRelationQueryWrapper.eq("userId", user.getId());
+        List<ViewDepartmentRoleUser> userRelationList = viewDepartmentRoleUserMapper
+                .selectList(userRelationQueryWrapper);
+        // 保存到session
+        SecurityUtils.getSubject().getSession().setAttribute("currentUserRelation",
+                userRelationList);
+
+        String returnUrl = "";
+        for (ViewDepartmentRoleUser viewDepartmentRoleUser : userRelationList)
+        {
+            // 查找用户当前的角色是否为供应商
+            if (CommonConstant.ROLE_SUPPLIER == viewDepartmentRoleUser.getRoleId().intValue())
+            {
+                throw new UnknownAccountException("供应商不可以用企业微信登录");
+            }
+            // 查找用户当前的角色，是否为管理员
+            else if (1 == viewDepartmentRoleUser.getRoleId().intValue())
+            {
+                returnUrl = "/manage/index";
+                break;
+            }
+            else
+            {
+                returnUrl = "/system/index";
+            }
+        }
+        return new ModelAndView(String.format("redirect:http://localhost:7079%s", returnUrl));
+    }
+
+    /**
+     * RSA解密
+     * @param str
+     * @param privateKey
+     * @return
+     * @throws Exception
+     */
+    public String decrypt(String str, String privateKey) throws Exception{
+        //64位解码加密后的字符串
+        byte[] inputByte = Base64.decodeBase64(str.getBytes("UTF-8"));
+        //base64编码的私钥
+        byte[] decoded = Base64.decodeBase64(privateKey);
+        RSAPrivateKey priKey = (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(decoded));
+        //RSA解密
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, priKey);
+        String outStr = new String(cipher.doFinal(inputByte));
+        return outStr;
+    }
+
 }
