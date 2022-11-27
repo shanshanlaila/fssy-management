@@ -53,7 +53,7 @@ public class SsoKeyServiceImpl extends ServiceImpl<SsoKeyMapper, SsoKey> impleme
 
     @Override
     public List<SsoKey> findSsoKeyDataParams(Map<String, Object> params) {
-        QueryWrapper<SsoKey> queryWrapper = getQueryWrapper(params);
+        QueryWrapper<SsoKey> queryWrapper = new QueryWrapper<>();
         List<SsoKey> ssoKeyList = ssoKeyMapper.selectList(queryWrapper);
         return ssoKeyList;
     }
