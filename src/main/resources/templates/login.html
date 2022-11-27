@@ -1,84 +1,123 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>登录页面</title>
-  <script th:src="@{/plugin/jquery/jquery-3.4.1.min.js}" charset="utf-8"></script>
-  <link th:href="@{/plugin/font-awesome/css/font-awesome.min.css}"
-        rel="stylesheet">
-  
-  <link rel="stylesheet" th:href="@{/plugin/X-admin-v2.2/css/font.css}"/>
-  <!-- 引入xadmin2.2的样式 -->
-  <link rel="stylesheet" th:href="@{/plugin/X-admin-v2.2/css/xadmin.css}"/>
-  <link type="text/css" rel="stylesheet"
-        th:href="@{/plugin/X-admin-v2.2/css/login.css}">
-  
-  <link type="text/css" rel="stylesheet" th:href="@{/css/common.css}">
-  <!-- 页签上添加logo -->
-  <link rel="icon" type="image/x-icon" th:href="@{/image/fssy-logo.png}"/>
-  
-  <!-- 引入2.2版本依赖的2.45版本的layui,原系统用的是2.56版本 -->
-  <script th:src="@{/plugin/layui-v2.5.5/layui.js}" charset="utf-8"></script>
-  <!-- 引入xadmin2.2的js -->
-  <script type="text/javascript"
-          th:src="@{/plugin/X-admin-v2.2/js/xadmin.js}"></script>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <script th:src="@{/plugin/jquery/jquery-3.4.1.min.js}" charset="utf-8"></script>
+    <link th:href="@{/plugin/font-awesome/css/font-awesome.min.css}"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/plugin/X-admin-v2.2/css/font.css}"/>
+    <!-- 引入xadmin2.2的样式 -->
+    <link rel="stylesheet" th:href="@{/plugin/X-admin-v2.2/css/xadmin.css}"/>
+    <link type="text/css" rel="stylesheet"
+          th:href="@{/plugin/X-admin-v2.2/css/login.css}">
+
+    <link type="text/css" rel="stylesheet" th:href="@{/css/common.css}">
+    <!-- 页签上添加logo -->
+    <link rel="icon" type="image/x-icon" th:href="@{/image/fssy-logo.png}"/>
+
+    <!-- 引入2.2版本依赖的2.45版本的layui,原系统用的是2.56版本 -->
+    <script th:src="@{/plugin/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+    <!-- 引入xadmin2.2的js -->
+    <script type="text/javascript"
+            th:src="@{/plugin/X-admin-v2.2/js/xadmin.js}"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100%;
+            background: #fff;
+        }
+
+        .password {
+            position: relative;
+        }
+
+        .password .n-txtCss {
+            width: 90% !important;
+        }
+
+        .password .fa {
+            position: absolute;
+            right: 10px;
+            top: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+    </style>
 </head>
 <body class="login-bg">
 
 <div class="layui-row">
-  <div class="layui-col-md4 layui-col-md-offset7">
-    <div class="login layui-anim layui-anim-up">
-      <div class="message">方盛实业绩效系统</div>
-      <div id="darkbannerwrap"></div>
-      <form method="post" class="layui-form"
-            action="/login">
-        <input name="name" placeholder="用户名"
-               lay-verify="required" lay-reqText="姓名或账户为必填项" type="text"
-               class="layui-input">
-        <hr class="hr15">
-        <input name="password" placeholder="密码" lay-verify="pass"
-               lay-reqText="密码为必填项" type="password" class="layui-input">
-        <hr class="hr15">
-        <input value="登录" lay-submit lay-filter="login" style="width: 100%;"
-               type="submit">
-        <hr class="hr20">
-      </form>
+    <div class="layui-col-md4 layui-col-md-offset7">
+        <div class="login layui-anim layui-anim-up" style="max-width: 800px;min-height: 360px;margin-top: 30px;background: rgba(0,0,0,0.5);">
+            <div class="message" style="background-color: #0082ef;">方盛实业绩效系统
+            </div>
+            <div id="darkbannerwrap"></div>
+            <form method="post" class="layui-form" action="/login">
+                <input name="name" placeholder="用户名" lay-verify="required" lay-reqtext="姓名或账户为必填项" type="text"
+                       class="layui-input">
+                <dd class="password">
+                    <input name="password" placeholder="密码" lay-verify="pass" lay-reqtext="密码为必填项" type="password"
+                           class="layui-input" style="  margin-top: 20px;">
+                    <i class="fa fa-eye-slash"></i>
+                </dd>
+                <input value="登录" lay-submit="" lay-filter="login"
+                       style="width: 100%;margin-top: 30px;background-color:#0082ef;" type="submit">
+
+
+            </form>
+        </div>
     </div>
-  </div>
 </div>
 
 
-
-
 <script>
-  $(function () {
-    layui.use('form', function () {
-      var $ = layui.$
-        , form = layui.form
-        , layer = layui.layer;
+    $(function () {
+        layui.use('form', function () {
+            var $ = layui.$
+                , form = layui.form
+                , layer = layui.layer;
 
-      // 监听提交
-      form.on('submit(login)', function (data) {
-        // 采用ajax提交登录请求
-        var url = '/login';
-        $.post(url, data.field, function (result) {
-          if (result.status === 200) { // 登录成功
-            if (result.data === 1) {
-              window.location.href = '/manage/index';
-            } else if (result.data === 2) {
-              window.location.href = '/system/index';
-            } else if (result.data === 3) {
-              window.location.href = "/system/supplierHomepage";
-            }
 
-          } else {
-            layer.msg(result.msg, {icon: 5, time: 4000});
-          }
+            $(".password").on("click", ".fa-eye-slash", function () {
+                $(this).removeClass("fa-eye-slash").addClass("fa-eye");
+                $(this).prev().attr("type", "text");
+            });
+
+            $(".password").on("click", ".fa-eye", function () {
+                $(this).removeClass("fa-eye").addClass("fa-eye-slash");
+                $(this).prev().attr("type", "password");
+            });
+
+            // 监听提交
+            form.on('submit(login)', function (data) {
+                // 采用ajax提交登录请求
+                var url = '/login';
+                $.post(url, data.field, function (result) {
+                    if (result.status === 200) { // 登录成功
+                        if (result.data === 1) {
+                            window.location.href = '/manage/index';
+                        } else if (result.data === 2) {
+                            window.location.href = '/system/index';
+                        } else if (result.data === 3) {
+                            window.location.href = "/system/supplierHomepage";
+                        }
+
+                    } else {
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                });
+                return false;
+            });
         });
-        return false;
-      });
-    });
-  })
+    })
 </script>
 </body>
+
 </html>
