@@ -162,41 +162,19 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             String planOutput = cells.get(SheetService.columnToIndex("K"));// 表单（输出内容）
             String planStartDateStr = cells.get(SheetService.columnToIndex("L"));// 计划开始时间
             String planEndDateStr = cells.get(SheetService.columnToIndex("M"));// 计划完成时间
-            //String roleName = cells.get(SheetService.columnToIndex("N"));// 岗位名称
             String userName = cells.get(SheetService.columnToIndex("N"));// 岗位人员姓名
-            //String applyDateStr = cells.get(SheetService.columnToIndex("Q"));// 申报日期
-            // 检查必填项
-            //2022/11/7，当事件类型为新增工作流式，事件清单序号可以为空
-               /* if (ObjectUtils.isEmpty(eventsId)) {
-                    setFailedContent(result, String.format("第%s行的事件清单表序号为空", j + 1));
-                    cell.setCellValue("事件清单表序号不能为空");
-                    continue;
-                }*/
 
+            // 检查必填项
             if (StringUtils.isEmpty(departmentName)) {
                 setFailedContent(result, String.format("第%s行的部门名称为空", j + 1));
                 cell.setCellValue("部门名称不能为空");
                 continue;
             }
-            /*if (StringUtils.isEmpty(roleName)) {
-                setFailedContent(result, String.format("第%s行的岗位名称为空", j + 1));
-                cell.setCellValue("岗位名称不能为空");
-                continue;
-            }*/
             if (StringUtils.isEmpty(userName)) {
                 setFailedContent(result, String.format("第%s行的员工名称为空", j + 1));
                 cell.setCellValue("员工名称不能为空");
                 continue;
             }
-            /*if (StringUtils.isEmpty(applyDateStr)) {
-                setFailedContent(result, String.format("第%s行的申报日期为空", j + 1));
-                cell.setCellValue("申报日期不能为空");
-                continue;
-            }*/
-
-            /*String applyDate = applyDateStr.trim().substring(0, 10);
-            String year = Arrays.asList(applyDate.split("-")).get(0);
-            String month = Arrays.asList(applyDate.split("-")).get(1);*/
             if (StringUtils.isEmpty(planStartDateStr)) {
                 setFailedContent(result, String.format("第%s行的计划开始时间为空", j + 1));
                 cell.setCellValue("计划开始时间不能为空");
@@ -209,13 +187,16 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 continue;
             }
             String planEndDate = planEndDateStr.trim().substring(0, 10);
+            // 新增工作流不能填有价值分
+            if (eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C) && !ObjectUtils.isEmpty(standardValue)) {
+                throw new ServiceException(String.format("第【%s】行的价值分不能填写值，因为它的事件类型为【新增工作流】", j + 1));
+            }
             // 数据校验
             if (!(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_B) || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_A) || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
                 setFailedContent(result, String.format("第%s行的事件类型填写错误", j + 1));
                 cell.setCellValue("事件类型填写错误");
                 continue;
             }
-            // 如果事件类型为新增工作流，设置字段isNewEvent为是
 
             // 构建实体类
             EntryCasPlanDetail entryCasPlanDetail = new EntryCasPlanDetail();
@@ -240,7 +221,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setPlanStartDate(LocalDate.parse(planStartDate));
             entryCasPlanDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
-            entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
+            if (!ObjectUtils.isEmpty(standardValue)) {
+                entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
+            }
             entryCasPlanDetail.setAttachmentId(attachment.getId());
             // 数据库不能为null的字段设置值
             if (!ObjectUtils.isEmpty(eventsId)) {
@@ -494,7 +477,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
-            queryWrapper.eq("userName",params.get("userNameRight"));
+            queryWrapper.eq("userName", params.get("userNameRight"));
         }
         return queryWrapper;
     }

@@ -141,7 +141,12 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
         int successNum = 0;
         // 检查事件岗位比重map
         Map<String, BigDecimal> checkProportionMap = new HashMap<>();
+        // 需要更新基础事件完成岗位配比标识的集合
         List<Long> updatedEventsIds = new ArrayList<>();
+        // 用来判断相同基础事件的生效日期可以相同，但数据库中不能存在的map
+        Map<Long, LocalDate> eventIdWithActivityMap = new HashMap<>();
+        // 存放relationRole的集合
+        List<EventsRelationRole> relationRoleList = new ArrayList<>();
         // 循环总行数(不读表头，从第2行开始读，索引从0开始，所以j=1)
         for (int j = 1; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> temp = new ArrayList<>();
@@ -305,8 +310,16 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             // 事件清单信息部门与填报部门校验
             // 查询事件清单
             EventList eventList = eventListMapper.selectById(eventsId);
-            Map<Long,LocalDate> eventIdWithActivityMap =new HashMap<>();// 用来判断相同基础事件的生效日期可以相同，但数据库中不能存在
-            eventIdWithActivityMap.put(eventsId,activeDate);
+            if (eventIdWithActivityMap.containsKey(eventsId)) {
+                // 如果基础事件的序号相同，则它们的生效日期也要相同
+                if (!eventIdWithActivityMap.get(eventsId).isEqual(activeDate)) {
+                    /*StringTool.setMsg(sb, String.format("第【%s】行序号为【%s】的事件清单的生效日期不一致，不能导入", j + 1, eventsId));
+                    cell.setCellValue(String.format("序号为【%s】的事件清单的生效日期不一致，不能导入", eventsId));
+                    continue;*/
+                    throw new ServiceException(String.format("序号为【%s】的事件清单的生效日期不一致，不能导入", eventsId));
+                }
+            }
+            eventIdWithActivityMap.put(eventsId, activeDate);
             if (ObjectUtils.isEmpty(eventList)) {
                 StringTool.setMsg(sb,
                         String.format("第【%s】行序号为【%s】的事件清单不存在，必须为【数值】", j + 1, eventsId));
@@ -326,9 +339,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             relationRoleCheckQueryWrapper.eq("eventsId", eventList.getId()).select("activeDate,id,eventsId");
             List<EventsRelationRole> checkDataList = eventsRelationRoleMapper.selectList(relationRoleCheckQueryWrapper);
             for (EventsRelationRole eventsRelationRole : checkDataList) {
-                if (eventIdWithActivityMap.containsKey(eventsId)){
-
-                }
                 if (activeDate.isEqual(eventsRelationRole.getActiveDate())) {
                     // 如果要导入数的生效日期在数据库中被查出来的话则不能导入
                     activeFlag = false;
@@ -338,11 +348,13 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             }
             if (!activeFlag) {
                 // activeFlag=false
-                StringTool.setMsg(sb, String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入",
+                /*StringTool.setMsg(sb, String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入",
                         j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
+                setFailedContent(result,String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入",j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
                 cell.setCellValue(String.format("序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入", eventsId,
                         activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
-                continue;
+                continue;*/
+                throw new ServiceException(String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入",j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
             }
             // endregion
 
@@ -417,14 +429,17 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventsRelationRole.setUpdatedAt(LocalDateTime.now());
             // endregion
 
-            // 无则更新，有则修改
-            eventsRelationRoleService.saveOrUpdate(eventsRelationRole);
+            // 写入更新
+            //eventsRelationRoleService.save(eventsRelationRole);
+            // 存入集合，用于读取循环数据完毕后批量写入数据库
+            relationRoleList.add(eventsRelationRole);
             updatedEventsIds.add(eventList.getId());
 
             cell.setCellValue("成功");
             successNum++;
         }
-
+        // 批量写入
+        eventsRelationRoleService.saveBatch(relationRoleList);
         // 如果updatedEventsIds为空则报错
         if (ObjectUtils.isEmpty(updatedEventsIds)) {
             setFailedContent(result, "导入的生效日期都存在，请更改后重新导入");
