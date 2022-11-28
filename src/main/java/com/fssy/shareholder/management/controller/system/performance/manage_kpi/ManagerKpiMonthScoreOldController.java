@@ -198,7 +198,45 @@ public class ManagerKpiMonthScoreOldController {
         if (!ObjectUtils.isEmpty(request.getParameter("companyList"))) {
             params.put("companyList", request.getParameter("companyList"));
         }
-
+        if (!ObjectUtils.isEmpty(request.getParameter("anomalyMark"))) {
+            params.put("anomalyMark", request.getParameter("anomalyMark"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal1"))) {
+            params.put("abnormal1", request.getParameter("abnormal1"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal2"))) {
+            params.put("abnormal2", request.getParameter("abnormal2"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal3"))) {
+            params.put("abnormal3", request.getParameter("abnormal3"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal4"))) {
+            params.put("abnormal4", request.getParameter("abnormal4"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal5"))) {
+            params.put("abnormal5", request.getParameter("abnormal5"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal6"))) {
+            params.put("abnormal6", request.getParameter("abnormal6"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal7"))) {
+            params.put("abnormal7", request.getParameter("abnormal7"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal8"))) {
+            params.put("abnormal8", request.getParameter("abnormal8"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal9"))) {
+            params.put("abnormal9", request.getParameter("abnormal9"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal10"))) {
+            params.put("abnormal10", request.getParameter("abnormal10"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal11"))) {
+            params.put("abnormal11", request.getParameter("abnormal11"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("abnormal12"))) {
+            params.put("abnormal12", request.getParameter("abnormal12"));
+        }
         return params;
     }
 }
