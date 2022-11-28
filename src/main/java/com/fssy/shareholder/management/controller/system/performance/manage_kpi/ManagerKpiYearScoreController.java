@@ -233,6 +233,27 @@ public class ManagerKpiYearScoreController {
         if (!ObjectUtils.isEmpty(request.getParameter("companyList"))) {
             params.put("companyList", request.getParameter("companyList"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("2017"))) {
+            params.put("2017", request.getParameter("2017"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("2018"))) {
+            params.put("2018", request.getParameter("2018"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("2019"))) {
+            params.put("2019", request.getParameter("2019"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("2020"))) {
+            params.put("2020", request.getParameter("2020"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("2021"))) {
+            params.put("2021", request.getParameter("2021"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("2022"))) {
+            params.put("2022", request.getParameter("2022"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("2023"))) {
+            params.put("2023", request.getParameter("2023"));
+        }
 
         return params;
     }
