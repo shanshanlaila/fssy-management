@@ -183,11 +183,16 @@
                         width: 120
                     },
                     {
-                        field: 'scoreAdjust',
-                        title: '人工调整分数',
-                        align: 'center',
-                        sort: true,
-                        width: 120
+                        field: 'scoreAdjust', title: '人工调整分数', width: 120,align: 'center',sort: true,
+                        templet: function (d) {
+                            if (d.anomalyMark === "1") {
+                                return "<span class=\"layui-badge\">"+d.scoreAdjust+"</span>";
+                            } else if (d.anomalyMark === "") {
+                                return d.scoreAdjust;
+                            } else {
+                                return "无对应状态";
+                            }
+                        }
                     },
                     {
                         field: 'businessScore',

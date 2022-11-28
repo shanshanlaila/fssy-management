@@ -155,102 +155,148 @@
                         width: 80
                     },
                     {
-                        field: 'month1',
-                        title: '1月',
-                        align: 'center',
-                        sort: true,
-                        event:'month1',
-                        width: 80
-                        // templet: '#herfFormalUrl1'
+                        field: 'month1', title: '1月', width: 80,align: 'center',sort: true,event:'month1',
+                        templet: function (d) {
+                            if (d.abnormal1 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month1+"</span>";
+                            } else if (d.abnormal1 === 0) {
+                                return d.month1;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month2',
-                        title: '2月',
-                        align: 'center',
-                        sort: true,
-                        event:'month2',
-                        width: 80
+                        field: 'month2', title: '2月', width: 80,align: 'center',sort: true,event:'month2',
+                        templet: function (d) {
+                            if (d.abnormal2 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month2+"</span>";
+                            } else if (d.abnormal2 === 0) {
+                                return d.month2;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month3',
-                        title: '3月',
-                        align: 'center',
-                        sort: true,
-                        event:'month3',
-                        width: 80
+                        field: 'month3', title: '3月', width: 80,align: 'center',sort: true,event:'month3',
+                        templet: function (d) {
+                            if (d.abnormal3 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month3+"</span>";
+                            } else if (d.abnormal3 === 0) {
+                                return d.month3;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month4',
-                        title: '4月',
-                        align: 'center',
-                        sort: true,
-                        event:'month4',
-                        width: 80
-                        // templet: '#herfFormalUrl4'
+                        field: 'month4', title: '4月', width: 80,align: 'center',sort: true,event:'month4',
+                        templet: function (d) {
+                            if (d.abnormal4 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month4+"</span>";
+                            } else if (d.abnormal4 === 0) {
+                                return d.month4;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month5',
-                        title: '5月',
-                        align: 'center',
-                        sort: true,
-                        event:'month5',
-                        width: 80
+                        field: 'month5', title: '5月', width: 80,align: 'center',sort: true,event:'month5',
+                        templet: function (d) {
+                            if (d.abnormal5 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month5+"</span>";
+                            } else if (d.abnormal5 === 0) {
+                                return d.month5;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month6',
-                        title: '6月',
-                        align: 'center',
-                        sort: true,
-                        event:'month6',
-                        width: 80
+                        field: 'month6', title: '6月', width: 80,align: 'center',sort: true,event:'month6',
+                        templet: function (d) {
+                            if (d.abnormal6 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month6+"</span>";
+                            } else if (d.abnormal6 === 0) {
+                                return d.month6;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month7',
-                        title: '7月',
-                        align: 'center',
-                        sort: true,
-                        event:'month7',
-                        width: 80
+                        field: 'month7', title: '7月', width: 80,align: 'center',sort: true,event:'month7',
+                        templet: function (d) {
+                            if (d.abnormal7 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month7+"</span>";
+                            } else if (d.abnormal7 === 0) {
+                                return d.month7;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month8',
-                        title: '8月',
-                        align: 'center',
-                        sort: true,
-                        event:'month8',
-                        width: 80
+                        field: 'month8', title: '8月', width: 80,align: 'center',sort: true,event:'month8',
+                        templet: function (d) {
+                            if (d.abnormal8 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month8+"</span>";
+                            } else if (d.abnormal8 === 0) {
+                                return d.month8;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month9',
-                        title: '9月',
-                        align: 'center',
-                        sort: true,
-                        event:'month9',
-                        width: 80
+                        field: 'month9', title: '9月', width: 80,align: 'center',sort: true,event:'month9',
+                        templet: function (d) {
+                            if (d.abnormal9 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month9+"</span>";
+                            } else if (d.abnormal9 === 0) {
+                                return d.month9;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month10',
-                        title: '10月',
-                        align: 'center',
-                        sort: true,
-                        event:'month10',
-                        width: 80
+                        field: 'month10', title: '10月', width: 80,align: 'center',sort: true,event:'month10',
+                        templet: function (d) {
+                            if (d.abnormal10 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month10+"</span>";
+                            } else if (d.abnormal10 === 0) {
+                                return d.month10;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month11',
-                        title: '11月',
-                        align: 'center',
-                        sort: true,
-                        event:'month11',
-                        width: 80
+                        field: 'month11', title: '11月', width: 80,align: 'center',sort: true,event:'month11',
+                        templet: function (d) {
+                            if (d.abnormal11 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month11+"</span>";
+                            } else if (d.abnormal11 === 0) {
+                                return d.month11;
+                            } else {
+                                return "";
+                            }
+                        }
                     },
                     {
-                        field: 'month12',
-                        title: '12月',
-                        align: 'center',
-                        sort: true,
-                        event:'month12',
-                        width: 80
+                        field: 'month12', title: '12月', width: 80,align: 'center',sort: true,event:'month12',
+                        templet: function (d) {
+                            if (d.abnormal12 === 1) {
+                                return "<span class=\"layui-badge\">"+d.month12+"</span>";
+                            } else if (d.abnormal12 === 0) {
+                                return d.month12;
+                            } else {
+                                return "";
+                            }
+                        }
                     }
                 ]
             ]
