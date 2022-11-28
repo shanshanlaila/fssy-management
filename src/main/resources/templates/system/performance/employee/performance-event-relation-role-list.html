@@ -85,6 +85,13 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="toolbar">
+                        <form class="layui-form layui-col-space5">
+                            <div class="layui-inline layui-show-xs-block">
+                                <span style="font-size: xx-small;color: grey">导入数据规范：1.相同基础事件的占比相加必须等于【1】 2.相同基础事件的生效日期必须相同  &nbsp;3.生效日期必须是之前没有导入成功过的日期</span>
+                            </div>
+                        </form>
+                    </script>
                 </div>
             </div>
         </div>
@@ -163,33 +170,35 @@
                 }, {
                     field: 'proportion',
                     title: '比重',
-                    width: 90
-                },{
+                    width: 90,
+                    style: 'cursor:pointer;background-color: pink;',
+                }, {
                     field: 'standardValue',
                     title: '事件标准价值',
                     width: 90
-                },{
+                }, {
                     field: 'delow',
                     title: '不合格价值',
                     width: 90
-                },{
+                }, {
                     field: 'middle',
                     title: '中价值',
                     width: 90
-                },{
+                }, {
                     field: 'fine',
                     title: '良价值',
                     width: 90
-                },{
+                }, {
                     field: 'excellent',
                     title: '优价值',
                     width: 90
                 },
                     {
-                    field: 'activeDate',
-                    title: '生效日期',
-                    width: 130
-                }, {
+                        field: 'activeDate',
+                        title: '生效日期',
+                        width: 130,
+                        style: 'cursor:pointer;background-color: pink;',
+                    }, {
                     field: 'year',
                     title: '编制年份',
                     width: 110
