@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -85,4 +86,11 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
      * @return
      */
     boolean SelectUpdate(EntryCasPlanDetail entryCasPlanDetail);
+
+    /**
+     * 单条填写履职计划
+     * @param entryCasPlanDetail 履职计划
+     * @return 填写成功
+     */
+    boolean saveOneCasPlanDetail(EntryCasPlanDetail entryCasPlanDetail,HttpServletRequest request);
 }

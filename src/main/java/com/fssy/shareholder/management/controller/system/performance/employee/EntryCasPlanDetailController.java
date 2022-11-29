@@ -607,4 +607,19 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         return "/system/performance/employee/plan/plan-create-event-list-form";
     }
+    /**
+     * 创建单条履职计划
+     *
+     * @param entryCasPlanDetail 履职计划
+     * @return 结果
+     */
+    @PostMapping("save")
+    @ResponseBody
+    public SysResult create(EntryCasPlanDetail entryCasPlanDetail, HttpServletRequest request) {
+        boolean result = entryCasPlanDetailService.saveOneCasPlanDetail(entryCasPlanDetail,request);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "创建失败");
+    }
 }

@@ -729,7 +729,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 entryCasReviewDetail.setArtifactualScore(actualAutoScore);
                 entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
             }
+            User user = GetTool.getUser();
             entryCasReviewDetail.setAuditNote(auditNote);
+            entryCasReviewDetail.setAuditId(user.getId());
+            entryCasReviewDetail.setAuditName(user.getName());
+            entryCasReviewDetail.setAuditDate(LocalDate.now());
             entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }
         return true;
