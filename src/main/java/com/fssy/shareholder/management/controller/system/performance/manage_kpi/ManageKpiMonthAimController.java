@@ -66,7 +66,7 @@ public class ManageKpiMonthAimController {
     @RequiredLog("经营管理月度项目指标管理")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/performance/manager_kpi/manage-kpi-month-aim/manage-kpi-month-aim-list";
+        return "system/performance/manager_kpi/manage-kpi-month-aim/manage-kpi-month-aim-list";
     }
 
     /**
@@ -121,7 +121,7 @@ public class ManageKpiMonthAimController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度目标数据"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/manage-kpi-month-aim/manage-kpi-month-aim-attachment-list";
+        return "system/performance/manager_kpi/manage-kpi-month-aim/manage-kpi-month-aim-attachment-list";
     }
 
     /**

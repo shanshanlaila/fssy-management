@@ -64,7 +64,7 @@ public class ViewManageMonthPerformanceController {
         Map<String, Object> params = new HashMap<>();
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
         model.addAttribute("companyNameList",companyNameList);
-        return "/system/performance/manager_kpi/view-manage-month-performance/view-manage-month-performance-list";
+        return "system/performance/manager_kpi/view-manage-month-performance/view-manage-month-performance-list";
     }
     /**
      * 返回经营指标 数据
@@ -260,7 +260,7 @@ public class ViewManageMonthPerformanceController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度目标数据"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/view-manage-month-performance/view-manage-month-aim-attachment-list";
+        return "system/performance/manager_kpi/view-manage-month-performance/view-manage-month-aim-attachment-list";
     }
     /**
      * 附件上传 （月度目标）
@@ -349,7 +349,7 @@ public class ViewManageMonthPerformanceController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度实绩项目"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/view-manage-month-performance/view-manage-month-performance-attachment-list";
+        return "system/performance/manager_kpi/view-manage-month-performance/view-manage-month-performance-attachment-list";
     }
     /**
      * 附件上传(月度实绩值）

@@ -49,7 +49,7 @@ public class ManagerKpiMonthScoreOldController {
         Map<String, Object> params = new HashMap<>();
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
         model.addAttribute("companyNameList",companyNameList);
-        return "/system/performance/manager_kpi/manager-kpi-month-score-old/manager-kpi-month-score-old-list";
+        return "system/performance/manager_kpi/manager-kpi-month-score-old/manager-kpi-month-score-old-list";
     }
     /**
      * 返回经理人绩效月度推移的表格

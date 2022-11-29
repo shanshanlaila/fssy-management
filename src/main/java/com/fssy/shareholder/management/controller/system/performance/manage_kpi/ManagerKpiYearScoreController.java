@@ -51,7 +51,7 @@ public class ManagerKpiYearScoreController {
         Map<String, Object> params = new HashMap<>();
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
         model.addAttribute("companyNameList",companyNameList);
-        return "/system/performance/manager_kpi/view-manager-kpi-year-score/view-manager-kpi-year-score-list";
+        return "system/performance/manager_kpi/view-manager-kpi-year-score/view-manager-kpi-year-score-list";
     }
     /**
      * 返回 经理人年度KPI分数数据表格
@@ -104,7 +104,7 @@ public class ManagerKpiYearScoreController {
         model.addAttribute("year", year);
         model.addAttribute("companyName", companyName);
         model.addAttribute("managerName", managerName);
-        return "/system/performance/manager_kpi/view-manager-kpi-year-score/view-manager-kpi-year-score-detail";
+        return "system/performance/manager_kpi/view-manager-kpi-year-score/view-manager-kpi-year-score-detail";
     }
 
     /**

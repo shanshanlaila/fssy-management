@@ -44,7 +44,7 @@ public class ManagerKpiScoreController {
     @RequiresPermissions("system:performance:manager_kpi:manager-month-score:index")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/performance/manager_kpi/manager-month-score/manager-month-score-list";
+        return "system/performance/manager_kpi/manager-month-score/manager-month-score-list";
     }
 
     /**
