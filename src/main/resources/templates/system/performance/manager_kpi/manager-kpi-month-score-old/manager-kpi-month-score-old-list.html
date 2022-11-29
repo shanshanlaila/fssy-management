@@ -311,7 +311,14 @@
             var url = '';
             for (var i = 1; i < 13; i++) {
                 if (obj.event === 'month' + i) {
-                    url = '/system/performance/manager_kpi/view-manager-kpi-month-score/search-detail?month=' + i + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName;
+                    let map = new Map(Object.entries(data))
+                    // console.log(map.get('month' + i));
+                    //点击空白区域不会进行页面下钻
+                    if(map.get('month' + i) == null){
+                        break;
+                    }else{
+                        url = '/system/performance/manager_kpi/view-manager-kpi-month-score/search-detail?month=' + i + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName;
+                    }
                     break;
                 }
             }
