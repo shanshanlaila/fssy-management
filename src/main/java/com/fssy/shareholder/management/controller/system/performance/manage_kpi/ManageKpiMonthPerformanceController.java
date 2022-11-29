@@ -67,7 +67,7 @@ public class ManageKpiMonthPerformanceController {
     @GetMapping("index1")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/performance/manager_kpi/manage-kpi-month-performance/manage-kpi-month-performance-list";
+        return "system/performance/manager_kpi/manage-kpi-month-performance/manage-kpi-month-performance-list";
     }
 
     /**
@@ -384,7 +384,7 @@ public class ManageKpiMonthPerformanceController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度实绩项目"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/manage-kpi-month-performance/manage-kpi-month-performance-attachment-list";
+        return "system/performance/manager_kpi/manage-kpi-month-performance/manage-kpi-month-performance-attachment-list";
     }
 
     /**

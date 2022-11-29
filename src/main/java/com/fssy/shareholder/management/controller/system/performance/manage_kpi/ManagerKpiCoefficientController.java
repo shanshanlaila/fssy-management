@@ -68,7 +68,7 @@ public class ManagerKpiCoefficientController {
         Map<String, Object> params = new HashMap<>();
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
         model.addAttribute("companyNameList",companyNameList);
-        return "/system/performance/manager_kpi/manager-kpi-coefficient/manager-kpi-coefficient-list";
+        return "system/performance/manager_kpi/manager-kpi-coefficient/manager-kpi-coefficient-list";
     }
     /**
      * 返回经理人项目难度系数管理数据
@@ -109,7 +109,7 @@ public class ManagerKpiCoefficientController {
         String id = request.getParameter("id");
         ManagerKpiCoefficient byId = managerKpiCoefficientService.getById(id);
         model.addAttribute("managerKpiCoefficient", byId);
-        return "/system/performance/manager_kpi/manager-kpi-coefficient/manager-kpi-coefficient-edit";
+        return "system/performance/manager_kpi/manager-kpi-coefficient/manager-kpi-coefficient-edit";
     }
 
     /**
@@ -183,7 +183,7 @@ public class ManagerKpiCoefficientController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经理人项目难度系数表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/manager-kpi-coefficient/manager-kpi-coefficient-attachment-list";
+        return "system/performance/manager_kpi/manager-kpi-coefficient/manager-kpi-coefficient-attachment-list";
     }
     /**
      * 附件上传

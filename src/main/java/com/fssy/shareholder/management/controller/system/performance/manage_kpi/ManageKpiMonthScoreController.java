@@ -45,7 +45,7 @@ public class ManageKpiMonthScoreController {
     @RequiredLog("经营管理月度项目分数管理")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/performance/manager_kpi/manage-kpi-month-score/manage-kpi-month-score-list";
+        return "system/performance/manager_kpi/manage-kpi-month-score/manage-kpi-month-score-list";
     }
 
     /**

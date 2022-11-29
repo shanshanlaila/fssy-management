@@ -60,7 +60,7 @@ public class ManageKpiLibController {
     @GetMapping("index1")
     public String managerIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/performance/manager_kpi/manage-kpi-lib/manage-kpi-lib-list";
+        return "system/performance/manager_kpi/manage-kpi-lib/manage-kpi-lib-list";
     }
 
     private Map<String, Object> getParams(HttpServletRequest request) {
@@ -166,7 +166,7 @@ public class ManageKpiLibController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理指标库"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/manage-kpi-lib/manage-kpi-lib-attachment-list";
+        return "system/performance/manager_kpi/manage-kpi-lib/manage-kpi-lib-attachment-list";
     }
 
     /**
@@ -273,7 +273,7 @@ public class ManageKpiLibController {
         params.put("id", id);
         ManageKpiLib manageKpiLib = manageKpiLibService.findStudentsDataByParams(params).get(0);
         model.addAttribute("manageKpiLib", manageKpiLib);
-        return "/system/performance/manager_kpi/manage-kpi-lib/manage-kpi-lib-edit";
+        return "system/performance/manager_kpi/manage-kpi-lib/manage-kpi-lib-edit";
     }
     /**
      * 更新经营管理指标库信息

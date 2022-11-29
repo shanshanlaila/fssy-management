@@ -77,7 +77,7 @@ public class ViewManagerKpiMonthController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经理人KPI分数表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-attachment-list";
+        return "system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-attachment-list";
     }
 
     /**
@@ -140,7 +140,7 @@ public class ViewManagerKpiMonthController {
     @RequiredLog("经理人月度KPI分数")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-list";
+        return "system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-list";
     }
 
     /**
@@ -231,7 +231,7 @@ public class ViewManagerKpiMonthController {
         params.put("year", year);
         Map<String, Object> managerKpiScoreOld = managerKpiScoreService.findManagerKpiScoreOldDataByParams(params).get(0);
         model.addAttribute("managerKpiScoreOld", managerKpiScoreOld);
-        return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-edit";
+        return "system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-edit";
     }
 
     /**
@@ -279,7 +279,7 @@ public class ViewManagerKpiMonthController {
         params.put("managerName",managerName);
         Map<String, Object> managerKpiScoreOld = managerKpiScoreService.findManagerKpiScoreOldDataByParams(params).get(0);
         model.addAttribute("managerKpiScoreOld", managerKpiScoreOld);
-        return "/system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-detail";
+        return "system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-detail";
     }
 
     /**

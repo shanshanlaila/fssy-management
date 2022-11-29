@@ -67,7 +67,7 @@ public class ViewManagerKpiYearController {
         Map<String, Object> params = new HashMap<>();
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
         model.addAttribute("companyNameList",companyNameList);
-        return "/system/performance/manager_kpi/view-manager-kpi-year/view-manager-kpi-year-list";
+        return "system/performance/manager_kpi/view-manager-kpi-year/view-manager-kpi-year-list";
     }
     /**
      * 返回经理人年度KPI管理数据
@@ -108,7 +108,7 @@ public class ViewManagerKpiYearController {
         String id = request.getParameter("id");
         ViewManagerKpiYear kpiYearServiceById = viewManagerKpiYearService.getById(id);
         model.addAttribute("kpiYearServiceById", kpiYearServiceById);
-        return "/system/performance/manager_kpi/view-manager-kpi-year/view-manager-kpi-year-edit";
+        return "system/performance/manager_kpi/view-manager-kpi-year/view-manager-kpi-year-edit";
     }
 
     /**
@@ -276,7 +276,7 @@ public class ViewManagerKpiYearController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经理人年度KPI"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/view-manager-kpi-year/view-manager-kpi-year-attachment-list";
+        return "system/performance/manager_kpi/view-manager-kpi-year/view-manager-kpi-year-attachment-list";
     }
     /**
      * 附件上传

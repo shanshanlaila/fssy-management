@@ -66,7 +66,7 @@ public class ViewManageYearMonthScoreController {
     @RequiredLog("经营管理月度项目分数管理")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-list";
+        return "system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-list";
     }
 
     /**
@@ -141,7 +141,7 @@ public class ViewManageYearMonthScoreController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "激励约束项目评分表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-attachment-list";
+        return "system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-attachment-list";
     }
 
     /**
@@ -263,7 +263,7 @@ public class ViewManageYearMonthScoreController {
         String id = request.getParameter("id");
         ManageKpiMonthAim manageKpiMonthAim = manageKpiMonthAimService.getById(id);
         model.addAttribute("map", manageKpiMonthAim);
-        return "/system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-edit";
+        return "system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-edit";
     }
 
     /**
