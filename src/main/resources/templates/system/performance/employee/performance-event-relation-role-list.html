@@ -85,6 +85,10 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <!--行工具栏-->
+                    <script type="text/html" id="tool">
+                        <a lay-event="createCasPlan" title="单条填写履职计划"><i class="layui-icon">&#xe608;</i></a>
+                    </script>
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
@@ -146,83 +150,108 @@
                         title: '编制日期',
                         fixed: 'left',
                         width: 130
-                    }, {
-                    field: 'workEvents',
-                    title: '工作事件',
-                    fixed: 'left',
-                    width: 150
-                }, {
-                    field: 'userName',
-                    title: '用户名称',
-                    width: 120
-                }, {
-                    field: 'roleName',
-                    title: '岗位名称',
-                    width: 100
-                }, {
-                    field: 'departmentName',
-                    title: '部门名称',
-                    width: 140
-                }, {
-                    field: 'isMainOrNext',
-                    title: '主担/次担',
-                    width: 110
-                }, {
-                    field: 'proportion',
-                    title: '比重',
-                    width: 90,
-                    style: 'cursor:pointer;background-color: pink;',
-                }, {
-                    field: 'standardValue',
-                    title: '事件标准价值',
-                    width: 90
-                }, {
-                    field: 'delow',
-                    title: '不合格价值',
-                    width: 90
-                }, {
-                    field: 'middle',
-                    title: '中价值',
-                    width: 90
-                }, {
-                    field: 'fine',
-                    title: '良价值',
-                    width: 90
-                }, {
-                    field: 'excellent',
-                    title: '优价值',
-                    width: 90
-                },
+                    },
+                    {
+                        field: 'workEvents',
+                        title: '工作事件',
+                        fixed: 'left',
+                        width: 150
+                    },
+                    {
+                        field: 'userName',
+                        title: '用户名称',
+                        width: 120
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位名称',
+                        width: 100
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 140
+                    },
+                    {
+                        field: 'isMainOrNext',
+                        title: '主担/次担',
+                        width: 110
+                    },
+                    {
+                        field: 'proportion',
+                        title: '比重',
+                        width: 90,
+                        style: 'cursor:pointer;background-color: pink;',
+                    },
+                    {
+                        field: 'standardValue',
+                        title: '事件标准价值',
+                        width: 90
+                    },
+                    {
+                        field: 'delow',
+                        title: '不合格价值',
+                        width: 90
+                    },
+                    {
+                        field: 'middle',
+                        title: '中价值',
+                        width: 90
+                    },
+                    {
+                        field: 'fine',
+                        title: '良价值',
+                        width: 90
+                    },
+                    {
+                        field: 'excellent',
+                        title: '优价值',
+                        width: 90
+                    },
                     {
                         field: 'activeDate',
                         title: '生效日期',
                         width: 130,
                         style: 'cursor:pointer;background-color: pink;',
-                    }, {
-                    field: 'year',
-                    title: '编制年份',
-                    width: 110
-                }, {
-                    field: 'month',
-                    title: '编制月份',
-                    width: 110
-                }, {
-                    field: 'jobName',
-                    title: '工作职责',
-                    width: 130
-                }, {
-                    field: 'eventsFirstType',
-                    title: '事件类型',
-                    width: 130
-                }, {
-                    field: 'roleId',
-                    title: '岗位序号',
-                    width: 80,
-                }, {
-                    field: 'eventsId',
-                    title: '事件序号',
-                    width: 80
-                }
+                    },
+                    {
+                        field: 'year',
+                        title: '编制年份',
+                        width: 110
+                    },
+                    {
+                        field: 'month',
+                        title: '编制月份',
+                        width: 110
+                    },
+                    {
+                        field: 'jobName',
+                        title: '工作职责',
+                        width: 130
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 130
+                    },
+                    {
+                        field: 'roleId',
+                        title: '岗位序号',
+                        width: 80,
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '事件序号',
+                        width: 80
+                    },
+                    {
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    },
+
                 ]
             ]
         });
@@ -261,6 +290,23 @@
             layer.msg("正在导出事件列表，请稍候");
             window.open(url, true);
             return false;
+        });
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'createCasPlan') { // 填写履职回顾
+                layer.open({
+                    type: 2,
+                    title: '序号为' + data.id + '的履职回顾填写',
+                    area:
+                        [
+                            $(window).width() * 0.9 + 'px',
+                            $(window).height() - 50 + 'px'
+                        ],
+                    content: '/system/performance/employee/events-relation-role/createCasPlan/' + data.id,
+                    maxmin: true,
+                    scrollbar: true
+                });
+            }
         });
 
         // 部门查询下拉列表

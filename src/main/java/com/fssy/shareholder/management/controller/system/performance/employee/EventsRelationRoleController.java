@@ -4,12 +4,13 @@
  */
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
+import com.fssy.shareholder.management.service.manage.department.DepartmentService;
+import com.fssy.shareholder.management.service.manage.role.RoleService;
+import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
-import com.fssy.shareholder.management.service.manage.department.DepartmentService;
-import com.fssy.shareholder.management.service.manage.role.RoleService;
-import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * <p>
@@ -305,5 +304,17 @@ public class EventsRelationRoleController
 			throw new ServiceException("未查出数据");
 		}
 		sheetOutputService.exportNum("履职管控表", relationRoleLists, fieldMap, response, strList, null);
+	}
+	/**
+	 * 展示新增单条履职计划页面
+	 *
+	 * @param id 基础事件id
+	 * @return 展示页面
+	 */
+	@GetMapping("createCasPlan/{id}")
+	public String showCreateCasPlan(@PathVariable String id, Model model) {
+		EventsRelationRole eventsRelationRole = eventsRelationRoleService.getById(id);
+		model.addAttribute("eventsRelationRole", eventsRelationRole);//传数据到前端去
+		return "system/performance/employee/events-relation-role-creatCasPlan";
 	}
 }
