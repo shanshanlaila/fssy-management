@@ -39,11 +39,11 @@ public class SsoKeyController {
     private SsoKeyService ssoKeyService;
 
     @RequiredLog("单点登录")
-    @RequiresPermissions("system:sso-key:index")
+    @RequiresPermissions("system:sso:index")
     @GetMapping("index")
     public String ssoKeyIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/sso/sso-key-list";
+        return "system/sso/sso-key-list";
     }
 
     /**
