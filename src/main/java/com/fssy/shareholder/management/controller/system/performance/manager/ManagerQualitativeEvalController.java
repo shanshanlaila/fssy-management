@@ -62,7 +62,7 @@ public class ManagerQualitativeEvalController {
     @RequiredLog("总经理定性评价")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "/system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-list";
+        return "system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-list";
     }
 
     /**
@@ -164,7 +164,7 @@ public class ManagerQualitativeEvalController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "总经理定性评价表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "/system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-attachment-list";
+        return "system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-attachment-list";
     }
 
     /**
@@ -266,7 +266,7 @@ public class ManagerQualitativeEvalController {
         params.put("year", year);
         Map<String, Object> managerQualitativeEval = managerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params).get(0);
         model.addAttribute("managerQualitativeEval", managerQualitativeEval);
-        return "/system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-edit";
+        return "system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-edit";
     }
 
     /**
