@@ -1,29 +1,29 @@
-package com.fssy.shareholder.management.pojo.system.performance.manage_kpi;
+package com.fssy.shareholder.management.pojo.system.performance.manager;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-
+import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * <p>
- * 经理人绩效分数表 实体类
+ * **	经理人绩效汇总评分表  实体类
  * </p>
  *
  * @author Shizn
- * @since 2022-10-31
+ * @since 2022-11-30
  */
 @Getter
 @Setter
-@TableName("bs_manager_kpi_score")
-public class ManagerKpiScore extends BaseModel {
+@TableName("bs_hr_manager_performance_eval")
+public class HrManagerPerformanceEval extends BaseModel {
 
-    private static final long serialVersionUID = 5487167079908951966L;
+    private static final long serialVersionUID = 9211249107741018013L;
 
     /**
      * 序号
@@ -86,12 +86,6 @@ public class ManagerKpiScore extends BaseModel {
     private String position;
 
     /**
-     * 月份
-     */
-    @TableField("month")
-    private Integer month;
-
-    /**
      * 季度
      */
     @TableField("quarter")
@@ -110,58 +104,88 @@ public class ManagerKpiScore extends BaseModel {
     private BigDecimal scoreAdjust;
 
     /**
-     * 重点KPI分数(副职)
-     */
-    @TableField("kpiScoreAdjust")
-    private BigDecimal kpiScoreAdjust;
-
-    /**
-     * 经营绩效分数(正职)
-     */
-    @TableField("businessScore")
-    private BigDecimal businessScore;
-
-    /**
-     * 激励约束分数
-     */
-    @TableField("incentiveScore")
-    private BigDecimal incentiveScore;
-
-    /**
-     * 难度系数
-     */
-    @TableField("difficultyCoefficient")
-    private BigDecimal difficultyCoefficient;
-
-    /**
-     * 绩效考核系数
-     */
-    @TableField("incentiveCoefficient")
-    private BigDecimal incentiveCoefficient;
-
-    /**
-     * 总经理经营绩效分数(不含激励约束)
-     */
-    @TableField("generalManagerScore")
-    private BigDecimal generalManagerScore;
-
-    /**
      * 企业名称缩写
      */
     @TableField("companyNameShort")
     private String companyNameShort;
 
     /**
-     * 重点KPI分数(副职)
+     * 定量评价分数
      */
     @TableField("kpiScore")
     private BigDecimal kpiScore;
 
     /**
-     * 年度目标项目ID：建立与年度关联
+     * 定性评价分数
      */
-    @TableField("manageKpiYearId")
-    private Integer manageKpiYearId;
+    @TableField("qualitativeScore")
+    private Double qualitativeScore;
+
+    /**
+     * 优点分析
+     */
+    @TableField("advantageAnalyze")
+    private String advantageAnalyze;
+
+    /**
+     * 现况分析
+     */
+    @TableField("disadvantageAnalyze")
+    private String disadvantageAnalyze;
+
+    /**
+     * 风险描述
+     */
+    @TableField("riskDesc")
+    private String riskDesc;
+
+    /**
+     * 责任部门
+     */
+    @TableField("respDepartment")
+    private String respDepartment;
+
+    /**
+     * 集团改善措施
+     */
+    @TableField("groupImproveAction")
+    private String groupImproveAction;
+
+    /**
+     * 定量评价月份
+     */
+    @TableField("kpiScoreMonth")
+    private Integer kpiScoreMonth;
+
+    /**
+     * 定性、定量评价占比id
+     */
+    @TableField("evalStdId")
+    private Integer evalStdId;
+
+    /**
+     * 经理人月份KPI绩效分数
+     */
+    @TableField("kpiScoreId")
+    private Integer kpiScoreId;
+
+    /**
+     * 定性评价得分id
+     */
+    @TableField("qualitativeEvalId")
+    private Integer qualitativeEvalId;
+
+    /**
+     * 定量评价占比	
+     */
+    @TableField("kpiScoreR")
+    private BigDecimal kpiScoreR;
+
+    /**
+     * 定性评价占比
+     */
+    @TableField("qualitativeScoreR")
+    private Double qualitativeScoreR;
 
 
 }

@@ -90,7 +90,7 @@ public class ViewHrKpiScoreQualitative extends BaseModel {
     private String companyNameShort;
 
     /**
-     * 人工调整分数
+     * KPI人工调整分数
      */
     @TableField("scoreAdjustKpi")
     private BigDecimal scoreAdjustKpi;
@@ -102,27 +102,34 @@ public class ViewHrKpiScoreQualitative extends BaseModel {
     private Double qualitativeScore;
 
     /**
+     * 定量绩效分数（KPI人工调整分数）
+     */
+    @TableField("kpiScore")
+    private BigDecimal kpiScore;
+    /**
      * 定量评价占比	
      */
     @TableField("kpiScoreR")
     private BigDecimal kpiScoreR;
 
     /**
-     * 系统生成分数
+     * 定性评价占比
+     */
+    @TableField("qualitativeScoreR")
+    private BigDecimal qualitativeScoreR;
+
+    /**
+     * 总绩效系统生成分数
      */
     @TableField("scoreAuto")
     private BigDecimal scoreAuto;
     /**
-     * 人工调整分数
+     * 总绩效人工调整分数
      */
     @TableField("scoreAdjust")
     private BigDecimal scoreAdjust;
 
-    /**
-     * 定量绩效分数
-     */
-    @TableField("kpiScore")
-    private BigDecimal kpiScore;
+
 
 
 }

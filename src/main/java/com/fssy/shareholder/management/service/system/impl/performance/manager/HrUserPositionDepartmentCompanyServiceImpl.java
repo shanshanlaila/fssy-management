@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,19 +29,24 @@ public class HrUserPositionDepartmentCompanyServiceImpl extends ServiceImpl<HrUs
     @Override
     public Page<HrUserPositionDepartmentCompany> findHrUserPositionDepartmentCompanyDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<HrUserPositionDepartmentCompany> queryWrapper = getQueryWrapper(params);
+        queryWrapper.eq("status","在职").in("managerType","企业总经理","企业分管经理人");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<HrUserPositionDepartmentCompany> myPage = new Page<>(page, limit);
         return hrUserPositionDepartmentCompanyMapper.selectPage(myPage, queryWrapper);
-
     }
+
+    @Override
+    public List<HrUserPositionDepartmentCompany> findHrUserPositionDepartmentCompany() {
+        QueryWrapper<HrUserPositionDepartmentCompany> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status","在职").in("managerType","企业总经理","企业分管经理人");
+        return hrUserPositionDepartmentCompanyMapper.selectList(queryWrapper);
+    }
+
     private QueryWrapper<HrUserPositionDepartmentCompany> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<HrUserPositionDepartmentCompany> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("id")) {
             queryWrapper.eq("id", params.get("id"));
-        }
-        if (params.containsKey("select")) {
-            queryWrapper.select((String) params.get("select"));
         }
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
@@ -50,12 +56,6 @@ public class HrUserPositionDepartmentCompanyServiceImpl extends ServiceImpl<HrUs
         }
         if (params.containsKey("position")) {
             queryWrapper.eq("position", params.get("position"));
-        }
-        if (params.containsKey("year")) {
-            queryWrapper.eq("year", params.get("year"));
-        }
-        if (params.containsKey("month")) {
-            queryWrapper.eq("month", params.get("month"));
         }
         if (params.containsKey("status")) {
             queryWrapper.eq("status", params.get("status"));

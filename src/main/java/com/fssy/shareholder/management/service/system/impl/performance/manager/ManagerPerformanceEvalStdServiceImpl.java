@@ -39,7 +39,9 @@ public class ManagerPerformanceEvalStdServiceImpl extends ServiceImpl<ManagerPer
 
     @Override
     public List<ManagerPerformanceEvalStd> findManagerPerformanceEvalStdDataByParams(Map<String, Object> params) {
-        return null;
+        QueryWrapper<ManagerPerformanceEvalStd> queryWrapper = getQueryWrapper(params);
+        List<ManagerPerformanceEvalStd> managerPerformanceEvalStds = managerPerformanceEvalStdMapper.selectList(queryWrapper);
+        return managerPerformanceEvalStds;
     }
 
     @Override
