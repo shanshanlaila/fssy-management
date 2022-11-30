@@ -65,7 +65,7 @@ public class ManageKpiLibController {
 
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
-        //车型系列表主键查询
+        //主键查询
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
             params.put("id", request.getParameter("id"));
         }
@@ -119,7 +119,7 @@ public class ManageKpiLibController {
      */
     @GetMapping("getObjects")
     @ResponseBody
-    public Map<String, Object> getVehicleSeriesDatas(HttpServletRequest request) {
+    public Map<String, Object> getManageKpiLibDatas(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> params = getParams(request);
         // 获取limit和page
