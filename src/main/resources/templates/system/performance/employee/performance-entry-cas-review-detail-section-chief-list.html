@@ -401,19 +401,21 @@
             layer.confirm('确定审核吗？', {icon: 3, title: '提示'}, function (index) {
                 // 履职回顾id列表
                 var entryReviewDetailIds = [];
+                var auditNotes = [];
 
                 data.forEach(function (item) {
                     entryReviewDetailIds.push(item.id);
+                    auditNotes.push(item.auditNote);
                 });
                 layer.load();
                 $.ajax({
                     type: 'POST',
                     url: '/system/entry-cas-review-detail/sectionBatchAudit',
                     data: {
+                        'auditNotes': auditNotes,
                         'entryReviewDetailIds': entryReviewDetailIds,
                         'chargeTransactionEvaluateLevel': $('#chargeTransactionEvaluateLevel').find("option:selected").val(),
                         'chargeTransactionBelowType': $('#chargeTransactionBelowType').find("option:selected").val(),
-
                     },
                     success: function (result) {
                         layer.closeAll();

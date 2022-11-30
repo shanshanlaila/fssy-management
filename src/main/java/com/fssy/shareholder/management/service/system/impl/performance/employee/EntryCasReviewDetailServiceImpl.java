@@ -316,16 +316,14 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
             // 只能提交 待提交审核 状态的事件清单
             if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
-                LambdaUpdateWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-                if (entryCasReviewDetail.getEventsFirstType().equals("事务类")) {
+                if (entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)) {
+                    // 事务类，提交给科长审核
                     entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG);
-                    entryCasReviewDetailLambdaUpdateWrapper.eq(EntryCasReviewDetail::getId, entryCasReviewDetail.getId());
-                    entryCasReviewDetailMapper.update(entryCasReviewDetail, entryCasReviewDetailLambdaUpdateWrapper);
                 } else {
+                    // 非事务类 和 新增工作流 交给部长审核
                     entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER);
-                    entryCasReviewDetailLambdaUpdateWrapper.eq(EntryCasReviewDetail::getId, entryCasReviewDetail.getId());
-                    entryCasReviewDetailMapper.update(entryCasReviewDetail, entryCasReviewDetailLambdaUpdateWrapper);
                 }
+                entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
             } else return false;
         }
         return true;
@@ -493,10 +491,18 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue("流程（工作事件）不能为空");
                 continue;
             }
-            if (ObjectUtils.isEmpty(standardValue)) {
-                setFailedContent(result, String.format("第%s行的事件价值标准分为空", j + 1));
-                cell.setCellValue("事件价值标准分不能为空");
-                continue;
+            // ‘新增工作流’ 价值分只能为空
+            if (eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+                if (!ObjectUtils.isEmpty(standardValue)) {
+                    throw new ServiceException(String.format("第%s行的事务类型【新增工作流】价值分只能为空", j + 1));
+                }
+            }
+            if (!eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+                if (ObjectUtils.isEmpty(standardValue)) {
+                    setFailedContent(result, String.format("第%s行的事件标准价值分为空", j + 1));
+                    cell.setCellValue("事件标准价值分不能为空");
+                    continue;
+                }
             }
             if (ObjectUtils.isEmpty(departmentName)) {
                 setFailedContent(result, String.format("第%s行的部门名称为空", j + 1));
@@ -597,7 +603,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setEventsFirstType(eventsFirstType);
             entryCasReviewDetail.setJobName(jobName);
             entryCasReviewDetail.setWorkEvents(workEvents);
-            entryCasReviewDetail.setStandardValue(new BigDecimal(standardValue));
+            if (!eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+                entryCasReviewDetail.setStandardValue(new BigDecimal(standardValue));
+            }
             entryCasReviewDetail.setDepartmentName(departmentName);
             entryCasReviewDetail.setRoleName(roleName);
             entryCasReviewDetail.setUserName(userName);
@@ -610,7 +618,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasReviewDetail.setActualCompleteDate(LocalDate.parse(actualCompleteDate));
             entryCasReviewDetail.setCompleteDesc(completeDesc);
-            entryCasReviewDetail.setIsNewEvent(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)?PerformanceConstant.YES:PerformanceConstant.NO);
+            entryCasReviewDetail.setIsNewEvent(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C) ? PerformanceConstant.YES : PerformanceConstant.NO);
             // 查询部门id
             LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
             departmentLambdaQueryWrapper.eq(Department::getDepartmentName, departmentName);
@@ -711,7 +719,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
      * @return
      */
     @Override
-    public boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview,List<String> auditNotes) {
+    public boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
         for (int i = 0; i < entryCasReviewDetails.size(); i++) {
             String auditNote = auditNotes.get(i);
@@ -749,10 +757,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
      * @return
      */
     @Override
-    public boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType,List<String> auditNotes) {
+    public boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
         for (int i = 0; i < entryCasReviewDetails.size(); i++) {
-            String auditNote = auditNotes.get(i);
+            String auditNote = null;
+            if (!ObjectUtils.isEmpty(auditNotes)) {
+                auditNote = auditNotes.get(i);
+            }
             EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetails.get(i);
             // 当事务评价等级为合格，事务类评价不同类型就取值为空，因为事务类评价不同类型是针对事务类评价等级为不合格时的情况。
             if (chargeTransactionEvaluateLevel.equals(PerformanceConstant.QUALIFIED)) {

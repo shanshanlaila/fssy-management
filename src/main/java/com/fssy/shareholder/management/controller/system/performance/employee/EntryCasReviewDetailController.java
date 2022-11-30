@@ -54,7 +54,7 @@ public class EntryCasReviewDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-entry-cas-review-detail-list";
+        return "system/performance/employee/performance-entry-cas-review-detail-list";
     }
 
     /**
@@ -320,7 +320,7 @@ public class EntryCasReviewDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-entry-cas-review-detail-minister-list";
+        return "system/performance/employee/performance-entry-cas-review-detail-minister-list";
     }
 
     /**
@@ -339,7 +339,7 @@ public class EntryCasReviewDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-entry-cas-review-detail-section-chief-list";
+        return "system/performance/employee/performance-entry-cas-review-detail-section-chief-list";
     }
 
     /**
@@ -356,7 +356,7 @@ public class EntryCasReviewDetailController {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
-        return "/system/performance/employee/performance-entry-cas-review-detail-minister-edit";
+        return "system/performance/employee/performance-entry-cas-review-detail-minister-edit";
     }
 
     /**
@@ -372,7 +372,7 @@ public class EntryCasReviewDetailController {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
-        return "/system/performance/employee/performance-entry-cas-review-detail-section-chief-edit";
+        return "system/performance/employee/performance-entry-cas-review-detail-section-chief-edit";
     }
 
     /**
@@ -494,7 +494,7 @@ public class EntryCasReviewDetailController {
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);
 
-        return "/system/performance/employee/entry-cas-review-detail-create-new";
+        return "system/performance/employee/entry-cas-review-detail-create-new";
     }
 
     @GetMapping("matchReview")
@@ -505,7 +505,7 @@ public class EntryCasReviewDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);
-        return "/system/performance/employee/event-relation-role-choose-list";
+        return "system/performance/employee/event-relation-role-choose-list";
     }
 
 
