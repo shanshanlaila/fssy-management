@@ -5,6 +5,7 @@ import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.Manage
 import com.fssy.shareholder.management.pojo.system.performance.manager.HrUserPositionDepartmentCompany;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,4 +24,12 @@ public interface HrUserPositionDepartmentCompanyService extends IService<HrUserP
      * @return 分页数据
      */
     Page<HrUserPositionDepartmentCompany> findHrUserPositionDepartmentCompanyDataListPerPageByParams(Map<String, Object> params);
+
+    /**
+     * 查询指定的数据
+     * @return
+     */
+    List<HrUserPositionDepartmentCompany> findHrUserPositionDepartmentCompany();
+
+
 }
