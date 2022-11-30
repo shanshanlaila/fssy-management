@@ -63,7 +63,7 @@ public class EventListController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-event-list";
+        return "system/performance/employee/performance-event-list";
     }
 
     /**
@@ -79,7 +79,7 @@ public class EventListController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-event-manage-list";
+        return "system/performance/employee/performance-event-manage-list";
     }
 
     /**
@@ -337,7 +337,7 @@ public class EventListController {
             throw new ServiceException("不能操作其他部门的事件");
         }
         model.addAttribute("eventList", eventList);//发送数据到前端，eventList对应
-        return "/system/performance/events-list-edit";
+        return "system/performance/events-list-edit";
     }
 
     /**
@@ -384,7 +384,7 @@ public class EventListController {
         String id = request.getParameter("id");
         EventList eventList = eventListService.getById(Long.valueOf(id));
         model.addAttribute("eventList", eventList);//发送数据到前端，eventList对应
-        return "/system/performance/employee/performance-event-manage-edit";
+        return "system/performance/employee/performance-event-manage-edit";
     }
 
     /**
@@ -463,7 +463,7 @@ public class EventListController {
         model.addAttribute("roleNameList", roleNameList);//传到前端去
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
-        return "/system/performance/employee/entry-cas-new-plan-detail-match-event-list";
+        return "system/performance/employee/entry-cas-new-plan-detail-match-event-list";
     }
 
     /**
@@ -506,7 +506,7 @@ public class EventListController {
     public String details(@PathVariable Long id, Model model) {
         EventList eventList = eventListService.getById(id);
         model.addAttribute("eventList", eventList);
-        return "/system/performance/employee/events-list-details";
+        return "system/performance/employee/events-list-details";
     }
 
     /**

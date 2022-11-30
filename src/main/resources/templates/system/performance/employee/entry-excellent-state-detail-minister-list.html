@@ -311,7 +311,7 @@
             ]
         });
         form.on('submit(retreat)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
+            var checkStatus = table.checkStatus(dataTable.config.id);
                 data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
@@ -321,7 +321,7 @@
             let msg = "";
             var excellentStateDetailIds = [];
             data.forEach(function (item) {
-                if (item.status == 5) {
+                if (item.status === 5) {
                     msg = msg ? msg + ',' + item.noticeNo : item.noticeNo;
                     flag = true;
                 }

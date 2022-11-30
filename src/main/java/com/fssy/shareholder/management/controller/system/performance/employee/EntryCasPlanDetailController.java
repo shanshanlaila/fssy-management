@@ -77,7 +77,7 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-entry-cas-plan-detail-list";
+        return "system/performance/employee/performance-entry-cas-plan-detail-list";
     }
 
     /**
@@ -438,7 +438,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("roleNameList", roleNameList);//传到前端去
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName",departmentRoleByUser.getDepartmentName());
-        return "/system/performance/employee/performance-entry-cas-plan-detail-minister-list";
+        return "system/performance/employee/performance-entry-cas-plan-detail-minister-list";
     }
 
     @GetMapping("index1")
@@ -451,7 +451,7 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
+        return "system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
     }
 
     /**
@@ -464,7 +464,7 @@ public class EntryCasPlanDetailController {
     public String showCreateReview(@PathVariable String id, Model model) {
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
-        return "/system/performance/employee/entry-cas-plan-detail-createReview";
+        return "system/performance/employee/entry-cas-plan-detail-createReview";
     }
 
     @GetMapping("HRIndex")
@@ -477,7 +477,7 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-entry-cas-plan-detail-HR-list";
+        return "system/performance/employee/performance-entry-cas-plan-detail-HR-list";
     }
 
     /**
@@ -508,7 +508,7 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/performance-entry-cas-plan-detail-select-list";
+        return "system/performance/employee/performance-entry-cas-plan-detail-select-list";
     }
 
     /**
@@ -525,7 +525,7 @@ public class EntryCasPlanDetailController {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
-        return "/system/performance/employee/performance-entry-cas-plan-detail-select-edit";
+        return "system/performance/employee/performance-entry-cas-plan-detail-select-edit";
     }
 
     /**
@@ -552,7 +552,7 @@ public class EntryCasPlanDetailController {
     @GetMapping("AssociateEvents/{id}")
     public String AssociateEvents(@PathVariable String id, Model model) {
         model.addAttribute("planId", id);
-        return "/system/performance/employee/entry-cas-new-plan-detail";
+        return "system/performance/employee/entry-cas-new-plan-detail";
     }
 
     /**
@@ -590,7 +590,7 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/plan/entry-cas-plan-detail-create-event-list";
+        return "system/performance/employee/plan/entry-cas-plan-detail-create-event-list";
     }
 
     /**
@@ -605,7 +605,7 @@ public class EntryCasPlanDetailController {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
-        return "/system/performance/employee/plan/plan-create-event-list-form";
+        return "system/performance/employee/plan/plan-create-event-list-form";
     }
     /**
      * 创建单条履职计划

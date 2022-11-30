@@ -356,33 +356,33 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     /**
      * 经营管理部主管撤销审核评优材料
      *
-     * @param excellentStateDetailIds 履职回顾的Ids
+     * @param excellentStateDetailIds 需要评优履职回顾的Ids
      * @return
      */
     @Override
     public boolean MinisterRetreat(List<String> excellentStateDetailIds) {
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE)
-                    ||entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
-                throw new ServiceException("不能撤销待绩效科复核状态材料");
+            QueryWrapper<EntryCasReviewDetail> entryCasReviewDetailQueryWrapper = new QueryWrapper<>();
+            entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
+            List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
+            if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
+                throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
             }
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE)
+                    || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
+                throw new ServiceException("此数据为【待审核】的数据，不能撤销审核");
+            }
+            // 只能撤销完结状态下的履职回顾评优
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
+                // 查询履职回顾
+                EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
                 entryExcellentStateDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN);
                 entryExcellentStateDetail.setMinisterReview("");
                 entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
-
-                QueryWrapper<EntryCasReviewDetail> entryCasReviewDetailQueryWrapper = new QueryWrapper<>();
-                entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
-                List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
-                if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
-                    throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
-                }
-                EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
-                reviewDetail.setFinalNontransactionEvaluateLevel(PerformanceConstant.REVIEW_DETAIL_MINISTER_REVIEW_EXCELLENT);
+                reviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
                 entryCasReviewDetailMapper.updateById(reviewDetail);
             }
-
         }
         return true;
     }
@@ -537,7 +537,10 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         //根据ID集合去找对应的实体类集合
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (int i = 0; i < entryExcellentStateDetails.size(); i++) {
-            String auditNote = auditNotes.get(i);
+            String auditNote = null;
+            if (!ObjectUtils.isEmpty(auditNotes)) {
+                auditNote = auditNotes.get(i);
+            }
             EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetails.get(i);
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
                 throw new ServiceException("不能审核此状态下的评优材料");
@@ -552,12 +555,16 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         }
         return true;
     }
+
     @Override
-    public boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview,List<String> auditNotes) {
+    public boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview, List<String> auditNotes) {
         //根据Id集合去找对应的实体类集合
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (int i = 0; i < entryExcellentStateDetails.size(); i++) {
-            String auditNote = auditNotes.get(i);
+            String auditNote = null;
+            if (!ObjectUtils.isEmpty(auditNotes)) {
+                auditNote = auditNotes.get(i);
+            }
             EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetails.get(i);
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
                 throw new ServiceException("不能审核完结状态的评优材料");

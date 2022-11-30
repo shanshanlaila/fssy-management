@@ -75,7 +75,7 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/entry-excellent-state-detail-list";
+        return "system/performance/employee/entry-excellent-state-detail-list";
     }
 
     @RequestMapping("getObjects")
@@ -310,7 +310,7 @@ public class EntryExcellentStateDetailController {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryExcellentStateDetail", entryExcellentStateDetail);
-        return "/system/performance/employee/entry-excellent-state-detail-performance-edit";
+        return "system/performance/employee/entry-excellent-state-detail-performance-edit";
     }
 
     /**
@@ -345,7 +345,7 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/entry-excellent-state-detail-performance-list";
+        return "system/performance/employee/entry-excellent-state-detail-performance-list";
     }
 
     /**
@@ -364,7 +364,7 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/entry-excellent-state-detail-minister-list";
+        return "system/performance/employee/entry-excellent-state-detail-minister-list";
     }
 
     /**
@@ -381,7 +381,7 @@ public class EntryExcellentStateDetailController {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryExcellentStateDetail", entryExcellentStateDetail);
-        return "/system/performance/employee/entry-excellent-state-detail-minister-edit";
+        return "system/performance/employee/entry-excellent-state-detail-minister-edit";
     }
 
     /**
@@ -452,7 +452,7 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         model.addAttribute("userNameList", userNameList);
-        return "/system/performance/employee/entry-excellent-state-detail-createAndUpload";
+        return "system/performance/employee/entry-excellent-state-detail-createAndUpload";
     }
 
 
@@ -470,7 +470,7 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
-        return "/system/performance/employee/entry-review-detail-wait-upload-list";
+        return "system/performance/employee/entry-review-detail-wait-upload-list";
     }
 
     /**

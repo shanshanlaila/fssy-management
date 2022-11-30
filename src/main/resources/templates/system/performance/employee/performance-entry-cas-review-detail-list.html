@@ -244,7 +244,7 @@
                     },
                     {
                         field: 'workOutput',
-                        title: '表单',
+                        title: '表单(来源于基础事件)',
                         width: 130
                     },
                     {
@@ -360,7 +360,7 @@
 
         // 提交审核
         form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
+            var checkStatus = table.checkStatus(dataTable.config.id)
                 data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
