@@ -56,7 +56,7 @@ public class ManagerQualitativeEvalStdController {
         Map<String, Object> params = new HashMap<>();
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
         model.addAttribute("companyNameList",companyNameList);
-        return "/system/performance/manager/manager-qualitative-eval-std/manager-qualitative-eval-std-list";
+        return "system/performance/manager/manager-qualitative-eval-std/manager-qualitative-eval-std-list";
     }
 
     /**
@@ -66,7 +66,7 @@ public class ManagerQualitativeEvalStdController {
      */
     @GetMapping("create")
     public String create(Model model){
-        return "/system/performance/manager/manager-qualitative-eval-std/manager-qualitative-eval-std-create";
+        return "system/performance/manager/manager-qualitative-eval-std/manager-qualitative-eval-std-create";
     }
 
     /**
@@ -122,7 +122,7 @@ public class ManagerQualitativeEvalStdController {
         params.put("year", year);
         ManagerQualitativeEvalStd managerQualitativeEvalStd = managerQualitativeEvalStdService.findManagerQualitativeEvalStdDataByParams(params).get(0);
         model.addAttribute("managerQualitativeEvalStd", managerQualitativeEvalStd);
-        return "/system/performance/manager/manager-qualitative-eval-std/manager-qualitative-eval-std-edit";
+        return "system/performance/manager/manager-qualitative-eval-std/manager-qualitative-eval-std-edit";
     }
 
     /**

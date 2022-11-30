@@ -119,7 +119,7 @@ public class ManageKpiMonthPerformanceController {
 //        Page<Map<String, Object>> mapListPerPageByParams = manageKpiMonthPerformanceMapper.selectMapsPage(params);
         ManageKpiMonthPerformance byId = manageKpiMonthPerformanceService.getById(manageKpiYearId);
         model.addAttribute("manageKpiMonthPerformance", byId);
-        return "/system/performance/manager_kpi/manage-kpi-month-performance/manage-kpi-month-performance-edit";
+        return "system/performance/manager_kpi/manage-kpi-month-performance/manage-kpi-month-performance-edit";
     }
 
     /**
