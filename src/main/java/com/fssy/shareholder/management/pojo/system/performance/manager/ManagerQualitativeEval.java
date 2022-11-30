@@ -19,7 +19,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("bs_manager_qualitative_eval")
+@TableName("bs_hr_manager_qualitative_eval")
 public class ManagerQualitativeEval extends BaseModel {
 
     private static final long serialVersionUID = -1449703154431814705L;
