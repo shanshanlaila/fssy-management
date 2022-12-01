@@ -33,6 +33,13 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="userSelect"></div>
+                        </div>
+                       <!-- <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="userName" placeholder="员工姓名查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>-->
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input">
@@ -183,6 +190,16 @@
         form.on('submit(export)', function (data) {
             var field = data.field;
             data.field.status = '待填报回顾'
+            var roleIds = data.field.roleIds;
+            var userIds = data.field.userIds;
+            // 必填项控制
+            var departmentIds = data.field.departmentIds;
+            if ([[${departmentName}]] !== '人力资源部' && [[${departmentName}]] !== '绩效科') {
+                if (!departmentIds && !roleIds && !userIds) {
+                    layer.msg("部门名称或者岗位名称或者员工姓名为必填项，请选择！", {icon: 5, time: 4000});
+                    return false;
+                }
+            }
             field.url = "/system/entry-cas-plan-detail/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");
@@ -556,6 +573,24 @@
             width: '160px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'roleIds',// 传到后端选择的roleId集合字符串
+    });
+    // 员工姓名查询下拉列表
+    let userSelect = xmSelect.render({
+        el: '#userSelect', // 绑定
+        language: 'zn',
+        data: [[${userList}]],// model过来的
+        filterable: true,
+        // radio: true,// 是否是单选
+        tips: '用户查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 30,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'userIds',// 传到后端选择的userId集合字符串
     });
 </script>
 </body>

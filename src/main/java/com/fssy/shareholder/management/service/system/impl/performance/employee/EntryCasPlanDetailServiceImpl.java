@@ -391,6 +391,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("userId")) {
             queryWrapper.eq("userId", params.get("userId"));
         }
+        // 用户表主键列表查询
+        if (params.containsKey("userIds")) {
+            queryWrapper.in("userId", (List<String>) params.get("userIds"));
+        }
         if (params.containsKey("applyDate")) {
             queryWrapper.eq("applyDate", params.get("applyDate"));
         }

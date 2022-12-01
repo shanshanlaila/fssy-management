@@ -20,6 +20,7 @@ import com.fssy.shareholder.management.service.system.performance.employee.Event
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,7 +68,7 @@ public class EntryExcellentStateDetailController {
 
     @GetMapping("index")
     @RequiredLog("")
-//    @RequiresPermissions("system:performance:entryExcellentStateDetail")
+    @RequiresPermissions("system:performance:entryExcellentStateDetail:index")
     public String showEntryExcellentStateDetail(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -337,7 +338,7 @@ public class EntryExcellentStateDetailController {
      */
     @GetMapping("indexPerformance")
     @RequiredLog("")
-//    @RequiresPermissions("system:performance:entryExcellentStateDetail")
+    @RequiresPermissions("system:performance:entryExcellentStateDetail:indexPerformance")
     public String showIndexPerformance(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -356,7 +357,7 @@ public class EntryExcellentStateDetailController {
      */
     @GetMapping("indexMinisterReview")
     @RequiredLog("")
-//    @RequiresPermissions("system:performance:entryExcellentStateDetail")
+    @RequiresPermissions("system:performance:entryExcellentStateDetail:indexMinisterReview")
     public String showIndexMinisterReview(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -424,6 +425,7 @@ public class EntryExcellentStateDetailController {
      * @return 修改页面
      */
     @GetMapping("createAndUpload/{id}")
+    @RequiresPermissions("system:performance:entryExcellentStateDetail:createAndUpload")
     public String showExcellentPage(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         EventList eventList = eventListService.getById(entryCasReviewDetail.getEventsId());

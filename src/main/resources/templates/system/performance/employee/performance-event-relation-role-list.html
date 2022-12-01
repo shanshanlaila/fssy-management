@@ -17,7 +17,7 @@
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                              style="line-height: 30px"></i>
+                                                                style="line-height: 30px"></i>
 </a>
 </div>
 <div class="layui-fluid">
@@ -28,9 +28,10 @@
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block">
                             <label class="layui-form-label"
-                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label> <input
-                                type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
-                                autocomplete="off" class="layui-input laydate search-laydate">
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
+                            <input
+                                    type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
+                                    autocomplete="off" class="layui-input laydate search-laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="createDateEnd" placeholder="编制日期止" id="createDateEnd"
@@ -38,9 +39,10 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <label class="layui-form-label"
-                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">生效日期</label> <input
-                                type="text" name="activeDateStart" placeholder="生效日期起" id="activeDateStart"
-                                autocomplete="off" class="layui-input laydate search-laydate">
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">生效日期</label>
+                            <input
+                                    type="text" name="activeDateStart" placeholder="生效日期起" id="activeDateStart"
+                                    autocomplete="off" class="layui-input laydate search-laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
@@ -52,6 +54,10 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="userSelect"></div>
+                        </div>
+
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="year" placeholder="编制年份查询" autocomplete="off"
                                    class="layui-input">
@@ -62,10 +68,6 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="eventsType" placeholder="事件类别查询" autocomplete="off"
-                                   class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="userName" placeholder="用户查询" autocomplete="off"
                                    class="layui-input">
                         </div>
 
@@ -285,6 +287,16 @@
             var field = data.field;
             // 导出参数设置-只导出完结状态下的数据-status=“完结”
             data.field.status = '完结';
+            var roleIds = data.field.roleIds;
+            var userIds = data.field.userIds;
+            // 必填项控制
+            var departmentIds = data.field.departmentIds;
+            if ([[${departmentName}]] !== '人力资源部' && [[${departmentName}]] !== '绩效科') {
+                if (!departmentIds && !roleIds && !userIds) {
+                    layer.msg("部门名称或者岗位名称或者员工姓名为必填项，请选择！", {icon: 5, time: 4000});
+                    return false;
+                }
+            }
             field.url = "/system/performance/employee/events-relation-role/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");
@@ -345,6 +357,24 @@
                 width: '160px', 'min-height': '28px', 'line-height': '28px'
             },
             name: 'roleIds',// 传到后端选择的departmentId集合字符串
+        });
+        // 员工姓名查询下拉列表
+        let userSelect = xmSelect.render({
+            el: '#userSelect', // 绑定
+            language: 'zn',
+            data: [[${userList}]],// model过来的
+            filterable: true,
+            // radio: true,// 是否是单选
+            tips: '用户查询',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 30,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'userIds',// 传到后端选择的userId集合字符串
         });
     });
 </script>

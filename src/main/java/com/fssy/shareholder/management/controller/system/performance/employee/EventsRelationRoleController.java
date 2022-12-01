@@ -6,11 +6,14 @@ package com.fssy.shareholder.management.controller.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
+import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +61,9 @@ public class EventsRelationRoleController
 	@Autowired
 	private RoleService roleService;
 
+	@Autowired
+	private UserService userService;
+
 	/**
 	 * 返回事件清单岗位关系管理页面
 	 *
@@ -67,8 +73,7 @@ public class EventsRelationRoleController
 	@RequiredLog("事件清单岗位关系管理")
 	@RequiresPermissions("performance:employee:event:relation:role:index")
 	@GetMapping("index")
-	public String index(Model model)
-	{
+	public String index(Model model) {
 		Map<String, Object> params = new HashMap<>();
 		List<String> selectedIds = new ArrayList<>();
 		List<Map<String, Object>> departmentList = departmentService
@@ -79,6 +84,12 @@ public class EventsRelationRoleController
 		List<Map<String, Object>> roleList = roleService.findRoleSelectedDataListByParams(params,
 				longSelectedIds);
 		model.addAttribute("roleList", roleList);
+		Map<String, Object> userParams = new HashMap<>();
+		List<String> selectedUserIds = new ArrayList<>();
+		List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams,selectedUserIds);
+		model.addAttribute("userList", userList);
+		ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
+		model.addAttribute("departmentName",viewDepartmentRoleUser.getDepartmentName());
 		return "system/performance/employee/performance-event-relation-role-list";
 	}
 
@@ -252,6 +263,12 @@ public class EventsRelationRoleController
 			String roleIdsStr = request.getParameter("roleIds");
 			List<String> roleIds = Arrays.asList(roleIdsStr.split(","));
 			params.put("roleIds", roleIds);
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("userIds")))
+		{
+			String userIdsStr = request.getParameter("userIds");
+			List<String> userIds = Arrays.asList(userIdsStr.split(","));
+			params.put("userIds", userIds);
 		}
 		return params;
 	}
