@@ -3,7 +3,6 @@ package com.fssy.shareholder.management.service.system.performance.manage_kpi;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthPerformance;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManageMonthPerformance;
 
 import java.util.List;

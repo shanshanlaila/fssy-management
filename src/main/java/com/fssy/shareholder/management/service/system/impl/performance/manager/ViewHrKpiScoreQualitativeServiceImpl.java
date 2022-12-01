@@ -3,8 +3,6 @@ package com.fssy.shareholder.management.service.system.impl.performance.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.system.performance.manager.HrUserPositionDepartmentCompanyMapper;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
-import com.fssy.shareholder.management.pojo.system.performance.manager.HrUserPositionDepartmentCompany;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ViewHrKpiScoreQualitative;
 import com.fssy.shareholder.management.mapper.system.performance.manager.ViewHrKpiScoreQualitativeMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

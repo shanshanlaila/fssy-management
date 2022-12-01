@@ -1,7 +1,6 @@
 package com.fssy.shareholder.management.service.system.performance.manager;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ViewHrKpiScoreQualitative;
 import com.baomidou.mybatisplus.extension.service.IService;
 

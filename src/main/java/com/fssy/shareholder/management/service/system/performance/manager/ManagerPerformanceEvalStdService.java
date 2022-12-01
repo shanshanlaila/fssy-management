@@ -3,7 +3,6 @@ package com.fssy.shareholder.management.service.system.performance.manager;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerPerformanceEvalStd;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 
 import java.util.List;
 import java.util.Map;

@@ -9,7 +9,6 @@ import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.Mana
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ViewManagerKpiYearMapper;
 import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiYear;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiYear;

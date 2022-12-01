@@ -3,8 +3,6 @@ package com.fssy.shareholder.management.service.system.performance.manager;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.performance.manager.HrManagerPerformanceEval;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;

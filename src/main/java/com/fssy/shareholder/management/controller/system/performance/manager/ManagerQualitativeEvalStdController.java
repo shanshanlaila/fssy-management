@@ -4,7 +4,6 @@ package com.fssy.shareholder.management.controller.system.performance.manager;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.common.SysResult;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiCoefficient;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;

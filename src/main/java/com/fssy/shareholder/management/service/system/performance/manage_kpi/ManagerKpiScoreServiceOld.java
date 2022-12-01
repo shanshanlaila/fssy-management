@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiMonth;
 
 import java.util.List;
 import java.util.Map;

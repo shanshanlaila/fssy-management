@@ -8,7 +8,6 @@ import com.fssy.shareholder.management.mapper.system.performance.manager.Manager
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScore;
 import com.fssy.shareholder.management.pojo.system.performance.manager.*;
 import com.fssy.shareholder.management.mapper.system.performance.manager.HrManagerPerformanceEvalMapper;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreService;
 import com.fssy.shareholder.management.service.system.performance.manager.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
