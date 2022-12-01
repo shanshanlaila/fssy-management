@@ -11,7 +11,7 @@ import com.fssy.shareholder.management.service.common.override.ManageKpiMonthPer
 import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ViewManageMonthPerformanceService;
+import com.fssy.shareholder.management.service.system.hr.performance.manage_kpi.ViewManageMonthPerformanceService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;

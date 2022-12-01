@@ -3,8 +3,8 @@ package com.fssy.shareholder.management.controller.system.performance.manage_kpi
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScore;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreService;
+import com.fssy.shareholder.management.pojo.system.hr.performance.manage_kpi.ManagerKpiScore;
+import com.fssy.shareholder.management.service.system.hr.performance.manage_kpi.ManagerKpiScoreService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;

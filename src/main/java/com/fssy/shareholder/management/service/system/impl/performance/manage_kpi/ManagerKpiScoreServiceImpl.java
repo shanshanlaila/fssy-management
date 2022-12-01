@@ -2,9 +2,9 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScore;
-import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiScoreMapper;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreService;
+import com.fssy.shareholder.management.pojo.system.hr.performance.manage_kpi.ManagerKpiScore;
+import com.fssy.shareholder.management.mapper.system.hr.performance.manage_kpi.ManagerKpiScoreMapper;
+import com.fssy.shareholder.management.service.system.hr.performance.manage_kpi.ManagerKpiScoreService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -5,12 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthPerformanceMapper;
-import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiYearMapper;
+import com.fssy.shareholder.management.mapper.system.hr.performance.manage_kpi.ManageKpiMonthPerformanceMapper;
+import com.fssy.shareholder.management.mapper.system.hr.performance.manage_kpi.ManageKpiYearMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthPerformance;
+import com.fssy.shareholder.management.pojo.system.hr.performance.manage_kpi.ManageKpiMonthPerformance;
 import com.fssy.shareholder.management.service.common.SheetService;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiMonthPerformanceService;
+import com.fssy.shareholder.management.service.system.hr.performance.manage_kpi.ManageKpiMonthPerformanceService;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;

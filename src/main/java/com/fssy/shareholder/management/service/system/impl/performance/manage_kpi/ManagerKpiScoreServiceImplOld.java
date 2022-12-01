@@ -2,16 +2,12 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.mapper.Mapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiLib;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthPerformance;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
-import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiScoreMapperOld;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiMonth;
+import com.fssy.shareholder.management.pojo.system.hr.performance.manage_kpi.ManagerKpiScoreOld;
+import com.fssy.shareholder.management.mapper.system.hr.performance.manage_kpi.ManagerKpiScoreMapperOld;
 import com.fssy.shareholder.management.service.common.SheetService;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
+import com.fssy.shareholder.management.service.system.hr.performance.manage_kpi.ManagerKpiScoreServiceOld;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -21,15 +17,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>

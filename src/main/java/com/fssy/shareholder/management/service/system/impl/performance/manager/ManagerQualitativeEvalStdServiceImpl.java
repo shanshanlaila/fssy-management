@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 
 
-import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
-import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerQualitativeEvalStdMapper;
+import com.fssy.shareholder.management.pojo.system.hr.performance.manager.ManagerQualitativeEvalStd;
+import com.fssy.shareholder.management.mapper.system.hr.performance.manager.ManagerQualitativeEvalStdMapper;
 import com.fssy.shareholder.management.service.common.SheetService;
-import com.fssy.shareholder.management.service.system.performance.manager.ManagerQualitativeEvalStdService;
+import com.fssy.shareholder.management.service.system.hr.performance.manager.ManagerQualitativeEvalStdService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

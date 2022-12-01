@@ -3,19 +3,17 @@ package com.fssy.shareholder.management.controller.system.performance.manage_kpi
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ViewManageYearMonthScoreMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManageYearMonthScore;
+import com.fssy.shareholder.management.pojo.system.hr.performance.manage_kpi.ManageKpiMonthAim;
+import com.fssy.shareholder.management.pojo.system.hr.performance.manage_kpi.ViewManageYearMonthScore;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.ManageMonthScoreSheetOutputService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiMonthAimService;
-import com.fssy.shareholder.management.service.system.performance.manage_kpi.ViewManageYearMonthScoreService;
+import com.fssy.shareholder.management.service.system.hr.performance.manage_kpi.ManageKpiMonthAimService;
+import com.fssy.shareholder.management.service.system.hr.performance.manage_kpi.ViewManageYearMonthScoreService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
