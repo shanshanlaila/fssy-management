@@ -91,7 +91,6 @@ public class ManagerPerformanceEvalStdController {
     @GetMapping("edit")
     public String edit(HttpServletRequest request, Model model) {
         String id = request.getParameter("id");
-        System.out.println(id);
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         ManagerPerformanceEvalStd managerPerformanceEvalStd = managerPerformanceEvalStdService.findManagerPerformanceEvalStdDataByParams(params).get(0);
@@ -107,8 +106,8 @@ public class ManagerPerformanceEvalStdController {
     @PostMapping("update")
     @ResponseBody
     public SysResult update(ManagerPerformanceEvalStd managerPerformanceEvalStd){
-
-        boolean result = managerPerformanceEvalStdService.updateManagerPerformanceEvalStdData(managerPerformanceEvalStd);
+        Map<String, Object> params = new HashMap<>();
+        boolean result = managerPerformanceEvalStdService.updateManagerPerformanceEvalStdData(managerPerformanceEvalStd,params);
         if (result) {
             return SysResult.ok();
         }
@@ -123,8 +122,8 @@ public class ManagerPerformanceEvalStdController {
      */
     @DeleteMapping("{id}")
     @ResponseBody
-    public SysResult delete(@PathVariable(value = "id") Integer id) {
-        boolean result = managerPerformanceEvalStdService.deleteManagerPerformanceEvalStdDataById(id);
+    public SysResult delete(@PathVariable(value = "id") Integer id,Map<String, Object> params) {
+        boolean result = managerPerformanceEvalStdService.deleteManagerPerformanceEvalStdDataById(id,params);
         if (result) {
             return SysResult.ok();
         }

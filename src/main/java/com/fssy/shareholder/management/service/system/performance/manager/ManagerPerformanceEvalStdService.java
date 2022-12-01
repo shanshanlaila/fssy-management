@@ -38,7 +38,7 @@ public interface ManagerPerformanceEvalStdService extends IService<ManagerPerfor
      * @param id
      * @return
      */
-    public boolean deleteManagerPerformanceEvalStdDataById(Integer id);
+    public boolean deleteManagerPerformanceEvalStdDataById(Integer id,Map<String, Object> params);
 
 
     /**
@@ -46,7 +46,7 @@ public interface ManagerPerformanceEvalStdService extends IService<ManagerPerfor
      * @param managerPerformanceEvalStd
      * @return
      */
-    boolean updateManagerPerformanceEvalStdData(ManagerPerformanceEvalStd managerPerformanceEvalStd);
+    boolean updateManagerPerformanceEvalStdData(ManagerPerformanceEvalStd managerPerformanceEvalStd,Map<String, Object> params);
 
 
     /**

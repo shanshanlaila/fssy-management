@@ -92,7 +92,7 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         for (ManagerQualitativeEval qualitativeEval : filterList) {
             Integer evalStdId = qualitativeEval.getEvalStdId();
             if (evalStdId==id)
-                throw new ServiceException("此记录正在使用");
+                throw new ServiceException("此记录正在使用,不能删除");
         }
         int result = managerQualitativeEvalStdMapper.deleteById(id);
         if (result > 0) {
@@ -128,7 +128,6 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         Integer id = managerQualitativeEvalStd.getId();
         //1.2   //查询出比例表中的相关的getEvalStdId所有记录,存入filterListStd
         QueryWrapper<ManagerQualitativeEval> queryWrapper = managerQualitativeEvalQueryWrapper(params);
-
         List<ManagerQualitativeEval> managerQualitativeEvals = managerQualitativeEvalMapper.selectList(queryWrapper);
         List<ManagerQualitativeEval> filterList = managerQualitativeEvals.stream()
                 .filter(i -> i.getEvalStdId().equals(id)).collect(Collectors.toList());
@@ -136,7 +135,7 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         for (ManagerQualitativeEval qualitativeEval : filterList) {
             Integer evalStdId = qualitativeEval.getEvalStdId();
             if (evalStdId==id)
-                throw new ServiceException("此记录正在使用");
+                throw new ServiceException("此记录正在使用，不能修改");
         }
 
 
