@@ -1,5 +1,9 @@
 server:
-  port: 8081
+  port: 7079
+#  应用部署服务器的网址或IP
+baseUrl:
+  http://192.168.50.166
+#   http://localhost
 #  ssl:
 #    key-store-password: PatYQkO8
 #    key-store-type: PKCS12
@@ -16,9 +20,10 @@ spring:
     # JDBC数据库驱动
     driver-class-name: com.mysql.cj.jdbc.Driver
     # mysql连接字符串
-    url: jdbc:mysql://127.0.0.1:3306/fs-business?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-    username: ENC(TDYLJAaQfgP54EehX6XjbQ==)
-    password: ENC(6AcVP2wi2zCkZ+unsW5sYg==)
+    url: jdbc:mysql://192.168.50.166:3306/fs-business?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+#    url: jdbc:mysql://localhost:3306/fs-business?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 
   devtools:
     restart:
       enabled: true #设置开启热部署
