@@ -312,7 +312,7 @@ public class EntryCasReviewDetailController {
      */
     @GetMapping("MinisterIndex")
     @RequiredLog("履职计划部 门 领导、非事务审核评价管理")
-    @RequiresPermissions("system:performance:entryCasReviewDetail")
+    @RequiresPermissions("system:performance:entryCasReviewDetail:MinisterIndex")
     public String showEntryCasReviewDetailByMinster(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -331,7 +331,7 @@ public class EntryCasReviewDetailController {
      */
     @GetMapping("index1")
     @RequiredLog("履职计划科长审核评价")
-    @RequiresPermissions("system:performance:entryCasPlanDetail")
+    @RequiresPermissions("system:performance:entryCasPlanDetail:index1")
     public String showEntryCasPlanDetailListBySection_chief(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
