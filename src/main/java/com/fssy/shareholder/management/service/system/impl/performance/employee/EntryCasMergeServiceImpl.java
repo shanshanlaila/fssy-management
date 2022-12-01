@@ -4,9 +4,9 @@
  */
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
-import com.fssy.shareholder.management.pojo.system.hr.performance.employee.EntryCasMerge;
-import com.fssy.shareholder.management.mapper.system.hr.performance.employee.EntryCasMergeMapper;
-import com.fssy.shareholder.management.service.system.hr.performance.employee.EntryCasMergeService;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
+import com.fssy.shareholder.management.service.system.performance.employee.EntryCasMergeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 

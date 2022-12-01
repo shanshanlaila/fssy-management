@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fssy.shareholder.management.mapper.system.hr.performance.employee.EventsRelationRoleMapper;
-import com.fssy.shareholder.management.pojo.system.hr.performance.employee.EventsRelationRole;
-import com.fssy.shareholder.management.service.system.hr.performance.employee.EventsRelationRoleService;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
+import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 
 /**

@@ -2,9 +2,9 @@ package com.fssy.shareholder.management.service.system.impl.performance.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fssy.shareholder.management.pojo.system.hr.performance.manager.ManagerPerformanceEvalStd;
-import com.fssy.shareholder.management.mapper.system.hr.performance.manager.ManagerPerformanceEvalStdMapper;
-import com.fssy.shareholder.management.service.system.hr.performance.manager.ManagerPerformanceEvalStdService;
+import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerPerformanceEvalStd;
+import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerPerformanceEvalStdMapper;
+import com.fssy.shareholder.management.service.system.performance.manager.ManagerPerformanceEvalStdService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

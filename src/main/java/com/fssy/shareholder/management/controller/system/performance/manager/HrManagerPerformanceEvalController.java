@@ -3,8 +3,8 @@ package com.fssy.shareholder.management.controller.system.performance.manager;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.common.SysResult;
-import com.fssy.shareholder.management.pojo.system.hr.performance.manager.HrManagerPerformanceEval;
-import com.fssy.shareholder.management.service.system.hr.performance.manager.HrManagerPerformanceEvalService;
+import com.fssy.shareholder.management.pojo.system.performance.manager.HrManagerPerformanceEval;
+import com.fssy.shareholder.management.service.system.performance.manager.HrManagerPerformanceEvalService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;

@@ -6,13 +6,13 @@ package com.fssy.shareholder.management.tools.common;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
-import com.fssy.shareholder.management.mapper.system.hr.performance.employee.EntryCasReviewDetailMapper;
-import com.fssy.shareholder.management.mapper.system.hr.performance.employee.EventListMapper;
-import com.fssy.shareholder.management.mapper.system.hr.performance.employee.EventsRelationRoleMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasReviewDetailMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
-import com.fssy.shareholder.management.pojo.system.hr.performance.employee.EntryCasReviewDetail;
-import com.fssy.shareholder.management.pojo.system.hr.performance.employee.EventsRelationRole;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.SecurityUtils;

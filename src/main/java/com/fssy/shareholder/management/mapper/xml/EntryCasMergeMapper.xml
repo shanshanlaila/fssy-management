@@ -3,7 +3,7 @@
 <mapper namespace="com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.fssy.shareholder.management.pojo.system.hr.performance.employee.EntryCasMerge">
+    <resultMap id="BaseResultMap" type="com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge">
         <id column="id" property="id" />
         <result column="createdAt" property="createdAt" />
         <result column="createdId" property="createdId" />

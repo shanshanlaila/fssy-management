@@ -2,8 +2,8 @@ package com.fssy.shareholder.management.controller.system.performance.manager;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fssy.shareholder.management.pojo.system.hr.performance.manager.ViewHrKpiScoreQualitative;
-import com.fssy.shareholder.management.service.system.hr.performance.manager.ViewHrKpiScoreQualitativeService;
+import com.fssy.shareholder.management.pojo.system.performance.manager.ViewHrKpiScoreQualitative;
+import com.fssy.shareholder.management.service.system.performance.manager.ViewHrKpiScoreQualitativeService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
