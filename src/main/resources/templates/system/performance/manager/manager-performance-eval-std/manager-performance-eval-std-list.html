@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>企业经理人评价项目权重管理</title>
+    <title>企业经理人定性绩效评价管理</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -13,7 +13,7 @@
 <!-- 引入xadmin -->
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">企业经理人绩效</a> <a href="">评价项目权重</a>
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">企业经理人绩效</a> <a href="">定性绩效评价</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
                                                               style="line-height: 30px"></i>
@@ -44,16 +44,13 @@
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-                        <a lay-event="edit" title="修改企业经理人项目权重信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除企业经理人项目权重信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a lay-event="edit" title="修改经理人绩效定性评分各项目占比信息"><i class="layui-icon">&#xe642;</i></a>
+                        <a lay-event="delete" title="删除经理人绩效定性评分各项目占比信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
                             <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>
                         </div>
-                        <!--                        <div class="layui-btn-container">-->
-                        <!--                            <button style="top: 250px" type="button" class="layui-btn layui-btn-primary">默认按钮</button>-->
-                        <!--                        </div>-->
                     </script>
                 </div>
             </div>
@@ -68,10 +65,10 @@
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
         // 重新重置日期控件
         laydate.render({
-            elem: '#year',
-            trigger: 'click',
-            type: 'year',
-            value: moment().format("YYYY")
+            elem : '#year',
+            trigger : 'click',
+            type : 'year',
+            value : moment().format("YYYY")
         });
 
         // 监听搜索按钮
@@ -97,11 +94,11 @@
             if (obj.event === 'create') {
                 layer.open({
                     type: 2,
-                    title: '添加企业经理人项目权重信息',
+                    title: '添加经理人绩效评分定性、定量分数占比信息',
                     area: [
-                        $(window).width() * 0.7 + 'px', $(window).height() - 100 + 'px'
+                        $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
                     ],
-                    content: '/system/performance/manager/manager-qualitative-eval-std/create',
+                    content: '/system/performance/manager/manager-performance-eval-std/create',
                     scrollbar: true,
                     // 设置点击遮盖关闭
                     // shadeClose: true,
@@ -115,7 +112,7 @@
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/performance/manager/manager-qualitative-eval-std/getYearScore",
+            url: "/system/performance/manager/manager-performance-eval-std/getYearScore",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -123,92 +120,54 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
-
             cols: [
                 [
-                    {field: 'year', title: '年份', width: 120, rowspan: 2},
-                    {title: '企业总经理', align: 'center', colspan: 6},
-                    {title: '分管经理人', align: 'center', colspan: 3},
+
+                    {
+                        field: 'index',
+                        title: '编号',
+                        fixed: 'left',
+                        type: 'numbers',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'year',
+                        title: '年份',
+                        width: 60
+                    },
+                    {
+                        field: 'kpiScoreR',
+                        title: '定量评价占比',
+                        width: 150,
+                        templet: function (d) {
+                            var kpiScoreR;
+                            kpiScoreR = d.kpiScoreR * 100;
+                            kpiScoreR = kpiScoreR + '%';
+                            return kpiScoreR
+
+                        }},
+                    {
+                        field: 'qualitativeScoreR',
+                        title: '定性评价占比',
+                        width: 150,
+                        templet: function (d) {
+                            var qualitativeScoreR;
+                            qualitativeScoreR = d.qualitativeScoreR * 100;
+                            qualitativeScoreR = qualitativeScoreR + '%';
+                            return qualitativeScoreR
+
+                        }
+                    },
                     {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
                         align: 'center',
-                        toolbar: '#tool',
-                        rowspan: 2
+                        toolbar: '#tool'
                     }
-                ],
-                [
-                    {
-                        field: 'auditEvalScoreR',
-                        title: '审计评分占比',
-                        width: 150,
-                        templet: function (d) {
-                            var auditEvalScoreR;
-                            auditEvalScoreR = d.auditEvalScoreR * 100;
-                            auditEvalScoreR = auditEvalScoreR + '%';
-                            return auditEvalScoreR
-                        }
-                    },
-                    {field: 'financialAuditScoreR', title: '财务稽核占比', width: 150,
-                        templet: function (d) {
-                            var financialAuditScoreR;
-                            financialAuditScoreR = d.financialAuditScoreR * 100;
-                            financialAuditScoreR = financialAuditScoreR + '%';
-                            return financialAuditScoreR
-                        }},
-                    {field: 'operationScoreR', title: '运营管理占比', width: 150,
-                        templet: function (d) {
-                            var operationScoreR;
-                            operationScoreR = d.operationScoreR * 100;
-                            operationScoreR = operationScoreR + '%';
-                            return operationScoreR
-                        }},
-                    {field: 'leadershipScoreR', title: '组织领导力占比', width: 150,
-                        templet: function (d) {
-                            var leadershipScoreR;
-                            leadershipScoreR = d.leadershipScoreR * 100;
-                            leadershipScoreR = leadershipScoreR + '%';
-                            return leadershipScoreR
-                        }},
-                    {field: 'investScoreR', title: '投资评价占比', width: 150,
-                        templet: function (d) {
-                            var auditEvalScoreR;
-                            auditEvalScoreR = d.investScoreR * 100;
-                            auditEvalScoreR = auditEvalScoreR + '%';
-                            return auditEvalScoreR
-                        }},
-                    {field: 'workReportScoreR', title: '述职报告占比', width: 150,
-                        templet: function (d) {
-                            var workReportScoreR;
-                            workReportScoreR = d.workReportScoreR * 100;
-                            workReportScoreR = workReportScoreR + '%';
-                            return workReportScoreR
-                        }},
-                    {field: 'skillScoreR', title: '技能评价占比', width: 150,
-                        templet: function (d) {
-                            var skillScoreR;
-                            skillScoreR = d.skillScoreR * 100;
-                            skillScoreR = skillScoreR + '%';
-                            return skillScoreR
-                        }},
-                    {field: 'democraticEvalScoreR', title: '民主评议占比', event: '2022年', width: 150,
-                        templet: function (d) {
-                            var democraticEvalScoreR;
-                            democraticEvalScoreR = d.democraticEvalScoreR * 100;
-                            democraticEvalScoreR = democraticEvalScoreR + '%';
-                            return democraticEvalScoreR
-                        }},
-                    {field: 'superiorEvalScoreR', title: '上级评价占比', width: 150,
-                        templet: function (d) {
-                            var superiorEvalScoreR;
-                            superiorEvalScoreR = d.superiorEvalScoreR * 100;
-                            superiorEvalScoreR = superiorEvalScoreR + '%';
-                            return superiorEvalScoreR
-                        }},
-
-
                 ]
+
             ]
         });
         // 监听搜索按钮
@@ -233,16 +192,16 @@
                     type: 2,
                     title: '序号为：' + data.id + '的经理绩效绩效定性评分各项目占比修改',
                     area: [
-                        $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
+                        $(window).width() * 0.7 + 'px', $(window).height() - 400 + 'px'
                     ],
-                    content: '/system/performance/manager/manager-qualitative-eval-std/edit?year=' + data.year,
+                    content: '/system/performance/manager/manager-performance-eval-std/edit?id=' + data.id,
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
                 layer.confirm('确认删除序号为：' + data.id + '的经理绩效绩效定性评分各项目占比吗？', function () {
                     $.ajax({
                         type: 'DELETE',
-                        url: '/system/performance/manager/manager-qualitative-eval-std/' + data.id,
+                        url: '/system/performance/manager/manager-performance-eval-std/' + data.id,
                         success: function (result) {
                             layer.msg(result.msg);
                             if (result.status == 200) {

@@ -12,12 +12,28 @@
         <form class="layui-form" style="margin-top: 10px;" id="head">
             <input type="hidden" name="attachmentId" id="attachmentId">
             <table class="layui-table layui-form" lay-size="sm">
+
                 <tr>
-                    <td colspan="8" style="background: #f7f7f7;color: black;">总经理人绩效定性评分各项目占比信息</td>
+                    <td style="width: 10%;text-align: right";><span style='color: red; font-weight: bold'>*</span>年份:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%" >
+                            <input type="text" class="layui-input" name="year" id="year"
+                                   lay-verify="required"/>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
-                    <td colspan="8" style="text-align:center;background: #f7f7f7;margin: auto">总经理绩效绩效定性评分各项目占比</td>
+                    <td  colspan="2" style="text-align: center" height="50px">&nbsp;总经理绩效绩效定性评分各项目占比
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td  colspan="2" style="text-align: center">&nbsp;非总经理绩效绩效定性评分各项目占比
+                    </td>
                 </tr>
+                <tr>
+
+                </tr>
+
+
                 <tr>
                     <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>审计评分占比(总经理):</td>
                     <td style="width: 10%">
@@ -26,13 +42,15 @@
                                    lay-verify="required"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>财务稽核占比(总经理)</td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>技能评价占比(非总经理):</td>
                     <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="financialAuditScoreR" id="financialAuditScoreR"
+                        <div class="layui-input-inline" style="width: 100%" >
+                            <input type="text" class="layui-input" name="skillScoreR" id="skillScoreR"
                                    lay-verify="required"/>
                         </div>
                     </td>
+
                 </tr>
 
                 <tr>
@@ -43,10 +61,28 @@
                                    lay-verify="required"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>组织领导力占比(总经理)</td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>上级评价占比(非总经理):</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%" >
-                            <input type="text" class="layui-input" name="leadershipScoreR" id="leadershipScoreR"
+                            <input type="text" class="layui-input" name="superiorEvalScoreR" id="superiorEvalScoreR"
+                                   lay-verify="required"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>财务稽核占比(总经理)</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="financialAuditScoreR" id="financialAuditScoreR"
+                                   lay-verify="required"/>
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>民主评议占比(非总经理):</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="democraticEvalScoreR" id="democraticEvalScoreR"
                                    lay-verify="required"/>
                         </div>
                     </td>
@@ -61,6 +97,21 @@
                                    lay-verify="required"/>
                         </div>
                     </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"colspan="2"></td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>组织领导力占比(总经理)</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%" >
+                            <input type="text" class="layui-input" name="leadershipScoreR" id="leadershipScoreR"
+                                   lay-verify="required"/>
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"colspan="2"></td>
+                </tr>
+                <tr>
                     <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>述职报告占比(总经理):</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%" >
@@ -68,49 +119,32 @@
                                    lay-verify="required"/>
                         </div>
                     </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"colspan="2"></td>
                 </tr>
 
                 <tr>
-                    <td colspan="8" style="text-align:center;background: #f7f7f7;margin: auto">非总经理绩效绩效定性评分各项目占比</td>
-                </tr>
-
-                <tr>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>技能评价占比(非总经理):</td>
+                    <td style="width: 10%;text-align: left"><span style='color: red; font-weight: bold'>*</span>总计:</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%" >
-                            <input type="text" class="layui-input" name="skillScoreR" id="skillScoreR"
+                            <input id="number2" type="text" class="layui-input"
                                    lay-verify="required"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>民主评议占比(非总经理):</td>
+
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: left"><span style='color: red; font-weight: bold'>*</span>总计:</td>
                     <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="democraticEvalScoreR" id="democraticEvalScoreR"
+                        <div class="layui-input-inline" style="width: 100%" >
+                            <input id="number1" type="text" class="layui-input"
                                    lay-verify="required"/>
                         </div>
                     </td>
                 </tr>
-
-                <tr>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>上级评价占比(非总经理):</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%" >
-                            <input type="text" class="layui-input" name="superiorEvalScoreR" id="superiorEvalScoreR"
-                                   lay-verify="required"/>
-                        </div>
-                    </td>
-                    <td style="width: 10%;text-align: right";><span style='color: red; font-weight: bold'>*</span>年份:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%" >
-                            <input type="text" class="layui-input" name="year" id="year"
-                                   lay-verify="required"/>
-                        </div>
-                    </td>
-                </tr>
-
-
 
             </table>
+
+
 
             <table class="layui-table layui-form" lay-size="sm">
                 <tr>
@@ -171,138 +205,15 @@
             });
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
-    //     // 合同获取人选择器
-    //     var userSelect = xmSelect.render({
-    //         el: '#userSelect',
-    //         language: 'zn',
-    //         data: [[${userList}]],
-    //         filterable: true,
-    //         size: 'mini',
-    //         radio: true,
-    //         clickClose: true, // 单选关闭
-    //         tips: '请选择员工',
-    //         paging: true, // 分页
-    //         pageSize: 10,
-    //         toolbar: {
-    //             show: true
-    //         },
-    //         layVerify: 'required',
-    //         layVerType: '获取合同人不能为空',
-    //         name: 'getContractPersonId'
-    //     });
-    //     var salesManagerNameSelect = xmSelect.render({
-    //         el: '#salesManagerNameSelect',
-    //         language: 'zn',
-    //         data: [[${userList}]],
-    //         filterable: true,
-    //         size: 'mini',
-    //         radio: true,
-    //         clickClose: true, // 单选关闭
-    //         paging: true, // 分页
-    //         pageSize: 10,
-    //         tips: '请选择员工',
-    //         toolbar: {
-    //             show: true
-    //         },
-    //         layVerify: 'required',
-    //         layVerType: '获取合同人不能为空',
-    //         name: 'salesManagerId'
-    //     });
-    //     var customerNameSelect = xmSelect.render({
-    //         el: '#customerNameSelect',
-    //         language: 'zn',
-    //         data: [[${cooperateCompanyList}]],
-    //         filterable: true,
-    //         size: 'mini',
-    //         radio: true,
-    //         clickClose: true, // 单选关闭
-    //         paging: true, // 分页
-    //         pageSize: 10,
-    //         tips: '请选择客户',
-    //         toolbar: {
-    //             show: true
-    //         },
-    //         layVerify: 'required',
-    //         layVerType: '客户不能为空',
-    //         name: 'customerCode'
-    //     });
-    //
+
+        // // 获取所有input输入框
+        // const iptlist = document.getElementsByTagName("input")
+        // function handlesum1(id) {
+        //
+        // }
+
     });
 </script>
-<!--&lt;!&ndash;多附件上传&ndash;&gt;-->
-<!--<script th:inline="javascript">-->
-<!--    layui.use('upload', function () {-->
-<!--        var $ = layui.jquery-->
-<!--            , upload = layui.upload;-->
-
-<!--        //多文件列表示例-->
-<!--        var demoListView = $('#demoList')-->
-<!--            , uploadListIns = upload.render({-->
-<!--            elem: '#testList'-->
-<!--            //改成您自己的上传接口-->
-<!--            , url: "/system/sale/contract/uploadFile"-->
-<!--            , data: {'_token': "{{csrf_token()}}"}-->
-<!--            , accept: 'file'-->
-<!--            , multiple: true-->
-<!--            , auto: false-->
-<!--            , bindAction: '#testListAction'-->
-<!--            , choose: function (obj) {-->
-<!--                var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列-->
-<!--                //读取本地文件-->
-<!--                obj.preview(function (index, file, result) {-->
-<!--                    var tr = $(['<tr id="upload-' + index + '">'-->
-<!--                        , '<td>' + file.name + '</td>'-->
-<!--                        , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'-->
-<!--                        , '<td>等待上传</td>'-->
-<!--                        , '<td>'-->
-<!--                        , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'-->
-<!--                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'-->
-<!--                        , '</td>'-->
-<!--                        , '</tr>'].join(''));-->
-
-<!--                    //单个重传-->
-<!--                    tr.find('.demo-reload').on('click', function () {-->
-<!--                        obj.upload(index, file);-->
-<!--                    });-->
-
-<!--                    //删除-->
-<!--                    tr.find('.demo-delete').on('click', function () {-->
-<!--                        delete files[index]; //删除对应的文件-->
-<!--                        tr.remove();-->
-<!--                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选-->
-<!--                    });-->
-
-<!--                    demoListView.append(tr);-->
-<!--                });-->
-<!--            }-->
-<!--            , done: function (res, index, upload) {-->
-<!--                if (res.status == 200) { //上传成功-->
-<!--                    var tr = demoListView.find('tr#upload-' + index)-->
-<!--                        , tds = tr.children();-->
-<!--                    tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');-->
-<!--                    tds.eq(3).html(''); //清空操作-->
-<!--                    console.log(res.data);-->
-<!--                    // 返回的attachmentId依次添加到隐藏域-->
-<!--                    var attachmentIds = $('#attachmentId').val();-->
-<!--                    if (!attachmentIds)-->
-<!--                        attachmentIds = attachmentIds + res.data;-->
-<!--                    else-->
-<!--                        attachmentIds = attachmentIds + ',' + res.data;-->
-<!--                    $('#attachmentId').val(attachmentIds);-->
-<!--                    return delete this.files[index]; //删除文件队列已经上传成功的文件-->
-<!--                }-->
-<!--                this.error(index, upload);-->
-<!--            }-->
-<!--            , error: function (index, upload) {-->
-<!--                var tr = demoListView.find('tr#upload-' + index)-->
-<!--                    , tds = tr.children();-->
-<!--                tds.eq(2).html('<span style="color: #22ff34;">上传失败</span>');-->
-<!--                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传-->
-<!--            }-->
-<!--        });-->
-
-<!--    });-->
-<!--</script>-->
 
 
 </body>

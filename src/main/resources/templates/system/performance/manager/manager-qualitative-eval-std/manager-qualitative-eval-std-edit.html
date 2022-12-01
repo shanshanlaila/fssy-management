@@ -11,79 +11,46 @@
 <div class="layui-fluid">
     <div class="layui-card-body">
         <form class="layui-form" style="margin-top: 10px;" id="head">
+
             <table class="layui-table layui-form" lay-size="sm">
 
-                    <input type="hidden" th:value="${managerQualitativeEvalStd['year']}" name="year">
-                    <input type="hidden" th:value="${managerQualitativeEvalStd['id']}" name="id">
+            </table>
+
+
+            <table class="layui-table layui-form" lay-size="sm">
+
+                <input type="hidden" th:value="${managerQualitativeEvalStd['year']}" name="year">
+                <input type="hidden" th:value="${managerQualitativeEvalStd['id']}" name="id">
 
                 <tr>
-                    <td colspan="8" style="text-align:center;background: #f7f7f7;margin: auto">总经理绩效绩效定性评分各项目占比</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;年份:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="year" id="year"
+                                   lay-verify="required" th:value="${managerQualitativeEvalStd['year']}"/>
+                        </div>
+
+                    </td>
                 </tr>
-                    <tr>
-
-                        <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;审计评分占比(总经理):
-                        </td>
-                        <td>
-                            <div class="layui-input-inline" style="width: 100%">
-                                <input type="text" class="layui-input" name="auditEvalScoreR" id="auditEvalScoreR"
-                                       lay-verify="required" th:value="${managerQualitativeEvalStd['auditEvalScoreR']}"/>
-                            </div>
-                        </td>
-                        <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;财务稽核占比(总经理)
-                        </td>
-                        <td>
-                            <div class="layui-input-inline" style="width: 100%">
-                                <input type="text" class="layui-input" name="financialAuditScoreR" id="financialAuditScoreR"
-                                       lay-verify="required" th:value="${managerQualitativeEvalStd['financialAuditScoreR']}"/>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;运营管理占比(总经理):
-                        </td>
-                        <td>
-                            <div class="layui-input-inline" style="width: 100%">
-                                <input type="text" class="layui-input" name="operationScoreR" id="operationScoreR"
-                                       lay-verify="required" th:value="${managerQualitativeEvalStd['operationScoreR']}"/>
-                            </div>
-                        </td>
-                        <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;组织领导力占比(总经理)
-                        </td>
-                        <td>
-                            <div class="layui-input-inline" style="width: 100%">
-                                <input type="text" class="layui-input" name="leadershipScoreR" id="leadershipScoreR"
-                                       lay-verify="required" th:value="${managerQualitativeEvalStd['leadershipScoreR']}"/>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;投资评价占比(总经理):
-                        </td>
-                        <td>
-                            <div class="layui-input-inline" style="width: 100%">
-                                <input type="text" class="layui-input" name="investScoreR" id="investScoreR"
-                                       lay-verify="required" th:value="${managerQualitativeEvalStd['investScoreR']}"/>
-                            </div>
-                        </td>
-                        <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;述职报告占比(总经理):
-                        </td>
-                        <td>
-                            <div class="layui-input-inline" style="width: 100%">
-                                <input type="text" class="layui-input" name="workReportScoreR" id="workReportScoreR"
-                                       lay-verify="required" th:value="${managerQualitativeEvalStd['workReportScoreR']}"/>
-                            </div>
-                        </td>
-                    </tr>
-
-
-
                 <tr>
-                    <td colspan="8" style="text-align:center;background: #f7f7f7;margin: auto">非总经理绩效绩效定性评分各项目占比</td>
+                    <td colspan="2" style="text-align: center">&nbsp;总经理绩效绩效定性评分各项目占比
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td colspan="2" style="text-align: center">&nbsp;非总经理绩效绩效定性评分各项目占比
+                    </td>
                 </tr>
 
                 <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;审计评分占比(总经理):
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="auditEvalScoreR" id="auditEvalScoreR"
+                                   lay-verify="required" th:value="${managerQualitativeEvalStd['auditEvalScoreR']}"/>
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;技能评价占比(非总经理):
                     </td>
                     <td>
@@ -92,6 +59,19 @@
                                    lay-verify="required" th:value="${managerQualitativeEvalStd['skillScoreR']}"/>
                         </div>
                     </td>
+
+                </tr>
+
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;财务稽核占比(总经理)
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="financialAuditScoreR" id="financialAuditScoreR"
+                                   lay-verify="required" th:value="${managerQualitativeEvalStd['financialAuditScoreR']}"/>
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;民主评议占比(非总经理):
                     </td>
                     <td>
@@ -103,6 +83,15 @@
                 </tr>
 
                 <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;运营管理占比(总经理):
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="operationScoreR" id="operationScoreR"
+                                   lay-verify="required" th:value="${managerQualitativeEvalStd['operationScoreR']}"/>
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;上级评价占比(非总经理):
                     </td>
                     <td>
@@ -111,17 +100,53 @@
                                    lay-verify="required" th:value="${managerQualitativeEvalStd['superiorEvalScoreR']}"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;年份:
+                </tr>
+
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;组织领导力占比(总经理)
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="year" id="year"
-                                   lay-verify="required" th:value="${managerQualitativeEvalStd['year']}"/>
+                            <input type="text" class="layui-input" name="leadershipScoreR" id="leadershipScoreR"
+                                   lay-verify="required" th:value="${managerQualitativeEvalStd['leadershipScoreR']}"/>
                         </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="text-align: right" colspan="2">&nbsp&nbsp;
                     </td>
                 </tr>
 
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;投资评价占比(总经理):
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="investScoreR" id="investScoreR"
+                                   lay-verify="required" th:value="${managerQualitativeEvalStd['investScoreR']}"/>
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="text-align: right" colspan="2">&nbsp&nbsp;
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;述职报告占比(总经理):
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="workReportScoreR" id="workReportScoreR"
+                                   lay-verify="required" th:value="${managerQualitativeEvalStd['workReportScoreR']}"/>
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="text-align: right" colspan="2">&nbsp&nbsp;
+                </tr>
+
             </table>
+
+
+
+
+
             <table class="layui-table layui-form" lay-size="sm">
                 <tr>
                     <td colspan="4" style="text-align: center">
@@ -140,6 +165,14 @@
             , layer = layui.layer
             , laydate = layui.laydate
             , form = layui.form;
+
+        // 重新重置日期控件
+        laydate.render({
+            elem : '#year',
+            trigger : 'click',
+            type : 'year',
+            value : moment().format("YYYY")
+        });
 
         form.on('submit(baseForm)', function (data) {
             var elem = data.elem;

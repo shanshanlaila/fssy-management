@@ -41,7 +41,7 @@ public interface ManagerQualitativeEvalStdService extends IService<ManagerQualit
      * @param id
      * @return
      */
-    public boolean deleteManagerQualitativeEvalStdDataById(Integer id);
+    public boolean deleteManagerQualitativeEvalStdDataById(Integer id,Map<String, Object> params);
 
 
     /**
@@ -49,7 +49,7 @@ public interface ManagerQualitativeEvalStdService extends IService<ManagerQualit
      * @param managerQualitativeEvalStd
      * @return
      */
-     boolean updateManagerQualitativeEvalStdData(ManagerQualitativeEvalStd managerQualitativeEvalStd);
+    boolean updateManagerQualitativeEvalStdData(ManagerQualitativeEvalStd managerQualitativeEvalStd,Map<String, Object> params);
 
 
     /**
@@ -57,5 +57,5 @@ public interface ManagerQualitativeEvalStdService extends IService<ManagerQualit
      * @param managerQualitativeEvalStd
      * @return
      */
-     boolean insertManagerQualitativeEvalStd(ManagerQualitativeEvalStd managerQualitativeEvalStd);
+    boolean insertManagerQualitativeEvalStd(ManagerQualitativeEvalStd managerQualitativeEvalStd);
 }

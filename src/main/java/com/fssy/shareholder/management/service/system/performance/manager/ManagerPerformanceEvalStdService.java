@@ -3,6 +3,7 @@ package com.fssy.shareholder.management.service.system.performance.manager;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerPerformanceEvalStd;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public interface ManagerPerformanceEvalStdService extends IService<ManagerPerfor
      * @param id
      * @return
      */
-    public boolean deleteManagerPerformanceEvalStdDataById(Integer id);
+    public boolean deleteManagerPerformanceEvalStdDataById(Integer id,Map<String, Object> params);
 
 
     /**
@@ -45,7 +46,7 @@ public interface ManagerPerformanceEvalStdService extends IService<ManagerPerfor
      * @param managerPerformanceEvalStd
      * @return
      */
-    boolean updateManagerPerformanceEvalStdData(ManagerPerformanceEvalStd managerPerformanceEvalStd);
+    boolean updateManagerPerformanceEvalStdData(ManagerPerformanceEvalStd managerPerformanceEvalStd,Map<String, Object> params);
 
 
     /**
@@ -54,6 +55,7 @@ public interface ManagerPerformanceEvalStdService extends IService<ManagerPerfor
      * @return
      */
     boolean insertManagerPerformanceEvalStd(ManagerPerformanceEvalStd managerPerformanceEvalStd);
+
 
 
 }
