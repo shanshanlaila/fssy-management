@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerPerformanceEvalStd;
 import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerPerformanceEvalStdMapper;
+import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.system.performance.manager.ManagerPerformanceEvalStdService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,11 @@ public class ManagerPerformanceEvalStdServiceImpl extends ServiceImpl<ManagerPer
     @Autowired
     private ManagerPerformanceEvalStdMapper managerPerformanceEvalStdMapper;
 
+    /**
+     * 通过查询条件 分页查询数据
+     * @param params
+     * @return
+     */
     @Override
     public Page<ManagerPerformanceEvalStd> findManagerPerformanceEvalStdDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManagerPerformanceEvalStd> queryWrapper = getQueryWrapper(params);
@@ -36,6 +43,11 @@ public class ManagerPerformanceEvalStdServiceImpl extends ServiceImpl<ManagerPer
 
     }
 
+    /**
+     * 查询所有数据
+     * @param params
+     * @return
+     */
     @Override
     public List<ManagerPerformanceEvalStd> findManagerPerformanceEvalStdDataByParams(Map<String, Object> params) {
         QueryWrapper<ManagerPerformanceEvalStd> queryWrapper = getQueryWrapper(params);
@@ -43,21 +55,67 @@ public class ManagerPerformanceEvalStdServiceImpl extends ServiceImpl<ManagerPer
         return managerPerformanceEvalStds;
     }
 
+    /**
+     * 通过id删除数据
+     * @param id
+     * @return
+     */
     @Override
     public boolean deleteManagerPerformanceEvalStdDataById(Integer id) {
+        int result = managerPerformanceEvalStdMapper.deleteById(id);
+        if (result > 0) {
+            return true;
+        }
         return false;
     }
 
+    /**
+     *  修改经理人绩效定性评分各项目占比表
+     * @param managerPerformanceEvalStd
+     * @return
+     */
     @Override
     public boolean updateManagerPerformanceEvalStdData(ManagerPerformanceEvalStd managerPerformanceEvalStd) {
+        BigDecimal kpiScoreR = managerPerformanceEvalStd.getKpiScoreR();
+        Double spiScpreRs = kpiScoreR.doubleValue();
+        Double qualitativeScoreR = managerPerformanceEvalStd.getQualitativeScoreR();
+        double v = spiScpreRs + qualitativeScoreR;
+        if (v!=1){
+            return false;
+        }
+        int result = managerPerformanceEvalStdMapper.updateById(managerPerformanceEvalStd);
+        if (result > 0) {
+            return true;
+        }
         return false;
     }
 
+    /**
+     * 添加经理人绩效定性评分各项目占比表
+     * @param managerPerformanceEvalStd
+     * @return
+     */
     @Override
     public boolean insertManagerPerformanceEvalStd(ManagerPerformanceEvalStd managerPerformanceEvalStd) {
+        BigDecimal kpiScoreR = managerPerformanceEvalStd.getKpiScoreR();
+        Double spiScpreRs = kpiScoreR.doubleValue();
+        Double qualitativeScoreR = managerPerformanceEvalStd.getQualitativeScoreR();
+        double v = spiScpreRs + qualitativeScoreR;
+        if (v!=1){
+            return false;
+        }
+        int result = managerPerformanceEvalStdMapper.insert(managerPerformanceEvalStd);
+        if (result > 0) {
+            return true;
+        }
         return false;
     }
 
+    /**
+     * 查询条件 在数据库中进行查询
+     * @param params
+     * @return
+     */
     private QueryWrapper<ManagerPerformanceEvalStd> getQueryWrapper(Map<String, Object> params){
         QueryWrapper<ManagerPerformanceEvalStd> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("year")) {

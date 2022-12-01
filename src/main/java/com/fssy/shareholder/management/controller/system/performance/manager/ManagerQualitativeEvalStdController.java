@@ -1,13 +1,16 @@
 package com.fssy.shareholder.management.controller.system.performance.manager;
 
 
+
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+
+import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.manage.company.CompanyService;
-import com.fssy.shareholder.management.service.system.config.AttachmentService;
-import com.fssy.shareholder.management.service.system.config.ImportModuleService;
+
+import com.fssy.shareholder.management.service.system.performance.manager.ManagerQualitativeEvalService;
 import com.fssy.shareholder.management.service.system.performance.manager.ManagerQualitativeEvalStdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -37,13 +40,7 @@ public class ManagerQualitativeEvalStdController {
     private ManagerQualitativeEvalStdService managerQualitativeEvalStdService;
 
     @Autowired
-    private AttachmentService attachmentService;
-
-    @Autowired
-    private ImportModuleService importModuleService;
-    @Autowired
     private CompanyService companyService;
-
 
     /**
      * 经理人绩效定性评分各项目占比管理页面
@@ -84,6 +81,11 @@ public class ManagerQualitativeEvalStdController {
         return SysResult.build(500, "总经理和非总经理占比分别要100%，请检查数据后重新尝试");
     }
 
+    /**
+     * 返回经理人绩效定性评分各项目占比页面
+     * @param request
+     * @return
+     */
     @GetMapping("getYearScore")
     @ResponseBody
     public Map<String,Object> getManagerQualitativeEvalStdDatas(HttpServletRequest request){
@@ -93,9 +95,7 @@ public class ManagerQualitativeEvalStdController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
-//        //获取前端公司查询的主键
-//        String companyIds = request.getParameter("companyIds");
-//        params.put("companyId",companyIds);
+
         Page<ManagerQualitativeEvalStd> managerQualitativeEvalStdDataListPerPageByParams = managerQualitativeEvalStdService.findManagerQualitativeEvalStdDataListPerPageByParams(params);
         if (managerQualitativeEvalStdDataListPerPageByParams.getTotal() == 0) {
             result.put("code", 404);
@@ -132,7 +132,9 @@ public class ManagerQualitativeEvalStdController {
     @PostMapping("update")
     @ResponseBody
     public SysResult update(ManagerQualitativeEvalStd managerQualitativeEvalStd){
-        boolean result = managerQualitativeEvalStdService.updateManagerQualitativeEvalStdData(managerQualitativeEvalStd);
+
+        Map<String, Object> params = new HashMap<>();
+        boolean result = managerQualitativeEvalStdService.updateManagerQualitativeEvalStdData(managerQualitativeEvalStd,params);
         if (result) {
             return SysResult.ok();
         }
@@ -146,8 +148,8 @@ public class ManagerQualitativeEvalStdController {
      */
     @DeleteMapping("{id}")
     @ResponseBody
-    public SysResult delete(@PathVariable(value = "id") Integer id) {
-        boolean result = managerQualitativeEvalStdService.deleteManagerQualitativeEvalStdDataById(id);
+    public SysResult delete(@PathVariable(value = "id") Integer id,Map<String, Object> params) {
+        boolean result = managerQualitativeEvalStdService.deleteManagerQualitativeEvalStdDataById(id,params);
         if (result) {
             return SysResult.ok();
         }
