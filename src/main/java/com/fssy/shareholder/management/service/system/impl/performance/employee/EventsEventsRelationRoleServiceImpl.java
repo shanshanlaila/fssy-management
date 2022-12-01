@@ -4,15 +4,6 @@
  */
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,6 +11,14 @@ import com.fssy.shareholder.management.mapper.system.performance.employee.Events
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -213,6 +212,10 @@ public class EventsEventsRelationRoleServiceImpl
         // 用户名称查询
         if (params.containsKey("userName")) {
             queryWrapper.like("userName", params.get("userName"));
+        }
+        // 用户表主键列表查询
+        if (params.containsKey("userIds")) {
+            queryWrapper.in("userId", (List<String>) params.get("userIds"));
         }
         if (params.containsKey("idDesc")) {
             queryWrapper.orderByDesc("id");

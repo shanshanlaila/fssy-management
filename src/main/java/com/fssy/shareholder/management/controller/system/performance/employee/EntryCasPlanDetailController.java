@@ -77,6 +77,12 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams,selectedUserIds);
+        model.addAttribute("userList", userList);
+        ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("departmentName",viewDepartmentRoleUser.getDepartmentName());
         return "system/performance/employee/performance-entry-cas-plan-detail-list";
     }
 
@@ -254,6 +260,12 @@ public class EntryCasPlanDetailController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("userNameRight"))) {
             params.put("userNameRight", request.getParameter("userNameRight"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("userIds")))
+        {
+            String userIdsStr = request.getParameter("userIds");
+            List<String> userIds = Arrays.asList(userIdsStr.split(","));
+            params.put("userIds", userIds);
         }
         return params;
     }
@@ -469,7 +481,7 @@ public class EntryCasPlanDetailController {
 
     @GetMapping("HRIndex")
     @RequiredLog("人力资源部审核")
-    @RequiresPermissions("system:performance:entryCasPlanDetail")
+    @RequiresPermissions("system:performance:entryCasPlanDetail:HRIndex")
     public String HRIndex(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
