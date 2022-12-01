@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -179,5 +180,10 @@ public class ManagerQualitativeEval extends BaseModel {
     @TableField("adjustCause")
     private String adjustCause;
 
+    /**
+     * 定性评价比例ID
+     */
+    @TableField("evalStdId")
+    private Integer evalStdId;
 
 }

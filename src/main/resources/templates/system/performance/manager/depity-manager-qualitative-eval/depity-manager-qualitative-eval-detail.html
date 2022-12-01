@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>查看指定经理人的定性评价组成</title>
+	<link rel="stylesheet" th:href="@{/css/common.css}" />
+	<script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+<body>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="layui-fluid">
+	<div class="layui-row layui-col-space15">
+		<div class="layui-form">
+			<h3 style="margin: 5px;text-align:center">分管经理定性评分各项目占比</h3>
+			<table class="layui-table" lay-size="sm">
+				<tr>
+					<td style="text-align:center">技能评价占比</td>
+					<td>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" readonly th:value="${skillScoreR}">
+						</div>
+					</td>
+					<td style="text-align:center">民主评议占比</td>
+					<td>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" readonly th:value="${democraticEvalScoreR}">
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:center">上级评价占比</td>
+					<td>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" readonly th:value="${superiorEvalScoreR}">
+						</div>
+					</td>
+				</tr>
+			</table>
+			<h3 style="margin: 5px;text-align:center">分管经理定性评分各项目原始得分</h3>
+			<table class="layui-table" lay-size="sm">
+				<tr>
+					<td style="text-align:center">技能评价得分</td>
+					<td>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" readonly th:value="${skillScoreOld}">
+						</div>
+					</td>
+					<td style="text-align:center">民主评议得分</td>
+					<td>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" readonly th:value="${democraticEvalScoreOld}">
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align:center">上级评价得分</td>
+					<td>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" readonly th:value="${superiorEvalScoreOld}">
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>
