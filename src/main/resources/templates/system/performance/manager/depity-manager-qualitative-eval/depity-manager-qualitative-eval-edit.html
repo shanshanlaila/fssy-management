@@ -13,77 +13,39 @@
         <form class="layui-form" style="margin-top: 10px;" id="head">
             <table class="layui-table layui-form" lay-size="sm">
                 <tr>
-                    <td colspan="4" style="background: #f7f7f7; color: black;">修改总经理定性评价信息</td>
+                    <td colspan="4" style="background: #f7f7f7; color: black;">修改分管经理定性评价信息</td>
                 </tr>
                 <input type="hidden" th:value="${managerQualitativeEval['id']}" name="id">
                 <!--第一行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;所在企业:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;技能评价得分:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="companyName" id="companyName"
-                                   lay-verify="required" th:value="${managerQualitativeEval['companyName']}"/>
+                            <input type="text" class="layui-input layui-disabled" name="skillScore" id="skillScore"
+                                   lay-verify="required" th:value="${managerQualitativeEval['skillScore']}"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;审计评价得分:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;民主评议得分:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="auditEvalScore" id="auditEvalScore"
-                                   lay-verify="required" th:value="${managerQualitativeEval['auditEvalScore']}"/>
+                            <input type="text" class="layui-input layui-disabled" name="democraticEvalScore" id="democraticEvalScore"
+                                   lay-verify="required" th:value="${managerQualitativeEval['democraticEvalScore']}"/>
                         </div>
                     </td>
                 </tr>
                 <!--第二行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;财务稽核得分:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;上级评价得分:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="financialAuditScore" id="financialAuditScore"
-                                   lay-verify="required" th:value="${managerQualitativeEval['financialAuditScore']}"/>
+                            <input type="text" class="layui-input layui-disabled" name="superiorEvalScore" id="superiorEvalScore"
+                                   lay-verify="required" th:value="${managerQualitativeEval['superiorEvalScore']}"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;运营管理得分:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="operationScore" id="operationScore"
-                                   lay-verify="required" th:value="${managerQualitativeEval['operationScore']}"/>
-                        </div>
-                    </td>
-                </tr>
-                <!--第三行-->
-                <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;组织领导得分:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="leadershipScore" id="leadershipScore"
-                                   lay-verify="required" th:value="${managerQualitativeEval['leadershipScore']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;投资管理得分:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="investScore" id="investScore"
-                                   lay-verify="required" th:value="${managerQualitativeEval['investScore']}"/>
-                        </div>
-                    </td>
-                </tr>
-                <!--第四行-->
-                <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;述职报告得分:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="workReportScore" id="workReportScore"
-                                   lay-verify="required" th:value="${managerQualitativeEval['workReportScore']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;系统合计分数:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;系统小计分数:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
@@ -92,9 +54,9 @@
                         </div>
                     </td>
                 </tr>
-                <!--第五行-->
+                <!--第三行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;修改合计分数:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;修改小计分数:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
@@ -106,7 +68,7 @@
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" placeholder="请输入修改[原因\时间\操作人]" class="layui-input" name="adjustCause" id="adjustCause"
+                            <input type="textarea" placeholder="请输入修改[原因\时间\操作人]" class="layui-input" name="adjustCause" id="adjustCause"
                                    lay-verify="required" th:value="${managerQualitativeEval['adjustCause']}"/>
                         </div>
                     </td>

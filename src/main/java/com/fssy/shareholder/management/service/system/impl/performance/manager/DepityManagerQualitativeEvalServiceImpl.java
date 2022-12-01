@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerQualitativeEvalMapper;
+import com.fssy.shareholder.management.mapper.system.performance.manager.DepityManagerQualitativeEvalMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerQualitativeEvalStdMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.common.SheetService;
-import com.fssy.shareholder.management.service.system.performance.manager.ManagerQualitativeEvalService;
+import com.fssy.shareholder.management.service.system.performance.manager.DepityManagerQualitativeEvalService;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -21,7 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -33,12 +36,12 @@ import java.util.stream.Collectors;
  * @since 2022-11-28
  */
 @Service
-public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualitativeEvalMapper, ManagerQualitativeEval> implements ManagerQualitativeEvalService {
+public class DepityManagerQualitativeEvalServiceImpl extends ServiceImpl<DepityManagerQualitativeEvalMapper, ManagerQualitativeEval> implements DepityManagerQualitativeEvalService {
 
     @Autowired
-    private ManagerQualitativeEvalMapper managerQualitativeEvalMapper;
-    @Autowired
     private ManagerQualitativeEvalStdMapper managerQualitativeEvalStdMapper;
+    @Autowired
+    private DepityManagerQualitativeEvalMapper depityManagerQualitativeEvalMapper;
     @Autowired
     private SheetService sheetService;
 
@@ -50,7 +53,7 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
     @Override
     public List<ManagerQualitativeEval> findManagerQualitativeEvalSDataByParams(Map<String, Object> params) {
         QueryWrapper<ManagerQualitativeEval> queryWrapper = getQueryWrapperManager(params);
-        return managerQualitativeEvalMapper.selectList(queryWrapper);
+        return depityManagerQualitativeEvalMapper.selectList(queryWrapper);
     }
 
     /**
@@ -64,7 +67,7 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
         int limit = (int)params.get("limit");
         int page = (int)params.get("page");
         Page<ManagerQualitativeEval> myPage = new Page<>(page,limit);
-        return managerQualitativeEvalMapper.selectPage(myPage, queryWrapper);
+        return depityManagerQualitativeEvalMapper.selectPage(myPage, queryWrapper);
     }
 
     /**
@@ -75,7 +78,7 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
     @Override
     public List<Map<String, Object>> findManagerQualitativeEvalDataByParams(Map<String, Object> params) {
         QueryWrapper<ManagerQualitativeEval> queryWrapper = getQueryWrapperManager(params);
-        return managerQualitativeEvalMapper.selectMaps(queryWrapper);
+        return depityManagerQualitativeEvalMapper.selectMaps(queryWrapper);
     }
 
     /**
@@ -92,11 +95,11 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
         // 读取附件
         sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
         // 读取表单
-        sheetService.readByName("总经理定性评价"); //根据表单名称获取该工作表单
+        sheetService.readByName("分管经理定性评价"); //根据表单名称获取该工作表单
         // 获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【总经理定性评价】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【分管经理定性评价】不存在，无法读取数据，请检查");
         }
 
         // 获取单价列表数据
@@ -141,28 +144,22 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
             String companyName = cells.get(SheetService.columnToIndex("C"));
             String position = cells.get(SheetService.columnToIndex("D"));
             String yearExcel = cells.get(SheetService.columnToIndex("E"));
-            String auditEvalScore = cells.get(SheetService.columnToIndex("F"));
-            String financialAuditScore = cells.get(SheetService.columnToIndex("G"));
-            String operationScore = cells.get(SheetService.columnToIndex("H"));
-            String leadershipScore = cells.get(SheetService.columnToIndex("I"));
-            String investScore = cells.get(SheetService.columnToIndex("J"));
-            String workReportScore = cells.get(SheetService.columnToIndex("K"));
+            String skillScore = cells.get(SheetService.columnToIndex("F"));
+            String democraticEvalScore = cells.get(SheetService.columnToIndex("G"));
+            String superiorEvalScore = cells.get(SheetService.columnToIndex("H"));
 
             //构建实体类  ManagerQualitativeEval
             ManagerQualitativeEval managerQualitativeEval = new ManagerQualitativeEval();
-            managerQualitativeEval.setId(Integer.valueOf(id));
+//            managerQualitativeEval.setId(Integer.valueOf(id));
             managerQualitativeEval.setManagerName(managerName);
             managerQualitativeEval.setCompanyName(companyName);
             managerQualitativeEval.setPosition(position);
             managerQualitativeEval.setYear(Integer.valueOf(yearExcel));
-            managerQualitativeEval.setAuditEvalScore(Double.valueOf(auditEvalScore));
-            managerQualitativeEval.setFinancialAuditScore(Double.valueOf(financialAuditScore));
-            managerQualitativeEval.setOperationScore(Double.valueOf(operationScore));
-            managerQualitativeEval.setLeadershipScore(Double.valueOf(leadershipScore));
-            managerQualitativeEval.setInvestScore(Double.valueOf(investScore));
-            managerQualitativeEval.setWorkReportScore(Double.valueOf(workReportScore));
+            managerQualitativeEval.setSkillScore(Double.valueOf(skillScore));
+            managerQualitativeEval.setDemocraticEvalScore(Double.valueOf(democraticEvalScore));
+            managerQualitativeEval.setSuperiorEvalScore(Double.valueOf(superiorEvalScore));
             managerQualitativeEval.setStatus("待计算");
-            managerQualitativeEval.setGeneralManager("是");
+            managerQualitativeEval.setGeneralManager("否");
 
             //根据id进行导入，存在则更新，不存在则新增，并且每次导入都会刷新分数，回归待计算状态
             saveOrUpdate(managerQualitativeEval);
@@ -195,7 +192,7 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
      */
     @Override
     public boolean deleteManagerQualitativeEvalDataById(Integer id) {
-        int result = managerQualitativeEvalMapper.deleteById(id);
+        int result = depityManagerQualitativeEvalMapper.deleteById(id);
         if (result > 0) {
             return true;
         }
@@ -209,7 +206,7 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
      */
     @Override
     public boolean updateManagerQualitativeEvalData(ManagerQualitativeEval managerQualitativeEval) {
-        int result = managerQualitativeEvalMapper.updateById(managerQualitativeEval);
+        int result = depityManagerQualitativeEvalMapper.updateById(managerQualitativeEval);
         if (result > 0) {
             return true;
         }
@@ -228,13 +225,13 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
         //因为数据库中的字段类型是int,前端传入是String,在使用equals时需保证与数据库字段相同,所以在此将类型转为int
         int year = Integer.parseInt(yearValue);
         /**
-         * step1:分别条件查询出总经理定性评价表和比例表的相关记录
+         * step1:分别条件查询出分管经理定性评价表和比例表的相关记录
          */
-        //1.1 查询出总经理表中的相关年份并且待计算的所有记录,存入filterListManager
+        //1.1 查询出分管经理表中的相关年份并且待计算的所有记录,存入filterListManager
         QueryWrapper<ManagerQualitativeEval> queryWrapperManger = getQueryWrapperManager(params);
-        List<ManagerQualitativeEval> managerQualitativeEvals = managerQualitativeEvalMapper.selectList(queryWrapperManger);
+        List<ManagerQualitativeEval> managerQualitativeEvals = depityManagerQualitativeEvalMapper.selectList(queryWrapperManger);
         List<ManagerQualitativeEval> filterListManager = managerQualitativeEvals.stream()
-                .filter(i -> i.getStatus().equals("待计算")  && (i.getYear().equals(year)) && (i.getPosition().equals("总经理"))).collect(Collectors.toList());
+                .filter(i -> i.getStatus().equals("待计算")  && (i.getYear().equals(year))).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(filterListManager)) {
             throw new ServiceException("没有查出数据或已生成！生成失败！");
         }
@@ -247,24 +244,18 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
             throw new ServiceException("没有查出数据或已生成！生成失败！");
         }
         /**
-         * step2:获取查询到的比例表记录中的总经理相关比例指标
+         * step2:获取查询到的比例表记录中的分管经理相关比例指标
          */
         //2.1 创建接收比例指标的变量
-        double auditEvalScoreR = 0;
-        double financialAuditScoreR = 0;
-        double operationScoreR = 0;
-        double leadershipScoreR = 0;
-        double investScoreR = 0;
-        double workReportScoreR = 0;
+        double skillScoreR = 0;
+        double democraticEvalScoreR  = 0;
+        double superiorEvalScoreR = 0;
         int evalStdId = -1;
         //2.2 拿出记录中的相关值
         for (ManagerQualitativeEvalStd temp : filterListStd) {
-            auditEvalScoreR = temp.getAuditEvalScoreR();
-            financialAuditScoreR = temp.getFinancialAuditScoreR();
-            operationScoreR = temp.getOperationScoreR();
-            leadershipScoreR = temp.getLeadershipScoreR();
-            investScoreR = temp.getInvestScoreR();
-            workReportScoreR = temp.getWorkReportScoreR();
+            skillScoreR = temp.getSkillScoreR();
+            democraticEvalScoreR = temp.getDemocraticEvalScoreR();
+            superiorEvalScoreR = temp.getSuperiorEvalScoreR();
             evalStdId = temp.getId();
         }
         /**
@@ -272,39 +263,31 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
          */
         //3.1 遍历记录,进行分数计算
         for (ManagerQualitativeEval temp: filterListManager) {
-            //3.2 获取词条记录中的a f o l i w六个指标的分数,然后与比例记录中的值进行计算
-            double auditEvalScore = temp.getAuditEvalScore() * auditEvalScoreR;
-            double financialAuditScore = temp.getFinancialAuditScore() * financialAuditScoreR;
-            double operationScore = temp.getOperationScore() * operationScoreR;
-            double leadershipScore = temp.getLeadershipScore() * leadershipScoreR;
-            double investScore = temp.getInvestScore() * investScoreR;
-            double workReportScore = temp.getWorkReportScore() * workReportScoreR;
+            //3.2 获取词条记录中的s d s三个指标的分数,然后与比例记录中的值进行计算
+            double skillScore = temp.getSkillScore() * skillScoreR;
+            double democraticEvalScore = temp.getDemocraticEvalScore() * democraticEvalScoreR;
+            double superiorEvalScore = temp.getSuperiorEvalScore() * superiorEvalScoreR;
             //3.3 计算出总和(自动),并初始化合计(人工)
-            double qualitativeEvalScoreAuto = auditEvalScore + financialAuditScore + operationScore
-                    + leadershipScore + investScore + workReportScore;
+            double qualitativeEvalScoreAuto = skillScore + democraticEvalScore + superiorEvalScore;
             double qualitativeEvalScoreAdjust = qualitativeEvalScoreAuto;
             //3.4 将分数插入数据库
             ManagerQualitativeEval managerQualitativeEval = new ManagerQualitativeEval();
-            managerQualitativeEval.setAuditEvalScore(auditEvalScore);
-            managerQualitativeEval.setFinancialAuditScore(financialAuditScore);
-            managerQualitativeEval.setOperationScore(operationScore);
-            managerQualitativeEval.setLeadershipScore(leadershipScore);
-            managerQualitativeEval.setInvestScore(investScore);
-            managerQualitativeEval.setWorkReportScore(workReportScore);
+            managerQualitativeEval.setSkillScore(skillScore);
+            managerQualitativeEval.setDemocraticEvalScore(democraticEvalScore);
+            managerQualitativeEval.setSuperiorEvalScore(superiorEvalScore);
             managerQualitativeEval.setQualitativeEvalScoreAuto(qualitativeEvalScoreAuto);
             managerQualitativeEval.setQualitativeEvalScoreAdjust(qualitativeEvalScoreAdjust);
             managerQualitativeEval.setStatus("已计算");
             managerQualitativeEval.setEvalStdId(evalStdId);
             // 根据经理人姓名,年份,公司名称进行判断，存在则更新，不存在则新增
             UpdateWrapper<ManagerQualitativeEval> UpdateWrapper = new UpdateWrapper<>();
-            UpdateWrapper.set("auditEvalScore", auditEvalScore).set("evalStdId",evalStdId)
-                    .set("financialAuditScore", financialAuditScore).set("operationScore", operationScore)
-                    .set("leadershipScore", leadershipScore).set("investScore", investScore)
-                    .set("workReportScore",workReportScore).set("qualitativeEvalScoreAuto",qualitativeEvalScoreAuto)
+            UpdateWrapper.set("skillScore", skillScore)
+                    .set("democraticEvalScore", democraticEvalScore).set("superiorEvalScore", superiorEvalScore)
+                    .set("qualitativeEvalScoreAuto",qualitativeEvalScoreAuto).set("evalStdId",evalStdId)
                     .set("qualitativeEvalScoreAdjust",qualitativeEvalScoreAdjust).set("status","已计算")
                     .eq("managerName", temp.getManagerName()).eq("year", temp.getYear())
                     .eq("companyName", temp.getCompanyName());
-            managerQualitativeEvalMapper.update(null, UpdateWrapper);
+            depityManagerQualitativeEvalMapper.update(null, UpdateWrapper);
         }
         return true;
     }

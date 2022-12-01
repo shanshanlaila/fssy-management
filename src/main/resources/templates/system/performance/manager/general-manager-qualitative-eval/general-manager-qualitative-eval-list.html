@@ -59,14 +59,21 @@
                                     title="导入总经理定性评价表">导入总经理定性评价附件
                             </button>
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="visibility:hidden;">
+                            <select name="generalManager" id="generalManager">
+                                <option value="">请选择职位类别</option>
+                                <option value="是">总经理</option>
+                                <option value="否">分管经理人</option>
+                            </select>
+                        </div>
                     </div>
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-<!--                        <a lay-event="detail" title="经理人分数信息明细"><i class="layui-icon">&#xe63c;</i></a>-->
-                        <a lay-event="edit" title="总经理定性评价修改"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除经理人分数信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a lay-event="detail" title="总经理定性评价信息明细"><i class="layui-icon">&#xe63c;</i></a>
+                        <a lay-event="edit" title="总经理定性评价信息修改"><i class="layui-icon">&#xe642;</i></a>
+                        <a lay-event="delete" title="删除总经理定性评价信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                     </script>
@@ -86,7 +93,7 @@
         form.on('submit(search)', function (data) {
             // 重新加载表格
             table.reload('dataTable', {
-                url: "/system/performance/manager_kpi/view-manager-kpi-month-score/getObjects",
+                url: "/system/performance/manager/general-manager-qualitative-eval/getObjects?generalManager=" + "是",
                 where: data.field,
                 page: {
                     curr: 1
@@ -97,9 +104,9 @@
         //监听导出按钮
         form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
-            field.url = "/system/performance/manager_kpi/view-manager-kpi-month-score/downloadForCharge";
+            field.url = "/system/performance/manager/general-manager-qualitative-eval/downloadForCharge";
             var url = createUrl(field);
-            layer.msg("正在经理人月度KPI分数，请稍候");
+            layer.msg("正在导出总经理定性评价表，请稍候");
             window.open(url, true);
             return false;
         });
@@ -107,9 +114,9 @@
         form.on('submit(import)', function (data) {
             var createLayer = layer.open({
                 type: 2,
-                title: "上传经理人绩效分数附件",
+                title: "上传总经理定性评价附件",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/performance/manager_kpi/view-manager-kpi-month-score/index',
+                content: '/system/performance/manager/general-manager-qualitative-eval/index',
                 scrollbar: true,
                 maxmin: true,
             });
@@ -132,128 +139,180 @@
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        width: 60
+                        width: 60,
+                        rowspan: 2
+                    },
+                    {
+                        field: 'index',
+                        title: '编号',
+                        type: 'numbers',
+                        align: 'center',
+                        width: 80,
+                        rowspan: 2
+                    },
+                    // {
+                    //     field: 'id',
+                    //     title: 'ID',
+                    //     align: 'center',
+                    //     width: 80,
+                    //     rowspan: 2
+                    // },
+                    {
+                        field: 'managerName',
+                        title: '姓名',
+                        align: 'center',
+                        width: 120,
+                        rowspan: 2
                     },
                     {
                         field: 'companyName',
-                        title: '企业名称',
+                        title: '所在企业',
                         align: 'center',
-                        fixed: 'left',
-                        width: 120
-                    },
-                    {
-                        field: 'managerName',
-                        title: '经理人姓名',
-                        align: 'center',
-                        fixed: 'left',
-                        width: 120
+                        width: 120,
+                        rowspan: 2
                     },
                     {
                         field: 'position',
-                        title: '职务',
+                        title: '所任职务',
                         align: 'center',
-                        fixed: 'left',
                         width: 80,
+                        rowspan: 2
                     },
                     {
                         field: 'year',
                         title: '年份',
                         align: 'center',
-                        width: 80
+                        width: 80,
+                        rowspan: 2
                     },
                     {
-                        field: 'month',
-                        title: '月份',
-                        align: 'center',
-                        width: 80
-                    },
-                    {
-                        field: 'scoreAuto',
-                        title: '系统生成分数',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
-                        field: 'scoreAdjust', title: '人工调整分数', width: 120,align: 'center',sort: true,
+                        field: 'status', title: '状态', width: 80,align: 'center',rowspan: 2,
                         templet: function (d) {
-                            if (d.anomalyMark === "1") {
-                                return "<span class=\"layui-badge\">"+d.scoreAdjust+"</span>";
-                            } else if (d.anomalyMark === "") {
-                                return d.scoreAdjust;
+                            if (d.status === "待计算") {
+                                return "<span class=\"layui-badge layui-bg-gray\">"+d.status+"</span>";
+                            } else if (d.status === "已计算") {
+                                return "<span class=\"layui-badge layui-bg-green\">"+d.status+"</span>";
                             } else {
                                 return "无对应状态";
                             }
                         }
                     },
                     {
-                        field: 'businessScore',
-                        title: '经营绩效分数',
+                        title: '企业综合评价评分',
+                        colspan: 5,
+                        width: 400,
+                        align: 'center'
+                    },
+                    // {
+                    //     title: '工作评价',
+                    //     colspan: 1,
+                    //     width: 80,
+                    //     align: 'center'
+                    // },
+                    {
+                        field: 'workReportScore',
+                        title: '述职报告',
                         align: 'center',
-                        width: 120
+                        width: 80,
+                        rowspan: 2
                     },
                     {
-                        field: 'incentiveScore',
-                        title: '激励约束分数',
+                        field: 'qualitativeEvalScoreAuto',
+                        title: '合计(自动)',
                         align: 'center',
-                        width: 120
+                        sort: true,
+                        width: 120,
+                        rowspan: 2
                     },
                     {
-                        field: 'difficultyCoefficient',
-                        title: '难度系数',
-                        align: 'center',
-                        width: 100
+                        field: 'qualitativeEvalScoreAdjust', title: '合计(人工)', width: 120,align: 'center',rowspan: 2,sort: true,
+                        templet: function (d) {
+                            if (d.qualitativeEvalScoreAdjust !== d.qualitativeEvalScoreAuto) {
+                                return "<span class=\"layui-badge layui-bg-blue\">"+d.qualitativeEvalScoreAdjust+"</span>";
+                            } else if (d.qualitativeEvalScoreAdjust === d.qualitativeEvalScoreAuto) {
+                                return d.qualitativeEvalScoreAdjust;
+                            } else {
+                                return "无对应状态";
+                            }
+                        }
                     },
+                    // {
+                    //     field: 'qualitativeEvalScoreAdjust',
+                    //     title: '合计(人工)',
+                    //     align: 'center',
+                    //     sort: true,
+                    //     width: 120,
+                    //     rowspan: 2
+                    // },
                     {
-                        field: 'generalManagerScore',
-                        title: '总经理经营绩效分数',
+                        field: 'adjustCause',
+                        title: '人工调整原因',
                         align: 'center',
-                        width: 150,
-                    },
-                    {
-                        field: 'advantageAnalyze',
-                        title: '绩效优点',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
-                        field: 'disadvantageAnalyze',
-                        title: '绩效存在问题',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
-                        field: 'riskDesc',
-                        title: '绩效风险',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
-                        field: 'respDepartment',
-                        title: '总部管控责任部门',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
-                        field: 'groupImproveAction',
-                        title: '管控措施',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
-                        field: 'anomalyType',
-                        title: '绩效异常类别',
-                        align: 'center',
-                        width: 120
+                        width: 120,
+                        rowspan: 2
                     },
                     {
                         fixed: 'right',
                         title: '操作',
-                        width: 100,
+                        width: 80,
                         align: 'center',
-                        toolbar: '#tool'
+                        toolbar: '#tool',
+                        rowspan: 2
                     }
+                ],
+                [
+                    //企业综合评价评分
+                    {
+                        field: 'auditEvalScore',
+                        title: '审计评价',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'financialAuditScore',
+                        title: '财务稽核',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'operationScore',
+                        title: '运营管理',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'leadershipScore',
+                        title: '组织领导力',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'investScore',
+                        title: '投资管理',
+                        align: 'center',
+                        width: 80
+                    },
+                    //工作评价   data-field="11"
+                    // {
+                    //     field: 'workReportScore',
+                    //     title: '述职报告',
+                    //     align: 'center',
+                    //     width: 80
+                    // }
                 ]
             ]
+            //对子列只有一列时，layui的bug进行处理
+            // done: function(res, curr, count) {
+            //     // 直接删选出data-field='workReportScore'隐藏
+            //     // $("td[data-field='workReportScore']").hide()
+            //     $("td[data-field='11']").hide()
+            //     // 循环遍历data-field>0的隐藏
+            //     // $.each($("td"), (function() {
+            //     //     if($(this).attr('data-field') > 0){
+            //     //         $(this).hide()
+            //     //     }
+            //     // }))
+            // }
         });
 
 
@@ -261,31 +320,16 @@
         form.on('submit(confirmScore)',function (data) {
             console.log(data.field)
             var field = data.field;
-            var companyName = data.field.companyName;
             var year =data.field.year;
-            var month =data.field.month;
-            if(companyName == "")
-            {
-                layer.msg("公司名称未空!");
-                return false;
-            }
             if (year == ""){
                 layer.msg("年份为空！");
                 return false;
             }
-            if (month == ""){
-                layer.msg("月份为空！");
-                return false;
-            }
             $.ajax({
                 type: 'POST',
-                url: '/system/performance/manager_kpi/view-manager-kpi-month-score/updateScore',
+                url: '/system/performance/manager/general-manager-qualitative-eval/updateScore',
                 data: {
-                    "managerName": field.managerName,
-                    "companyName": field.companyName,
-                    "generalManager": field.generalManager,
-                    "year": field.year,
-                    "month": field.month
+                    "year": field.year
                 },
                 success: function (result) {
                     layer.closeAll();
@@ -304,18 +348,18 @@
             if (obj.event === 'edit') {
                 layer.open({
                     type: 2,
-                    title: data.managerName + '的各项分数信息如下:',
+                    title: data.managerName + '--' + data.year + '--的定性评价信息如下:',
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/performance/manager_kpi/view-manager-kpi-month-score/edit?id=' + data.id + '&managerName=' + data.managerName + '&month=' + data.month + '&year=' + data.year,
+                    content: '/system/performance/manager/general-manager-qualitative-eval/edit?id=' + data.id + '&managerName=' + data.managerName + '&companyName=' + data.companyName + '&year=' + data.year,
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除【' + data.managerName + '】的分数记录信息吗？', function () {
+                layer.confirm('确认删除【' + data.managerName + '】的记录信息吗？', function () {
                     $.ajax({
                         type: 'DELETE',
-                        url: '/system/performance/manager_kpi/view-manager-kpi-month-score/' + data.id,
+                        url: '/system/performance/manager/general-manager-qualitative-eval/' + data.id,
                         success: function (result) {
                             layer.msg(result.msg);
                             if (result.status == 200) {
@@ -328,12 +372,12 @@
                 // console.log("list" + data.month)
                 layer.open({
                     type : 2,
-                    title : data.year + '年' + data.month  + '月--' + data.managerName + '--的各项分数信息如下:',
+                    title : data.year + '年---'  + data.managerName + '--的各项信息如下:',
                     area : [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
                     //①获取需要查看的此条记录的指定数据
-                    content : '/system/performance/manager_kpi/view-manager-kpi-month-score/search-detail?month=' + data.month + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
+                    content : '/system/performance/manager/general-manager-qualitative-eval/search-detail?year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
                     maxmin : true
                 });
             }
@@ -342,7 +386,7 @@
         $(document).ready(function() {
             console.log($("#year").val())
             table.reload('dataTable', {
-                url: "/system/performance/manager_kpi/view-manager-kpi-month-score/getObjects?year=" + moment().format("YYYY") + "&month=" + moment().month(),
+                url: "/system/performance/manager/general-manager-qualitative-eval/getObjects?year=" + moment().format("YYYY"),
                 // where: data.field,
                 page: {
                     curr: 1
