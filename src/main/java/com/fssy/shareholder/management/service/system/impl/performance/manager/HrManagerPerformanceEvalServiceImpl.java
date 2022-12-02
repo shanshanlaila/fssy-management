@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiScoreMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerPerformanceEvalStdMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerQualitativeEvalMapper;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiLib;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScore;
 import com.fssy.shareholder.management.pojo.system.performance.manager.*;
 import com.fssy.shareholder.management.mapper.system.performance.manager.HrManagerPerformanceEvalMapper;
@@ -42,9 +43,17 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
     private ManagerKpiScoreMapper managerKpiScoreMapper;
 
     @Override
-    public List<HrManagerPerformanceEval> findHrManagerPerformanceEvalDataByParams(Map<String, Object> params) {
-        return null;
+    public List<Map<String, Object>> findHrManagerPerformanceEvalDataByParams(Map<String, Object> params) {
+        QueryWrapper<HrManagerPerformanceEval> queryWrapper = getQueryWrapper(params);
+        return hrManagerPerformanceEvalMapper.selectMaps(queryWrapper);
     }
+
+    @Override
+    public List<HrManagerPerformanceEval> findHrHrManagerPerformanceEvalDataByParams(Map<String, Object> params) {
+        QueryWrapper<HrManagerPerformanceEval> queryWrapper = getQueryWrapper(params);
+        return hrManagerPerformanceEvalMapper.selectList(queryWrapper);
+    }
+
 
     @Override
     public Page<HrManagerPerformanceEval> findHrManagerPerformanceEvalDataListPerPageByParams(Map<String, Object> params) {
@@ -179,6 +188,16 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
         return true;
     }
 
+    @Override
+    public boolean updateHrManagerPerformanceEval(HrManagerPerformanceEval hrManagerPerformanceEval) {
+        int result = hrManagerPerformanceEvalMapper.updateById(hrManagerPerformanceEval);
+        if (result > 0) {
+            return true;
+        }
+        return false;
+    }
+
+
     private QueryWrapper<HrManagerPerformanceEval> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<HrManagerPerformanceEval> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("id")) {
@@ -190,6 +209,9 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
         }
+        if (params.containsKey("companyNameShort")) {
+            queryWrapper.like("companyNameShort", params.get("companyNameShort"));
+        }
         if (params.containsKey("managerName")) {
             queryWrapper.like("managerName", params.get("managerName"));
         }
@@ -199,8 +221,8 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
         if (params.containsKey("year")) {
             queryWrapper.eq("year", params.get("year"));
         }
-        if (params.containsKey("month")) {
-            queryWrapper.eq("month", params.get("month"));
+        if (params.containsKey("kpiScoreMonth")) {
+            queryWrapper.eq("kpiScoreMonth", params.get("kpiScoreMonth"));
         }
         if (params.containsKey("managerType")) {
             queryWrapper.eq("managerType", params.get("managerType"));
