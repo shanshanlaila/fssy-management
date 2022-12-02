@@ -22,21 +22,22 @@
                 <input type="hidden" th:value="${managerQualitativeEvalStd['year']}" name="year">
                 <input type="hidden" th:value="${managerQualitativeEvalStd['id']}" name="id">
 
-                <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;年份:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="year" id="year"
-                                   lay-verify="required" th:value="${managerQualitativeEvalStd['year']}"/>
+
+                    <!--                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;年份:-->
+                    <!--                    </td>-->
+
+                        <div class="layui-input-inline" style="width: 100%;text-align: center">
+                            <!--<input type="text" class="layui-input" name="year" id="year"
+                                   lay-verify="required" th:value="${managerQualitativeEvalStd['year']}" readonly/>-->
+                            <span style="text-align: center;font-size: large">[[${managerQualitativeEvalStd['year']}]]企业经理人绩效评价项目权重修改</span>
                         </div>
 
-                    </td>
-                </tr>
+
+
                 <tr>
                     <td colspan="2" style="text-align: center">&nbsp;总经理绩效绩效定性评分各项目占比
                     </td>
-                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"></td>
                     <td colspan="2" style="text-align: center">&nbsp;非总经理绩效绩效定性评分各项目占比
                     </td>
                 </tr>
@@ -50,7 +51,7 @@
                                    lay-verify="required" th:value="${managerQualitativeEvalStd['auditEvalScoreR']}"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"></td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;技能评价占比(非总经理):
                     </td>
                     <td>
@@ -68,16 +69,18 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="financialAuditScoreR" id="financialAuditScoreR"
-                                   lay-verify="required" th:value="${managerQualitativeEvalStd['financialAuditScoreR']}"/>
+                                   lay-verify="required"
+                                   th:value="${managerQualitativeEvalStd['financialAuditScoreR']}"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"></td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;民主评议占比(非总经理):
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="democraticEvalScoreR" id="democraticEvalScoreR"
-                                   lay-verify="required" th:value="${managerQualitativeEvalStd['democraticEvalScoreR']}"/>
+                                   lay-verify="required"
+                                   th:value="${managerQualitativeEvalStd['democraticEvalScoreR']}"/>
                         </div>
                     </td>
                 </tr>
@@ -91,7 +94,7 @@
                                    lay-verify="required" th:value="${managerQualitativeEvalStd['operationScoreR']}"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"></td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;上级评价占比(非总经理):
                     </td>
                     <td>
@@ -111,7 +114,7 @@
                                    lay-verify="required" th:value="${managerQualitativeEvalStd['leadershipScoreR']}"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"></td>
                     <td style="text-align: right" colspan="2">&nbsp&nbsp;
                     </td>
                 </tr>
@@ -125,7 +128,7 @@
                                    lay-verify="required" th:value="${managerQualitativeEvalStd['investScoreR']}"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"></td>
                     <td style="text-align: right" colspan="2">&nbsp&nbsp;
                 </tr>
                 <tr>
@@ -137,14 +140,31 @@
                                    lay-verify="required" th:value="${managerQualitativeEvalStd['workReportScoreR']}"/>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">              </td>
+                    <td style="width: 10%;text-align: right"></td>
                     <td style="text-align: right" colspan="2">&nbsp&nbsp;
                 </tr>
 
+                <tr>
+                    <td style="width: 10%;text-align: left"><span style='color: red; font-weight: bold'>*</span>总计:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input id="number3" type="text" class="layui-input"
+                                   lay-verify="required"/>
+                        </div>
+                    </td>
+
+                    <td style="width: 10%;text-align: right"></td>
+                    <td style="width: 10%;text-align: left"><span style='color: red; font-weight: bold'>*</span>总计:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input id="number2" type="text" class="layui-input"
+                                   lay-verify="required"/>
+                        </div>
+                    </td>
+                </tr>
+
+
             </table>
-
-
-
 
 
             <table class="layui-table layui-form" lay-size="sm">
@@ -167,12 +187,12 @@
             , form = layui.form;
 
         // 重新重置日期控件
-        laydate.render({
-            elem : '#year',
-            trigger : 'click',
-            type : 'year',
-            value : moment().format("YYYY")
-        });
+       /* laydate.render({
+            elem: '#year',
+            trigger: 'click',
+            type: 'year',
+            value: moment().format("YYYY")
+        });*/
 
         form.on('submit(baseForm)', function (data) {
             var elem = data.elem;
@@ -201,6 +221,139 @@
             });
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
+
+        $(document).ready(function () {
+            $('#auditEvalScoreR').on('input propertychange', function () {
+                var auditEvalScoreR = $(this).val();
+                var financialAuditScoreR = document.getElementById("financialAuditScoreR").value
+                var operationScoreR = document.getElementById("operationScoreR").value
+                var leadershipScoreR = document.getElementById("leadershipScoreR").value
+                var investScoreR = document.getElementById("investScoreR").value
+                var workReportScoreR = document.getElementById("workReportScoreR").value
+                var text1 = Number(auditEvalScoreR) + Number(financialAuditScoreR) + Number(operationScoreR) + Number(leadershipScoreR) +
+                    Number(investScoreR) + Number(workReportScoreR);
+                document.getElementById("number3").value = text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#financialAuditScoreR').on('input propertychange', function () {
+                var financialAuditScoreR = $(this).val();
+                var auditEvalScoreR = document.getElementById("auditEvalScoreR").value
+                var operationScoreR = document.getElementById("operationScoreR").value
+                var leadershipScoreR = document.getElementById("leadershipScoreR").value
+                var investScoreR = document.getElementById("investScoreR").value
+                var workReportScoreR = document.getElementById("workReportScoreR").value
+                var text1 = Number(auditEvalScoreR) + Number(financialAuditScoreR) + Number(operationScoreR) + Number(leadershipScoreR) +
+                    Number(investScoreR) + Number(workReportScoreR);
+                document.getElementById("number3").value = text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#operationScoreR').on('input propertychange', function () {
+                var operationScoreR = $(this).val();
+                var auditEvalScoreR = document.getElementById("auditEvalScoreR").value
+                var financialAuditScoreR = document.getElementById("financialAuditScoreR").value
+                var leadershipScoreR = document.getElementById("leadershipScoreR").value
+                var investScoreR = document.getElementById("investScoreR").value
+                var workReportScoreR = document.getElementById("workReportScoreR").value
+                var text1 = Number(auditEvalScoreR) + Number(financialAuditScoreR) + Number(operationScoreR) + Number(leadershipScoreR) +
+                    Number(investScoreR) + Number(workReportScoreR);
+                document.getElementById("number3").value = text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#leadershipScoreR').on('input propertychange', function () {
+                var leadershipScoreR = $(this).val();
+                var auditEvalScoreR = document.getElementById("auditEvalScoreR").value
+                var financialAuditScoreR = document.getElementById("financialAuditScoreR").value
+                var operationScoreR = document.getElementById("operationScoreR").value
+                var investScoreR = document.getElementById("investScoreR").value
+                var workReportScoreR = document.getElementById("workReportScoreR").value
+                var text1 = Number(auditEvalScoreR) + Number(financialAuditScoreR) + Number(operationScoreR) + Number(leadershipScoreR) +
+                    Number(investScoreR) + Number(workReportScoreR);
+                document.getElementById("number3").value = text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#investScoreR').on('input propertychange', function () {
+                var investScoreR = $(this).val();
+                var auditEvalScoreR = document.getElementById("auditEvalScoreR").value
+                var financialAuditScoreR = document.getElementById("financialAuditScoreR").value
+                var operationScoreR = document.getElementById("operationScoreR").value
+                var leadershipScoreR = document.getElementById("leadershipScoreR").value
+                var workReportScoreR = document.getElementById("workReportScoreR").value
+                var text1 = Number(auditEvalScoreR) + Number(financialAuditScoreR) + Number(operationScoreR) + Number(leadershipScoreR) +
+                    Number(investScoreR) + Number(workReportScoreR);
+                document.getElementById("number3").value = text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#workReportScoreR').on('input propertychange', function () {
+                var workReportScoreR = $(this).val();
+                var auditEvalScoreR = document.getElementById("auditEvalScoreR").value
+                var financialAuditScoreR = document.getElementById("financialAuditScoreR").value
+                var operationScoreR = document.getElementById("operationScoreR").value
+                var leadershipScoreR = document.getElementById("leadershipScoreR").value
+                var investScoreR = document.getElementById("investScoreR").value
+                var text1 = Number(auditEvalScoreR) + Number(financialAuditScoreR) + Number(operationScoreR) + Number(leadershipScoreR) +
+                    Number(investScoreR) + Number(workReportScoreR);
+                document.getElementById("number3").value = text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#skillScoreR').on('input propertychange', function () {
+                var skillScoreR = $(this).val();
+                // var input1=$("input1").val();
+                var democraticEvalScoreR = document.getElementById("democraticEvalScoreR").value
+                var superiorEvalScoreR = document.getElementById("superiorEvalScoreR").value
+                var text = Number(skillScoreR) + Number(democraticEvalScoreR) +
+                    Number(superiorEvalScoreR);
+                document.getElementById("number2").value = text
+                console.log(text);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#democraticEvalScoreR').on('input propertychange', function () {
+                var democraticEvalScoreR = $(this).val();
+                // var input1=$("input1").val();
+                var skillScoreR = document.getElementById("skillScoreR").value
+                var superiorEvalScoreR = document.getElementById("superiorEvalScoreR").value
+                var text = Number(skillScoreR) + Number(democraticEvalScoreR) + Number(superiorEvalScoreR);
+                document.getElementById("number2").value = text
+                console.log(text);
+            });
+        });
+
+        function f() {
+            $(document).ready(function () {
+                $('#superiorEvalScoreR').on('input propertychange', function () {
+                    var superiorEvalScoreR = $(this).val();
+                    // var input1=$("input1").val();
+                    var skillScoreR = document.getElementById("skillScoreR").value
+                    var democraticEvalScoreR = document.getElementById("democraticEvalScoreR").value
+                    var text = Number(skillScoreR) + Number(democraticEvalScoreR) + Number(superiorEvalScoreR);
+                    document.getElementById("number2").value = text
+                    console.log(text);
+                });
+            });
+
+            let year = document.getElementById("year");
+            console.log(year.value)
+            year.attr('value', year.value + '111')
+        }
     });
 </script>
 </body>

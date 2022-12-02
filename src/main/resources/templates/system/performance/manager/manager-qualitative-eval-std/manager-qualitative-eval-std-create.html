@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script th:src="@{/plugin/jquery/jquery-3.4.1.min.js}" charset="utf-8"></script>
 </head>
 <body>
 <!-- 引入layui -->
@@ -115,7 +116,7 @@
                     <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>述职报告占比(总经理):</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%" >
-                            <input type="text" class="layui-input" name="workReportScoreR" id="workReportScoreR"
+                            <input  type="text" class="layui-input" name="workReportScoreR" id="workReportScoreR"
                                    lay-verify="required"/>
                         </div>
                     </td>
@@ -127,8 +128,8 @@
                     <td style="width: 10%;text-align: left"><span style='color: red; font-weight: bold'>*</span>总计:</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%" >
-                            <input id="number2" type="text" class="layui-input"
-                                   lay-verify="required"/>
+                            <input id="number3"  type="text" class="layui-input"
+                                   lay-verify="required" />
                         </div>
                     </td>
 
@@ -136,7 +137,7 @@
                     <td style="width: 10%;text-align: left"><span style='color: red; font-weight: bold'>*</span>总计:</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%" >
-                            <input id="number1" type="text" class="layui-input"
+                            <input  id="number2" type="text" class="layui-input"
                                    lay-verify="required"/>
                         </div>
                     </td>
@@ -206,11 +207,135 @@
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
 
-        // // 获取所有input输入框
-        // const iptlist = document.getElementsByTagName("input")
-        // function handlesum1(id) {
-        //
-        // }
+
+
+        $(document).ready(function () {
+            $('#auditEvalScoreR').on('input propertychange', function () {
+                var auditEvalScoreR = $(this).val();
+                var financialAuditScoreR=document.getElementById("financialAuditScoreR").value
+                var operationScoreR=document.getElementById("operationScoreR").value
+                var leadershipScoreR=document.getElementById("leadershipScoreR").value
+                var investScoreR=document.getElementById("investScoreR").value
+                var workReportScoreR=document.getElementById("workReportScoreR").value
+                var text1=Number(auditEvalScoreR)+Number(financialAuditScoreR)+Number(operationScoreR)+Number(leadershipScoreR)+
+                    Number(investScoreR)+Number(workReportScoreR);
+                document.getElementById("number3").value=text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#financialAuditScoreR').on('input propertychange', function () {
+                var financialAuditScoreR = $(this).val();
+                var auditEvalScoreR=document.getElementById("auditEvalScoreR").value
+                var operationScoreR=document.getElementById("operationScoreR").value
+                var leadershipScoreR=document.getElementById("leadershipScoreR").value
+                var investScoreR=document.getElementById("investScoreR").value
+                var workReportScoreR=document.getElementById("workReportScoreR").value
+                var text1=Number(auditEvalScoreR)+Number(financialAuditScoreR)+Number(operationScoreR)+Number(leadershipScoreR)+
+                    Number(investScoreR)+Number(workReportScoreR);
+                document.getElementById("number3").value=text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#operationScoreR').on('input propertychange', function () {
+                var operationScoreR = $(this).val();
+                var auditEvalScoreR=document.getElementById("auditEvalScoreR").value
+                var financialAuditScoreR=document.getElementById("financialAuditScoreR").value
+                var leadershipScoreR=document.getElementById("leadershipScoreR").value
+                var investScoreR=document.getElementById("investScoreR").value
+                var workReportScoreR=document.getElementById("workReportScoreR").value
+                var text1=Number(auditEvalScoreR)+Number(financialAuditScoreR)+Number(operationScoreR)+Number(leadershipScoreR)+
+                    Number(investScoreR)+Number(workReportScoreR);
+                document.getElementById("number3").value=text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#leadershipScoreR').on('input propertychange', function () {
+                var leadershipScoreR = $(this).val();
+                var auditEvalScoreR=document.getElementById("auditEvalScoreR").value
+                var financialAuditScoreR=document.getElementById("financialAuditScoreR").value
+                var operationScoreR=document.getElementById("operationScoreR").value
+                var investScoreR=document.getElementById("investScoreR").value
+                var workReportScoreR=document.getElementById("workReportScoreR").value
+                var text1=Number(auditEvalScoreR)+Number(financialAuditScoreR)+Number(operationScoreR)+Number(leadershipScoreR)+
+                    Number(investScoreR)+Number(workReportScoreR);
+                document.getElementById("number3").value=text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#investScoreR').on('input propertychange', function () {
+                var investScoreR = $(this).val();
+                var auditEvalScoreR=document.getElementById("auditEvalScoreR").value
+                var financialAuditScoreR=document.getElementById("financialAuditScoreR").value
+                var operationScoreR=document.getElementById("operationScoreR").value
+                var leadershipScoreR=document.getElementById("leadershipScoreR").value
+                var workReportScoreR=document.getElementById("workReportScoreR").value
+                var text1=Number(auditEvalScoreR)+Number(financialAuditScoreR)+Number(operationScoreR)+Number(leadershipScoreR)+
+                    Number(investScoreR)+Number(workReportScoreR);
+                document.getElementById("number3").value=text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#workReportScoreR').on('input propertychange', function () {
+                var workReportScoreR = $(this).val();
+                var auditEvalScoreR=document.getElementById("auditEvalScoreR").value
+                var financialAuditScoreR=document.getElementById("financialAuditScoreR").value
+                var operationScoreR=document.getElementById("operationScoreR").value
+                var leadershipScoreR=document.getElementById("leadershipScoreR").value
+                var investScoreR=document.getElementById("investScoreR").value
+                var text1=Number(auditEvalScoreR)+Number(financialAuditScoreR)+Number(operationScoreR)+Number(leadershipScoreR)+
+                    Number(investScoreR)+Number(workReportScoreR);
+                document.getElementById("number3").value=text1
+                console.log(text1);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#skillScoreR').on('input propertychange', function () {
+                var skillScoreR = $(this).val();
+                // var input1=$("input1").val();
+                var democraticEvalScoreR=document.getElementById("democraticEvalScoreR").value
+                var superiorEvalScoreR=document.getElementById("superiorEvalScoreR").value
+                var text=Number(skillScoreR)+Number(democraticEvalScoreR)+
+                    Number(superiorEvalScoreR);
+                document.getElementById("number2").value=text
+                console.log(text);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#democraticEvalScoreR').on('input propertychange', function () {
+                var democraticEvalScoreR = $(this).val();
+                // var input1=$("input1").val();
+                var skillScoreR=document.getElementById("skillScoreR").value
+                var superiorEvalScoreR=document.getElementById("superiorEvalScoreR").value
+                var text=Number(skillScoreR)+Number(democraticEvalScoreR)+Number(superiorEvalScoreR);
+                document.getElementById("number2").value=text
+                console.log(text);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#superiorEvalScoreR').on('input propertychange', function () {
+                var superiorEvalScoreR = $(this).val();
+                // var input1=$("input1").val();
+                var skillScoreR=document.getElementById("skillScoreR").value
+                var democraticEvalScoreR=document.getElementById("democraticEvalScoreR").value
+                var text=Number(skillScoreR)+Number(democraticEvalScoreR)+Number(superiorEvalScoreR);
+                document.getElementById("number2").value=text
+                console.log(text);
+            });
+        });
+
 
     });
 </script>
