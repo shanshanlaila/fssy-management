@@ -155,7 +155,7 @@
                     type: 'POST',
                     url: '/system/entry-excellent-state-detail/batchAudit',
                     data: {
-                        "auditNotes":auditNotes,
+                        "auditNotes": auditNotes,
                         "excellentStateDetailIds": excellentStateDetailIds,
                         "classReview": $('#classReview').find("option:selected").val(),
                     },
@@ -192,6 +192,19 @@
                         fixed: 'left',
                         align: 'center',
                         width: 80,
+                        rowspan: 2
+                    },
+                    {
+                        field: "status",
+                        title: '状态',
+                        align: "center",
+                        fixed: 'left',
+                        width: 140,
+                        templet: function (d) {
+                            if (d.status === "待绩效科复核") {
+                                return '<span class="layui-badge layui-bg">待绩效科复核</span>';
+                            } else return d.status;
+                        },
                         rowspan: 2
                     },
                     {
@@ -241,9 +254,9 @@
                         title: '审核意见',
                         width: 130,
                         align: 'center',
-                        edit : 'text',
-                        event  : 'auditNote',
-                        style  : 'cursor:pointer;background-color: pink;',
+                        edit: 'text',
+                        event: 'auditNote',
+                        style: 'cursor:pointer;background-color: pink;',
                         rowspan: 2
                     },
                     {

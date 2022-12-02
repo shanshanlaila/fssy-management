@@ -419,31 +419,26 @@ public class EventListController {
                         "jobName," +
                         "workEvents," +
                         "eventsFirstType," +
-                        "standardValue," +
-                        "delow," +
-                        "middle," +
-                        "fine," +
-                        "excellent");
+                        "standardValue,departmentName");
         List<Map<String, Object>> eventLists = eventListService
                 .findEventListMapDataByParams(params);
-
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         // 需要改背景色的格子
-        fieldMap.put("id", "事件清单序号");
-        fieldMap.put("jobName", "工作职责");
-        fieldMap.put("workEvents", "流程（工作事件）");
+        fieldMap.put("id", "事件清单序号");// A
+        fieldMap.put("jobName", "工作职责");// B
+        fieldMap.put("workEvents", "流程（工作事件）");// C
         fieldMap.put("eventsFirstType", "事务类型");// D
-        fieldMap.put("departmentName", "*部门名称");// 跨部门
-        fieldMap.put("roleName", "*岗位名称");// 跨岗位
-        fieldMap.put("proportion", "*占比");// 多主担
-        fieldMap.put("isMainOrNext", "*主担/次担");
-        fieldMap.put("userName", "*职员名称");
-        fieldMap.put("standardValue", "事件标准价值");
-        fieldMap.put("delow", "不合格价值");
+        fieldMap.put("standardValue", "事件标准价值");// E
+        fieldMap.put("departmentName", "部门名称");// 跨部门 F
+        fieldMap.put("proportion", "*占比");// 多主担 G
+        fieldMap.put("roleName", "*岗位名称");// 跨岗位 H
+        fieldMap.put("isMainOrNext", "*主担/次担"); // I
+        fieldMap.put("userName", "*职员名称");// J
+        /*fieldMap.put("delow", "不合格价值");
         fieldMap.put("middle", "中价值");
         fieldMap.put("fine", "良价值");
-        fieldMap.put("excellent", "优价值");
-        fieldMap.put("activeDate", "*生效日期");
+        fieldMap.put("excellent", "优价值");*/
+        fieldMap.put("activeDate", "*生效日期");// K
         // 标识字符串的列
         List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
         SheetOutputService sheetOutputService = new SheetOutputService();

@@ -157,13 +157,13 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             String departmentName = cells.get(SheetService.columnToIndex("F"));//部门
             String standardValue = cells.get(SheetService.columnToIndex("G"));// 事件价值标准分
             String mainOrNext = cells.get(SheetService.columnToIndex("H"));// 主/次担
+            String userName = cells.get(SheetService.columnToIndex("I"));// 岗位人员姓名
             // 填写的数据
-            String planningWork = cells.get(SheetService.columnToIndex("I"));// 对应工作事件的计划内容
-            String times = cells.get(SheetService.columnToIndex("J"));// 频次
-            String planOutput = cells.get(SheetService.columnToIndex("K"));// 表单（输出内容）
-            String planStartDateStr = cells.get(SheetService.columnToIndex("L"));// 计划开始时间
-            String planEndDateStr = cells.get(SheetService.columnToIndex("M"));// 计划完成时间
-            String userName = cells.get(SheetService.columnToIndex("N"));// 岗位人员姓名
+            String planningWork = cells.get(SheetService.columnToIndex("J"));// 对应工作事件的计划内容
+            String times = cells.get(SheetService.columnToIndex("K"));// 频次
+            String planOutput = cells.get(SheetService.columnToIndex("L"));// 表单（输出内容）
+            String planStartDateStr = cells.get(SheetService.columnToIndex("M"));// 计划开始时间
+            String planEndDateStr = cells.get(SheetService.columnToIndex("N"));// 计划完成时间
 
             // 检查必填项
             if (StringUtils.isEmpty(departmentName)) {
@@ -240,14 +240,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 continue;
             }
             entryCasPlanDetail.setDepartmentId(departments.get(0).getId());
-            //LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            /*roleLambdaQueryWrapper.eq(Role::getName, roleName);
-            List<Role> roles = roleMapper.selectList(roleLambdaQueryWrapper);
-            if (ObjectUtils.isEmpty(roles)) {
-                setFailedContent(result, String.format("第%s行的岗位名称未维护", j + 1));
-                cell.setCellValue("表中岗位名称未维护");
-                continue;
-            }*/
             entryCasPlanDetail.setRoleName(departmentRoleByUser.getRoleName());
             entryCasPlanDetail.setRoleId(departmentRoleByUser.getRoleId());
             entryCasPlanDetail.setUserName(userName);

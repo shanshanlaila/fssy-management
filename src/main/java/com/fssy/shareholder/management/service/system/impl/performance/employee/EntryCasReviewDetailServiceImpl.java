@@ -407,7 +407,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         int successNumber = 0;
         // 导入总数
         int totalNumber = 0;
-
+        // 判断重复计划id的集合
+        ArrayList<Long> planIds = new ArrayList<>();
         // 获取单价列表数据
         Row row;
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
@@ -441,12 +442,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             totalNumber++;
             Cell cell = row.createCell(SheetService.columnToIndex("U"));
             // 读取数据
-            String casPlanId = cells.get(SheetService.columnToIndex("A"));// 履职计划主键
+            String planId = cells.get(SheetService.columnToIndex("A"));// 履职计划主键
             String eventsRoleId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
             String eventsFirstType = cells.get(SheetService.columnToIndex("C"));// 事件类型
             String jobName = cells.get(SheetService.columnToIndex("D"));// 工作职责
             String workEvents = cells.get(SheetService.columnToIndex("E"));// 流程（工作事件）
-            // String eventsForm = cells.get(SheetService.columnToIndex("F"));// 绩效类型
             String standardValue = cells.get(SheetService.columnToIndex("F"));// 事件价值标准分
             String departmentName = cells.get(SheetService.columnToIndex("G"));// 部门名称
             String roleName = cells.get(SheetService.columnToIndex("H"));// 岗位名称
@@ -463,7 +463,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             String completeDesc = cells.get(SheetService.columnToIndex("R"));// 工作完成描述
 
             // 数据库必填项判断
-            if (ObjectUtils.isEmpty(casPlanId)) {
+            if (ObjectUtils.isEmpty(planId)) {
                 setFailedContent(result, String.format("第%s行的履职计划序号为空", j + 1));
                 cell.setCellValue("履职计划序号不能为空");
                 continue;
@@ -565,10 +565,21 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 continue;
             }
             // 数据检查校验
+            // 一条计划只能对应一条回顾，即导入的表中不能有重复的计划id且数据库中不能存在此id
+            if (planIds.contains(Long.parseLong(planId))){
+                throw new ServiceException(String.format("第%s行的计划序号【%s】重复,本次导入失败",j+1,planId));
+            }
+            LambdaQueryWrapper<EntryCasReviewDetail> reviewQueryWrapper = new LambdaQueryWrapper<>();
+            reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId,planId);
+            List<EntryCasReviewDetail> reviewDetails = entryCasReviewDetailMapper.selectList(reviewQueryWrapper);
+            if (reviewDetails.size()>0){
+                throw new ServiceException(String.format("第%s行的计划序号【%s】已创建回顾,本次导入失败",j+1,planId));
+            }
+            planIds.add(Long.valueOf(planId));
             // 事务类别数据校验：非事务类、事务类
             if (!(PerformanceConstant.EVENTS_FIRST_TYPE_B.equals(eventsFirstType) || PerformanceConstant.EVENTS_FIRST_TYPE_A.equals(eventsFirstType) || PerformanceConstant.EVENTS_FIRST_TYPE_C.equals(eventsFirstType))) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的事务类别不为‘非事务类、事务类、新增工作流’中的一种，不能导入", j + 1, eventsFirstType));
-                cell.setCellValue(String.format("履职计划序号为【%s】的事务类别不为‘非事务类、事务类、新增工作流’中的一种，不能导入", casPlanId));
+                cell.setCellValue(String.format("履职计划序号为【%s】的事务类别不为‘非事务类、事务类、新增工作流’中的一种，不能导入", planId));
                 continue;
             }
             // 申报年份
@@ -578,11 +589,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             EntryCasReviewDetail entryCasReviewDetail = new EntryCasReviewDetail();
             LambdaQueryWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaQueryWrapper = new LambdaQueryWrapper<>();
             if (!ObjectUtils.isEmpty(eventsRoleId)) {
-                entryCasPlanDetailLambdaQueryWrapper.eq(EntryCasPlanDetail::getId, casPlanId).eq(EntryCasPlanDetail::getEventsRoleId, eventsRoleId);
+                entryCasPlanDetailLambdaQueryWrapper.eq(EntryCasPlanDetail::getId, planId).eq(EntryCasPlanDetail::getEventsRoleId, eventsRoleId);
                 List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectList(entryCasPlanDetailLambdaQueryWrapper);
                 if (ObjectUtils.isEmpty(entryCasPlanDetails)) {
                     StringTool.setMsg(sb, String.format("第【%s】行的事件岗位序号【%s】在系统中未查找到，不能导入", j + 1, eventsRoleId));
-                    cell.setCellValue(String.format("履职计划序号为【%s】的基础事件未查到，不能导入", casPlanId));
+                    cell.setCellValue(String.format("履职计划序号为【%s】的基础事件未查到，不能导入", planId));
                     continue;
                 }
                 EntryCasPlanDetail casPlanDetail = entryCasPlanDetails.get(0);
@@ -590,12 +601,12 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 EventList eventList = eventListMapper.selectById(casPlanDetail.getEventsId());
                 if (ObjectUtils.isEmpty(eventList)) {
                     StringTool.setMsg(sb, String.format("第【%s】行序号为【%s】的事件清单在系统中未查找到，不能导入", j + 1, departmentName));
-                    cell.setCellValue(String.format("履职计划序号为【%s】的事件清单未查到，不能导入", casPlanId));
+                    cell.setCellValue(String.format("履职计划序号为【%s】的事件清单未查到，不能导入", planId));
                     continue;
                 }
                 entryCasReviewDetail.setWorkOutput(eventList.getWorkOutput());
             }
-            entryCasReviewDetail.setCasPlanId(Long.valueOf(casPlanId));
+            entryCasReviewDetail.setCasPlanId(Long.valueOf(planId));
 
             if (!ObjectUtils.isEmpty(eventsRoleId)) {
                 entryCasReviewDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
@@ -625,7 +636,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             List<Department> departments = departmentMapper.selectList(departmentLambdaQueryWrapper);
             if (ObjectUtils.isEmpty(departments)) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的部门名称在系统中未查找到，不能导入", j + 1, departmentName));
-                cell.setCellValue(String.format("履职计划序号为【%s】的部门名称未查到，不能导入", casPlanId));
+                cell.setCellValue(String.format("履职计划序号为【%s】的部门名称未查到，不能导入", planId));
                 continue;
             }
             Long departmentId = departments.get(0).getId();
@@ -636,7 +647,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             List<Role> roles = roleMapper.selectList(roleLambdaQueryWrapper);
             if (ObjectUtils.isEmpty(roles)) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的岗位名称在系统中未查找到，不能导入", j + 1, roleName));
-                cell.setCellValue(String.format("履职计划序号为【%s】的岗位名称未查到，不能导入", casPlanId));
+                cell.setCellValue(String.format("履职计划序号为【%s】的岗位名称未查到，不能导入", planId));
                 continue;
             }
             Long roleId = roles.get(0).getId();
@@ -647,7 +658,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             List<User> users = userMapper.selectList(userLambdaQueryWrapper);
             if (ObjectUtils.isEmpty(users)) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的用户名称在系统中未查找到，不能导入", j + 1, roleName));
-                cell.setCellValue(String.format("履职计划序号为【%s】的用户名称未查到，不能导入", casPlanId));
+                cell.setCellValue(String.format("履职计划序号为【%s】的用户名称未查到，不能导入", planId));
                 continue;
             }
             Long userId = users.get(0).getId();
@@ -661,7 +672,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             // 不存在merge就报错
             if (ObjectUtils.isEmpty(entryCasMerges)) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的履职编号在系统中未查找到，不能导入", j + 1, roleName));
-                cell.setCellValue(String.format("履职计划序号为【%s】的履职编号未查到，不能导入", casPlanId));
+                cell.setCellValue(String.format("履职计划序号为【%s】的履职编号未查到，不能导入", planId));
                 continue;
             }
             EntryCasMerge entryCasMerge = entryCasMerges.get(0);
@@ -688,11 +699,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
             entryCasReviewDetail.setAttachmentId(attachment.getId());
             // 更新planDetail数据的状态为完结
-            EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailMapper.selectById(casPlanId);
+            EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailMapper.selectById(planId);
             if (ObjectUtils.isEmpty(entryCasPlanDetail)) {
 //                throw new ServiceException("不存在对应的履职计划序号，导入失败");
-                StringTool.setMsg(sb, String.format("第【%s】行的履职编号为【%s】在系统中未查找到，不能导入", j + 1, casPlanId));
-                cell.setCellValue(String.format("履职计划序号为【%s】的履职编号未查到，不能导入", casPlanId));
+                StringTool.setMsg(sb, String.format("第【%s】行的履职编号为【%s】在系统中未查找到，不能导入", j + 1, planId));
+                cell.setCellValue(String.format("履职计划序号为【%s】的履职编号未查到，不能导入", planId));
                 continue;
             }
             entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
@@ -704,6 +715,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             cell.setCellValue("导入成功");
 
         }
+
         if (successNumber == 0) {
             throw new ServiceException("没有成功导入一条，导入失败");
         }
@@ -722,7 +734,10 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     public boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
         for (int i = 0; i < entryCasReviewDetails.size(); i++) {
-            String auditNote = auditNotes.get(i);
+            String auditNote = null;
+            if (!ObjectUtils.isEmpty(auditNotes)) {
+                auditNote = auditNotes.get(i);
+            }
             EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetails.get(i);
             entryCasReviewDetail.setMinisterReview(ministerReview);
             // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
@@ -791,14 +806,30 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     @Override
     public boolean saveOneReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
-        /*User user = (User) SecurityUtils.getSubject().getPrincipal();
-        LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getUserId, user.getId());
-        List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentRoleUserLambdaQueryWrapper);
-        if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
-            throw new ServiceException("无符合部门");
+        EntryCasPlanDetail planDetail = entryCasPlanDetailMapper.selectById(entryCasReviewDetail.getCasPlanId());
+        if (ObjectUtils.isEmpty(planDetail)){
+            throw new ServiceException(String.format("序号为【%s】的计划不存在,创建失败",entryCasReviewDetail.getCasPlanId()));
         }
-        ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);*/
+        // 判断是否重复创建回顾
+        LambdaQueryWrapper<EntryCasReviewDetail> reviewQueryWrapper = new LambdaQueryWrapper<>();
+        reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId,entryCasReviewDetail.getCasPlanId());
+        List<EntryCasReviewDetail> reviewDetails = entryCasReviewDetailMapper.selectList(reviewQueryWrapper);
+        if (reviewDetails.size()>0){
+            throw new ServiceException(String.format("序号为【%s】的计划已经创建回顾，不能重复创建",entryCasReviewDetail.getCasPlanId()));
+        }
+        // 查询MergeNo
+        LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        entryCasMergeLambdaQueryWrapper
+                .eq(EntryCasMerge::getDepartmentName, entryCasReviewDetail.getDepartmentName())
+                .eq(EntryCasMerge::getYear, entryCasReviewDetail.getYear());
+        List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
+        // 不存在merge就报错
+        if (ObjectUtils.isEmpty(entryCasMerges)) {
+            throw new ServiceException(String.format("序号为【%s】的计划不存在对应的履职编号，创建失败",entryCasReviewDetail.getCasPlanId()));
+        }
+        EntryCasMerge entryCasMerge = entryCasMerges.get(0);
+        entryCasReviewDetail.setMergeNo(entryCasMerge.getMergeNo());
+        entryCasReviewDetail.setMergeId(entryCasMerge.getId());
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser(user);
         entryCasReviewDetail.setUserId(user.getId());
@@ -809,6 +840,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasReviewDetail.setCreateName(user.getName());
         entryCasReviewDetail.setCreateDate(LocalDate.now());
         entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+        planDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+        entryCasPlanDetailMapper.updateById(planDetail);
         entryCasReviewDetailMapper.insert(entryCasReviewDetail);
         return true;
     }
