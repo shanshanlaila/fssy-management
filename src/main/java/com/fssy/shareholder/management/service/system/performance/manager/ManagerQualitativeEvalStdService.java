@@ -26,14 +26,18 @@ public interface ManagerQualitativeEvalStdService extends IService<ManagerQualit
     Page<ManagerQualitativeEvalStd> findManagerQualitativeEvalStdDataListPerPageByParams(Map<String, Object> params);
 
 
-
-
     /**
      * 通过查询条件，查询数据
      * @param params
      * @return
      */
-    List<ManagerQualitativeEvalStd> findManagerQualitativeEvalStdDataByParams(Map<String, Object> params);
+    List<ManagerQualitativeEvalStd> findManagerQualitativeEvalStdDataByParams(Map<String, Object> params);    /**
+     /**
+     * 通过查询条件，查询数据(导出）
+     * @param params
+     * @return
+     */
+    List<Map<String,Object>> findManagerDataByParams(Map<String, Object> params);
 
 
     /**
