@@ -109,6 +109,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
     @Override
     @Transactional
     public Map<String, Object> readAttachmentToData(Attachment attachment) {
+        // 导入事件岗位关系
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -182,25 +183,25 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 cell.setCellValue("事件清单序号不能为空");
                 continue;
             }
-            String departmentName = temp.get(SheetService.columnToIndex("E"));
+            String departmentName = temp.get(SheetService.columnToIndex("F"));
             if (ObjectUtils.isEmpty(departmentName)) {
                 StringTool.setMsg(sb, String.format("第【%s】行部门名称不能为空", j + 1));
                 cell.setCellValue("部门名称不能为空");
                 continue;
             }
-            String roleName = temp.get(SheetService.columnToIndex("F"));
+            String roleName = temp.get(SheetService.columnToIndex("H"));
             if (ObjectUtils.isEmpty(roleName)) {
                 StringTool.setMsg(sb, String.format("第【%s】行岗位名称不能为空", j + 1));
                 cell.setCellValue("岗位名称不能为空");
                 continue;
             }
-            String isMainOrNext = temp.get(SheetService.columnToIndex("H"));
+            String isMainOrNext = temp.get(SheetService.columnToIndex("I"));
             if (ObjectUtils.isEmpty(isMainOrNext)) {
                 StringTool.setMsg(sb, String.format("第【%s】行是否主担不能为空", j + 1));
                 cell.setCellValue("是否主担不能为空");
                 continue;
             }
-            String userName = temp.get(SheetService.columnToIndex("I"));
+            String userName = temp.get(SheetService.columnToIndex("J"));
             if (ObjectUtils.isEmpty(userName)) {
                 StringTool.setMsg(sb, String.format("第【%s】行职员名称不能为空", j + 1));
                 cell.setCellValue("职员名称不能为空");
@@ -221,7 +222,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             }
             BigDecimal standardValue;
             try {
-                standardValue = new BigDecimal(temp.get(SheetService.columnToIndex("J")));// 事件标准价值
+                standardValue = new BigDecimal(temp.get(SheetService.columnToIndex("E")));// 事件标准价值
             } catch (Exception e) {
                 StringTool.setMsg(sb, String.format("第【%s】行事件标准价值格式不正确，必须为【数值】", j + 1));
                 cell.setCellValue("事件标准价值格式不正确，必须为【数值】");
@@ -235,7 +236,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             // 计算事件标准价值分
             standardValue = (standardValue.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal delow;
+            /*BigDecimal delow;
             try {
                 delow = new BigDecimal(temp.get(SheetService.columnToIndex("K")));
             } catch (Exception e) {
@@ -293,10 +294,10 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 cell.setCellValue("优价值不能为空");
                 continue;
             }
-            excellent = (excellent.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
+            excellent = (excellent.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);*/
 
-            String activeDateStr = temp.get(SheetService.columnToIndex("O"));
-            LocalDate activeDate = null;
+            String activeDateStr = temp.get(SheetService.columnToIndex("K"));
+            LocalDate activeDate;
             try {
                 activeDate = LocalDate.parse(activeDateStr);
             } catch (Exception e) {
@@ -313,9 +314,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             if (eventIdWithActivityMap.containsKey(eventsId)) {
                 // 如果基础事件的序号相同，则它们的生效日期也要相同
                 if (!eventIdWithActivityMap.get(eventsId).isEqual(activeDate)) {
-                    /*StringTool.setMsg(sb, String.format("第【%s】行序号为【%s】的事件清单的生效日期不一致，不能导入", j + 1, eventsId));
-                    cell.setCellValue(String.format("序号为【%s】的事件清单的生效日期不一致，不能导入", eventsId));
-                    continue;*/
                     throw new ServiceException(String.format("序号为【%s】的事件清单的生效日期不一致，不能导入", eventsId));
                 }
             }
@@ -326,6 +324,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 cell.setCellValue(String.format("序号为【%s】的事件清单不存在，必须为【数值】", eventsId));
                 continue;
             }
+            // 填报的部门，有多个工作项得话，必须有一个项的部门与基础事件的部门保持一致
             if (!departmentName.equals(eventList.getDepartmentName())) {
                 StringTool.setMsg(sb,
                         String.format("第【%s】行序号为【%s】的事件清单对应部门与填报部门不一致，不能导入", j + 1, eventsId));
@@ -347,14 +346,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 
             }
             if (!activeFlag) {
-                // activeFlag=false
-                /*StringTool.setMsg(sb, String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入",
-                        j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
-                setFailedContent(result,String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入",j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
-                cell.setCellValue(String.format("序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入", eventsId,
-                        activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
-                continue;*/
-                throw new ServiceException(String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入",j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
+                throw new ServiceException(String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入", j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
             }
             // endregion
 
@@ -383,7 +375,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             if (ObjectUtils.isEmpty(userList)) {
                 StringTool.setMsg(sb, String.format("第【%s】行名称为【%s】的用户未维护", j + 1, userName));
                 cell.setCellValue(String.format("名称为【%s】的用户未维护", userName));
-                continue;
+                throw new ServiceException(String.format("第%s行的职员名称【%s】未在系统中维护", j + 1, userName));
             }
             User signUser = userList.get(0);
             // endregion
@@ -401,10 +393,10 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventsRelationRole.setRoleName(role.getName());
             eventsRelationRole.setRoleId(role.getId());
             eventsRelationRole.setStandardValue(standardValue);
-            eventsRelationRole.setDelow(delow);
-            eventsRelationRole.setMiddle(middle);
-            eventsRelationRole.setFine(fine);
-            eventsRelationRole.setExcellent(excellent);
+            eventsRelationRole.setDelow(standardValue.multiply(new BigDecimal(0)).setScale(2, RoundingMode.HALF_UP));
+            eventsRelationRole.setMiddle(standardValue.multiply(new BigDecimal("0.6")).setScale(2, RoundingMode.HALF_UP));
+            eventsRelationRole.setFine(standardValue.multiply(new BigDecimal("0.8")).setScale(2, RoundingMode.HALF_UP));
+            eventsRelationRole.setExcellent(standardValue.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_UP));
             LocalDate createDate = DateTool.dateToLocalDate(attachment.getImportDate());
             eventsRelationRole.setCreateDate(createDate);
             eventsRelationRole.setYear(createDate.getYear());

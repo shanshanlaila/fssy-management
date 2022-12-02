@@ -281,38 +281,37 @@ public class EventsRelationRoleController
 	 */
 	@GetMapping("downloadForCharge")
 	public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
+		// 导出事件清单填报履职计划
 		Map<String, Object> params = getParams(request);
 		params.put("select",
-						"id,"+
+				"id,"+
 						"eventsId," +
 						"jobName," +
 						"workEvents," +
 						"departmentName," +
 						"standardValue," +
 						"eventsFirstType," +
-						"isMainOrNext"
+						"isMainOrNext,userName"
 		);
 		List<Map<String, Object>> relationRoleLists = eventsRelationRoleService.findRelationRoleMapDataByParams(params);
 
 		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
 		// 需要改背景色的格子
-		fieldMap.put("id", "系统序号");
-		fieldMap.put("eventsId", "事件清单序号");
-		fieldMap.put("eventsFirstType", "事务类型");
-		fieldMap.put("jobName", "工作职责");
-		fieldMap.put("workEvents", "流程（工作事件）");
-		fieldMap.put("departmentName", "部门");
-		fieldMap.put("standardValue", "事件价值标准分");
-		fieldMap.put("isMainOrNext", "主/次担");
+		fieldMap.put("id", "系统序号");// A
+		fieldMap.put("eventsId", "事件清单序号");// B
+		fieldMap.put("eventsFirstType", "事务类型");// C
+		fieldMap.put("jobName", "工作职责");// D
+		fieldMap.put("workEvents", "流程（工作事件）");// E
+		fieldMap.put("departmentName", "部门");// F
+		fieldMap.put("standardValue", "事件价值标准分");// G
+		fieldMap.put("isMainOrNext", "主/次担");// H
+		fieldMap.put("userName", "岗位人员姓名");// I
 		// 需要填写的部分
-		//fieldMap.put("jixiaoleixing", "*绩效类型");
-		fieldMap.put("duiyingjihuaneirong", "*对应工作事件的计划内容");// planningWork
-		fieldMap.put("pinci", "频次");
-		fieldMap.put("biaodan", "*表单（输出内容）");// planOutput
-		fieldMap.put("jihuakaishishijian", "*计划开始时间");
-		fieldMap.put("jihuawanchengshijian", "*计划完成时间");
-		//fieldMap.put("gangweimingcheng", "*岗位名称");
-		fieldMap.put("gangweirenyuanxingming", "*岗位人员姓名");
+		fieldMap.put("duiyingjihuaneirong", "*对应工作事件的计划内容");// planningWork J
+		fieldMap.put("pinci", "频次");// K
+		fieldMap.put("biaodan", "*表单（输出内容）");// planOutput L
+		fieldMap.put("jihuakaishishijian", "*计划开始时间");// M
+		fieldMap.put("jihuawanchengshijian", "*计划完成时间");// N
 		//fieldMap.put("shengbaoyuefen", "*申报日期");
 		// 标识字符串的列
 		List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
@@ -322,6 +321,7 @@ public class EventsRelationRoleController
 		}
 		sheetOutputService.exportNum("履职管控表", relationRoleLists, fieldMap, response, strList, null);
 	}
+
 	/**
 	 * 展示新增单条履职计划页面
 	 *

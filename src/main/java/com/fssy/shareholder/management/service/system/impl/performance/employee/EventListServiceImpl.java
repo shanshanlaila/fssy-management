@@ -331,11 +331,11 @@ public class EventListServiceImpl implements EventListService {
         //读取附件
         sheetService.load(attachment.getPath(), attachment.getFilename());//根据路径和名称读取附件
         //读取表单
-        sheetService.readByName("Sheet1");//根据表单名称获取该工作表单
+        sheetService.readByName("事件清单");//根据表单名称获取该工作表单
         //获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【Sheet1】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【事件清单】不存在，无法读取数据，请检查");
         }
         //处理导入日期
         Date importDate = attachment.getImportDate();
@@ -344,7 +344,7 @@ public class EventListServiceImpl implements EventListService {
         //实体类集合，用于后面的批量写入数据库
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
-        // 循环总行数(不读表的标题，从第4行开始读)
+        // 循环总行数(不读表的标题，从第2行开始读)
         for (int j = 1; j <= sheet.getLastRowNum(); j++) {
             // getPhysicalNumberOfRows()此方法不会将空白行计入行数
             //if (j==3)continue;// 跳过第三行，因为2，3行合并为一行
@@ -429,24 +429,24 @@ public class EventListServiceImpl implements EventListService {
                 cell.setCellValue("事件标准价值是空的");
                 continue;
             }
-            String delow = cells.get(SheetService.columnToIndex("J"));
+            /*String delow = cells.get(SheetService.columnToIndex("J"));
             String middle = cells.get(SheetService.columnToIndex("K"));
             String fine = cells.get(SheetService.columnToIndex("L"));
-            String excellent = cells.get(SheetService.columnToIndex("M"));
+            String excellent = cells.get(SheetService.columnToIndex("M"));*/
 
-            String note = cells.get(SheetService.columnToIndex("N"));
+            String note = cells.get(SheetService.columnToIndex("J"));
             if (ObjectUtils.isEmpty(note)) {
                 setFailedContent(result, String.format("第%s行的备注是空的", j + 1));
                 cell.setCellValue("备注是空的");
                 continue;
             }
-            String departmentName = cells.get(SheetService.columnToIndex("O"));
+            String departmentName = cells.get(SheetService.columnToIndex("K"));
             if (ObjectUtils.isEmpty(departmentName)) {
                 setFailedContent(result, String.format("第%s行的部门名称是空的", j + 1));
                 cell.setCellValue("部门名称是空的");
                 continue;
             }
-            String office = cells.get(SheetService.columnToIndex("P"));
+            String office = cells.get(SheetService.columnToIndex("L"));
             if (ObjectUtils.isEmpty(office)) {
                 setFailedContent(result, String.format("第%s行的科室是空的", j + 1));
                 cell.setCellValue("科室是空的");
@@ -454,8 +454,7 @@ public class EventListServiceImpl implements EventListService {
             }
             // 数据校验
             if (!(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)
-                    || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_B)
-                    || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
+                    || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_B))) {
                 setFailedContent(result, String.format("第%s行的事务类型填写有误", j + 1));
                 cell.setCellValue("表中事件类型填写有误");
                 continue;
@@ -490,10 +489,10 @@ public class EventListServiceImpl implements EventListService {
             eventList.setNote(note);
             eventList.setDepartmentName(departmentName);
             eventList.setDepartmentId(departmentList.get(0).getDepartmentId());
-            eventList.setDelow(new BigDecimal(delow));
+            /*eventList.setDelow(new BigDecimal(delow));
             eventList.setMiddle(new BigDecimal(middle));
             eventList.setFine(new BigDecimal(fine));
-            eventList.setExcellent(new BigDecimal(excellent));
+            eventList.setExcellent(new BigDecimal(excellent));*/
             String month = Arrays.asList(format.split("-")).get(1);
             eventList.setMonth(Integer.valueOf(month));
             eventList.setCreateDate(new Date());
