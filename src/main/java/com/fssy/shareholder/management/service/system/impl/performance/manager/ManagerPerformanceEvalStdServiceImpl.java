@@ -136,6 +136,7 @@ public class ManagerPerformanceEvalStdServiceImpl extends ServiceImpl<ManagerPer
         if (v!=1){
             return false;
         }
+        managerPerformanceEvalStd.setStatus("生效");
         int result = managerPerformanceEvalStdMapper.insert(managerPerformanceEvalStd);
         if (result > 0) {
             return true;

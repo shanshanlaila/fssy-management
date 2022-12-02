@@ -190,15 +190,15 @@
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title: '序号为：' + data.id + '的经理绩效绩效定性评分各项目占比修改',
+                    title:data.year + '年的企业经理人定性绩效信息修改',
                     area: [
-                        $(window).width() * 0.7 + 'px', $(window).height() - 400 + 'px'
+                        $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
                     ],
                     content: '/system/performance/manager/manager-performance-eval-std/edit?id=' + data.id,
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除序号为：' + data.id + '的经理绩效绩效定性评分各项目占比吗？', function () {
+                layer.confirm('确认删除年份为：' + data.year + '的企业经理人定性绩效信息吗？', function () {
                     $.ajax({
                         type: 'DELETE',
                         url: '/system/performance/manager/manager-performance-eval-std/' + data.id,
