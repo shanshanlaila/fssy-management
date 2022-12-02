@@ -76,6 +76,12 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         return managerQualitativeEvalStds;
     }
 
+    @Override
+    public List<Map<String, Object>> findManagerDataByParams(Map<String, Object> params) {
+        QueryWrapper<ManagerQualitativeEvalStd> queryWrapper = getQueryWrapper(params);
+        return managerQualitativeEvalStdMapper.selectMaps(queryWrapper);
+    }
+
     /**
      * 通过主键删除经理人绩效定性评分各项目占比信息
      * @param id
