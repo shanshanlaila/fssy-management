@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
+import org.springframework.beans.factory.annotation.Value;
 import javax.crypto.Cipher;
 import javax.servlet.http.HttpServletRequest;
 import java.security.KeyFactory;
@@ -57,7 +57,13 @@ public class LoginController
 
     @Autowired
     private SsoKeyService ssoKeyService;
-
+    /**
+     * 获取yml文件的端口、部署服务器的网址/IP;主要用于单点登录的跳转
+     */
+    @Value("${baseUrl}")
+    private String baseUrl;
+    @Value("${server.port}")
+    private String serverPort;
     /**
      * 返回登录页面
      *
@@ -306,6 +312,11 @@ public class LoginController
         userRelationQueryWrapper.eq("userId", user.getId());
         List<ViewDepartmentRoleUser> userRelationList = viewDepartmentRoleUserMapper
                 .selectList(userRelationQueryWrapper);
+
+        if (ObjectUtils.isEmpty(userRelationList)) {
+            throw new UnknownAccountException("当前系统未为当前登录用户分配岗位与权限,请联系系统管理员");
+        }
+
         // 保存到session
         SecurityUtils.getSubject().getSession().setAttribute("currentUserRelation",
                 userRelationList);
@@ -313,23 +324,29 @@ public class LoginController
         String returnUrl = "";
         for (ViewDepartmentRoleUser viewDepartmentRoleUser : userRelationList)
         {
-            // 查找用户当前的角色是否为供应商
-            if (CommonConstant.ROLE_SUPPLIER == viewDepartmentRoleUser.getRoleId().intValue())
+            if (0 == viewDepartmentRoleUser.getRoleId().intValue())
             {
                 throw new UnknownAccountException("供应商不可以用企业微信登录");
             }
-            // 查找用户当前的角色，是否为管理员
-            else if (1 == viewDepartmentRoleUser.getRoleId().intValue())
-            {
-                returnUrl = "/manage/index";
-                break;
+                // 查找用户当前的角色是否为供应商
+                if (CommonConstant.ROLE_SUPPLIER == viewDepartmentRoleUser.getRoleId().intValue())
+                {
+                    throw new UnknownAccountException("供应商不可以用企业微信登录");
+                }
+                // 查找用户当前的角色，是否为管理员
+                else if (1 == viewDepartmentRoleUser.getRoleId().intValue())
+                {
+                    returnUrl = "/manage/index";
+                    break;
+                }
+                else
+                {
+                    returnUrl = "/system/index";
+                }
             }
-            else
-            {
-                returnUrl = "/system/index";
-            }
-        }
-        return new ModelAndView(String.format("redirect:http://localhost:7079%s", returnUrl));
+
+
+        return new ModelAndView(String.format("redirect:%s:%s%s",baseUrl, serverPort, returnUrl));
     }
 
     /**

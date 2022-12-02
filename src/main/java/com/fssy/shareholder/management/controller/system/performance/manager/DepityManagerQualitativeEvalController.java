@@ -12,6 +12,7 @@ import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQu
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
+import com.fssy.shareholder.management.service.system.performance.manager.DepityManagerQualitativeEvalService;
 import com.fssy.shareholder.management.service.system.performance.manager.ManagerQualitativeEvalService;
 import com.fssy.shareholder.management.service.system.performance.manager.ManagerQualitativeEvalStdService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
@@ -20,10 +21,9 @@ import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,11 +40,11 @@ import java.util.*;
  * @since 2022-11-28
  */
 @Controller
-@RequestMapping("/system/performance/manager/general-manager-qualitative-eval")
-public class ManagerQualitativeEvalController {
+@RequestMapping("/system/performance/manager/depity-manager-qualitative-eval")
+public class DepityManagerQualitativeEvalController {
 
     @Autowired
-    private ManagerQualitativeEvalService managerQualitativeEvalService;
+    private DepityManagerQualitativeEvalService depityManagerQualitativeEvalService;
     @Autowired
     private ManagerQualitativeEvalStdService managerQualitativeEvalStdService;
     @Autowired
@@ -56,20 +56,20 @@ public class ManagerQualitativeEvalController {
 
 
     /**
-     * 总经理定性评价管理界面
+     * 分管经理定性评价管理界面
      * @param model
      * @return
      */
     @GetMapping("index1")
-    @RequiresPermissions("system:performance:manager:general-manager-qualitative-eval:index1")
-    @RequiredLog("总经理定性评价")
+    @RequiresPermissions("system:performance:manager:depity-manager-qualitative-eval:index1")
+    @RequiredLog("分管经理定性评价")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
-        return "system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-list";
+        return "system/performance/manager/depity-manager-qualitative-eval/depity-manager-qualitative-eval-list";
     }
 
     /**
-     * 返回 总经理定性评价管理界面 数据表格
+     * 返回 分管经理定性评价管理界面 数据表格
      *
      * @param request
      * @return
@@ -83,7 +83,7 @@ public class ManagerQualitativeEvalController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
-        Page<ManagerQualitativeEval> managerKpiScorePage = managerQualitativeEvalService.findManagerQualitativeEvalDataListPerPageByParams(params);
+        Page<ManagerQualitativeEval> managerKpiScorePage = depityManagerQualitativeEvalService.findManagerQualitativeEvalDataListPerPageByParams(params);
         if (managerKpiScorePage.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");
@@ -102,7 +102,7 @@ public class ManagerQualitativeEvalController {
      * @return 附件ID
      */
     @PostMapping("uploadFile")
-    @RequiredLog("总经理定性评价附件上传")
+    @RequiredLog("分管经理定性评价附件上传")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,HttpServletRequest request) {
 
@@ -126,7 +126,7 @@ public class ManagerQualitativeEvalController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = managerQualitativeEvalService.readManagerQualitativeEvalDataSource(result,year);
+            Map<String, Object> resultMap = depityManagerQualitativeEvalService.readManagerQualitativeEvalDataSource(result,year);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -156,7 +156,7 @@ public class ManagerQualitativeEvalController {
      * @return 页面
      */
     @RequiredLog("附件上传")
-    @RequiresPermissions("system:performance:manager:general-manager-qualitative-eval:index")
+    @RequiresPermissions("system:performance:manager:depity-manager-qualitative-eval:index")
     @GetMapping("index")
     public String materialDataAttachmentIndex(Model model) {
         SimpleDateFormat sdf = new SimpleDateFormat();
@@ -167,14 +167,14 @@ public class ManagerQualitativeEvalController {
         model.addAttribute("importDateStart", importDateStart);
         // 查询导入场景
         Map<String, Object> params = new HashMap<>();
-        params.put("noteEq", "总经理定性评价");
+        params.put("noteEq", "分管经理定性评价");
         List<ImportModule> importModules = importModuleService
                 .findImportModuleDataListByParams(params);
         if (org.springframework.util.ObjectUtils.isEmpty(importModules)) {
-            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "总经理定性评价表"));
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "分管经理定性评价表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
-        return "system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-attachment-list";
+        return "system/performance/manager/depity-manager-qualitative-eval/depity-manager-qualitative-eval-attachment-list";
     }
 
     /**
@@ -187,11 +187,11 @@ public class ManagerQualitativeEvalController {
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String,Object> params = getParams(request);
         //Sql语句
-        params.put("select","id,managerName,companyName,position,year,auditEvalScore,financialAuditScore," +
-                "operationScore,leadershipScore,investScore,workReportScore,qualitativeEvalScoreAuto," +
-                "qualitativeEvalScoreAdjust,adjustCause,status");
+        params.put("select","id,managerName,companyName,position,year,skillScore,democraticEvalScore," +
+                "superiorEvalScore,qualitativeEvalScoreAuto,qualitativeEvalScoreAdjust,adjustCause,yearImportantEvents," +
+                "eventsTrackSemiannual,eventsTrackAnnual,status");
         //查询
-        List<Map<String,Object>> managerQualitativeEvalDataByParams = managerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params);
+        List<Map<String,Object>> managerQualitativeEvalDataByParams = depityManagerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params);
         LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();
 
         //需要改变背景的格子
@@ -200,25 +200,26 @@ public class ManagerQualitativeEvalController {
         fieldMap.put("companyName", "所在企业");
         fieldMap.put("position", "所任职务");
         fieldMap.put("year", "年份");
-        fieldMap.put("auditEvalScore", "审计评价");
-        fieldMap.put("financialAuditScore", "财务稽核");
-        fieldMap.put("operationScore", "运营管理");
-        fieldMap.put("leadershipScore", "组织领导力");
-        fieldMap.put("investScore", "投资管理");
-        fieldMap.put("workReportScore", "述职报告");
-        fieldMap.put("qualitativeEvalScoreAuto", "合计（自动）");
-        fieldMap.put("qualitativeEvalScoreAdjust", "合计（人工）");
+        fieldMap.put("skillScore", "能力");
+        fieldMap.put("democraticEvalScore", "民主评议");
+        fieldMap.put("superiorEvalScore", "上级评价");
+        fieldMap.put("qualitativeEvalScoreAuto", "定性评价小计(自动)");
+        fieldMap.put("qualitativeEvalScoreAdjust", "定性评价小计(人工)");
+        fieldMap.put("adjustCause", "调整原因");
+        fieldMap.put("yearImportantEvents", "年度重点工作事件");
+        fieldMap.put("eventsTrackSemiannual", "半年度");
+        fieldMap.put("eventsTrackAnnual", "年度");
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12);
+        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13);
         SheetOutputService sheetOutputService = new SheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(managerQualitativeEvalDataByParams)) {
             throw new ServiceException("未查出数据");
         }
-        sheetOutputService.exportNum("总经理定性评价", managerQualitativeEvalDataByParams, fieldMap, response, strList, null);
+        sheetOutputService.exportNum("分管经理定性评价", managerQualitativeEvalDataByParams, fieldMap, response, strList, null);
     }
 
     /**
-     *  自动生成总经理定性评价分数
+     *  自动生成分管经理定性评价分数
      * @param
      * @return 结果
      */
@@ -229,7 +230,7 @@ public class ManagerQualitativeEvalController {
         if (ObjectUtils.isEmpty(params.get("year"))){
             throw new ServiceException("未选择年份，生成失败");
         }
-        boolean result = managerQualitativeEvalService.createScore(params);
+        boolean result = depityManagerQualitativeEvalService.createScore(params);
         if (result) {
             return SysResult.ok();
         }
@@ -237,14 +238,14 @@ public class ManagerQualitativeEvalController {
     }
 
     /**
-     * 以主键删除总经理定性评价记录
+     * 以主键删除分管经理定性评价记录
      * @param id
      * @return true/false
      */
     @DeleteMapping("{id}")
     @ResponseBody
     public SysResult delete(@PathVariable(value = "id") Integer id) {
-        boolean result = managerQualitativeEvalService.deleteManagerQualitativeEvalDataById(id);
+        boolean result = depityManagerQualitativeEvalService.deleteManagerQualitativeEvalDataById(id);
         if (result) {
             return SysResult.ok();
         }
@@ -252,7 +253,7 @@ public class ManagerQualitativeEvalController {
     }
 
     /**
-     * 修改总经理定性评价信息
+     * 修改分管经理定性评价信息
      * @param request
      * @param model
      * @return
@@ -268,13 +269,13 @@ public class ManagerQualitativeEvalController {
         params.put("managerName", managerName);
         params.put("companyName", companyName);
         params.put("year", year);
-        Map<String, Object> managerQualitativeEval = managerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params).get(0);
+        Map<String, Object> managerQualitativeEval = depityManagerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params).get(0);
         model.addAttribute("managerQualitativeEval", managerQualitativeEval);
-        return "system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-edit";
+        return "system/performance/manager/depity-manager-qualitative-eval/depity-manager-qualitative-eval-edit";
     }
 
     /**
-     * 更新总经理定性评价信息
+     * 更新分管经理定性评价信息
      * @param managerQualitativeEval
      * @return
      */
@@ -282,11 +283,11 @@ public class ManagerQualitativeEvalController {
     @ResponseBody
     public SysResult update(ManagerQualitativeEval managerQualitativeEval) {
 
-        boolean result = managerQualitativeEvalService.updateManagerQualitativeEvalData(managerQualitativeEval);
+        boolean result = depityManagerQualitativeEvalService.updateManagerQualitativeEvalData(managerQualitativeEval);
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "总经理定性评价信息没有更新，请检查数据后重新尝试");
+        return SysResult.build(500, "分管经理定性评价信息没有更新，请检查数据后重新尝试");
     }
 
     /**
@@ -312,47 +313,32 @@ public class ManagerQualitativeEvalController {
         params.put("year",year);
         params.put("companyName",companyName);
         params.put("managerName",managerName);
-        Map<String, Object> managerQualitativeEval = managerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params).get(0);
-        model.addAttribute("managerQualitativeEval",managerQualitativeEval);
+        Map<String, Object> managerQualitativeEval = depityManagerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params).get(0);
+        model.addAttribute("managerQualitativeEval", managerQualitativeEval);
         //对应分数下钻--获取值,用来计算原始数据
-        double auditEvalScore = Double.parseDouble(managerQualitativeEval.get("auditEvalScore").toString());
-        double financialAuditScore = Double.parseDouble(managerQualitativeEval.get("financialAuditScore").toString());
-        double operationScore = Double.parseDouble(managerQualitativeEval.get("operationScore").toString());
-        double leadershipScore = Double.parseDouble(managerQualitativeEval.get("leadershipScore").toString());
-        double investScore = Double.parseDouble(managerQualitativeEval.get("investScore").toString());
-        double workReportScore = Double.parseDouble(managerQualitativeEval.get("workReportScore").toString());
+        double skillScore = Double.parseDouble(managerQualitativeEval.get("skillScore").toString());
+        double democraticEvalScore = Double.parseDouble(managerQualitativeEval.get("democraticEvalScore").toString());
+        double superiorEvalScore = Double.parseDouble(managerQualitativeEval.get("superiorEvalScore").toString());
         //在ManagerQualitativeEvalStd中查找指标
         Map<String, Object> paramStd = new HashMap<>();
         paramStd.put("year",year);
         ManagerQualitativeEvalStd managerQualitativeEvalStd = managerQualitativeEvalStdService.findManagerQualitativeEvalStdDataByParams(paramStd).get(0);
-        model.addAttribute("managerQualitativeEvalStd",managerQualitativeEvalStd);
+        model.addAttribute("managerQualitativeEvalStd", managerQualitativeEvalStd);
         //对应分数下钻--获取相关比例系数,进行原来值的计算
-        double auditEvalScoreR = managerQualitativeEvalStd.getAuditEvalScoreR();
-        double financialAuditScoreR = managerQualitativeEvalStd.getFinancialAuditScoreR();
-        double operationScoreR = managerQualitativeEvalStd.getOperationScoreR();
-        double leadershipScoreR = managerQualitativeEvalStd.getLeadershipScoreR();
-        double investScoreR = managerQualitativeEvalStd.getInvestScoreR();
-        double workReportScoreR = managerQualitativeEvalStd.getWorkReportScoreR();
-        model.addAttribute("auditEvalScoreR",auditEvalScoreR);
-        model.addAttribute("financialAuditScoreR",financialAuditScoreR);
-        model.addAttribute("operationScoreR",operationScoreR);
-        model.addAttribute("leadershipScoreR",leadershipScoreR);
-        model.addAttribute("investScoreR",investScoreR);
-        model.addAttribute("workReportScoreR",workReportScoreR);
+        double skillScoreR = managerQualitativeEvalStd.getSkillScoreR();
+        double democraticEvalScoreR = managerQualitativeEvalStd.getDemocraticEvalScoreR();
+        double superiorEvalScoreR = managerQualitativeEvalStd.getSuperiorEvalScoreR();
+        model.addAttribute("skillScoreR",skillScoreR);
+        model.addAttribute("democraticEvalScoreR",democraticEvalScoreR);
+        model.addAttribute("superiorEvalScoreR",superiorEvalScoreR);
         //计算原来的值并将值传给前端
-        double auditEvalScoreOld = auditEvalScore / auditEvalScoreR;
-        double financialAuditScoreOld = financialAuditScore / financialAuditScoreR;
-        double operationScoreOld = operationScore / operationScoreR;
-        double leadershipScoreOld = leadershipScore / leadershipScoreR;
-        double investScoreOld = investScore / investScoreR;
-        double workReportScoreOld = workReportScore / workReportScoreR;
-        model.addAttribute("auditEvalScoreOld",auditEvalScoreOld);
-        model.addAttribute("financialAuditScoreOld",financialAuditScoreOld);
-        model.addAttribute("operationScoreOld",operationScoreOld);
-        model.addAttribute("leadershipScoreOld",leadershipScoreOld);
-        model.addAttribute("investScoreOld",investScoreOld);
-        model.addAttribute("workReportScoreOld",workReportScoreOld);
-        return "system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-detail";
+        double skillScoreOld = skillScore / skillScoreR;
+        double democraticEvalScoreOld = democraticEvalScore / democraticEvalScoreR;
+        double superiorEvalScoreOld = superiorEvalScore / superiorEvalScoreR;
+        model.addAttribute("skillScoreOld",skillScoreOld);
+        model.addAttribute("democraticEvalScoreOld",democraticEvalScoreOld);
+        model.addAttribute("superiorEvalScoreOld",superiorEvalScoreOld);
+        return "system/performance/manager/depity-manager-qualitative-eval/depity-manager-qualitative-eval-detail";
     }
 
     /**

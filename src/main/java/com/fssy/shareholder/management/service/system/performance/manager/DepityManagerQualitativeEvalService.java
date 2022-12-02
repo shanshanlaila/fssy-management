@@ -17,7 +17,7 @@ import java.util.Map;
  * @author zzp
  * @since 2022-11-28
  */
-public interface ManagerQualitativeEvalService extends IService<ManagerQualitativeEval> {
+public interface DepityManagerQualitativeEvalService extends IService<ManagerQualitativeEval> {
 
     /**
      * 通过查询条件，查询经理人定性评价 数据
