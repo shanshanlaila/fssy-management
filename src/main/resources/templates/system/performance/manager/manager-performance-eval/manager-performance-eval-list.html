@@ -28,11 +28,12 @@
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="companyName" placeholder="企业名称" autocomplete="off"
+                            <input type="text" name="companyNameShort" placeholder="企业名称" autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="managerName" id="managerName" placeholder="经理人姓名" autocomplete="off"
+                            <input type="text" name="managerName" id="managerName" placeholder="经理人姓名"
+                                   autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
@@ -40,7 +41,8 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="month" id="month" placeholder="月份" autocomplete="off"
+                            <input type="text" name="kpiScoreMonth" id="kpiScoreMonth" placeholder="月份"
+                                   autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -61,10 +63,7 @@
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-<!--                        <a lay-event="detail" title="经理人分数信息明细"><i class="layui-icon">&#xe63c;</i></a>-->
                         <a lay-event="edit" title="总经理定性评价修改"><i class="layui-icon">&#xe642;</i></a>
-                    </script>
-                    <script type="text/html" id="toolbar">
                     </script>
                 </div>
             </div>
@@ -129,14 +128,14 @@
                         title: '经理人姓名',
                         align: 'center',
                         fixed: 'left',
-                        width: 100
+                        width: 80
                     },
                     {
-                        field: 'companyName',
+                        field: 'companyNameShort',
                         title: '企业名称',
                         align: 'center',
                         fixed: 'left',
-                        width: 120
+                        width: 180
                     },
                     {
                         field: 'position',
@@ -155,25 +154,63 @@
                         field: 'kpiScore',
                         title: '定量评价',
                         align: 'center',
+                        sort: true,
+                        event: 'detail',
                         width: 100
                     },
                     {
                         field: 'qualitativeScore',
                         title: '定性评价',
                         align: 'center',
+                        event: 'qualitative',
+                        sort: true,
                         width: 100
                     },
                     {
                         field: 'scoreAuto',
                         title: '综合绩效分数（系统生成）',
                         align: 'center',
+                        sort: true,
                         width: 180
                     },
                     {
                         field: 'scoreAdjust',
                         title: '综合绩效分数（人工调整）',
                         align: 'center',
+                        sort: true,
                         width: 180
+                    },
+                    {
+                        field: 'scoreAdjustCause',
+                        title: '人工调整原因',
+                        align: 'center',
+                        width: 180
+                    },
+                    {
+                        field: 'kpiScoreR',
+                        title: '定量评价占比',
+                        align: 'center',
+                        sort: true,
+                        width: 100,
+                        templet: function (d) {
+                            var kpiScoreR;
+                            kpiScoreR = d.kpiScoreR * 100;
+                            kpiScoreR = kpiScoreR + '%';
+                            return kpiScoreR
+                        }
+                    },
+                    {
+                        field: 'qualitativeScoreR',
+                        title: '定性评价占比',
+                        align: 'center',
+                        sort: true,
+                        width: 100,
+                        templet: function (d) {
+                            var qualitativeScoreR;
+                            qualitativeScoreR = d.qualitativeScoreR * 100;
+                            qualitativeScoreR = qualitativeScoreR + '%';
+                            return qualitativeScoreR
+                        }
                     },
                     {
                         fixed: 'right',
@@ -188,18 +225,18 @@
 
 
         //监听生成分数按钮
-        form.on('submit(performanceScore)',function (data) {
+        form.on('submit(performanceScore)', function (data) {
             console.log(data.field)
             var field = data.field;
-            var companyName = data.field.companyName;
-            var year =data.field.year;
-            var month =data.field.month;
-            if(companyName == "")
-            if (year == ""){
-                layer.msg("年份为空！");
-                return false;
-            }
-            if (month == ""){
+            var companyName = data.field.companyNameShort;
+            var year = data.field.year;
+            var kpiScoreMonth = data.field.kpiScoreMonth;
+            if (companyName == "")
+                if (year == "") {
+                    layer.msg("年份为空！");
+                    return false;
+                }
+            if (kpiScoreMonth == "") {
                 layer.msg("月份为空！");
                 return false;
             }
@@ -208,10 +245,9 @@
                 url: '/system/performance/manager/manager-performance-eval/updateScore',
                 data: {
                     "managerName": field.managerName,
-                    "companyName": field.companyName,
-                    "generalManager": field.generalManager,
+                    "companyName": field.companyNameShort,
                     "year": field.year,
-                    "month": field.month
+                    "kpiScoreMonth": field.kpiScoreMonth
                 },
                 success: function (result) {
                     layer.closeAll();
@@ -221,55 +257,56 @@
                     }
                 }
             });
-        })
-        // 监听行工具事件
+        });
+        // 监听表格单击事件
         table.on('tool(dataTable)', function (obj) {
+            // 行数据
+            var data = obj.data;
+            var url = '';
+            //经理人KPI定量评价分数下转
+            if (obj.event === 'detail') {
+                layer.open({
+                    type: 2,
+                    title: data.year + '年' + data.kpiScoreMonth + '月--' + data.managerName + '--的各项分数信息如下:',
+                    area: [
+                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                    ],
+                    //①获取需要查看的此条记录的指定数据
+                    content: '/system/performance/manager/manager-performance-eval/search-detail?kpiScoreMonth=' + data.kpiScoreMonth + '&year=' + data.year + '&companyName=' + data.companyNameShort + '&managerName=' + data.managerName,
+                    maxmin: true
+                });
+            }
+            //经理人定性评价分数下转
+            else if (obj.event === 'qualitative') {
+                layer.open({
+                    type: 2,
+                    title: data.year + '年 ' + data.managerName + '的定性评价分数明细',
+                    area: [
+                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                    ],
+                    //①获取需要查看的此条记录的指定数据
+                    content: '/system/performance/manager/manager-performance-eval/search-qualitative?kpiScoreMonth=' + data.kpiScoreMonth + '&year=' +
+                        data.year + '&companyName=' + data.companyNameShort + '&managerName=' + data.managerName+'&position='+data.position,
+                    maxmin: true
+                })
+            }
             // 修改页面
-            var data = obj.data;//获取当前行数据
-            console.log(data)
-            if (obj.event === 'edit') {
+            else if (obj.event === 'edit') {
                 layer.open({
                     type: 2,
                     title: data.managerName + '的各项分数信息如下:',
                     area: [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/performance/manager_kpi/view-manager-kpi-month-score/edit?id=' + data.id + '&managerName=' + data.managerName + '&month=' + data.month + '&year=' + data.year,
+                    content: '/system/performance/manager/manager-performance-eval/edit?id=' + data.id,
                     maxmin: true
                 });
-            } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除【' + data.managerName + '】的分数记录信息吗？', function () {
-                    $.ajax({
-                        type: 'DELETE',
-                        url: '/system/performance/manager_kpi/view-manager-kpi-month-score/' + data.id,
-                        success: function (result) {
-                            layer.msg(result.msg);
-                            if (result.status == 200) {
-                                table.reload('dataTable');
-                            }
-                        }
-                    })
-                });
-            } else if (obj.event === 'detail') {//分数下钻，查看经理人的分数组成
-                // console.log("list" + data.month)
-                layer.open({
-                    type : 2,
-                    title : data.year + '年' + data.month  + '月--' + data.managerName + '--的各项分数信息如下:',
-                    area : [
-                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
-                    ],
-                    //①获取需要查看的此条记录的指定数据
-                    content : '/system/performance/manager_kpi/view-manager-kpi-month-score/search-detail?month=' + data.month + '&year=' + data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
-                    maxmin : true
-                });
             }
-        })
+        });
         //界面初始化的时候进行加载
-        $(document).ready(function() {
-            console.log($("#year").val())
+        $(document).ready(function () {
             table.reload('dataTable', {
-                url: "/system/performance/manager_kpi/view-manager-kpi-month-score/getObjects?year=" + moment().format("YYYY") + "&month=" + moment().month(),
-                // where: data.field,
+                url: "/system/performance/manager/manager-performance-eval/getObject?year=" + moment().format("YYYY") + "&kpiScoreMonth=" + moment().month(),
                 page: {
                     curr: 1
                 }

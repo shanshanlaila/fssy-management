@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
 
 import java.math.BigDecimal;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -176,7 +177,7 @@ public class HrManagerPerformanceEval extends BaseModel {
     private Integer qualitativeEvalId;
 
     /**
-     * 定量评价占比	
+     * 定量评价占比
      */
     @TableField("kpiScoreR")
     private BigDecimal kpiScoreR;
@@ -186,6 +187,11 @@ public class HrManagerPerformanceEval extends BaseModel {
      */
     @TableField("qualitativeScoreR")
     private Double qualitativeScoreR;
+    /**
+     * 定性评价占比
+     */
+    @TableField("scoreAdjustCause")
+    private String scoreAdjustCause;
 
 
 }
