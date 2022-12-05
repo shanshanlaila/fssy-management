@@ -38,7 +38,7 @@ public class HrUserPositionDepartmentCompanyServiceImpl extends ServiceImpl<HrUs
     @Override
     public List<HrUserPositionDepartmentCompany> findHrUserPositionDepartmentCompany() {
         QueryWrapper<HrUserPositionDepartmentCompany> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("status","在职").in("managerType","企业总经理","企业分管经理人");
+        queryWrapper.eq("status","在职").in("managerType","企业总经理","企业分管经理");
         return hrUserPositionDepartmentCompanyMapper.selectList(queryWrapper);
     }
 

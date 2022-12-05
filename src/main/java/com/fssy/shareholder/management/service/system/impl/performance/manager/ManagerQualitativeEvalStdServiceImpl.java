@@ -163,7 +163,7 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         Double democraticEvalScoreR = managerQualitativeEvalStd.getDemocraticEvalScoreR();
         Double superiorEvalScoreR = managerQualitativeEvalStd.getSuperiorEvalScoreR();
         double vgm = skillScoreR + democraticEvalScoreR + superiorEvalScoreR;
-        if (vgm!=1){
+        if (vgm!=100){
             return false;
         }
         Double auditEvalScoreR = managerQualitativeEvalStd.getAuditEvalScoreR();
@@ -173,7 +173,7 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         Double investScoreR = managerQualitativeEvalStd.getInvestScoreR();
         Double workReportScoreR = managerQualitativeEvalStd.getWorkReportScoreR();
         double gm = auditEvalScoreR + financialAuditScoreR + operationScoreR + leadershipScoreR + investScoreR + workReportScoreR;
-        if (gm!=1){
+        if (gm!=100){
             return false;
         }
         int result = managerQualitativeEvalStdMapper.insert(managerQualitativeEvalStd);
@@ -215,6 +215,9 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         }
         if (params.containsKey("workReportScoreR")) {
             queryWrapper.eq("workReportScoreR", params.get("workReportScoreR"));
+        }
+        if (params.containsKey("status")) {
+            queryWrapper.eq("status", params.get("status"));
         }
 
         return queryWrapper;

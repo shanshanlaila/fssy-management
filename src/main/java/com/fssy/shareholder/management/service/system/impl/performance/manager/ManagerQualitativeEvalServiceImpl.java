@@ -340,6 +340,12 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
         if (params.containsKey("evalStdId")) {
             queryWrapper.eq("evalStdId", params.get("evalStdId"));
         }
+        if (params.containsKey("status")) {
+            queryWrapper.eq("status", params.get("status"));
+        }
+        if (params.containsKey("position")) {
+            queryWrapper.eq("position", params.get("position"));
+        }
         return queryWrapper;
     }
 
@@ -352,6 +358,9 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
         QueryWrapper<ManagerQualitativeEvalStd> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("year")) {
             queryWrapper.eq("year", params.get("year"));
+        }
+        if (params.containsKey("status")) {
+            queryWrapper.eq("status", params.get("status"));
         }
         if (params.containsKey("skillScoreR")) {
             queryWrapper.eq("skillScoreR", params.get("skillScoreR"));
@@ -379,6 +388,9 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
         }
         if (params.containsKey("workReportScoreR")) {
             queryWrapper.eq("workReportScoreR", params.get("workReportScoreR"));
+        }
+        if (params.containsKey("position")) {
+            queryWrapper.eq("position", params.get("position"));
         }
         return queryWrapper;
     }
