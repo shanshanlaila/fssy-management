@@ -1,4 +1,4 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
@@ -63,35 +63,6 @@ public class EventListAttachmentController {
 	private ImportModuleService importModuleService;
 
     /**
-     * @return 事件列表展示路径
-     */
-	@RequiredLog("事件清单附件列表")
-    @GetMapping("import")
-    @RequiresPermissions("system:performance:employee:event:attachment:import")
-    public String showImportPage(Model model) {
-        SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("yyyy-MM-dd");
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        String importDateStart = sdf.format(date);
-
-        model.addAttribute("importDateStart", importDateStart);
-        
-		// 查询导入场景
-		Map<String, Object> params = new HashMap<>();
-		params.put("noteEq", "完整事件清单");
-		List<ImportModule> importModules = importModuleService
-				.findImportModuleDataListByParams(params);
-		if (ObjectUtils.isEmpty(importModules))
-		{
-			throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "完整事件清单"));
-		}
-		model.addAttribute("module", importModules.get(0).getId());
-        return "system/performance/employee/events-attachment-list";
-    }
-
-
-    /**
      * 事件列表附件上传
      *
      * @param file       前台传来的附件数据
@@ -146,7 +117,7 @@ public class EventListAttachmentController {
 
 	/**
 	 * 返回无标准事件清单附件页面
-	 * 
+	 *
 	 * @param model model对象
 	 * @return
 	 */

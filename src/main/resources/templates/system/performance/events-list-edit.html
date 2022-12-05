@@ -49,7 +49,7 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th colspan="6">无标准事件信息</th>
+                    <th colspan="6">基础事件信息修改</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -73,10 +73,10 @@
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="eventsType" id="eventsType"
-                                   placeholder="事件类别" autocomplete="off"
-                                   lay-verify="required" lay-reqText="事件类别为必填项"
-                                   th:value="${eventList['eventsType']}"/>
+                            <select name="eventsFirstType" id="eventsFirstType">
+                                <option value="事务类">事务类</option>
+                                <option value="非事务类">非事务类</option>
+                            </select>
                         </div>
                     </td>
                     <td style="text-align: right"><span
@@ -143,41 +143,6 @@
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="standardValue" id="standardValue"
                                    th:value="${eventList['standardValue']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;不合格价值:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="delow" id="delow"
-                                   lay-verify="不合格价值为必填项" th:value="${eventList['delow']}"/>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;中价值:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="middle" id="middle"
-                                   lay-verify="中价值为必填项" th:value="${eventList['middle']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;良价值:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="fine" id="fine"
-                                   lay-verify="良价值为必填项" th:value="${eventList['fine']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;优价值:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="excellent" id="excellent"
-                                   th:value="${eventList['excellent']}"/>
                         </div>
                     </td>
                 </tr>

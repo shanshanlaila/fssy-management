@@ -434,10 +434,6 @@ public class EventListController {
         fieldMap.put("roleName", "*岗位名称");// 跨岗位 H
         fieldMap.put("isMainOrNext", "*主担/次担"); // I
         fieldMap.put("userName", "*职员名称");// J
-        /*fieldMap.put("delow", "不合格价值");
-        fieldMap.put("middle", "中价值");
-        fieldMap.put("fine", "良价值");
-        fieldMap.put("excellent", "优价值");*/
         fieldMap.put("activeDate", "*生效日期");// K
         // 标识字符串的列
         List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
