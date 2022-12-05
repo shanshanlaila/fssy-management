@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -225,6 +222,12 @@ public class EventsEventsRelationRoleServiceImpl
         }
         if (params.containsKey("select")) {
             queryWrapper.select(InstandTool.objectToString(params.get("select")));
+        }
+        // 年月组合查询
+        if (params.containsKey("yearAndMonth")) {
+            String yearAndMonth = (String) params.get("yearAndMonth");
+            List<String> asList = Arrays.asList(yearAndMonth.split("-"));
+            queryWrapper.eq("year", asList.get(0)).eq("month", asList.get(1));
         }
         return queryWrapper;
     }

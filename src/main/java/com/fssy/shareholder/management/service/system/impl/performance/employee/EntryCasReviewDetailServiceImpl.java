@@ -275,7 +275,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
-            queryWrapper.groupBy("userName");
+            queryWrapper.select("userName").groupBy("userName");
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {

@@ -270,6 +270,10 @@ public class EventsRelationRoleController
 			List<String> userIds = Arrays.asList(userIdsStr.split(","));
 			params.put("userIds", userIds);
 		}
+		// 年月组合查询
+		if (!ObjectUtils.isEmpty(request.getParameter("yearAndMonth"))){
+			params.put("yearAndMonth",request.getParameter("yearAndMonth"));
+		}
 		return params;
 	}
 

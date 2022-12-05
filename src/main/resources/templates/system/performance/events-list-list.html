@@ -18,7 +18,7 @@
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                                style="line-height: 30px"></i></a>
+                                                              style="line-height: 30px"></i></a>
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
@@ -50,32 +50,16 @@
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="eventsType" placeholder="事件类别"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="eventsFirstType" placeholder="事件类型"
-                                   autocomplete="off" class="layui-input">
+                            <select name="eventsFirstType" id="eventsFirstType">
+                                <option value="" selected>请选择事件类型</option>
+                                <option value="事务类">事务类</option>
+                                <option value="非事务类">非事务类</option>
+                            </select>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="office" placeholder="科室查询"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="id" placeholder="序号查询"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <label>
-                                <select name="status">
-                                    <option style="display: none" value="">请选择状态</option>
-                                    <option value="完结">完结</option>
-                                    <option value="待填报价值">待填报价值</option>
-                                </select>
-                            </label>
-                        </div>
-
 
                         <div class="layui-inline layui-show-xs-block">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
@@ -163,99 +147,73 @@
                                 [
                                     [
                                         {
-                                            field: 'id',
-                                            title: '序号',
+                                            field: 'year',
+                                            title: '年份',
                                             width: 50,
                                             fixed: 'left'
                                         },
                                         {
-                                            field: 'departmentName',
-                                            title: '部门名称',
+                                            field: 'strategyFunctions',
+                                            title: '战略职能',
                                             width: 90,
                                             fixed: 'left'
                                         },
                                         {
-                                            field: 'year',
-                                            title: '编制年份',
-                                            width: 70,
+                                            field: 'supportFunctions',
+                                            title: '支持职能',
+                                            width: 100,
+                                            fixed: 'left'
+                                        },
+                                        {
+                                            field: 'jobName',
+                                            title: '工作职责',
+                                            width: 200,
                                             fixed: 'left'
                                         },
                                         {
                                             field: 'workEvents',
                                             title: '流程（工作事件）',
-                                            width: 200,
-                                            fixed: 'left'
+                                            width: 200
                                         },
                                         {
                                             field: 'workOutput',
-                                            title: '表单',
-                                            width: 130
+                                            title: '表单（输出内容）',
+                                            width: 200
                                         },
-
-                                        {
-                                            field: 'status',
-                                            title: '状态',
-                                            width: 90
-                                        },
-                                        {
-                                            field: 'standardValue',
-                                            title: '事件标准价值',
-                                            width: 100
-                                        },
-                                        /*{
-                                            field: 'delow',
-                                            title: '不合格价值',
-                                            width: 80
-                                        },
-                                        {
-                                            field: 'middle',
-                                            title: '中价值',
-                                            width: 80
-                                        },
-                                        {
-                                            field: 'fine',
-                                            title: '良价值',
-                                            width: 80
-                                        },
-                                        {
-                                            field: 'excellent',
-                                            title: '优价值',
-                                            width: 80
-                                        },*/
                                         {
                                             field: 'eventsFirstType',
                                             title: '事件类型',
                                             width: 80
                                         },
                                         {
-                                            field: 'jobName',
-                                            title: '工作职责',
-                                            width: 120
-                                        },
-                                        {
-                                            field: 'strategyFunctions',
-                                            title: '战略职能',
-                                            width: 130
-                                        },
-                                        {
-                                            field: 'supportFunctions',
-                                            title: '支持职能',
-                                            width: 130
-                                        },
-                                        {
-                                            field: 'note',
-                                            title: '备注',
-                                            width: 60
-                                        },
-                                        {
                                             field: 'duration',
-                                            title: '月工作标准时长（分）',
-                                            width: 130
+                                            title: '月工作标准时长',
+                                            width: 100
                                         },
                                         {
                                             field: 'level',
                                             title: '评价等级',
-                                            width: 130
+                                            width: 100
+                                        },
+                                        {
+                                            field: 'standardValue',
+                                            title: '事件标准价值',
+                                            width: 90
+                                        },
+                                        {
+                                            field: 'note',
+                                            title: '备注',
+                                            width: 100
+                                        },
+                                        {
+                                            field: 'departmentName',
+                                            title: '部门',
+                                            width: 90
+                                        },
+                                        {
+                                            field: 'office',
+                                            title: '科室',
+                                            width: 70
                                         },
                                         {
                                             field: 'createDate',
@@ -266,11 +224,6 @@
                                             field: 'activeDate',
                                             title: '生效日期',
                                             width: 80,
-                                        },
-                                        {
-                                            field: 'office',
-                                            title: '科室',
-                                            width: 60
                                         },
                                         {
                                             field: 'listCreateUser',
