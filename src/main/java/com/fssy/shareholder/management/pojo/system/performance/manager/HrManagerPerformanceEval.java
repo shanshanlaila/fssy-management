@@ -175,6 +175,11 @@ public class HrManagerPerformanceEval extends BaseModel {
      */
     @TableField("qualitativeEvalId")
     private Integer qualitativeEvalId;
+    /**
+     * 干部履历表id
+     */
+    @TableField("userPositionId")
+    private Integer userPositionId;
 
     /**
      * 定量评价占比

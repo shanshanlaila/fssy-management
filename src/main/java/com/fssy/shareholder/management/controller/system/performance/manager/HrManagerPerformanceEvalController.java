@@ -6,6 +6,7 @@ import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.performance.manager.HrManagerPerformanceEval;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
+import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
@@ -50,6 +51,7 @@ public class HrManagerPerformanceEvalController {
     private ManagerQualitativeEvalStdService managerQualitativeEvalStdService;
     @Autowired
     private ManagerQualitativeEvalService managerQualitativeEvalService;
+
     /**
      * 经理人定性评价汇总表 管理页面
      *
@@ -108,7 +110,7 @@ public class HrManagerPerformanceEvalController {
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "分数生成失败");
+        return SysResult.build(500, "没有相应的年度占比，分数生成失败");
     }
 
     /**
@@ -149,6 +151,7 @@ public class HrManagerPerformanceEvalController {
 
     /**
      * 修改经营管理指标库信息
+     *
      * @param request
      * @param model
      * @return
@@ -162,8 +165,10 @@ public class HrManagerPerformanceEvalController {
         model.addAttribute("hrManagerPerformanceEval", hrManagerPerformanceEval);
         return "system/performance/manager/manager-performance-eval/manager-performance-eval-edit";
     }
+
     /**
      * 更新经营管理指标库信息
+     *
      * @param hrManagerPerformanceEval
      * @return
      */
@@ -177,77 +182,120 @@ public class HrManagerPerformanceEvalController {
         }
         return SysResult.build(500, "企业经理人年度绩效汇总信息没有更新，请检查数据后重新尝试");
     }
+
     /**
      * 返回查看指定总经理的定性评价分数详情页面<br/>
      * 添加根据给出姓名、公司名称、年份查看所有其对应的分数数据
+     *
      * @param request 请求实体
      * @param model   model对象
      * @return 页面
      */
     @GetMapping("search-qualitative")
-    public String searchQualitative(HttpServletRequest request, Model model)
-    {
+    public String searchQualitative(HttpServletRequest request, Model model) {
         //②将获取到的姓名、公司名称、年份、月份返回到前端弹出层页面
-        String month = request.getParameter("kpiScoreMonth");
         String year = request.getParameter("year");
         String companyName = request.getParameter("companyName");
         String managerName = request.getParameter("managerName");
-        String position=request.getParameter("position");
-        model.addAttribute("month", month);
-        model.addAttribute("year", year);
-        model.addAttribute("companyName", companyName);
-        model.addAttribute("managerName", managerName);
-        model.addAttribute("position",position);
-        Map<String, Object> params = new HashMap<>();
-        Map<String, Object> map = new HashMap<>();
-
-        params.put("year",year);
-        map.put("year",year);
-        map.put("companyName",companyName);
-        map.put("managerName",managerName);
-        map.put("position",position);
-        Map<String, Object> managerQualitativeEvalStd =
-               managerQualitativeEvalStdService.findManagerDataByParams(params).get(0);
-//        Map<String, Object> stringObjectMap = managerQualitativeEvalService.findManagerQualitativeEvalDataByParams(map).get(0);
-//        model.addAttribute("stringObjectMap",stringObjectMap);
+        String position = request.getParameter("position");
+        //在定性评价占比表中查找指标
+        Map<String, Object> paramStd = new HashMap<>();
+        paramStd.put("year", year);
+        paramStd.put("status", "生效");
+        ManagerQualitativeEvalStd managerQualitativeEvalStd = managerQualitativeEvalStdService.findManagerQualitativeEvalStdDataByParams(paramStd).get(0);
         model.addAttribute("managerQualitativeEvalStd", managerQualitativeEvalStd);
+        //对应分数下钻--获取相关比例系数,进行原来值的计算
+        //总经理占比获取
+        double auditEvalScoreR = managerQualitativeEvalStd.getAuditEvalScoreR();
+        double financialAuditScoreR = managerQualitativeEvalStd.getFinancialAuditScoreR();
+        double operationScoreR = managerQualitativeEvalStd.getOperationScoreR();
+        double leadershipScoreR = managerQualitativeEvalStd.getLeadershipScoreR();
+        double investScoreR = managerQualitativeEvalStd.getInvestScoreR();
+        double workReportScoreR = managerQualitativeEvalStd.getWorkReportScoreR();
+        model.addAttribute("auditEvalScoreR", auditEvalScoreR);
+        model.addAttribute("financialAuditScoreR", financialAuditScoreR);
+        model.addAttribute("operationScoreR", operationScoreR);
+        model.addAttribute("leadershipScoreR", leadershipScoreR);
+        model.addAttribute("investScoreR", investScoreR);
+        model.addAttribute("workReportScoreR", workReportScoreR);
+        //分管经理占比数据获取
+        double skillScoreR = managerQualitativeEvalStd.getSkillScoreR();
+        double democraticEvalScoreR = managerQualitativeEvalStd.getDemocraticEvalScoreR();
+        double superiorEvalScoreR = managerQualitativeEvalStd.getSuperiorEvalScoreR();
+        model.addAttribute("skillScoreR", skillScoreR);
+        model.addAttribute("democraticEvalScoreR", democraticEvalScoreR);
+        model.addAttribute("superiorEvalScoreR", superiorEvalScoreR);
+        //获取定性评价分数表中详情
+        //判断经理人职务，如果是总经理则展示总经理的信息详情否则是分管经理人
+        if (position.equals("总经理")) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("year", year);
+            params.put("companyName", companyName);
+            params.put("managerName", managerName);
+            params.put("position", position);
 
-        return "system/performance/manager/manager-performance-eval/manager-performance-eval-general-detail";
-    }
+            Map<String, Object> managerQualitativeEval = null;
+            try {
+                managerQualitativeEval = managerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params).get(0);
+            } catch (Exception e) {
+                throw new ServiceException("查询不到数据");
+            }
+            model.addAttribute("managerQualitativeEval", managerQualitativeEval);
 
-    /**
-     * 返回指定总经理定性评价分数明细表格数据
-     */
-    @GetMapping("getGeneralScore")
-    @ResponseBody
-    public Map<String, Object> getGeneralScore(HttpServletRequest request)
-    {
-        //④将传进来的参数交给数据库查，然后返回页面
-        Map<String, Object> result = new HashMap<String, Object>();
-        Map<String, Object> params = new HashMap<>();
-        String managerScoreDataMonth = request.getParameter("kpiScoreMonth");
-        String managerScoreDataYear = request.getParameter("year");
-        String managerScoreDataCompanyName = request.getParameter("companyName");
-        String managerScoreDataManagerName = request.getParameter("managerName");
-        params.put("month",managerScoreDataMonth);
-        params.put("year",managerScoreDataYear);
-        params.put("companyName",managerScoreDataCompanyName);
-        params.put("managerName",managerScoreDataManagerName);
+            //对应分数下钻--获取值,用来计算原始数据
+            //总经理原始分数数据获取
+            double auditEvalScore = Double.parseDouble(managerQualitativeEval.get("auditEvalScore").toString());
+            double financialAuditScore = Double.parseDouble(managerQualitativeEval.get("financialAuditScore").toString());
+            double operationScore = Double.parseDouble(managerQualitativeEval.get("operationScore").toString());
+            double leadershipScore = Double.parseDouble(managerQualitativeEval.get("leadershipScore").toString());
+            double investScore = Double.parseDouble(managerQualitativeEval.get("investScore").toString());
+            double workReportScore = Double.parseDouble(managerQualitativeEval.get("workReportScore").toString());
+            //计算原来的值并将值传给前端
+            //总经理分数计算和传送
+            double auditEvalScoreOld = auditEvalScore / auditEvalScoreR;
+            double financialAuditScoreOld = financialAuditScore / financialAuditScoreR;
+            double operationScoreOld = operationScore / operationScoreR;
+            double leadershipScoreOld = leadershipScore / leadershipScoreR;
+            double investScoreOld = investScore / investScoreR;
+            double workReportScoreOld = workReportScore / workReportScoreR;
+            model.addAttribute("auditEvalScoreOld", auditEvalScoreOld);
+            model.addAttribute("financialAuditScoreOld", financialAuditScoreOld);
+            model.addAttribute("operationScoreOld", operationScoreOld);
+            model.addAttribute("leadershipScoreOld", leadershipScoreOld);
+            model.addAttribute("investScoreOld", investScoreOld);
+            model.addAttribute("workReportScoreOld", workReportScoreOld);
+            return "system/performance/manager/manager-performance-eval/manager-performance-eval-general-detail";
+        } else {
+            Map<String, Object> params = new HashMap<>();
+            params.put("year", year);
+            params.put("companyName", companyName);
+            params.put("managerName", managerName);
+            params.put("position", position);
 
-        List<Map<String, Object>> managerQualitativeEvalDataByParams = managerQualitativeEvalService
-                .findManagerQualitativeEvalDataByParams(params);
-        if (managerQualitativeEvalDataByParams.size() == 0)
-        {
-            result.put("code", 404);
-            result.put("msg", "未查出数据");
+            Map<String, Object> managerQualitativeEval = null;
+            try {
+                managerQualitativeEval = managerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params).get(0);
+            } catch (ServiceException e) {
+                throw new ServiceException("查询不到数据");
+            }
+            if (ObjectUtils.isEmpty(managerQualitativeEval)) {
+                throw new ServiceException("查询不到数据！");
+            }
+            model.addAttribute("managerQualitativeEval", managerQualitativeEval);
+            //对应分数下钻--获取值,用来计算原始数据
+            //分管经理原始分数数据获取
+            double skillScore = Double.parseDouble(managerQualitativeEval.get("skillScore").toString());
+            double democraticEvalScore = Double.parseDouble(managerQualitativeEval.get("democraticEvalScore").toString());
+            double superiorEvalScore = Double.parseDouble(managerQualitativeEval.get("superiorEvalScore").toString());
+            //分管经理分数计算和传输
+            double skillScoreOld = skillScore / skillScoreR;
+            double democraticEvalScoreOld = democraticEvalScore / democraticEvalScoreR;
+            double superiorEvalScoreOld = superiorEvalScore / superiorEvalScoreR;
+            model.addAttribute("skillScoreOld", skillScoreOld);
+            model.addAttribute("democraticEvalScoreOld", democraticEvalScoreOld);
+            model.addAttribute("superiorEvalScoreOld", superiorEvalScoreOld);
+            return "system/performance/manager/manager-performance-eval/manager-performance-eval-vice-detail";
         }
-        else
-        {
-            result.put("code", 0);
-            result.put("count", managerQualitativeEvalDataByParams.size());
-            result.put("data", managerQualitativeEvalDataByParams);
-        }
-        return result;
     }
 
     /**
@@ -259,8 +307,7 @@ public class HrManagerPerformanceEvalController {
      * @return 页面
      */
     @GetMapping("search-detail")
-    public String searchByAssignFromBtn(HttpServletRequest request, Model model)
-    {
+    public String searchByAssignFromBtn(HttpServletRequest request, Model model) {
         //②将获取到的姓名、公司名称、年份、月份返回到前端弹出层页面
         String month = request.getParameter("kpiScoreMonth");
         String year = request.getParameter("year");
@@ -273,10 +320,10 @@ public class HrManagerPerformanceEvalController {
         model.addAttribute("managerName", managerName);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("month",month);
-        params.put("year",year);
-        params.put("companyName",companyName);
-        params.put("managerName",managerName);
+        params.put("month", month);
+        params.put("year", year);
+        params.put("companyName", companyName);
+        params.put("managerName", managerName);
         Map<String, Object> managerKpiScoreOld = managerKpiScoreServiceOld.findManagerKpiScoreOldDataByParams(params).get(0);
         model.addAttribute("managerKpiScoreOld", managerKpiScoreOld);
         return "system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-detail";
@@ -287,8 +334,7 @@ public class HrManagerPerformanceEvalController {
      */
     @GetMapping("getManagerScoreData")
     @ResponseBody
-    public Map<String, Object> getManagerScoreData(HttpServletRequest request)
-    {
+    public Map<String, Object> getManagerScoreData(HttpServletRequest request) {
         //④将传进来的参数交给数据库查，然后返回页面
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> params = new HashMap<>();
@@ -296,25 +342,23 @@ public class HrManagerPerformanceEvalController {
         String managerScoreDataYear = request.getParameter("year");
         String managerScoreDataCompanyName = request.getParameter("companyName");
         String managerScoreDataManagerName = request.getParameter("managerName");
-        params.put("month",managerScoreDataMonth);
-        params.put("year",managerScoreDataYear);
-        params.put("companyName",managerScoreDataCompanyName);
-        params.put("managerName",managerScoreDataManagerName);
+        params.put("month", managerScoreDataMonth);
+        params.put("year", managerScoreDataYear);
+        params.put("companyName", managerScoreDataCompanyName);
+        params.put("managerName", managerScoreDataManagerName);
         List<Map<String, Object>> managerScoreDataIdList = viewManagerKpiMonthService
                 .findViewManagerKpiMonthMapDataByParams(params);
-        if (managerScoreDataIdList.size() == 0)
-        {
+        if (managerScoreDataIdList.size() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");
-        }
-        else
-        {
+        } else {
             result.put("code", 0);
             result.put("count", managerScoreDataIdList.size());
             result.put("data", managerScoreDataIdList);
         }
         return result;
     }
+
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
         //主键查询
