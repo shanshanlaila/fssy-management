@@ -183,6 +183,31 @@ public class HrManagerPerformanceEvalController {
         return SysResult.build(500, "企业经理人年度绩效汇总信息没有更新，请检查数据后重新尝试");
     }
 
+//    /**
+//     * 进行分数下转之前先判断下转的数据是否存在，不存在则进行错误提示
+//     * @param request
+//     * @return
+//     */
+//    @PostMapping("searchExist")
+//    public boolean searchExist(HttpServletRequest request){
+//        Map<String, Object> params = getParams(request);
+//        String year = (String) params.get("year");
+//        String managerName = (String) params.get("managerName");
+//        String companyName = (String) params.get("companyName");
+//        String position = (String) params.get("position");
+//        //判断是否存在数据
+//        Map<String, Object> temp = new HashMap<>();
+//        temp.put("year", year);
+//        temp.put("companyName", companyName);
+//        temp.put("managerName", managerName);
+//        temp.put("position", position);
+//        try {
+//            Map<String, Object>  managerQualitativeEval = managerQualitativeEvalService.findManagerQualitativeEvalDataByParams(temp).get(0);
+//        } catch (Exception e) {
+//            throw new ServiceException("查询不到数据");
+//        }
+//        return true;
+//    }
     /**
      * 返回查看指定总经理的定性评价分数详情页面<br/>
      * 添加根据给出姓名、公司名称、年份查看所有其对应的分数数据
