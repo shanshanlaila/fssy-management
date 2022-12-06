@@ -52,6 +52,7 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
 
     /**
      * 提交审核
+     *
      * @param planDetailIds
      * @return 审核成功结果
      */
@@ -59,6 +60,7 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
 
     /**
      * 撤销审核
+     *
      * @param planDetailIds
      * @return 撤销成功结果
      */
@@ -66,14 +68,16 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
 
     /**
      * 审核
+     *
      * @param planDetailIds
      * @param event
      * @return 通过/拒绝
      */
-    boolean affirmStore(List<String> planDetailIds,String event,List<String> auditNotes);
+    boolean affirmStore(List<String> planDetailIds, String event, List<String> auditNotes);
 
     /**
      * 人力资源部 审核新增工作流
+     *
      * @param planDetailIds
      * @param event
      * @return 属于/不属于
@@ -82,6 +86,7 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
 
     /**
      * 选择关联事件清单（修改按钮）
+     *
      * @param entryCasPlanDetail
      * @return
      */
@@ -89,8 +94,17 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
 
     /**
      * 单条填写履职计划
+     *
      * @param entryCasPlanDetail 履职计划
      * @return 填写成功
      */
-    boolean saveOneCasPlanDetail(EntryCasPlanDetail entryCasPlanDetail,HttpServletRequest request);
+    boolean saveOneCasPlanDetail(EntryCasPlanDetail entryCasPlanDetail, HttpServletRequest request);
+
+    /**
+     * 根据参数分页查询数据-map
+     *
+     * @param params 查询参数
+     * @return 数据分页
+     */
+    Page<Map<String, Object>> findDataListByMapParams(Map<String, Object> params);
 }
