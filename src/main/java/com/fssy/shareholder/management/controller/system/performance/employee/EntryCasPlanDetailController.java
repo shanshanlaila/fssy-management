@@ -634,4 +634,26 @@ public class EntryCasPlanDetailController {
         }
         return SysResult.build(500, "创建失败");
     }
+
+    @RequestMapping("getObjectsByMap")
+    @ResponseBody
+    public Map<String, Object> getObjectsByMap(HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> params = getParams(request);
+        params.put("page", Integer.parseInt(request.getParameter("page")));
+        params.put("limit", Integer.parseInt(request.getParameter("limit")));
+
+        Page<Map<String,Object>> handlersItemPage = entryCasPlanDetailService.findDataListByMapParams(params);
+        if (handlersItemPage.getTotal() == 0) {
+            result.put("code", 404);
+            result.put("msg", "未查出数据");
+        } else {
+            // 查出数据，返回分页数据
+            result.put("code", 0);
+            result.put("count", handlersItemPage.getTotal());
+            result.put("data", handlersItemPage.getRecords());
+        }
+
+        return result;
+    }
 }

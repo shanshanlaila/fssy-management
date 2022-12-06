@@ -275,7 +275,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
-            queryWrapper.select("userName").groupBy("userName");
+            queryWrapper.select("userName,status").groupBy("userName");
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
@@ -940,6 +940,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasReviewDetail.setCreateId(user.getId());
         entryCasReviewDetailMapper.insert(entryCasReviewDetail);
         return true;
+    }
+
+    @Override
+    public Page<Map<String, Object>> findDataListByMapParams(Map<String, Object> params) {
+        QueryWrapper<EntryCasReviewDetail> queryWrapper = getQueryWrapper(params);
+        Page<Map<String, Object>> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
+        return entryCasReviewDetailMapper.selectMapsPage(myPage, queryWrapper);
     }
 
     public synchronized EntryCasMerge storeNoticeMerge(LocalDate createDate,

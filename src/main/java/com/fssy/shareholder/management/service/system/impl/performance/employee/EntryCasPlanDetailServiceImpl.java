@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
+
 import javax.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
@@ -470,7 +471,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
-            queryWrapper.select("userName").groupBy("userName");
+            queryWrapper.select("userName,status").groupBy("userName");
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
@@ -577,7 +578,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     public boolean affirmStore(List<String> planDetailIds, String event, List<String> auditNotes) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (int i = 0; i < entryCasPlanDetails.size(); i++) {
-            String auditNote = auditNotes.get(i);
+            String auditNote = null;
+            if (!ObjectUtils.isEmpty(auditNotes)) {
+                auditNote = auditNotes.get(i);
+            }
             EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetails.get(i);
             if (event.equals("pass")) {
                 // 部长、科长审核通过
@@ -618,8 +622,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     public boolean SelectUpdate(EntryCasPlanDetail entryCasPlanDetail) {
         return false;
     }
+
     @Override
-    public boolean saveOneCasPlanDetail(EntryCasPlanDetail entryCasPlanDetail,HttpServletRequest request) {
+    public boolean saveOneCasPlanDetail(EntryCasPlanDetail entryCasPlanDetail, HttpServletRequest request) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser(user);
         entryCasPlanDetail.setUserId(user.getId());
@@ -700,6 +705,13 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
         int insert = entryCasPlanDetailMapper.insert(entryCasPlanDetail);
         return insert > 0;
+    }
+
+    @Override
+    public Page<Map<String, Object>> findDataListByMapParams(Map<String, Object> params) {
+        QueryWrapper<EntryCasPlanDetail> queryWrapper = getQueryWrapper(params);
+        Page<Map<String, Object>> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
+        return entryCasPlanDetailMapper.selectMapsPage(myPage, queryWrapper);
     }
 
 }

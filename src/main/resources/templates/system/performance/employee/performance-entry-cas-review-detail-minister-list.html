@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>履职计划表管理</title>
+    <title>工作计划完成情况部门领导复核管理</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -128,7 +128,7 @@
         var dataTableLeft = table.render({
             elem: '#dataTableLeft',
             id: 'dataTableLeft',
-            url: "/system/entry-cas-review-detail/getObjects",
+            url: "/system/entry-cas-review-detail/getObjectsByMap",
             page: true,
             totalRow: true,
             size: 'sm',
