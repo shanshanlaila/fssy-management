@@ -253,11 +253,13 @@
                         layer.msg(result.msg,{icon: 6, time: 1000});
                         table.reload('dataTable')
                     } else {
-                        layer.msg(result.msg,{icon: 6, time: 1000})
-                        return false
+                        console.log("result",result.msg)
+                        layer.msg(result.msg)
+                        // return false
                     }
                 }
             });
+            return false;
         });
         // 监听表格单击事件
         table.on('tool(dataTable)', function (obj) {
