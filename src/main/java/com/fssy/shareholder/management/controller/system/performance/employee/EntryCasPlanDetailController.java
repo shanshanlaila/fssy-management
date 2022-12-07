@@ -79,10 +79,10 @@ public class EntryCasPlanDetailController {
         model.addAttribute("roleNameList", roleNameList);//传到前端去
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams,selectedUserIds);
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentName",viewDepartmentRoleUser.getDepartmentName());
+        model.addAttribute("departmentName", viewDepartmentRoleUser.getDepartmentName());
         return "system/performance/employee/performance-entry-cas-plan-detail-list";
     }
 
@@ -96,6 +96,13 @@ public class EntryCasPlanDetailController {
     @ResponseBody
     public Map<String, Object> getObjects(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>();
+        // 审核页面，如果左侧没有数据或者没有点击，右侧显示未查出数据
+        String isEmpty = request.getParameter("isEmpty");
+        if (!ObjectUtils.isEmpty(isEmpty)) {
+            result.put("code", 404);
+            result.put("msg", "未查出数据");
+            return result;
+        }
         Map<String, Object> params = getParams(request);
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
@@ -261,8 +268,7 @@ public class EntryCasPlanDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("userNameRight"))) {
             params.put("userNameRight", request.getParameter("userNameRight"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("userIds")))
-        {
+        if (!ObjectUtils.isEmpty(request.getParameter("userIds"))) {
             String userIdsStr = request.getParameter("userIds");
             List<String> userIds = Arrays.asList(userIdsStr.split(","));
             params.put("userIds", userIds);
@@ -305,7 +311,7 @@ public class EntryCasPlanDetailController {
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
         //fieldMap.put("eventsForm", "绩效类型");
-        fieldMap.put("standardValue", "事件价值标准分");
+        fieldMap.put("standardValue", "事件标准价值");
         fieldMap.put("departmentName", "部门名称");
         fieldMap.put("roleName", "岗位名称");
         fieldMap.put("userName", "员工姓名");
@@ -425,7 +431,7 @@ public class EntryCasPlanDetailController {
                             @RequestParam(value = "planDetailIds[]") List<String> planDetailIds,
                             @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String event = request.getParameter("event");
-        boolean res = entryCasPlanDetailService.affirmStore(planDetailIds, event,auditNotes);
+        boolean res = entryCasPlanDetailService.affirmStore(planDetailIds, event, auditNotes);
         if (res) {
             return SysResult.ok();
         }
@@ -448,8 +454,12 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentName",departmentRoleByUser.getDepartmentName());
+        model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "system/performance/employee/performance-entry-cas-plan-detail-minister-list";
     }
 
@@ -463,6 +473,10 @@ public class EntryCasPlanDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
         return "system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
     }
 
@@ -619,6 +633,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         return "system/performance/employee/plan/plan-create-event-list-form";
     }
+
     /**
      * 创建单条履职计划
      *
@@ -628,7 +643,7 @@ public class EntryCasPlanDetailController {
     @PostMapping("save")
     @ResponseBody
     public SysResult create(EntryCasPlanDetail entryCasPlanDetail, HttpServletRequest request) {
-        boolean result = entryCasPlanDetailService.saveOneCasPlanDetail(entryCasPlanDetail,request);
+        boolean result = entryCasPlanDetailService.saveOneCasPlanDetail(entryCasPlanDetail, request);
         if (result) {
             return SysResult.ok();
         }
@@ -643,7 +658,7 @@ public class EntryCasPlanDetailController {
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
 
-        Page<Map<String,Object>> handlersItemPage = entryCasPlanDetailService.findDataListByMapParams(params);
+        Page<Map<String, Object>> handlersItemPage = entryCasPlanDetailService.findDataListByMapParams(params);
         if (handlersItemPage.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");

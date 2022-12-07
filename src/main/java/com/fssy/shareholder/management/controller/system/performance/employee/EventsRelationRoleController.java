@@ -307,7 +307,7 @@ public class EventsRelationRoleController
 		fieldMap.put("jobName", "工作职责");// D
 		fieldMap.put("workEvents", "流程（工作事件）");// E
 		fieldMap.put("departmentName", "部门");// F
-		fieldMap.put("standardValue", "事件价值标准分");// G
+		fieldMap.put("standardValue", "事件标准价值");// G
 		fieldMap.put("isMainOrNext", "主/次担");// H
 		fieldMap.put("userName", "岗位人员姓名");// I
 		// 需要填写的部分

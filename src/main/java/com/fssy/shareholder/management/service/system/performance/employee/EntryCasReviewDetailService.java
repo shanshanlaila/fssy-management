@@ -26,10 +26,10 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     Page<EntryCasReviewDetail> findDataListByParams(Map<String, Object> params);
 
     /**
-     * 工作计划完成情况审核评价 （部 门 领导、非事务）
+     * 履职回顾-部长审核（单条）
      *
-     * @param entryCasReviewDetail
-     * @return
+     * @param entryCasReviewDetail 回顾
+     * @return 结果
      */
     boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail);
 

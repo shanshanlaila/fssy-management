@@ -8,6 +8,7 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
+import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -40,6 +41,9 @@ public class EntryCasReviewDetailController {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * @param model
      * @return
@@ -54,6 +58,10 @@ public class EntryCasReviewDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
         return "system/performance/employee/performance-entry-cas-review-detail-list";
     }
 
@@ -67,6 +75,13 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     public Map<String, Object> getObjects(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>();
+        // 审核页面，如果左侧没有数据或者没有点击，右侧显示未查出数据
+        String isEmpty = request.getParameter("isEmpty");
+        if (!ObjectUtils.isEmpty(isEmpty)) {
+            result.put("code", 404);
+            result.put("msg", "未查出数据");
+            return result;
+        }
         Map<String, Object> params = getParams(request);
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
@@ -250,6 +265,11 @@ public class EntryCasReviewDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("userNameRight"))) {
             params.put("userNameRight", request.getParameter("userNameRight"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("userIds"))) {
+            String userIdsStr = request.getParameter("userIds");
+            List<String> userIds = Arrays.asList(userIdsStr.split(","));
+            params.put("userIds", userIds);
+        }
         return params;
     }
 
@@ -283,7 +303,7 @@ public class EntryCasReviewDetailController {
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "履职明细更新失败");
+        return SysResult.build(500, "回顾审核失败");
     }
 
     /**
@@ -320,6 +340,10 @@ public class EntryCasReviewDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
         return "system/performance/employee/performance-entry-cas-review-detail-minister-list";
     }
 
@@ -339,6 +363,10 @@ public class EntryCasReviewDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
         return "system/performance/employee/performance-entry-cas-review-detail-section-chief-list";
     }
 
@@ -439,7 +467,7 @@ public class EntryCasReviewDetailController {
                                 @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
                                 @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String ministerReview = request.getParameter("ministerReview");
-        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, ministerReview,auditNotes);
+        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, ministerReview, auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -452,12 +480,12 @@ public class EntryCasReviewDetailController {
     @RequestMapping("sectionBatchAudit")
     @ResponseBody
     @RequiredLog("科长事物类批量审核")
-    public SysResult sectionBatchAudit( HttpServletRequest request,
-                                        @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
-                                        @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
+    public SysResult sectionBatchAudit(HttpServletRequest request,
+                                       @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
+                                       @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String chargeTransactionEvaluateLevel = request.getParameter("chargeTransactionEvaluateLevel");
         String chargeTransactionBelowType = request.getParameter("chargeTransactionBelowType");
-        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType,auditNotes);
+        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType, auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -533,7 +561,7 @@ public class EntryCasReviewDetailController {
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
 
-        Page<Map<String,Object>> handlersItemPage = entryCasReviewDetailService.findDataListByMapParams(params);
+        Page<Map<String, Object>> handlersItemPage = entryCasReviewDetailService.findDataListByMapParams(params);
         if (handlersItemPage.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");

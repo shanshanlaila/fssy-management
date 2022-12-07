@@ -275,11 +275,15 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
-            queryWrapper.select("userName,status").groupBy("userName");
+            queryWrapper.select("userName").groupBy("userName");
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
             queryWrapper.eq("userName", params.get("userNameRight"));
+        }
+        // 用户表主键列表查询
+        if (params.containsKey("userIds")) {
+            queryWrapper.in("userId", (List<String>) params.get("userIds"));
         }
         return queryWrapper;
 
@@ -294,12 +298,23 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
      */
     @Override
     public boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
+        // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
         if (entryCasReviewDetail.getMinisterReview().equals(PerformanceConstant.EXCELLENT)) {
             entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
+            entryCasReviewDetail.setIsExcellent(PerformanceConstant.YES);
         } else {
-            entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+            entryCasReviewDetail.setFinalNontransactionEvaluateLevel(entryCasReviewDetail.getMinisterReview());
+            entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 完结
+            BigDecimal actualAutoScore = GetTool.getScore(entryCasReviewDetail, entryCasReviewDetail.getMinisterReview());
+            entryCasReviewDetail.setAutoScore(actualAutoScore);
+            entryCasReviewDetail.setArtifactualScore(actualAutoScore);
+            entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
         }
-        entryCasReviewDetail.setFinalNontransactionEvaluateLevel(entryCasReviewDetail.getMinisterReview());
+        User user = GetTool.getUser();
+        entryCasReviewDetail.setAuditNote(entryCasReviewDetail.getAuditNote());
+        entryCasReviewDetail.setAuditId(user.getId());
+        entryCasReviewDetail.setAuditName(user.getName());
+        entryCasReviewDetail.setAuditDate(LocalDate.now());
         int result = entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         return result > 0;
     }
@@ -566,14 +581,14 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             }
             // 数据检查校验
             // 一条计划只能对应一条回顾，即导入的表中不能有重复的计划id且数据库中不能存在此id
-            if (planIds.contains(Long.parseLong(planId))){
-                throw new ServiceException(String.format("第%s行的计划序号【%s】重复,本次导入失败",j+1,planId));
+            if (planIds.contains(Long.parseLong(planId))) {
+                throw new ServiceException(String.format("第%s行的计划序号【%s】重复,本次导入失败", j + 1, planId));
             }
             LambdaQueryWrapper<EntryCasReviewDetail> reviewQueryWrapper = new LambdaQueryWrapper<>();
-            reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId,planId);
+            reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId, planId);
             List<EntryCasReviewDetail> reviewDetails = entryCasReviewDetailMapper.selectList(reviewQueryWrapper);
-            if (reviewDetails.size()>0){
-                throw new ServiceException(String.format("第%s行的计划序号【%s】已创建回顾,本次导入失败",j+1,planId));
+            if (reviewDetails.size() > 0) {
+                throw new ServiceException(String.format("第%s行的计划序号【%s】已创建回顾,本次导入失败", j + 1, planId));
             }
             planIds.add(Long.valueOf(planId));
             // 事务类别数据校验：非事务类、事务类
@@ -807,15 +822,15 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     @Override
     public boolean saveOneReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
         EntryCasPlanDetail planDetail = entryCasPlanDetailMapper.selectById(entryCasReviewDetail.getCasPlanId());
-        if (ObjectUtils.isEmpty(planDetail)){
-            throw new ServiceException(String.format("序号为【%s】的计划不存在,创建失败",entryCasReviewDetail.getCasPlanId()));
+        if (ObjectUtils.isEmpty(planDetail)) {
+            throw new ServiceException(String.format("序号为【%s】的计划不存在,创建失败", entryCasReviewDetail.getCasPlanId()));
         }
         // 判断是否重复创建回顾
         LambdaQueryWrapper<EntryCasReviewDetail> reviewQueryWrapper = new LambdaQueryWrapper<>();
-        reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId,entryCasReviewDetail.getCasPlanId());
+        reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId, entryCasReviewDetail.getCasPlanId());
         List<EntryCasReviewDetail> reviewDetails = entryCasReviewDetailMapper.selectList(reviewQueryWrapper);
-        if (reviewDetails.size()>0){
-            throw new ServiceException(String.format("序号为【%s】的计划已经创建回顾，不能重复创建",entryCasReviewDetail.getCasPlanId()));
+        if (reviewDetails.size() > 0) {
+            throw new ServiceException(String.format("序号为【%s】的计划已经创建回顾，不能重复创建", entryCasReviewDetail.getCasPlanId()));
         }
         // 查询MergeNo
         LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -825,7 +840,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
         // 不存在merge就报错
         if (ObjectUtils.isEmpty(entryCasMerges)) {
-            throw new ServiceException(String.format("序号为【%s】的计划不存在对应的履职编号，创建失败",entryCasReviewDetail.getCasPlanId()));
+            throw new ServiceException(String.format("序号为【%s】的计划不存在对应的履职编号，创建失败", entryCasReviewDetail.getCasPlanId()));
         }
         EntryCasMerge entryCasMerge = entryCasMerges.get(0);
         entryCasReviewDetail.setMergeNo(entryCasMerge.getMergeNo());

@@ -36,10 +36,6 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="userSelect"></div>
                         </div>
-                       <!-- <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="userName" placeholder="员工姓名查询" autocomplete="off"
-                                   class="layui-input">
-                        </div>-->
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input">
@@ -185,28 +181,6 @@
             , type: 'year'
         });
 
-
-        // 导出
-        form.on('submit(export)', function (data) {
-            var field = data.field;
-            data.field.status = '待填报回顾'
-            var roleIds = data.field.roleIds;
-            var userIds = data.field.userIds;
-            // 必填项控制
-            var departmentIds = data.field.departmentIds;
-            if ([[${departmentName}]] !== '人力资源部' && [[${departmentName}]] !== '绩效科') {
-                if (!departmentIds && !roleIds && !userIds) {
-                    layer.msg("部门名称或者岗位名称或者员工姓名为必填项，请选择！", {icon: 5, time: 4000});
-                    return false;
-                }
-            }
-            field.url = "/system/entry-cas-plan-detail/downloadForCharge";
-            var url = createUrl(field);
-            layer.msg("正在导出事件列表，请稍候");
-            window.open(url, true);
-            return false;
-        });
-
         // 实例表格
         var dataTable = table.render({
             elem: '#dataTable',
@@ -230,26 +204,6 @@
                         width: 50,
                     },
                     {
-                        field: 'id',
-                        title: '序号',
-                        width: 50,
-                        fixed: 'left'
-                    },
-                    {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 120,
-                        fixed: 'left',
-                        templet: function (d) {
-                            let eventsId = d.eventsId;
-                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
-                                return d.eventsId
-                            } else {
-                                return "无"
-                            }
-                        }
-                    },
-                    {
                         field: 'status',
                         title: '履职计划状态',
                         width: 100,
@@ -257,6 +211,8 @@
                             switch (d.status) {
                                 case '待提交审核':
                                     return '<span class="layui-badge layui-bg">待提交审核</span>';
+                                case '待填报回顾':
+                                    return '<span class="layui-badge layui-bg-green">待填报回顾</span>';
                                 default:
                                     return d.status;
                             }
@@ -278,19 +234,46 @@
                         width: 200,
                     },
                     {
+                        field: 'departmentName',
+                        title: '部门',
+                        width: 100
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位（角色）名称',
+                        width: 110
+                    },
+                    {
+                        field: 'userName',
+                        title: '员工姓名',
+                        width: 80
+                    },
+                    {
+                        field: 'standardValue',
+                        title: '事件标准价值',
+                        width: 90,
+                        align: 'center'
+                    },
+                    {
+                        field: 'mainOrNext',
+                        title: '主/次担',
+                        width: 50
+                    },
+                    {
                         field: 'planningWork',
-                        title: '对应工作事件的计划内容',
+                        title: '计划内容',
                         width: 150
                     },
                     {
                         field: 'times',
                         title: '频次',
-                        width: 50
+                        width: 50,
+                        align: 'center'
                     },
                     {
                         field: 'planOutput',
-                        title: '表单(输出内容)来源自己填写',
-                        width: 180
+                        title: '表单输出内容',
+                        width: 150
                     },
                     {
                         field: 'planStartDate',
@@ -302,45 +285,15 @@
                         title: '计划完成日期',
                         width: 90
                     },
-                    /*{
-                        field: 'eventsForm',
-                        title: '绩效类型',
-                        width: 80
-                    },*/
-                    {
-                        field: 'standardValue',
-                        title: '事件标准价值',
-                        width: 90
-                    },
-                    {
-                        field: 'mainOrNext',
-                        title: '主担/次担',
-                        width: 70
-                    },
                     {
                         field: 'createDate',
                         title: '编制日期',
                         width: 90
                     },
                     {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 80,
-                    },
-                    {
                         field: 'createDate',
                         title: '编制日期',
                         width: 80,
-                    },
-                    {
-                        field: 'roleName',
-                        title: '岗位（角色）名称',
-                        width: 110
-                    },
-                    {
-                        field: 'userName',
-                        title: '员工姓名',
-                        width: 80
                     },
                     {
                         field: 'applyDate',
@@ -373,6 +326,24 @@
                         width: 120
                     },
                     {
+                        field: 'id',
+                        title: '序号',
+                        width: 50,
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 120,
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
+                    },
+                    {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
@@ -383,9 +354,10 @@
             ]
         });
 
+        // 提交审核
         form.on('submit(confirm)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id)
-                data = checkStatus.data;
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
@@ -419,9 +391,10 @@
             return false;
         });
 
+        // 撤销审核
         form.on('submit(retreat)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
+            var checkStatus = table.checkStatus(dataTable.config.id);
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
@@ -430,20 +403,12 @@
             let msg = "";
             var planDetailIds = [];
             data.forEach(function (item) {
-                if (item.status == 5) {
+                if (item.status === 5) {
                     msg = msg ? msg + ',' + item.noticeNo : item.noticeNo;
                     flag = true;
                 }
                 planDetailIds.push(item.id);
             });
-
-            // if (flag) {
-            //     layer.msg("开票通知单号为：" + msg + '的数据状态为财务审核通过不能撤销，请取消选择', {
-            //         icon: 5,
-            //         time: 4000
-            //     });
-            //     return false;
-            // }
 
             layer.confirm('确定撤销审核吗？', {icon: 3, title: '提示'}, function (index) {
                 $.ajax({
@@ -454,7 +419,7 @@
                     },
                     success: function (result) {
                         layer.msg(result.msg);
-                        if (result.status == 200) {
+                        if (result.status === 200) {
                             table.reload('dataTable');
                             laydate.render(
                                 {
@@ -483,6 +448,29 @@
             });
             return false;
         });
+
+
+        // 导出
+        form.on('submit(export)', function (data) {
+            var field = data.field;
+            data.field.status = '待填报回顾'
+            var roleIds = data.field.roleIds;
+            var userIds = data.field.userIds;
+            // 必填项控制
+            var departmentIds = data.field.departmentIds;
+            if ([[${departmentName}]] !== '人力资源部' && [[${departmentName}]] !== '绩效科') {
+                if (!departmentIds && !roleIds && !userIds) {
+                    layer.msg("请选择【部门】或者【岗位】导出", {icon: 5, time: 4000});
+                    return false;
+                }
+            }
+            field.url = "/system/entry-cas-plan-detail/downloadForCharge";
+            var url = createUrl(field);
+            layer.msg("正在导出事件列表，请稍候");
+            window.open(url, true);
+            return false;
+        });
+
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
@@ -574,6 +562,7 @@
         },
         name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
+
     // 员工姓名查询下拉列表
     let userSelect = xmSelect.render({
         el: '#userSelect', // 绑定
