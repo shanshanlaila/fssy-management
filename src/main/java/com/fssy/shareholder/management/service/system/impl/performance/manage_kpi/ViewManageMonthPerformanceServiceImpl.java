@@ -660,12 +660,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         //设置月份常量，十二月一共循环十二次，与数据查询的月份无关联
         int MONTH=12;
         // 达成数量
-        StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,kpiDefinition,benchmarkCompany," +
-                "benchmarkValue,monitorDepartment,monitorUser,year,basicTarget,mustInputTarget,reachTarget,dataSource," +
-                "challengeTarget,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual,evaluateMode,analyzeRes,managerKpiMark");
-        selectStr1.append(",(SELECT a.accumulateTarget FROM view_manage_month_performance as a WHERE a.projectDesc=view_manage_month_performance.projectDesc and a.companyName = view_manage_month_performance.companyName AND a.YEAR = view_manage_month_performance.year  AND a.MONTH = "+month+") AS monthATarget"
-                +",(SELECT b.accumulateActual FROM view_manage_month_performance as b WHERE  b.projectDesc=view_manage_month_performance.projectDesc and b.companyName = view_manage_month_performance.companyName AND b.YEAR = view_manage_month_performance.year AND b.MONTH = "+month+") AS monthAActual"
-                +",(SELECT c.analyzeRes FROM view_manage_month_performance as c WHERE  c.projectDesc=view_manage_month_performance.projectDesc and c.companyName = view_manage_month_performance.companyName AND c.YEAR = view_manage_month_performance.year AND c.MONTH = "+month+") AS monthAnalyzeRes");
+        StringBuilder selectStr1 = new StringBuilder("manageKpiYearId");
         do {
             selectStr1.append(", sum(if(MONTH =" + MONTH + ",monthTarget,null)) AS 'monthTarget" + MONTH + "'"
                     + ", sum(if(MONTH =" + MONTH + ",monthActualValue,null)) AS 'monthActual" + MONTH + "'");

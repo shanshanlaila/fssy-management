@@ -52,13 +52,13 @@ public class ManagerKpiMonthScoreOldServiceImpl extends ServiceImpl<ManagerKpiSc
     private QueryWrapper<ManagerKpiScoreOld> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = new QueryWrapper<>();
         int month = 1;
-        StringBuilder selectStr = new StringBuilder("id,companyName,managerName,position,year,scoreAdjust,anomalyMark");
+        StringBuilder selectStr = new StringBuilder("companyName,managerName,position,year");
         do{
             selectStr.append(", sum(if(MONTH =" +  month + ",scoreAdjust,null)) AS 'month" + month + "'");
             selectStr.append(", sum(if(MONTH =" +  month + ",anomalyMark,null)) AS 'abnormal" + month + "'");
             month++;
         }while (month <= 12);
-        queryWrapper.select(selectStr.toString()).groupBy("managerName,companyName,year");
+        queryWrapper.select(selectStr.toString()).groupBy("companyName,managerName,position,year");
         if (params.containsKey("select")) {
             queryWrapper.select((String) params.get("select"));
         }
