@@ -27,11 +27,17 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
+                        <!--部门下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
+                        <!--岗位下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
+                        </div>
+                        <!--用户下拉框-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="userSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="year" name="year" placeholder="审核年份查询" autocomplete="off"
@@ -183,26 +189,6 @@
                         width: 50
                     },
                     {
-                        field: 'id',
-                        title: '序号',
-                        width: 50,
-                        fixed: 'left',
-                    },
-                    {
-                        field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 120,
-                        fixed: 'left',
-                        templet: function (d) {
-                            let eventsId = d.eventsId;
-                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
-                                return d.eventsId
-                            } else {
-                                return "无"
-                            }
-                        }
-                    },
-                    {
                         field: 'status',
                         title: '履职计划状态',
                         width: 90,
@@ -224,7 +210,7 @@
                     {
                         field: 'jobName',
                         title: '工作职责',
-                        width: 100
+                        width: 150
                     },
                     {
                         field: 'workEvents',
@@ -232,9 +218,30 @@
                         width: 200,
                     },
                     {
+                        field: 'standardValue',
+                        title: '事件标准价值',
+                        width: 100,
+                        align: 'center'
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位（角色）名称',
+                        width: 110
+                    },
+                    {
+                        field: 'userName',
+                        title: '员工姓名',
+                        width: 80
+                    },
+                    {
                         field: 'planningWork',
                         title: '对应工作事件的计划内容',
-                        width: 150
+                        width: 200
                     },
 
                     {
@@ -246,6 +253,11 @@
                         field: 'workOutput',
                         title: '表单(来源于基础事件)',
                         width: 130
+                    },
+                    {
+                        field: 'mainOrNext',
+                        title: '主担/次担',
+                        width: 90
                     },
                     {
                         field: 'planStartDate',
@@ -272,45 +284,15 @@
                         title: '频次',
                         width: 50
                     },
-                    /*{
-                        field: 'eventsForm',
-                        title: '绩效类型',
-                        width: 90
-                    },*/
-                    {
-                        field: 'standardValue',
-                        title: '事件标准价值',
-                        width: 100
-                    },
-                    {
-                        field: 'mainOrNext',
-                        title: '主担/次担',
-                        width: 90
-                    },
                     {
                         field: 'createDate',
                         title: '编制日期',
                         width: 100
                     },
                     {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                    },
-                    {
                         field: 'note',
                         title: '备注',
                         width: 50
-                    },
-                    {
-                        field: 'roleName',
-                        title: '岗位（角色）名称',
-                        width: 110
-                    },
-                    {
-                        field: 'userName',
-                        title: '员工姓名',
-                        width: 80
                     },
                     {
                         field: 'applyDate',
@@ -332,11 +314,6 @@
                         title: '编制人',
                         width: 80
                     },
-                    /*{
-                        field: 'eventsType',
-                        title: '事件类别',
-                        width: 80
-                    },*/
                     {
                         field: 'auditNote',
                         title: '审核意见',
@@ -346,6 +323,24 @@
                         field: 'mergeNo',
                         title: '员工月度履职计划表编号',
                         width: 150
+                    },
+                    {
+                        field: 'id',
+                        title: '序号',
+                        width: 50,
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '对应事件清单序号',
+                        width: 120,
+                        templet: function (d) {
+                            let eventsId = d.eventsId;
+                            if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
+                                return d.eventsId
+                            } else {
+                                return "无"
+                            }
+                        }
                     },
                     {
                         fixed: 'right',
@@ -503,6 +498,7 @@
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
     });
+
     // 岗位查询下拉列表
     let roleSelect = xmSelect.render({
         el: '#roleSelect', // 绑定
@@ -520,6 +516,25 @@
             width: '160px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'roleIds',// 传到后端选择的roleId集合字符串
+    });
+
+    // 员工姓名查询下拉列表
+    let userSelect = xmSelect.render({
+        el: '#userSelect', // 绑定
+        language: 'zn',
+        data: [[${userList}]],// model过来的
+        filterable: true,
+        // radio: true,// 是否是单选
+        tips: '用户查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 30,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'userIds',// 传到后端选择的userId集合字符串
     });
 </script>
 </body>
