@@ -20,6 +20,7 @@ import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
@@ -388,8 +389,11 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     }
 
     @Override
+    @Transactional
     public boolean save(EntryExcellentStateDetail entryExcellentStateDetail, String mainIdsStr, String nextIdsStr) {
-
+        if (ObjectUtils.isEmpty(mainIdsStr)) {
+            throw new ServiceException("提交失败，请选择主担");
+        }
         // 查询当前登录用户对应的部门和角色信息
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         LambdaQueryWrapper<ViewDepartmentRoleUser> druWrapper = new LambdaQueryWrapper<>();
@@ -417,15 +421,18 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 mainSb.append(",");
             }
         }
-        for (String nextId : nextIds) {
-            User nextUser = userMapper.selectById(nextId);
-            countNext++;
-            // 查询次担责任人，并用,拼接成字符串
-            if (countNext == nextIds.length) {
-                nextSb.append(nextUser.getName());
-            } else {
-                nextSb.append(nextUser.getName());
-                nextSb.append(",");
+        int result = 0;
+        if (!ObjectUtils.isEmpty(nextIdsStr)) {
+            for (String nextId : nextIds) {
+                User nextUser = userMapper.selectById(nextId);
+                countNext++;
+                // 查询次担责任人，并用,拼接成字符串
+                if (countNext == nextIds.length) {
+                    nextSb.append(nextUser.getName());
+                } else {
+                    nextSb.append(nextUser.getName());
+                    nextSb.append(",");
+                }
             }
         }
         // 创建评价说明材料明细
@@ -461,7 +468,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         entryExcellentStateMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryExcellentStateMerge);// 保存
         entryExcellentStateDetail.setMergeId(entryExcellentStateMerge.getId());
         entryExcellentStateDetail.setMergeNo(entryExcellentStateMerge.getMergeNo());
-        int result = entryExcellentStateDetailMapper.insert(entryExcellentStateDetail);// 保存
+        result = entryExcellentStateDetailMapper.insert(entryExcellentStateDetail);// 保存
 
         // 根据选择的主担，创建表“bs_performance_state_relation_main_user”
         for (String mainId : mainIds) {
@@ -479,22 +486,23 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             stateRelationMainUser.setCreatedAt(LocalDateTime.now());
             stateRelationMainUserMapper.insert(stateRelationMainUser);// 保存
         }
-
-        // 根据选择的次担，创建表“bs_performance_state_relation_next_user”
-        for (String nextId : nextIds) {
-            User nextUser = userMapper.selectById(nextId);
-            StateRelationNextUser stateRelationNextUser = new StateRelationNextUser();
-            stateRelationNextUser.setNextUserName(nextUser.getName());
-            stateRelationNextUser.setNextUserId(nextUser.getId());
-            stateRelationNextUser.setNextDepartmentId(viewDepartmentRoleUser.getDepartmentId());
-            stateRelationNextUser.setNextDepartmentName(viewDepartmentRoleUser.getDepartmentName());
-            stateRelationNextUser.setNextRoleId(viewDepartmentRoleUser.getRoleId());
-            stateRelationNextUser.setNextRoleName(viewDepartmentRoleUser.getRoleName());
-            stateRelationNextUser.setStateId(entryExcellentStateDetail.getId());
-            stateRelationNextUser.setCreatedId(user.getId());
-            stateRelationNextUser.setCreatedName(user.getName());
-            stateRelationNextUser.setCreatedAt(LocalDateTime.now());
-            stateRelationNextUserMapper.insert(stateRelationNextUser);// 保存
+        if (!ObjectUtils.isEmpty(nextIdsStr)) {
+            // 根据选择的次担，创建表“bs_performance_state_relation_next_user”
+            for (String nextId : nextIds) {
+                User nextUser = userMapper.selectById(nextId);
+                StateRelationNextUser stateRelationNextUser = new StateRelationNextUser();
+                stateRelationNextUser.setNextUserName(nextUser.getName());
+                stateRelationNextUser.setNextUserId(nextUser.getId());
+                stateRelationNextUser.setNextDepartmentId(viewDepartmentRoleUser.getDepartmentId());
+                stateRelationNextUser.setNextDepartmentName(viewDepartmentRoleUser.getDepartmentName());
+                stateRelationNextUser.setNextRoleId(viewDepartmentRoleUser.getRoleId());
+                stateRelationNextUser.setNextRoleName(viewDepartmentRoleUser.getRoleName());
+                stateRelationNextUser.setStateId(entryExcellentStateDetail.getId());
+                stateRelationNextUser.setCreatedId(user.getId());
+                stateRelationNextUser.setCreatedName(user.getName());
+                stateRelationNextUser.setCreatedAt(LocalDateTime.now());
+                stateRelationNextUserMapper.insert(stateRelationNextUser);// 保存
+            }
         }
         return result > 0;
     }

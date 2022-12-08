@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>履职计划表管理</title>
+    <title>履职计划-部长审核</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -40,7 +40,7 @@
                         </div>
                         <br>
                         <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn" lay-submit lay-filter="leftSearch" style="width: 251px">
+                            <button class="layui-btn" lay-submit lay-filter="leftSearch">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                         </div>
@@ -147,9 +147,21 @@
                     {
                         field: 'userName',
                         title: '员工姓名',
-                        width: 250,
-                        align:'center'
+                        width: '100%',
+                        align: 'center'
                     },
+                    {
+                        field: 'roleName',
+                        title: '岗位名称',
+                        width: '100%',
+                        align: 'center'
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: '100%',
+                        align: 'center'
+                    }
                 ]
             ]
         });
@@ -270,7 +282,12 @@
             }
             // 重新加载表格
             table.reload('dataTableLeft', {
-
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            table.reload('dataTableRight', {
                 where: data.field,
                 page: {
                     curr: 1
@@ -339,6 +356,7 @@
             return false;
         });
 
+        // 审核不通过
         form.on('submit(noPass)', function (data) {
             var checkStatus = table.checkStatus(dataTableRight.config.id);
                 data = checkStatus.data;
@@ -389,7 +407,7 @@
         paging: true, // 分页
         pageSize: 20,
         style: {
-            width: '250px', 'min-height': '28px', 'line-height': '28px',
+            width: '120px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
     });
@@ -408,7 +426,7 @@
         paging: true, // 分页
         pageSize: 30,
         style: {
-            width: '250px', 'min-height': '28px', 'line-height': '28px',
+            width: '120px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
@@ -427,7 +445,7 @@
         paging: true, // 分页
         pageSize: 30,
         style: {
-            width: '250px', 'min-height': '28px', 'line-height': '28px',
+            width: '120px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'userIds',// 传到后端选择的userId集合字符串
     });

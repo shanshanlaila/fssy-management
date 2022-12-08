@@ -412,11 +412,6 @@ public class EventListServiceImpl implements EventListService {
                 continue;
             }
             String duration = cells.get(SheetService.columnToIndex("G"));
-            if (ObjectUtils.isEmpty(duration)) {
-                setFailedContent(result, String.format("第%s行的月工作标准时长（分）是空的", j + 1));
-                cell.setCellValue("月工作标准时长（分）是空的");
-                continue;
-            }
             String level = cells.get(SheetService.columnToIndex("H"));
             if (ObjectUtils.isEmpty(level)) {
                 setFailedContent(result, String.format("第%s行的评价等级是空的", j + 1));
@@ -429,17 +424,8 @@ public class EventListServiceImpl implements EventListService {
                 cell.setCellValue("事件标准价值是空的");
                 continue;
             }
-            /*String delow = cells.get(SheetService.columnToIndex("J"));
-            String middle = cells.get(SheetService.columnToIndex("K"));
-            String fine = cells.get(SheetService.columnToIndex("L"));
-            String excellent = cells.get(SheetService.columnToIndex("M"));*/
 
             String note = cells.get(SheetService.columnToIndex("J"));
-            if (ObjectUtils.isEmpty(note)) {
-                setFailedContent(result, String.format("第%s行的备注是空的", j + 1));
-                cell.setCellValue("备注是空的");
-                continue;
-            }
             String departmentName = cells.get(SheetService.columnToIndex("K"));
             if (ObjectUtils.isEmpty(departmentName)) {
                 setFailedContent(result, String.format("第%s行的部门名称是空的", j + 1));

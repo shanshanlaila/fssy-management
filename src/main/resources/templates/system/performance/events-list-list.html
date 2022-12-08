@@ -13,8 +13,8 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <!-- 引入zTree -->
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">绩效系统</a> <a href="">员工绩效管理</a><a>
-				<cite>基础事件管理</cite>
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">基础事件管理</a><a>
+				<cite>导入基础事件清单</cite>
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
@@ -155,7 +155,7 @@
                                         {
                                             field: 'strategyFunctions',
                                             title: '战略职能',
-                                            width: 90,
+                                            width: 130,
                                             fixed: 'left'
                                         },
                                         {
@@ -312,11 +312,6 @@
                 table.on('tool(dataTable)', function (obj) {
                     var data = obj.data;
                     if (obj.event === 'edit') { // 修改
-                        // if (data.status == '取消') {
-                        //     layer.msg('不能修改取消状态的事件清单');
-                        //     return false;
-                        // }
-
                         layer.open(
                             {
                                 type: 2,
@@ -337,7 +332,7 @@
                                     url: '/system/performance/employee/eventsList/' + data.id,
                                     success: function (result) {
                                         layer.msg(result.msg);
-                                        if (result.status == 200) {
+                                        if (result.status === 200) {
                                             table.reload('dataTable');
                                         }
                                     }
