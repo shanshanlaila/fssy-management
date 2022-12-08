@@ -146,12 +146,22 @@ public class ViewManageMonthPerformance extends BaseModel {
      */
     @TableField("accumulateActual")
     private BigDecimal accumulateActual;
+    /**
+     * 权重
+     */
+    @TableField("proportion")
+    private BigDecimal proportion;
 
     /**
      * 分析结果
      */
     @TableField("analyzeRes")
     private String analyzeRes;
+    /**
+     * 分解目标方式：
+     */
+    @TableField("kpiDecomposeMode")
+    private String kpiDecomposeMode;
 
     /**
      * 经理人绩效指标标识：识别经营管理指标和经理人指标

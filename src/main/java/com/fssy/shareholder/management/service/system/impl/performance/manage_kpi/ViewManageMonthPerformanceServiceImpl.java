@@ -660,14 +660,21 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         //设置月份常量，十二月一共循环十二次，与数据查询的月份无关联
         int MONTH=12;
         // 达成数量
-        StringBuilder selectStr1 = new StringBuilder("manageKpiYearId");
+        StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany,benchmarkValue," +
+                "monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget,reachTarget," +
+                "dataSource,challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual," +
+                "kpiDefinition,kpiDecomposeMode,analyzeRes");
         do {
             selectStr1.append(", sum(if(MONTH =" + MONTH + ",monthTarget,null)) AS 'monthTarget" + MONTH + "'"
                     + ", sum(if(MONTH =" + MONTH + ",monthActualValue,null)) AS 'monthActual" + MONTH + "'");
             MONTH--;
         } while (MONTH>0);
+        selectStr1.append(", sum(if(MONTH =" + month + ",accumulateActual,null)) AS 'monthATarget' , sum(if(MONTH =" + month + ",accumulateTarget,null)) AS 'monthAActual'");
         queryWrapper.select(selectStr1.toString()).eq("year",year)
-                .groupBy("manageKpiYearId");
+                .groupBy("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany," +
+                        "benchmarkValue,monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget," +
+                        "reachTarget,dataSource,challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual," +
+                        "pastThreeYearsActual,kpiDefinition,kpiDecomposeMode,analyzeRes");
 
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
