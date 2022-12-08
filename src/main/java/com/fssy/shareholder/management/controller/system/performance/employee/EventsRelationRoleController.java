@@ -176,20 +176,20 @@ public class EventsRelationRoleController
 		// 生效日期查询
 		if (!ObjectUtils.isEmpty(request.getParameter("activeDateStart")))
 		{
-			params.put("activeDate", request.getParameter("activeDateStart"));
+			params.put("activeDateStart", request.getParameter("activeDateStart"));
 		}
 		if (!ObjectUtils.isEmpty(request.getParameter("activeDateEnd")))
 		{
-			params.put("activeDate", request.getParameter("activeDateEnd"));
+			params.put("activeDateEnd", request.getParameter("activeDateEnd"));
 		}
 		// 编制日期查询
 		if (!ObjectUtils.isEmpty(request.getParameter("createDateStart")))
 		{
-			params.put("createDate", request.getParameter("createDateStart"));
+			params.put("createDateStart", request.getParameter("createDateStart"));
 		}
 		if (!ObjectUtils.isEmpty(request.getParameter("createDateEnd")))
 		{
-			params.put("createDate", request.getParameter("createDateEnd"));
+			params.put("createDateEnd", request.getParameter("createDateEnd"));
 		}
 		// 部门名称精确查询
 		if (!ObjectUtils.isEmpty(request.getParameter("departmentNameEq")))

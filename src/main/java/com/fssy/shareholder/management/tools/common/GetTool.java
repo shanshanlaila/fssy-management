@@ -62,6 +62,22 @@ public class GetTool {
         eventsRelationRoleMappers = eventsRelationRoleMapper;
     }
 
+    /**
+     * 获取部门-角色-用户视图实体类(重载)
+     *
+     * @param userName 员工姓名
+     * @return 部门-角色-用户视图实体类
+     */
+    public static ViewDepartmentRoleUser getDepartmentRoleByUser(String userName) {
+        LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getUserName, userName);
+        List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMappers.selectList(viewDepartmentRoleUserLambdaQueryWrapper);
+        if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
+            throw new ServiceException("当前登录用户信息不全");
+        }
+        return viewDepartmentRoleUsers.get(0);
+    }
+
 
     /**
      * 获取部门-角色-用户视图实体类

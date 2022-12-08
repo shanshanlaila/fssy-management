@@ -199,13 +199,12 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 cell.setCellValue("事件类型填写错误");
                 continue;
             }
-
             // 构建实体类
             EntryCasPlanDetail entryCasPlanDetail = new EntryCasPlanDetail();
             // 查询当前登录用户
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             // 查询视图
-            ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(user);
+            ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(userName);
             if (!ObjectUtils.isEmpty(eventsRoleId)) {
                 entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
             }
@@ -471,7 +470,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
-            queryWrapper.select("userName,status").groupBy("userName");
+            queryWrapper.select("userName,roleName,departmentName").groupBy("userName","roleName","departmentName");
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
@@ -496,7 +495,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 .selectOne(queryNoticeMergeSerialQueryWrapper);
         noticeMergeSerial = !ObjectUtils.isEmpty(noticeMergeLastSerialData)
                 && !ObjectUtils.isEmpty(noticeMergeLastSerialData.getSerial())
-                ? noticeMergeLastSerialData.getSerial().intValue() + 1
+                ? noticeMergeLastSerialData.getSerial() + 1
                 : 1;
         entryCasMerge.setMergeNo(
                 String.format("JH%s%s", year,
@@ -658,42 +657,37 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
         String key = viewDepartmentRoleUser + ":" + LocalDate.now().getYear();
         EntryCasMerge entryCasMerge;
-        if (mergeMap.containsKey(key)) // 缓存存在则获取
+        List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
+        // 只查到一条数据
+        if (entryCasMerges.size() >= 1) {
+            entryCasMerge = entryCasMerges.get(0);
+        } else
+        // 查不到数据
         {
-            entryCasMerge = mergeMap.get(key);
-        } else {
-            List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
-            // 只查到一条数据
-            if (entryCasMerges.size() >= 1) {
-                entryCasMerge = entryCasMerges.get(0);
-            } else
-            // 查不到数据
-            {
-                entryCasMerge = new EntryCasMerge();
-                entryCasMerge.setCreateDate(LocalDate.now());
-                entryCasMerge.setCreatedAt(LocalDateTime.now());
-                entryCasMerge.setCreateId(user.getId());
-                entryCasMerge.setCreateName(user.getName());
-                entryCasMerge.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
-                entryCasMerge.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
-                entryCasMerge.setAuditName(null);
-                entryCasMerge.setAuditId(null);
-                entryCasMerge.setAuditDate(null);
-                entryCasMerge.setRoleId(viewDepartmentRoleUser.getRoleId());
-                entryCasMerge.setRoleName(viewDepartmentRoleUser.getRoleName());
-                entryCasMerge.setUserId(user.getId());
-                entryCasMerge.setUserName(user.getName());
-                // mergeNo
-                entryCasMerge.setApplyDate(LocalDate.now());
-                entryCasMerge.setYear(LocalDate.now().getYear());
-                entryCasMerge.setMonth(LocalDate.now().getMonthValue());
-                entryCasMerge.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-                // serial
-                entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryCasMerge);
-            }
-            // 存入缓存
-            mergeMap.put(key, entryCasMerge);
+            entryCasMerge = new EntryCasMerge();
+            entryCasMerge.setCreateDate(LocalDate.now());
+            entryCasMerge.setCreatedAt(LocalDateTime.now());
+            entryCasMerge.setCreateId(user.getId());
+            entryCasMerge.setCreateName(user.getName());
+            entryCasMerge.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
+            entryCasMerge.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
+            entryCasMerge.setAuditName(null);
+            entryCasMerge.setAuditId(null);
+            entryCasMerge.setAuditDate(null);
+            entryCasMerge.setRoleId(viewDepartmentRoleUser.getRoleId());
+            entryCasMerge.setRoleName(viewDepartmentRoleUser.getRoleName());
+            entryCasMerge.setUserId(user.getId());
+            entryCasMerge.setUserName(user.getName());
+            // mergeNo
+            entryCasMerge.setApplyDate(LocalDate.now());
+            entryCasMerge.setYear(LocalDate.now().getYear());
+            entryCasMerge.setMonth(LocalDate.now().getMonthValue());
+            entryCasMerge.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+            // serial
+            entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryCasMerge);
         }
+        // 存入缓存
+        mergeMap.put(key, entryCasMerge);
 
         // 添加计划表编号和序号
         entryCasPlanDetail.setMergeNo(entryCasMerge.getMergeNo());

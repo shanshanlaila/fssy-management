@@ -41,7 +41,7 @@
                         </div>
                         <br>
                         <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn" lay-submit lay-filter="searchLeft" style="width: 251px">
+                            <button class="layui-btn" lay-submit lay-filter="searchLeft">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                         </div>
@@ -152,6 +152,18 @@
                         width: 250,
                         align:'center'
                     },
+                    {
+                        field: 'roleName',
+                        title: '岗位名称',
+                        width: '100%',
+                        align: 'center'
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: '100%',
+                        align: 'center'
+                    }
                 ]
             ]
         });
@@ -292,6 +304,12 @@
                     curr: 1
                 }
             });
+            table.reload('dataTableRight', {
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
             return false
         });
         // 监听搜索按钮(右)
@@ -399,7 +417,7 @@
         paging: true, // 分页
         pageSize: 20,
         style: {
-            width: '250px', 'min-height': '28px', 'line-height': '28px',
+            width: '120px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
     });
@@ -418,7 +436,7 @@
         paging: true, // 分页
         pageSize: 30,
         style: {
-            width: '250px', 'min-height': '28px', 'line-height': '28px',
+            width: '120px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
@@ -437,7 +455,7 @@
         paging: true, // 分页
         pageSize: 30,
         style: {
-            width: '250px', 'min-height': '28px', 'line-height': '28px',
+            width: '120px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'userIds',// 传到后端选择的userId集合字符串
     });

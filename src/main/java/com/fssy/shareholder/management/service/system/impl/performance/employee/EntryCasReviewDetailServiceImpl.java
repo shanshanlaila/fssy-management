@@ -275,7 +275,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
-            queryWrapper.select("userName").groupBy("userName");
+            queryWrapper.select("userName,roleName,departmentName").groupBy("userName","roleName","departmentName");
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
@@ -554,11 +554,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue("频次不能为空");
                 continue;
             }
-            if (ObjectUtils.isEmpty(planOutput)) {
+            /*if (ObjectUtils.isEmpty(planOutput)) {
                 setFailedContent(result, String.format("第%s行的表单（输出内容）为空", j + 1));
                 cell.setCellValue("表单（输出内容）不能为空");
                 continue;
-            }
+            }*/
             if (ObjectUtils.isEmpty(planStartDate)) {
                 setFailedContent(result, String.format("第%s行的计划开始时间为空", j + 1));
                 cell.setCellValue("计划开始时间不能为空");

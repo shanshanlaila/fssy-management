@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>评优材料管理页面</title>
+    <title>回顾评优材料上传</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -13,8 +13,8 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb">
-            <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>部门上传评优说明材料</cite></a>
+            <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">回顾评优管理</a>
+            <a> <cite>回顾评优材料上传</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -33,19 +33,14 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
-                            <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="createDate" placeholder="编制日期" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 80px;">
                             <input type="text" name="times" placeholder="频次"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="id" placeholder="按序号查询"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
                                 <select name="status">
@@ -128,14 +123,50 @@
             cols: [
                 [
                     {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位名称',
+                        width: 100
+                    },
+                    {
+                        field: 'userName',
+                        title: '员工姓名',
+                        width: 80
+                    },
+                    {
                         field: 'planningWork',
                         title: '对应工作事件的计划内容',
                         width: 130
                     },
                     {
+                        field: 'jobName',
+                        title: '工作职责',
+                        width: 130
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 80
+                    },
+                    {
+                        field: 'standardValue',
+                        title: '事件标准价值',
+                        width: 100,
+                        align: 'center'
+                    },
+                    {
+                        field: 'workEvents',
+                        title: '流程（工作事件）',
+                        width: 200,
+                    },
+                    {
                         field: 'workOutput',
                         title: '表单',
-                        width: 80
+                        width: 130
                     },
                     {
                         field: 'planOutput',
@@ -162,11 +193,7 @@
                         title: '编制日期',
                         width: 100
                     },
-                    {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                    },
+
                     {
                         field: 'status',
                         title: '履职计划状态',
@@ -177,11 +204,7 @@
                         title: '编制日期',
                         width: 70,
                     },
-                    {
-                        field: 'workEvents',
-                        title: '流程（工作事件）',
-                        width: 200,
-                    },
+
                     {
                         field: 'id',
                         title: '序号',
@@ -192,42 +215,20 @@
                         title: '对应的履职计划id',
                         width: 110
                     },
-                    {
-                        field: 'jobName',
-                        title: '工作职责',
-                        width: 80
-                    },
+
                     {
                         field: 'note',
                         title: '备注',
                         width: 50
                     },
-                    {
-                        field: 'eventsFirstType',
-                        title: '事件类型',
-                        width: 80
-                    },
-                    {
-                        field: 'standardValue',
-                        title: '事件标准价值',
-                        width: 100,
-                        align: 'center'
-                    },
+
+
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
                         width: 50
                     },
-                    {
-                        field: 'roleName',
-                        title: '岗位（角色）名称',
-                        width: 100
-                    },
-                    {
-                        field: 'userName',
-                        title: '员工姓名',
-                        width: 80
-                    },
+
                     {
                         field: 'applyDate',
                         title: '申报日期',
@@ -321,6 +322,7 @@
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
     });
+
     // 岗位查询下拉列表
     let roleSelect = xmSelect.render({
         el: '#roleSelect', // 绑定

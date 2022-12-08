@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>评优材料审核</title>
+    <title>履职回顾评优提交审核</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -13,8 +13,8 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb">
-            <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>评优材料审核</cite></a>
+            <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">回顾评优管理</a>
+            <a> <cite>履职回顾评优提交审核</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -27,20 +27,17 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
-                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                        <!--部门下拉框-->
+                        <div class="layui-inline layui-show-xs-block">
                             <div id="departmentSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" id = "year" name="year" placeholder="申报年份查询" autocomplete="off"
+                            <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
-                            <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="createDate" placeholder="编制日期" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="id" placeholder="按序号查询"
-                                   autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
@@ -104,7 +101,7 @@
         //年选择器
         laydate.render({
             elem: '#year'
-            ,type: 'year'
+            , type: 'year'
         });
 
         // 监听搜索按钮
@@ -136,172 +133,127 @@
                 status: '待提交审核'
             },
             cols: [
-                  [
+                [
                     {
                         type: 'checkbox',
                         fixed: 'left',
-                        align:'center',
+                        align: 'center',
                         width: 80,
-                        rowspan:2
+                        rowspan: 2
+                    },
+                    {
+                        field: 'status',
+                        fixed: 'left',
+                        align: 'center',
+                        title: '状态',
+                        width: 100,
+                        rowspan: 2,
+                        templet: function (data) {
+                            if (data.status === '待提交审核') {
+                                return '<span class="layui-badge layui-bg">待提交审核</span>'
+                            } else {
+                                return data.status
+                            }
+                        }
                     },
                     {
                         field: 'departmentName',
                         title: '部门',
-                        align:'center',
+                        align: 'center',
                         width: 80,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'workEvents',
                         title: '工作事件',
-                        align:'center',
+                        align: 'center',
                         width: 130,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'mainUserName',
                         title: '主担',
-                        align:'center',
+                        align: 'center',
                         width: 50,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'nextUserName',
                         title: '次担',
-                        align:'center',
+                        align: 'center',
                         width: 50,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: 'actualCompleteDate',
                         title: '实际完成时间',
-                        align:'center',
+                        align: 'center',
                         width: 130,
-                        rowspan:2
+                        rowspan: 2
                     },
                     {
                         field: '',
                         title: '创新或超越预期的成果展示',
-                        align:'center',
+                        align: 'center',
                         width: 600,
-                        colspan:3
+                        colspan: 3
                     },
-                      {
-                          field: 'auditNote',
-                          title: '审核意见',
-                          width: 130,
-                          align:'center',
-                          rowspan:2
-                      },
-                      {
-                          field: 'note',
-                          title: '备注',
-                          width: 50,
-                          align:'center',
-                          rowspan:2
-                      },
-                      {
-                          field: 'createName',
-                          title: '编制人',
-                          width: 50,
-                          align:'center',
-                          rowspan:2
-                      },
-                      /*{
-                          field: 'auditName',
-                          title: '审核人',
-                          width: 50,
-                          align:'center',
-                          rowspan:2
-                      },
-                      {
-                          field: 'auditDate',
-                          title: '审核日期',
-                          width: 90,
-                          align:'center',
-                          rowspan:2
-                      },*/
-                      {
-                          field: 'createDate',
-                          title: '编制日期',
-                          width: 90,
-                          align:'center',
-                          rowspan:2
-                      },
-                    ],
-                   [
+                    {
+                        field: 'auditNote',
+                        title: '审核意见',
+                        width: 130,
+                        align: 'center',
+                        rowspan: 2
+                    },
+                    {
+                        field: 'note',
+                        title: '备注',
+                        width: 50,
+                        align: 'center',
+                        rowspan: 2
+                    },
+                    {
+                        field: 'createName',
+                        title: '编制人',
+                        width: 50,
+                        align: 'center',
+                        rowspan: 2
+                    },
+                    {
+                        field: 'createDate',
+                        title: '编制日期',
+                        width: 90,
+                        align: 'center',
+                        rowspan: 2
+                    },
+                ],
+                [
                     {
                         field: 'oriTarget',
                         title: '原设定目标',
-                        align:'center',
+                        align: 'center',
                         width: 200
                     },
                     {
                         field: 'actualTarget',
                         title: '实际达成目标',
-                        align:'center',
+                        align: 'center',
                         width: 200
                     },
                     {
                         field: 'innovative',
                         title: '岗位开展的有价值的创新工作描述',
-                        align:'center',
+                        align: 'center',
                         width: 200
                     }
-                  ]/*
-                    {
-                        field: 'id',
-                        title: '序号',
-                        width: 50
-                    },
-                    {
-                        field: 'mergeNo',
-                        title: '履职评价说明表编号',
-                        width: 50
-                    },
-                    {
-                        field: 'status',
-                        title: '申报材料复核状态',
-                        width: 130
-                    },
-                    {
-                        field: 'ministerReview',
-                        title: '经营管理部主管复核',
-                        width: 80
-                    },
-
-                    {
-                        field: 'classReview',
-                        title: '绩效科复核',
-                        width: 80
-                    },
-                    {
-                        field: 'ministerReviewUser',
-                        title: '经营管理部主管复核人名称',
-                        width: 80
-                    },
-                    {
-                        field: 'ministerReviewDate',
-                        title: '经营管理部主管复核日期',
-                        width: 130
-                    },
-                    {
-                        field: 'classReviewUser',
-                        title: '绩效科复核人名称',
-                        width: 80
-                    },
-                    {
-                        field: 'classReviewDate',
-                        title: '绩效科复核日期',
-                        width: 130
-                    },
-                */
+                ]
             ]
         });
 
+        // 提交审核
         form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
+            var checkStatus = table.checkStatus(dataTable.config.id);
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
@@ -335,31 +287,18 @@
             return false;
         });
 
+        // 撤销审核
         form.on('submit(retreat)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
-                data = checkStatus.data;
+            var checkStatus = table.checkStatus(dataTable.config.id);
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
             }
-            let flag = false;
-            let msg = "";
             var excellentStateDetailIds = [];
             data.forEach(function (item) {
-                if (item.status == 5) {
-                    msg = msg ? msg + ',' + item.noticeNo : item.noticeNo;
-                    flag = true;
-                }
                 excellentStateDetailIds.push(item.id);
             });
-
-            // if (flag) {
-            //     layer.msg("开票通知单号为：" + msg + '的数据状态为财务审核通过不能撤销，请取消选择', {
-            //         icon: 5,
-            //         time: 4000
-            //     });
-            //     return false;
-            // }
 
             layer.confirm('确定撤销审核吗？', {icon: 3, title: '提示'}, function (index) {
                 $.ajax({
@@ -370,7 +309,7 @@
                     },
                     success: function (result) {
                         layer.msg(result.msg);
-                        if (result.status == 200) {
+                        if (result.status === 200) {
                             table.reload('dataTable');
                             laydate.render(
                                 {
@@ -402,7 +341,7 @@
         paging: true, // 分页
         pageSize: 20,
         style: {
-            width: '160px', 'min-height': '28px', 'line-height': '28px',
+            width: '250px', 'min-height': '28px', 'line-height': '28px',
         },
         name: 'departmentIds',// 传到后端选择的departmentId集合字符串
     });

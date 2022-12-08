@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>绩效科评优材料管理页面</title>
+    <title>绩效科评优审核</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -13,8 +13,8 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb">
-            <a href="">首页</a> <a href="">绩效管理</a> <a href="">员工绩效管理</a>
-            <a> <cite>绩效科审核评优材料</cite></a>
+            <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">回顾评优管理</a>
+            <a> <cite>绩效科评优审核</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -34,13 +34,9 @@
                             <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
-                            <input type="text" name="createDate" placeholder="编制日期查询" autocomplete="off"
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="createDate" placeholder="编制日期" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="id" placeholder="按序号查询"
-                                   autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
@@ -199,7 +195,7 @@
                         title: '状态',
                         align: "center",
                         fixed: 'left',
-                        width: 140,
+                        width: 110,
                         templet: function (d) {
                             if (d.status === "待绩效科复核") {
                                 return '<span class="layui-badge layui-bg">待绩效科复核</span>';

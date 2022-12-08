@@ -331,7 +331,7 @@ public class EntryCasReviewDetailController {
      * @return
      */
     @GetMapping("MinisterIndex")
-    @RequiredLog("履职计划部 门 领导、非事务审核评价管理")
+    @RequiredLog("履职计划部门领导、非事务审核评价管理")
     @RequiresPermissions("system:performance:entryCasReviewDetail:MinisterIndex")
     public String showEntryCasReviewDetailByMinster(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
