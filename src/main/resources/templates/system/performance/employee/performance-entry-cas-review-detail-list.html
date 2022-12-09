@@ -44,7 +44,7 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 90px;">
-                            <input type="text" id="createDate" name="createDate" placeholder="编制日期查询" autocomplete="off"
+                            <input type="text" id="createDate" name="createDate" placeholder="编制日期" autocomplete="off"
                                    class="layui-input laydate search-laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -428,7 +428,7 @@
                             $(window).width() * 0.9 + 'px',
                             $(window).height() - 50 + 'px'
                         ],
-                    content: '/system/entry-cas-review-detail/sectionEdit/' + data.id,
+                    content: '/system/entry-cas-review-detail/edit/' + data.id,
                     maxmin: true,
                     scrollbar: true
                 });
@@ -437,7 +437,7 @@
 
         // 撤销提交
         form.on('submit(retreat)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id),
+            var checkStatus = table.checkStatus(dataTable.config.id);
                 data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
