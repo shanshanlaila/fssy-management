@@ -344,7 +344,7 @@ public class EntryCasPlanDetailController {
     @RequiredLog("点击计划修改按钮")
     public String showEditPage(@PathVariable String id, Model model) {
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
-        if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+        if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
@@ -551,7 +551,7 @@ public class EntryCasPlanDetailController {
     @GetMapping("SelectEdit/{id}")
     public String showSelectEditPage(@PathVariable String id, Model model) {
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
-        if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+        if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
@@ -581,8 +581,8 @@ public class EntryCasPlanDetailController {
     public SysResult match(EventList event, @PathVariable String planId) {
         EntryCasPlanDetail planDetail = entryCasPlanDetailService.getById(planId);
         planDetail.setEventsId(event.getId());
-        planDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-        planDetail.setNewStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+        planDetail.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
+        planDetail.setNewStatus(PerformanceConstant.FINAL);
         boolean result = entryCasPlanDetailService.updateById(planDetail);
         if (result) {
             return SysResult.build(200, "关联基础事件成功");

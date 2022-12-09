@@ -194,7 +194,7 @@ public class EventListServiceImpl implements EventListService {
             queryWrapper.eq("status", PerformanceConstant.EVENT_LIST_STATUS_WAIT);
         }
         if (params.containsKey("statusCancel")) {
-            queryWrapper.ne("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+            queryWrapper.ne("status", PerformanceConstant.CANCEL);
         }
         if (params.containsKey("roleName")) {
             queryWrapper.like("roleName", params.get("roleName"));
@@ -304,7 +304,7 @@ public class EventListServiceImpl implements EventListService {
             eventList.setStandardCreateUserId(user.getId());
             eventList.setStandardCreateDate(new Date());
             eventList.setStandardAttachmentId(attachment.getId());
-            eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+            eventList.setStatus(PerformanceConstant.FINAL);
             // 更新
             eventListMapper.updateById(eventList);
             cell.setCellValue("导入成功");// 写在upload目录下的excel表格
@@ -439,8 +439,8 @@ public class EventListServiceImpl implements EventListService {
                 continue;
             }
             // 数据校验
-            if (!(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)
-                    || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_B))) {
+            if (!(eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION)
+                    || eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION))) {
                 setFailedContent(result, String.format("第%s行的事务类型填写有误", j + 1));
                 cell.setCellValue("表中事件类型填写有误");
                 continue;
@@ -505,7 +505,7 @@ public class EventListServiceImpl implements EventListService {
             }
             ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
             eventList.setOfficeId(viewDepartmentRoleUser.getOfficeId());
-            eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 不需要填报事件标准，直接完结
+            eventList.setStatus(PerformanceConstant.FINAL);// 不需要填报事件标准，直接完结
             eventListMapper.insert(eventList);
             cell.setCellValue("导入成功");
         }
@@ -543,7 +543,7 @@ public class EventListServiceImpl implements EventListService {
     @Override
     public boolean changeStatus(Integer id) {
         UpdateWrapper<EventList> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", id).set("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+        updateWrapper.eq("id", id).set("status", PerformanceConstant.CANCEL);
         int update = eventListMapper.update(null, updateWrapper);
         return update == 1;
     }
@@ -579,7 +579,7 @@ public class EventListServiceImpl implements EventListService {
         eventList.setMonth(Integer.valueOf(month));
         eventList.setCreateDate(new Date());
         eventList.setActiveDate(new Date());
-        eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 不需要填报事件标准，直接完结
+        eventList.setStatus(PerformanceConstant.FINAL);// 不需要填报事件标准，直接完结
         eventListMapper.insert(eventList);//写入数据库
         eventListMapper.updateById(eventList);//更新页面
         return true;
@@ -589,7 +589,7 @@ public class EventListServiceImpl implements EventListService {
     @Transactional
     public boolean insertEventByPlan(EventList eventList, Long id) {
         EntryCasPlanDetail planDetail = entryCasPlanDetailMapper.selectById(id);
-        eventList.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+        eventList.setStatus(PerformanceConstant.FINAL);
         eventList.setYear(LocalDate.now().getYear());
         eventList.setMonth(LocalDate.now().getMonthValue());
         eventList.setCreatedAt(LocalDateTime.now());
@@ -608,8 +608,8 @@ public class EventListServiceImpl implements EventListService {
         eventList.setDepartmentId(department.getDepartmentId());
         int result = eventListMapper.insert(eventList);// 新增event
         planDetail.setEventsId(eventList.getId());
-        planDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
-        planDetail.setNewStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+        planDetail.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
+        planDetail.setNewStatus(PerformanceConstant.FINAL);
         entryCasPlanDetailMapper.updateById(planDetail);// 更新plan
         return result > 0;
     }

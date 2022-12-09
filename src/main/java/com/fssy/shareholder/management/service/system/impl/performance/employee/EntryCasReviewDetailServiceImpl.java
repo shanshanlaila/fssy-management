@@ -214,7 +214,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 工作计划完成情况部长审核不显示事务类
         if (params.containsKey("eventsFirstTypeNe")) {
-            queryWrapper.ne("eventsFirstType", PerformanceConstant.EVENTS_FIRST_TYPE_A);
+            queryWrapper.ne("eventsFirstType", PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION);
         }
         if (params.containsKey("auditStatus")) {
             queryWrapper.like("auditStatus", params.get("auditStatus"));
@@ -223,7 +223,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             queryWrapper.eq("attachmentId", params.get("attachmentId"));
         }
         if (params.containsKey("statusCancel")) {
-            queryWrapper.ne("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+            queryWrapper.ne("status", PerformanceConstant.CANCEL);
         }
         if (params.containsKey("actualCompleteDate")) {
             queryWrapper.eq("actualCompleteDate", params.get("actualCompleteDate"));
@@ -275,7 +275,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
-            queryWrapper.select("userName,roleName,departmentName").groupBy("userName","roleName","departmentName");
+            queryWrapper.select("userName,roleName,departmentName").groupBy("userName", "roleName", "departmentName");
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
@@ -300,11 +300,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     public boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
         // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
         if (entryCasReviewDetail.getMinisterReview().equals(PerformanceConstant.EXCELLENT)) {
-            entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
+            entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
             entryCasReviewDetail.setIsExcellent(PerformanceConstant.YES);
         } else {
             entryCasReviewDetail.setFinalNontransactionEvaluateLevel(entryCasReviewDetail.getMinisterReview());
-            entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 完结
+            entryCasReviewDetail.setStatus(PerformanceConstant.FINAL);// 完结
             BigDecimal actualAutoScore = GetTool.getScore(entryCasReviewDetail, entryCasReviewDetail.getMinisterReview());
             entryCasReviewDetail.setAutoScore(actualAutoScore);
             entryCasReviewDetail.setArtifactualScore(actualAutoScore);
@@ -330,13 +330,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(reviewDetailIds);
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
             // 只能提交 待提交审核 状态的事件清单
-            if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
-                if (entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)) {
+            if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT)) {
+                if (entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION)) {
                     // 事务类，提交给科长审核
-                    entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG);
+                    entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_CHIEF);
                 } else {
                     // 非事务类 和 新增工作流 交给部长审核
-                    entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER);
+                    entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MINISTER);
                 }
                 entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
             } else return false;
@@ -355,15 +355,15 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(reviewDetailIds);
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
             LambdaUpdateWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG) ||
-                    entryCasReviewDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
+            if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF) ||
+                    entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER)) {
                 entryCasReviewDetail.setStatus("待提交审核");
                 entryCasReviewDetailLambdaUpdateWrapper.eq(EntryCasReviewDetail::getId, entryCasReviewDetail.getId());
                 entryCasReviewDetailMapper.update(entryCasReviewDetail, entryCasReviewDetailLambdaUpdateWrapper);
                 continue;
             }
             //校验方法
-            if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT) || entryCasReviewDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
+            if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT) || entryCasReviewDetail.getStatus().equals(PerformanceConstant.FINAL)) {
                 throw new ServiceException("不能撤销待提交审核状态或完结状态下的的履职明细");
             }
         }
@@ -488,9 +488,15 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue("事务类型不能为空");
                 continue;
             }
+            // 事务类别数据校验：非事务类、事务类、新增工作流
+            if (!(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION.equals(eventsFirstType) || PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION.equals(eventsFirstType) || PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT.equals(eventsFirstType))) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的事务类别不为‘非事务类、事务类、新增工作流’中的一种，不能导入", j + 1, eventsFirstType));
+                cell.setCellValue(String.format("履职计划序号为【%s】的事务类别不为‘非事务类、事务类、新增工作流’中的一种，不能导入", planId));
+                continue;
+            }
             if (ObjectUtils.isEmpty(eventsRoleId)) {
                 // 当事务类型不为 “新增工作流” 时才会进行判空，否则允许写入空值
-                if (!eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+                if (!eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                     setFailedContent(result, String.format("第%s行的事件岗位表序号为空", j + 1));// 备注
                     cell.setCellValue("事件岗位表序号不能为空");
                     continue;
@@ -507,12 +513,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 continue;
             }
             // ‘新增工作流’ 价值分只能为空
-            if (eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+            if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                 if (!ObjectUtils.isEmpty(standardValue)) {
                     throw new ServiceException(String.format("第%s行的事务类型【新增工作流】价值分只能为空", j + 1));
                 }
             }
-            if (!eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+            // 不属于‘新增工作流’的数据价值分不能为空
+            if (!eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                 if (ObjectUtils.isEmpty(standardValue)) {
                     setFailedContent(result, String.format("第%s行的事件标准价值分为空", j + 1));
                     cell.setCellValue("事件标准价值分不能为空");
@@ -554,11 +561,6 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue("频次不能为空");
                 continue;
             }
-            /*if (ObjectUtils.isEmpty(planOutput)) {
-                setFailedContent(result, String.format("第%s行的表单（输出内容）为空", j + 1));
-                cell.setCellValue("表单（输出内容）不能为空");
-                continue;
-            }*/
             if (ObjectUtils.isEmpty(planStartDate)) {
                 setFailedContent(result, String.format("第%s行的计划开始时间为空", j + 1));
                 cell.setCellValue("计划开始时间不能为空");
@@ -591,12 +593,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 throw new ServiceException(String.format("第%s行的计划序号【%s】已创建回顾,本次导入失败", j + 1, planId));
             }
             planIds.add(Long.valueOf(planId));
-            // 事务类别数据校验：非事务类、事务类
-            if (!(PerformanceConstant.EVENTS_FIRST_TYPE_B.equals(eventsFirstType) || PerformanceConstant.EVENTS_FIRST_TYPE_A.equals(eventsFirstType) || PerformanceConstant.EVENTS_FIRST_TYPE_C.equals(eventsFirstType))) {
-                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的事务类别不为‘非事务类、事务类、新增工作流’中的一种，不能导入", j + 1, eventsFirstType));
-                cell.setCellValue(String.format("履职计划序号为【%s】的事务类别不为‘非事务类、事务类、新增工作流’中的一种，不能导入", planId));
-                continue;
-            }
+
             // 申报年份
             String year = Arrays.asList(applyDate.split("-")).get(0);
             String month = Arrays.asList(applyDate.split("-")).get(1);
@@ -626,10 +623,10 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             if (!ObjectUtils.isEmpty(eventsRoleId)) {
                 entryCasReviewDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
             }
-            entryCasReviewDetail.setEventsFirstType(eventsFirstType);
             entryCasReviewDetail.setJobName(jobName);
             entryCasReviewDetail.setWorkEvents(workEvents);
-            if (!eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+            // 给事件类型不为‘新增工作流’的回顾写入价值分
+            if (!eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                 entryCasReviewDetail.setStandardValue(new BigDecimal(standardValue));
             }
             entryCasReviewDetail.setDepartmentName(departmentName);
@@ -644,7 +641,15 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasReviewDetail.setActualCompleteDate(LocalDate.parse(actualCompleteDate));
             entryCasReviewDetail.setCompleteDesc(completeDesc);
-            entryCasReviewDetail.setIsNewEvent(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C) ? PerformanceConstant.YES : PerformanceConstant.NO);
+            // 写入是否为新增工作流的字段标识
+            entryCasReviewDetail.setIsNewEvent(eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT) ? PerformanceConstant.YES : PerformanceConstant.NO);
+            /*// 将‘新增工作流’转换为‘非事务类’,方便报表统计sql
+            if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
+                entryCasReviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
+            } else {
+                entryCasReviewDetail.setEventsFirstType(eventsFirstType);
+            }*/
+            entryCasReviewDetail.setEventsFirstType(eventsFirstType);
             // 查询部门id
             LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
             departmentLambdaQueryWrapper.eq(Department::getDepartmentName, departmentName);
@@ -711,7 +716,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setCreatedAt(LocalDateTime.now());
             entryCasReviewDetail.setMonth(Integer.valueOf(month));
             entryCasReviewDetail.setYear(Integer.valueOf(year));
-            entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+            entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
             entryCasReviewDetail.setAttachmentId(attachment.getId());
             // 更新planDetail数据的状态为完结
             EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailMapper.selectById(planId);
@@ -721,7 +726,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue(String.format("履职计划序号为【%s】的履职编号未查到，不能导入", planId));
                 continue;
             }
-            entryCasPlanDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+            entryCasPlanDetail.setStatus(PerformanceConstant.FINAL);
             entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             // 新增
             save(entryCasReviewDetail);
@@ -757,11 +762,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setMinisterReview(ministerReview);
             // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
             if (ministerReview.equals(PerformanceConstant.EXCELLENT)) {
-                entryCasReviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
+                entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
                 entryCasReviewDetail.setIsExcellent(PerformanceConstant.YES);
             } else {
                 entryCasReviewDetail.setFinalNontransactionEvaluateLevel(ministerReview);
-                entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 完结
+                entryCasReviewDetail.setStatus(PerformanceConstant.FINAL);// 完结
                 BigDecimal actualAutoScore = GetTool.getScore(entryCasReviewDetail, ministerReview);
                 entryCasReviewDetail.setAutoScore(actualAutoScore);
                 entryCasReviewDetail.setArtifactualScore(actualAutoScore);
@@ -803,7 +808,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 entryCasReviewDetail.setChargeTransactionEvaluateLevel(PerformanceConstant.UNQUALIFIED);
                 entryCasReviewDetail.setChargeTransactionBelowType(chargeTransactionBelowType);
             }
-            entryCasReviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+            entryCasReviewDetail.setStatus(PerformanceConstant.FINAL);
             // 审核信息
             User user = GetTool.getUser();
             entryCasReviewDetail.setAuditId(user.getId());
@@ -854,8 +859,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasReviewDetail.setCreatedAt(LocalDateTime.now());
         entryCasReviewDetail.setCreateName(user.getName());
         entryCasReviewDetail.setCreateDate(LocalDate.now());
-        entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
-        planDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+        entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
+        planDetail.setStatus(PerformanceConstant.FINAL);
         entryCasPlanDetailMapper.updateById(planDetail);
         entryCasReviewDetailMapper.insert(entryCasReviewDetail);
         return true;
@@ -931,7 +936,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasMerge.setApplyDate(LocalDate.now());
             entryCasMerge.setYear(LocalDate.now().getYear());
             entryCasMerge.setMonth(LocalDate.now().getMonthValue());
-            entryCasMerge.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+            entryCasMerge.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
             // serial
             entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryCasMerge);
         }
@@ -942,7 +947,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasReviewDetail.setYear(Integer.valueOf(year));
         entryCasReviewDetail.setMonth(Integer.valueOf(month));
         entryCasReviewDetail.setCasPlanId(entryCasPlanDetail.getId());
-        entryCasReviewDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+        entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
         entryCasReviewDetail.setMergeId(entryCasPlanDetail.getMergeId());
         entryCasReviewDetail.setMergeNo(entryCasPlanDetail.getMergeNo());
         entryCasReviewDetail.setDepartmentId(department.getDepartmentId());

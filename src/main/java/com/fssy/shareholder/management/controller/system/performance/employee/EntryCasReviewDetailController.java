@@ -1,7 +1,6 @@
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
 
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
@@ -49,7 +48,7 @@ public class EntryCasReviewDetailController {
      * @return
      */
     @GetMapping("index")
-    @RequiredLog("履职明细情况计划")
+    @RequiredLog("员工履职回顾明细")
     @RequiresPermissions("system:performance:entryCasReviewDetail")
     public String showEntryCasReviewDetail(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -284,17 +283,17 @@ public class EntryCasReviewDetailController {
     @RequiredLog("展示回顾修改页面")
     public String showEditPage(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
-        if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
-            throw new ServiceException("不能修改取消状态下的事件请单");
+        if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
+            throw new ServiceException("不能修改取消状态下的回顾");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         return "system/performance/employee/performance-entry-cas-review-detail-edit";
     }
 
     /**
-     * 更新回顾
+     * 更新单条回顾
      *
-     * @param entryCasReviewDetail 履职明细实体
+     * @param entryCasReviewDetail 回顾
      * @return 结果
      */
     @PostMapping("update")
@@ -319,7 +318,7 @@ public class EntryCasReviewDetailController {
     @RequiredLog("取消回顾")
     public SysResult cancel(@PathVariable Long id) {
         EntryCasReviewDetail reviewDetail = entryCasReviewDetailService.getById(id);
-        reviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+        reviewDetail.setStatus(PerformanceConstant.CANCEL);
         boolean result = entryCasReviewDetailService.updateById(reviewDetail);
         if (result) {
             return SysResult.ok();
@@ -384,7 +383,7 @@ public class EntryCasReviewDetailController {
     @RequiredLog("单条回顾审核-部长")
     public String showEditPageByMinister(@PathVariable Long id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
-        if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+        if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能审核取消状态下的事件请单");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
@@ -401,7 +400,7 @@ public class EntryCasReviewDetailController {
     @RequiredLog("单条回顾审核-科长")
     public String showEditPageBySection(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
-        if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+        if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);

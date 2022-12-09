@@ -286,7 +286,7 @@ public class EventListController {
         //获取无标准事件内容和清单Id
         String id = request.getParameter("id");
         EventList eventList = eventListService.getById(Long.valueOf(id));
-        if (eventList.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+        if (eventList.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态的事件清单");
         }
         User user = (User) SecurityUtils.getSubject().getPrincipal();
