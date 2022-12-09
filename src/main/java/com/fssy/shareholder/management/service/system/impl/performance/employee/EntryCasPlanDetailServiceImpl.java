@@ -614,11 +614,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     }
 
     @Override
-    public boolean SelectUpdate(EntryCasPlanDetail entryCasPlanDetail) {
-        return false;
-    }
-
-    @Override
     public boolean saveOneCasPlanDetail(EntryCasPlanDetail entryCasPlanDetail, HttpServletRequest request) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser(user);
@@ -635,8 +630,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         String eventsFirstType = request.getParameter("eventsFirstType");
         entryCasPlanDetail.setEventsFirstType(eventsFirstType);
 
-        // 如果事件类型为新增工作流，设置字段isNewEvent为是
-
         // 查询视图
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(user);
         if (!ObjectUtils.isEmpty(eventsRoleId)) {
@@ -647,15 +640,13 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setIsNewEvent(PerformanceConstant.YES);
         } else entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
 
-
-        Map<String, EntryCasMerge> mergeMap = new HashMap<>();
         // 根据条件查询或生成bs_performance_employee_entry_cas_merge表数据
         LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
         entryCasMergeLambdaQueryWrapper
-                .eq(EntryCasMerge::getDepartmentName, viewDepartmentRoleUser)
+                .eq(EntryCasMerge::getDepartmentId, viewDepartmentRoleUser.getTheDepartmentId())
                 .eq(EntryCasMerge::getYear, LocalDate.now().getYear());
 
-        String key = viewDepartmentRoleUser + ":" + LocalDate.now().getYear();
+        String key = viewDepartmentRoleUser.getTheDepartmentId() + ":" + LocalDate.now().getYear();
         EntryCasMerge entryCasMerge;
         List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
         // 只查到一条数据
@@ -686,8 +677,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // serial
             entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryCasMerge);
         }
-        // 存入缓存
-        mergeMap.put(key, entryCasMerge);
 
         // 添加计划表编号和序号
         entryCasPlanDetail.setMergeNo(entryCasMerge.getMergeNo());

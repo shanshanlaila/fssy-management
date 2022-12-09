@@ -281,6 +281,7 @@ public class EntryCasReviewDetailController {
      * @return 修改页面
      */
     @GetMapping("edit/{id}")
+    @RequiredLog("展示回顾修改页面")
     public String showEditPage(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
@@ -291,13 +292,14 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 更新履职明细
+     * 更新回顾
      *
      * @param entryCasReviewDetail 履职明细实体
      * @return 结果
      */
     @PostMapping("update")
     @ResponseBody
+    @RequiredLog("更新回顾")
     public SysResult update(EntryCasReviewDetail entryCasReviewDetail) {
         boolean result = entryCasReviewDetailService.updateEntryCasReviewDetail(entryCasReviewDetail);
         if (result) {
@@ -307,17 +309,18 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 取消履职明细
+     * 取消回顾
      *
      * @param id id
      * @return 取消结果
      */
     @PostMapping("cancel/{id}")
     @ResponseBody
-    public SysResult cancel(@PathVariable String id) {
-        LambdaUpdateWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        entryCasReviewDetailLambdaUpdateWrapper.eq(EntryCasReviewDetail::getId, id).set(EntryCasReviewDetail::getStatus, "取消");
-        boolean result = entryCasReviewDetailService.update(entryCasReviewDetailLambdaUpdateWrapper);
+    @RequiredLog("取消回顾")
+    public SysResult cancel(@PathVariable Long id) {
+        EntryCasReviewDetail reviewDetail = entryCasReviewDetailService.getById(id);
+        reviewDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+        boolean result = entryCasReviewDetailService.updateById(reviewDetail);
         if (result) {
             return SysResult.ok();
         }
@@ -325,13 +328,13 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 工作计划完成情况审核评价 （部 门 领导、非事务）
+     * 回顾审核-部长
      *
      * @param model
      * @return
      */
     @GetMapping("MinisterIndex")
-    @RequiredLog("履职计划部门领导、非事务审核评价管理")
+    @RequiredLog("回顾审核-部长页面")
     @RequiresPermissions("system:performance:entryCasReviewDetail:MinisterIndex")
     public String showEntryCasReviewDetailByMinster(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -348,13 +351,13 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 工作计划完成情况审核评价 （科长，事务类）
+     * 回顾审核-科长
      *
      * @param model
      * @return
      */
     @GetMapping("index1")
-    @RequiredLog("履职计划科长审核评价")
+    @RequiredLog("回顾审核-科长页面")
     @RequiresPermissions("system:performance:entryCasPlanDetail:index1")
     public String showEntryCasPlanDetailListBySection_chief(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -371,17 +374,18 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 履职计划部 门 领导、非事务审核评价
+     * 单条回顾审核-部长
      *
-     * @param id
-     * @param model
-     * @return
+     * @param id    回顾id
+     * @param model 模型
+     * @return 页面
      */
     @GetMapping("MinisterEdit/{id}")
-    public String showEditPageByMinister(@PathVariable String id, Model model) {
+    @RequiredLog("单条回顾审核-部长")
+    public String showEditPageByMinister(@PathVariable Long id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
-            throw new ServiceException("不能修改取消状态下的事件请单");
+            throw new ServiceException("不能审核取消状态下的事件请单");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         return "system/performance/employee/performance-entry-cas-review-detail-minister-edit";
@@ -394,6 +398,7 @@ public class EntryCasReviewDetailController {
      * @return 路径
      */
     @GetMapping("sectionEdit/{id}")
+    @RequiredLog("单条回顾审核-科长")
     public String showEditPageBySection(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
@@ -408,7 +413,7 @@ public class EntryCasReviewDetailController {
      *
      * @return 结果
      */
-    @RequiredLog("提交审核")
+    @RequiredLog("回顾提交审核")
     //@RequiresPermissions("system:performance:entryCasPlanDetail:indexStatus")
     @PostMapping("indexStatus")
     @ResponseBody
@@ -426,7 +431,7 @@ public class EntryCasReviewDetailController {
      * @param reviewDetailIds
      * @return
      */
-    @RequiredLog("撤销审核")
+    @RequiredLog("回顾撤销审核")
     @PostMapping("retreat")
     @ResponseBody
     public SysResult retreat(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds) {
@@ -445,6 +450,7 @@ public class EntryCasReviewDetailController {
      */
     @PostMapping("sectionUpdate")
     @ResponseBody
+    @RequiredLog("提交修改工作计划完成情况审核评价 （科长，事务类）")
     public SysResult SectionUpdate(EntryCasReviewDetail entryCasReviewDetail) {
         boolean result = entryCasReviewDetailService.sectionWorkAudit(entryCasReviewDetail);
         if (result) {
@@ -462,7 +468,7 @@ public class EntryCasReviewDetailController {
      */
     @PostMapping("batchAudit")
     @ResponseBody
-    @RequiredLog("批量审核")
+    @RequiredLog("部长回顾批量审核")
     public SysResult batchAudit(HttpServletRequest request,
                                 @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
                                 @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
@@ -479,7 +485,7 @@ public class EntryCasReviewDetailController {
      */
     @RequestMapping("sectionBatchAudit")
     @ResponseBody
-    @RequiredLog("科长事物类批量审核")
+    @RequiredLog("科长回顾批量审核")
     public SysResult sectionBatchAudit(HttpServletRequest request,
                                        @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
                                        @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
@@ -500,6 +506,7 @@ public class EntryCasReviewDetailController {
      */
     @PostMapping("save")
     @ResponseBody
+    @RequiredLog("创建单条履职回顾")
     public SysResult create(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
         boolean result = entryCasReviewDetailService.saveOneReviewDetail(entryCasReviewDetail);
         if (result) {
@@ -514,6 +521,7 @@ public class EntryCasReviewDetailController {
      * @return 路径
      */
     @GetMapping("chooseEventRole")
+    @RequiredLog("跳转创建单条履职回顾-不根据计划")
     public String createReview(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -525,6 +533,12 @@ public class EntryCasReviewDetailController {
         return "system/performance/employee/entry-cas-review-detail-create-new";
     }
 
+    /**
+     * 双击选择事件岗位配比
+     *
+     * @param model
+     * @return
+     */
     @GetMapping("matchReview")
     public String matchReview(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -539,6 +553,7 @@ public class EntryCasReviewDetailController {
 
     @PostMapping("createReviewNotPlan")
     @ResponseBody
+    @RequiredLog("跳转创建单条履职回顾-不根据计划")
     public SysResult createReviewNotPlan(EntryCasReviewDetail entryCasReviewDetail) {
         Boolean result = entryCasReviewDetailService.storeReviewNotPlan(entryCasReviewDetail);
         if (result) {

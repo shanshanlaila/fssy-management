@@ -110,47 +110,6 @@ public class EventListController {
         return result;
     }
 
-    /**
-     * 事件清单评判标准管理-按钮：导出
-     *
-     * @param request  请求
-     * @param response 响应
-     */
-    @GetMapping("downloadObjects")
-    public void downloadObjects(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> params = getParams(request);
-        params.put("select",
-                "id," +
-                        "eventsFirstType," +
-                        "jobName," +
-                        "workEvents," +
-                        "delowStandard," +
-                        "middleStandard," +
-                        "fineStandard," +
-                        "excellentStandard," +
-                        "status"
-        );
-        List<Map<String, Object>> eventLists = eventListService.findEventListMapDataByParams(params);
-
-        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
-        fieldMap.put("id", "事件清单序号");
-        fieldMap.put("eventsFirstType", "事件类型");
-        fieldMap.put("jobName", "工作职责");
-        fieldMap.put("workEvents", "流程（工作事件）");
-        fieldMap.put("status", "状态");
-        fieldMap.put("delowStandard", "不合格标准");
-        fieldMap.put("middleStandard", "中标准");
-        fieldMap.put("fineStandard", "良标准");
-        fieldMap.put("excellentStandard", "优标准");
-
-        // 创建导出服务
-        SheetOutputService sheetOutputService = new SheetOutputService();
-        if (ObjectUtils.isEmpty(eventLists)) {
-            throw new ServiceException("未查出数据");
-        }
-        sheetOutputService.exportNum("事件清单标准评价表", eventLists, fieldMap, response, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), null);
-    }
-
 
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
@@ -371,23 +330,6 @@ public class EventListController {
     }
 
     /**
-     * 修改事件清单评判标准事件清单
-     *
-     * @param request
-     * @param model
-     * @return
-     */
-    @GetMapping("edit1")
-    //@RequiresPermissions("performance:employee:event:edit")
-    public String edit1(HttpServletRequest request, Model model) {
-        //获取无标准事件内容和清单Id
-        String id = request.getParameter("id");
-        EventList eventList = eventListService.getById(Long.valueOf(id));
-        model.addAttribute("eventList", eventList);//发送数据到前端，eventList对应
-        return "system/performance/employee/performance-event-manage-edit";
-    }
-
-    /**
      * 更新保存修改事件清单评判标准事件清单
      *
      * @param eventList
@@ -444,7 +386,13 @@ public class EventListController {
         sheetOutputService.exportNum("事件分配岗位表", eventLists, fieldMap, response, strList, null);
     }
 
+    /**
+     * 匹配基础事件
+     * @param model
+     * @return
+     */
     @GetMapping("matchEventList")
+    @RequiredLog("匹配基础事件")
     public String showMatchEventList(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -464,6 +412,7 @@ public class EventListController {
      * @return
      */
     @GetMapping("create")
+    @RequiredLog("返回新增单条基础事件页面")
     public String createEventList(HttpServletRequest request, Model model) {
         //1、查询部门列表，用于customerName xm-select插件
         Map<String, Object> departmentParams = new HashMap<>();
@@ -494,6 +443,7 @@ public class EventListController {
      * @return 详情页面
      */
     @GetMapping("details/{id}")
+    @RequiredLog("显示基础事件详情")
     public String details(@PathVariable Long id, Model model) {
         EventList eventList = eventListService.getById(id);
         model.addAttribute("eventList", eventList);

@@ -284,6 +284,7 @@ public class EventsRelationRoleController
 	 * @param response 响应
 	 */
 	@GetMapping("downloadForCharge")
+	@RequiredLog("导出事件清单填报履职计划")
 	public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
 		// 导出事件清单填报履职计划
 		Map<String, Object> params = getParams(request);
@@ -333,6 +334,7 @@ public class EventsRelationRoleController
 	 * @return 展示页面
 	 */
 	@GetMapping("createCasPlan/{id}")
+	@RequiredLog("展示新增单条履职计划页面")
 	public String showCreateCasPlan(@PathVariable String id, Model model) {
 		EventsRelationRole eventsRelationRole = eventsRelationRoleService.getById(id);
 		model.addAttribute("eventsRelationRole", eventsRelationRole);//传数据到前端去

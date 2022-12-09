@@ -175,7 +175,11 @@
                         align: 'center'
                     }
                 ]
-            ]
+            ],
+            done: function(res,curr,count){  //关键一，实现指针放在数据行显示手指状
+                $('td').css({'cursor':'pointer'}); //设置成指针放在表格上换成手指
+                $('table').width('100%');
+            }
         });
 
 
@@ -216,7 +220,8 @@
                     {
                         field: 'eventsFirstType',
                         title: '事件类型',
-                        width: 80
+                        width: 80,
+                        align: 'center'
                     },
                     {
                         field: 'jobName',
@@ -253,22 +258,26 @@
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
-                        width: 90
+                        width: 90,
+                        align: 'center'
                     },
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 90
+                        width: 90,
+                        align: 'center'
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 90
+                        width: 90,
+                        align: 'center'
                     },
                     {
                         field: 'actualCompleteDate',
                         title: '实际完成时间',
-                        width: 90
+                        width: 90,
+                        align: 'center'
                     },
                     {
                         field: 'completeDesc',
@@ -278,12 +287,14 @@
                     {
                         field: 'times',
                         title: '频次',
-                        width: 50
+                        width: 50,
+                        align: 'center'
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 100
+                        width: 100,
+                        align: 'center'
                     },
                     {
                         field: 'note',
@@ -293,37 +304,44 @@
                     {
                         field: 'applyDate',
                         title: '申报日期',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'year',
                         title: '申报年份',
-                        width: 80
+                        width: 80,
+                        align: 'center'
                     },
                     {
                         field: 'month',
                         title: '申报月份',
-                        width: 80
+                        width: 80,
+                        align: 'center'
                     },
                     {
                         field: 'createName',
                         title: '编制人',
-                        width: 80
+                        width: 80,
+                        align: 'center'
                     },
                     {
                         field: 'mergeNo',
                         title: '员工月度履职计划表编号',
-                        width: 150
+                        width: 150,
+                        align: "center"
                     },
                     {
                         field: 'id',
                         title: '序号',
                         width: 50,
+                        align: 'center'
                     },
                     {
                         field: 'eventsId',
-                        title: '对应事件清单序号',
-                        width: 120,
+                        title: '事件序号',
+                        width: 90,
+                        align: "center",
                         templet: function (d) {
                             let eventsId = d.eventsId;
                             if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
@@ -335,7 +353,7 @@
                     },
                     {
                         field: 'status',
-                        title: '履职计划状态',
+                        title: '状态',
                         width: 90,
                         templet: function (d) {
                             switch (d.status) {

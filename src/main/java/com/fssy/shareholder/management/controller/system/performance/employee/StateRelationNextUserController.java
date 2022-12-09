@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller;
  * @since 2022-10-28
  */
 @Controller
-@RequestMapping("/fssy.shareholder.management/state-relation-next-user")
+@RequestMapping("/management/state-relation-next-user")
 public class StateRelationNextUserController {
 
 }

@@ -61,7 +61,7 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body ">
-                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                        <div class="layui-inline layui-show-xs-block">
                             <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
@@ -149,8 +149,8 @@
                     {
                         field: 'userName',
                         title: '员工姓名',
-                        width: 250,
-                        align:'center'
+                        width: '100%',
+                        align: 'center'
                     },
                     {
                         field: 'roleName',
@@ -165,7 +165,11 @@
                         align: 'center'
                     }
                 ]
-            ]
+            ],
+            done: function(res,curr,count){  //关键一，实现指针放在数据行显示手指状
+                $('td').css({'cursor':'pointer'}); //设置成指针放在表格上换成手指
+                $('table').width('100%');
+            }
         });
         // 实例表格(右)
         var dataTableRight = table.render({
@@ -204,12 +208,7 @@
                     {
                         field: 'eventsFirstType',
                         title: '事件类型',
-                        width: 80
-                    },
-                    {
-                        field: 'workEvents',
-                        title: '流程（工作事件）',
-                        width: 200,
+                        width: 70
                     },
                     {
                         field: 'planningWork',
@@ -232,11 +231,6 @@
                         width: 90
                     },
                     {
-                        field: 'status',
-                        title: '履职计划状态',
-                        width: 100
-                    },
-                    {
                         field: 'standardValue',
                         title: '事件标准价值',
                         width: 100,
@@ -245,19 +239,17 @@
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
-                        width: 100
+                        width: 90
                     },
                     {
                         field: 'id',
-                        title: '序号',
+                        title: 'ID',
                         width: 50,
-                        fixed: "left",
                     },
                     {
                         field: 'eventsId',
                         title: '对应事件清单序号',
                         width: 120,
-                        fixed: "left",
                         templet: function (d) {
                             let eventsId = d.eventsId;
                             if (!(eventsId === null || eventsId === "" || eventsId === undefined)) {
@@ -403,6 +395,7 @@
             return false;
         });
     });
+
     // 部门查询下拉列表
     let departmentSelect = xmSelect.render({
         el: '#departmentSelect', // 绑定
