@@ -116,26 +116,31 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
             if (basic < 0) {
                 manageKpiMonthAim.setScoreAuto(BigDecimal.valueOf(0));  //分数为0
                 manageKpiMonthAim.setScoreAdjust(BigDecimal.valueOf(0));  //分数为0
+                manageKpiMonthAim.setTargetLevelActual("未达标");
             }
             //实绩累计值 > =月度基本  并且   < 月度必达
             if (basic >= 0 && mustInput < 0) {
                 manageKpiMonthAim.setScoreAuto(BigDecimal.valueOf(80));  //分数为80
                 manageKpiMonthAim.setScoreAdjust(BigDecimal.valueOf(80));
+                manageKpiMonthAim.setTargetLevelActual("基本");
             }
             //实绩累计值 > =月度必达   并且   <月度达标
             if (mustInput >= 0 && reach < 0) {
                 manageKpiMonthAim.setScoreAuto(BigDecimal.valueOf(100));  //分数为100
                 manageKpiMonthAim.setScoreAdjust(BigDecimal.valueOf(100));
+                manageKpiMonthAim.setTargetLevelActual("达标");
             }
             //实绩累计值  >= 月度达标  并且  < 月度挑战
             if (reach >= 0 && challenge < 0) {
                 manageKpiMonthAim.setScoreAuto(BigDecimal.valueOf(120));  //分数为120
                 manageKpiMonthAim.setScoreAdjust(BigDecimal.valueOf(120));
+                manageKpiMonthAim.setTargetLevelActual("必达");
             }
             //实绩累计值  >=月度挑战
             if (challenge >= 0) {
                 manageKpiMonthAim.setScoreAuto(BigDecimal.valueOf(150));  //分数为150
                 manageKpiMonthAim.setScoreAdjust(BigDecimal.valueOf(150));
+                manageKpiMonthAim.setTargetLevelActual("挑战");
             }
             Integer id = monthScore.getId();
             QueryWrapper<ManageKpiMonthAim> manageKpiMonthAimQueryWrapper = new QueryWrapper<>();
