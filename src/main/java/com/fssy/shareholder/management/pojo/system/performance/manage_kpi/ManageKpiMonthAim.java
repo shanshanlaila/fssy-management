@@ -374,6 +374,11 @@ public class ManageKpiMonthAim extends BaseModel {
      */
     @TableField("managerKpiMark")
     private String managerKpiMark;
+    /**
+     * 达标情况
+     */
+    @TableField("targetLevelActual")
+    private String targetLevelActual;
 
 
 }

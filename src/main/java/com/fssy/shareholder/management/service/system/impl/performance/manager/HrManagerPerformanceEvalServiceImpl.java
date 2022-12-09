@@ -120,8 +120,7 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
             }
             //定性评价分数表查询
             QueryWrapper<ManagerQualitativeEval> performanceEvalQueryWrapper = new QueryWrapper<>();
-            performanceEvalQueryWrapper.eq("year", year).eq("managerName", userName)
-                    .eq("companyName", companyName).eq("position", positionName);
+            performanceEvalQueryWrapper.eq("year", year).eq("managerName", userName).eq("position", positionName);
             List<ManagerQualitativeEval> performanceEvalList = managerQualitativeEvalMapper.selectList(performanceEvalQueryWrapper);
             for (ManagerQualitativeEval managerQualitativeEval : performanceEvalList) {
                 //定性评价经理人分数表获取数据

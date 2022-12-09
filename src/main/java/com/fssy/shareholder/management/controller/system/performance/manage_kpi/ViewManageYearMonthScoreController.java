@@ -103,6 +103,7 @@ public class ViewManageYearMonthScoreController {
      * @param
      * @return 结果
      */
+    @RequiredLog("自动生成分数")
     @PostMapping("updateScore")
     @ResponseBody
     public SysResult updateScore(HttpServletRequest request) {
@@ -391,6 +392,9 @@ public class ViewManageYearMonthScoreController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("evaluateMode"))){
             params.put("evaluateMode",request.getParameter("evaluateMode"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("targetLevelActual"))){
+            params.put("targetLevelActual",request.getParameter("targetLevelActual"));
         }
         return params;
 
