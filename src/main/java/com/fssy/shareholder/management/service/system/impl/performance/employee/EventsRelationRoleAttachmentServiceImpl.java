@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -207,7 +208,14 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 cell.setCellValue("职员名称不能为空");
                 continue;
             }
-            BigDecimal proportion = null;
+            // 只能导入当前登录用户的数据
+            User userByLogin = GetTool.getUser();
+            if (!userName.equals(userByLogin.getName())) {
+                StringTool.setMsg(sb, String.format("第【%s】行职员名称不能为其他人的", j + 1));
+                cell.setCellValue("职员名称不能为其他人的");
+                throw new ServiceException("只能导入本人的数据，导入失败");
+            }
+            BigDecimal proportion;
             try {
                 proportion = new BigDecimal(temp.get(SheetService.columnToIndex("G")));
             } catch (Exception e) {

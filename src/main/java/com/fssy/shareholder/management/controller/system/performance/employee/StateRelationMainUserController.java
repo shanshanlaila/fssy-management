@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller;
  * @since 2022-10-28
  */
 @Controller
-@RequestMapping("/fssy.shareholder.management/state-relation-main-user")
+@RequestMapping("/management/state-relation-main-user")
 public class StateRelationMainUserController {
 
 }

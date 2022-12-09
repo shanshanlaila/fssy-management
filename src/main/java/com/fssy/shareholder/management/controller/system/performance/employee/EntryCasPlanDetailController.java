@@ -283,6 +283,7 @@ public class EntryCasPlanDetailController {
      * @param response 响应
      */
     @GetMapping("downloadForCharge")
+    @RequiredLog("导出履职计划填报月底回顾")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         // 导出履职计划填报月底回顾
         Map<String, Object> params = getParams(request);
@@ -310,7 +311,6 @@ public class EntryCasPlanDetailController {
         fieldMap.put("eventsFirstType", "事件类型");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
-        //fieldMap.put("eventsForm", "绩效类型");
         fieldMap.put("standardValue", "事件标准价值");
         fieldMap.put("departmentName", "部门名称");
         fieldMap.put("roleName", "岗位名称");
@@ -341,6 +341,7 @@ public class EntryCasPlanDetailController {
      * @return 修改页面
      */
     @GetMapping("edit/{id}")
+    @RequiredLog("点击计划修改按钮")
     public String showEditPage(@PathVariable String id, Model model) {
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
         if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
@@ -358,12 +359,13 @@ public class EntryCasPlanDetailController {
      */
     @PostMapping("update")
     @ResponseBody
+    @RequiredLog("计划修改")
     public SysResult update(EntryCasPlanDetail entryCasPlanDetail) {
         boolean result = entryCasPlanDetailService.updateById(entryCasPlanDetail);
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "履职明细个更新失败");
+        return SysResult.build(500, "更新失败");
     }
 
     /**
@@ -374,6 +376,7 @@ public class EntryCasPlanDetailController {
      */
     @PostMapping("cancel/{id}")
     @ResponseBody
+    @RequiredLog("计划取消")
     public SysResult cancel(@PathVariable String id) {
         LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, id).set(EntryCasPlanDetail::getStatus, "取消");
@@ -427,6 +430,7 @@ public class EntryCasPlanDetailController {
      */
     @PostMapping("affirmStore")
     @ResponseBody
+    @RequiredLog("计划提交审核")
     public SysResult affirm(HttpServletRequest request,
                             @RequestParam(value = "planDetailIds[]") List<String> planDetailIds,
                             @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
@@ -445,7 +449,7 @@ public class EntryCasPlanDetailController {
      * @return
      */
     @GetMapping("MinisterIndex")
-    @RequiredLog("履职计划部长审核管理")
+    @RequiredLog("履职计划部长审核")
     @RequiresPermissions("system:performance:entryCasPlanDetail")
     public String showEntryCasPlanDetailListByMinster(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -464,7 +468,7 @@ public class EntryCasPlanDetailController {
     }
 
     @GetMapping("index1")
-    @RequiredLog("履职计划科长审核管理")
+    @RequiredLog("履职计划科长审核")
     @RequiresPermissions("system:performance:entryCasPlanDetail")
     public String showEntryCasPlanDetailListBySection_chief(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -555,22 +559,6 @@ public class EntryCasPlanDetailController {
     }
 
     /**
-     * 更新履职明细
-     *
-     * @param entryCasPlanDetail 履职明细实体
-     * @return 结果
-     */
-    @PostMapping("SelectUpdate")
-    @ResponseBody
-    public SysResult SelectUpdate(EntryCasPlanDetail entryCasPlanDetail) {
-        boolean result = entryCasPlanDetailService.SelectUpdate(entryCasPlanDetail);
-        if (result) {
-            return SysResult.ok();
-        }
-        return SysResult.build(500, "事件清单序号为空提交失败");
-    }
-
-    /**
      * 点击选择基础事件展示事件详情页面
      *
      * @return 页面路径
@@ -642,6 +630,7 @@ public class EntryCasPlanDetailController {
      */
     @PostMapping("save")
     @ResponseBody
+    @RequiredLog("创建单条计划")
     public SysResult create(EntryCasPlanDetail entryCasPlanDetail, HttpServletRequest request) {
         boolean result = entryCasPlanDetailService.saveOneCasPlanDetail(entryCasPlanDetail, request);
         if (result) {

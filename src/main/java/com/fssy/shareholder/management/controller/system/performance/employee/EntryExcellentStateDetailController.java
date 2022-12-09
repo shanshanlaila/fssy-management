@@ -67,7 +67,6 @@ public class EntryExcellentStateDetailController {
     private RoleService roleService;
 
     @GetMapping("index")
-    @RequiredLog("")
     @RequiresPermissions("system:performance:entryExcellentStateDetail:index")
     public String showEntryExcellentStateDetail(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -251,7 +250,7 @@ public class EntryExcellentStateDetailController {
      *
      * @return 结果
      */
-    @RequiredLog("提交审核")
+    @RequiredLog("回顾评优提交审核")
     //@RequiresPermissions("system:performance:entryCasPlanDetail:indexStatus")
     @PostMapping("indexStatus")
     @ResponseBody
@@ -269,7 +268,7 @@ public class EntryExcellentStateDetailController {
      * @param excellentStateDetailIds
      * @return
      */
-    @RequiredLog("撤销审核")
+    @RequiredLog("回顾评优撤销审核")
     @PostMapping("retreat")
     @ResponseBody
     public SysResult retreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
@@ -286,7 +285,7 @@ public class EntryExcellentStateDetailController {
      * @param excellentStateDetailIds
      * @return
      */
-    @RequiredLog("撤销审核")
+    @RequiredLog("绩效科回顾评优撤销审核")
     @PostMapping("PerformanceRetreat")
     @ResponseBody
     public SysResult PerformanceRetreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
@@ -305,6 +304,7 @@ public class EntryExcellentStateDetailController {
      * @return 修改页面
      */
     @GetMapping("edit/{id}")
+    @RequiredLog("绩效科审核展示修改页面")
     public String showEditPage(@PathVariable String id, Model model) {
         EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetailService.getById(id);
         if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
@@ -322,6 +322,7 @@ public class EntryExcellentStateDetailController {
      */
     @PostMapping("update")
     @ResponseBody
+    @RequiredLog("绩效科审核评优材料（修改按钮）")
     public SysResult update(EntryExcellentStateDetail entryExcellentStateDetail) {
         boolean result = entryExcellentStateDetailService.updateEntryExcellentStateDetail(entryExcellentStateDetail);
         if (result) {
@@ -337,7 +338,7 @@ public class EntryExcellentStateDetailController {
      * @return
      */
     @GetMapping("indexPerformance")
-    @RequiredLog("")
+    @RequiredLog("绩效科审核评优材料返回页面")
     @RequiresPermissions("system:performance:entryExcellentStateDetail:indexPerformance")
     public String showIndexPerformance(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -356,7 +357,7 @@ public class EntryExcellentStateDetailController {
      * @return
      */
     @GetMapping("indexMinisterReview")
-    @RequiredLog("")
+    @RequiredLog("经营管理部主管审核评优材料返回页面")
     @RequiresPermissions("system:performance:entryExcellentStateDetail:indexMinisterReview")
     public String showIndexMinisterReview(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -376,6 +377,7 @@ public class EntryExcellentStateDetailController {
      * @return 修改页面
      */
     @GetMapping("editMinister/{id}")
+    @RequiredLog("经营管理部主管展示修改页面")
     public String showEditMinister(@PathVariable String id, Model model) {
         EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetailService.getById(id);
         if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
@@ -393,6 +395,7 @@ public class EntryExcellentStateDetailController {
      */
     @PostMapping("updateMinister")
     @ResponseBody
+    @RequiredLog("绩效科审核评优材料（修改按钮）")
     public SysResult updateMinister(EntryExcellentStateDetail entryExcellentStateDetail) {
         boolean result = entryExcellentStateDetailService.updateMinister(entryExcellentStateDetail);
         if (result) {
@@ -407,7 +410,7 @@ public class EntryExcellentStateDetailController {
      * @param excellentStateDetailIds
      * @return
      */
-    @RequiredLog("撤销审核")
+    @RequiredLog("绩效科撤销审核评优材料")
     @PostMapping("MinisterRetreat")
     @ResponseBody
     public SysResult MinisterRetreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
@@ -426,6 +429,7 @@ public class EntryExcellentStateDetailController {
      */
     @GetMapping("createAndUpload/{id}")
     @RequiresPermissions("system:performance:entryExcellentStateDetail:createAndUpload")
+    @RequiredLog("展示评优材料上传页面")
     public String showExcellentPage(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         EventList eventList = eventListService.getById(entryCasReviewDetail.getEventsId());
@@ -464,6 +468,7 @@ public class EntryExcellentStateDetailController {
      * @param model 数据模型
      */
     @GetMapping("waitUploadList")
+    @RequiredLog("菜单跳转待评优的履职回顾")
     public String waitUploadList(Model model) {
         // 部门下拉选择
         Map<String, Object> departmentParams = new HashMap<>();
@@ -500,6 +505,7 @@ public class EntryExcellentStateDetailController {
      */
     @PostMapping("save")
     @ResponseBody
+    @RequiredLog("创建履职评价说明明细")
     public SysResult create(EntryExcellentStateDetail entryExcellentStateDetail, HttpServletRequest request) {
         if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A))) {
             return SysResult.build(500, "只能上传待经营管理部审核的回顾评优材料");

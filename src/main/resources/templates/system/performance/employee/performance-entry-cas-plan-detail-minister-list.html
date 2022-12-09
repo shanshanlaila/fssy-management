@@ -163,7 +163,11 @@
                         align: 'center'
                     }
                 ]
-            ]
+            ],
+            done: function(res,curr,count){  //关键一，实现指针放在数据行显示手指状
+            $('td').css({'cursor':'pointer'}); //设置成指针放在表格上换成手指
+            $('table').width('100%');
+        }
         });
 
         // 实例表格(右)
@@ -296,12 +300,10 @@
             return false
         });
 
-
         // 监听搜索按钮(右)
         form.on('submit(searchRight)', function (data) {
             // 重新加载表格
             table.reload('dataTableRight', {
-                // url: "/system/entry-cas-plan-detail/getObjects",
                 where: data.field,
                 page: {
                     curr: 1
@@ -314,8 +316,10 @@
         // 双击事件
         table.on('rowDouble(dataTableLeft)', function (obj) {
             var data = obj.data;
-
-            // 重新加载表格
+            // 行变色
+            //var data_index = $(this).attr('data-index');//得到当前的tr的index
+            //$(".layui-table-body tr[data-index=" + data_index + "]").attr({ "style": "background:azure;color:black" });//改变当前tr颜色
+            // 重新加载右侧表格
             table.reload('dataTableRight', {
                 url: "/system/entry-cas-plan-detail/getObjects?userNameRight=" + data.userName,
             });
