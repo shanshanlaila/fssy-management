@@ -307,7 +307,7 @@ public class EntryExcellentStateDetailController {
     @RequiredLog("绩效科审核展示修改页面")
     public String showEditPage(@PathVariable String id, Model model) {
         EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetailService.getById(id);
-        if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+        if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryExcellentStateDetail", entryExcellentStateDetail);
@@ -380,7 +380,7 @@ public class EntryExcellentStateDetailController {
     @RequiredLog("经营管理部主管展示修改页面")
     public String showEditMinister(@PathVariable String id, Model model) {
         EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetailService.getById(id);
-        if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+        if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
         model.addAttribute("entryExcellentStateDetail", entryExcellentStateDetail);
@@ -434,7 +434,7 @@ public class EntryExcellentStateDetailController {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         EventList eventList = eventListService.getById(entryCasReviewDetail.getEventsId());
         // 查询事件清单
-        if (!(entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
+        if (!(entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT))) {
             if (ObjectUtils.isEmpty(eventList)) {
                 throw new ServiceException("不存在对应的事件,请联系管理员");
             }
@@ -446,7 +446,7 @@ public class EntryExcellentStateDetailController {
         // 查询履职计划
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(entryCasReviewDetail.getCasPlanId());
         // 履职计划判空
-        if (!(entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
+        if (!(entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT))) {
             if (ObjectUtils.isEmpty(entryCasPlanDetail)) {
                 throw new ServiceException("不存在对应的履职计划,请联系管理员");
             }
@@ -507,7 +507,7 @@ public class EntryExcellentStateDetailController {
     @ResponseBody
     @RequiredLog("创建履职评价说明明细")
     public SysResult create(EntryExcellentStateDetail entryExcellentStateDetail, HttpServletRequest request) {
-        if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A))) {
+        if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT))) {
             return SysResult.build(500, "只能上传待经营管理部审核的回顾评优材料");
         }
         String mainIds = request.getParameter("mainIds");

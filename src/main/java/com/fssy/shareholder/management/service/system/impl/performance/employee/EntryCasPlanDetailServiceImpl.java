@@ -190,11 +190,11 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             }
             String planEndDate = planEndDateStr.trim().substring(0, 10);
             // 新增工作流不能填有价值分
-            if (eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C) && !ObjectUtils.isEmpty(standardValue)) {
+            if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT) && !ObjectUtils.isEmpty(standardValue)) {
                 throw new ServiceException(String.format("第【%s】行的价值分不能填写值，因为它的事件类型为【新增工作流】", j + 1));
             }
             // 数据校验
-            if (!(eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_B) || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_A) || eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C))) {
+            if (!(eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION) || eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION) || eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT))) {
                 setFailedContent(result, String.format("第%s行的事件类型填写错误", j + 1));
                 cell.setCellValue("事件类型填写错误");
                 continue;
@@ -209,7 +209,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
             }
             // 如果事件类型为新增工作流，设置字段isNewEvent为是
-            if (eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+            if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                 entryCasPlanDetail.setIsNewEvent(PerformanceConstant.YES);
             } else entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
             entryCasPlanDetail.setEventsFirstType(eventsFirstType);
@@ -221,7 +221,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setPlanOutput(planOutput);
             entryCasPlanDetail.setPlanStartDate(LocalDate.parse(planStartDate));
             entryCasPlanDetail.setPlanEndDate(LocalDate.parse(planEndDate));
-            entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+            entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
             if (!ObjectUtils.isEmpty(standardValue)) {
                 entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
             }
@@ -294,7 +294,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                     entryCasMerge.setApplyDate(LocalDate.now());
                     entryCasMerge.setYear(LocalDate.now().getYear());
                     entryCasMerge.setMonth(LocalDate.now().getMonthValue());
-                    entryCasMerge.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+                    entryCasMerge.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
                     // serial
                     entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryCasMerge);
                 }
@@ -457,7 +457,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             queryWrapper.eq("attachmentId", params.get("attachmentId"));
         }
         if (params.containsKey("statusCancel")) {
-            queryWrapper.ne("status", PerformanceConstant.EVENT_LIST_STATUS_CANCEL);
+            queryWrapper.ne("status", PerformanceConstant.CANCEL);
         }
         if (params.containsKey("newStatus")) {
             queryWrapper.eq("newStatus", params.get("newStatus"));
@@ -465,8 +465,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         // 状态为’待部长审核‘和事件类型为’非实物类‘或’新增工作流‘
         if (params.containsKey("twoStatus")) {
             queryWrapper
-                    .eq("status", PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)
-                    .and(item -> item.eq("eventsFirstType", PerformanceConstant.EVENTS_FIRST_TYPE_B).or().eq("eventsFirstType", PerformanceConstant.EVENTS_FIRST_TYPE_C));
+                    .eq("status", PerformanceConstant.WAIT_AUDIT_MINISTER)
+                    .and(item -> item.eq("eventsFirstType", PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION).or().eq("eventsFirstType", PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT));
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
@@ -521,16 +521,16 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
             // 如果计划的状态为’待提交审核‘
-            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT)) {
                 LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
                 // 如果事件类型为’事务类‘
-                if (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENTS_FIRST_TYPE_A)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG);
+                if (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION)) {
+                    entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_AUDIT_CHIEF);
                     entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
                     entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
                 } else {
                     // 如果事件类型为’非事务类’或者‘新增工作流‘
-                    entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER);
+                    entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MINISTER);
                     entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
                     entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
                 }
@@ -550,12 +550,12 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
             //校验方法
-            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT) || entryCasPlanDetail.getStatus().equals(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW)) {
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT) || entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_WRITE_REVIEW)) {
                 throw new ServiceException("不能撤销待提交审核状态或待填报回顾状态下的的履职明细");
             }
-            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_KEZHANG) ||
-                    entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_MINISTER)) {
-                entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF) ||
+                    entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER)) {
+                entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
         }
@@ -580,13 +580,13 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetails.get(i);
             if (event.equals("pass")) {
                 // 部长、科长审核通过
-                entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+                entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
                 entryCasPlanDetail.setAuditNote(auditNote);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
             // 部长、科长审核拒绝
             else if (event.equals("noPass")) {
-                entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+                entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
                 entryCasPlanDetail.setAuditNote(auditNote);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
@@ -607,7 +607,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                     entryCasPlanDetail.setNewStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SELECT);
                 }
             }
-            entryCasPlanDetail.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+            entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
             entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
         }
         return true;
@@ -624,7 +624,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         entryCasPlanDetail.setCreateName(user.getName());
         entryCasPlanDetail.setRoleName(viewDepartmentRoleUser.getRoleName());
         entryCasPlanDetail.setRoleId(viewDepartmentRoleUser.getRoleId());
-        entryCasPlanDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+        entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
         entryCasPlanDetail.setApplyDate(LocalDate.now());
         String eventsRoleId = request.getParameter("eventsRoleId");
         String eventsFirstType = request.getParameter("eventsFirstType");
@@ -636,7 +636,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
         }
         // 如果事件类型为新增工作流，设置字段isNewEvent为是
-        if (eventsFirstType.equals(PerformanceConstant.EVENTS_FIRST_TYPE_C)) {
+        if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
             entryCasPlanDetail.setIsNewEvent(PerformanceConstant.YES);
         } else entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
 
@@ -673,7 +673,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasMerge.setApplyDate(LocalDate.now());
             entryCasMerge.setYear(LocalDate.now().getYear());
             entryCasMerge.setMonth(LocalDate.now().getMonthValue());
-            entryCasMerge.setStatus(PerformanceConstant.ENTRY_CAS_PLAN_DETAIL_STATUS_REVIEW);
+            entryCasMerge.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
             // serial
             entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryCasMerge);
         }

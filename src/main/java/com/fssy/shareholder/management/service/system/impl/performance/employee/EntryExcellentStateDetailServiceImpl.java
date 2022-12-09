@@ -212,8 +212,8 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             queryWrapper.like("updatedName", params.get("updatedName"));
         }
         if (params.containsKey("statusOr")) {
-            queryWrapper.eq("status", PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)
-                    .or(item -> item.eq("status", PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE));
+            queryWrapper.eq("status", PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)
+                    .or(item -> item.eq("status", PerformanceConstant.WAIT_AUDIT_PERFORMANCE));
         }
         if (params.containsKey("roleName")) {
             queryWrapper.like("roleName", params.get("roleName"));
@@ -239,9 +239,9 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
             //只能提交 待提交审核 状态的评优材料
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT)) {
                 LambdaUpdateWrapper<EntryExcellentStateDetail> entryExcellentStateDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-                entryExcellentStateDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE);
+                entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_PERFORMANCE);
                 entryExcellentStateDetailLambdaUpdateWrapper.eq(EntryExcellentStateDetail::getId, entryExcellentStateDetail.getId());
                 entryExcellentStateDetailMapper.update(entryExcellentStateDetail, entryExcellentStateDetailLambdaUpdateWrapper);
             } else return false;
@@ -260,15 +260,15 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
             LambdaUpdateWrapper<EntryExcellentStateDetail> entryExcellentStateDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE)) {
-                entryExcellentStateDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_PERFORMANCE)) {
+                entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
                 entryExcellentStateDetailLambdaUpdateWrapper.eq(EntryExcellentStateDetail::getId, entryExcellentStateDetail.getId());
                 entryExcellentStateDetailMapper.update(entryExcellentStateDetail, entryExcellentStateDetailLambdaUpdateWrapper);
                 continue;
             }
             //校验方法
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT)
-                    || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT)
+                    || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
                 throw new ServiceException("不能撤销待提交审核状态或其他状态的评优材料");
             }
         }
@@ -285,11 +285,11 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     public boolean PerformanceRetreat(List<String> excellentStateDetailIds) {
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE)) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_PERFORMANCE)) {
                 throw new ServiceException("不能撤销待绩效科复核状态材料");
             }
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
-                entryExcellentStateDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE);
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
+                entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_PERFORMANCE);
                 entryExcellentStateDetail.setClassReview("");
                 entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
 
@@ -317,7 +317,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
      */
     @Override
     public boolean updateEntryExcellentStateDetail(EntryExcellentStateDetail entryExcellentStateDetail) {
-        entryExcellentStateDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN);
+        entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF);
         entryExcellentStateDetail.setClassReview(entryExcellentStateDetail.getClassReview());
 //        QueryWrapper<EntryCasReviewDetail> entryCasReviewDetailQueryWrapper = new QueryWrapper<>();
 //        entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
@@ -340,7 +340,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
      */
     @Override
     public boolean updateMinister(EntryExcellentStateDetail entryExcellentStateDetail) {
-        entryExcellentStateDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);
+        entryExcellentStateDetail.setStatus(PerformanceConstant.FINAL);
         QueryWrapper<EntryCasReviewDetail> entryCasReviewDetailQueryWrapper = new QueryWrapper<>();
         entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
@@ -370,18 +370,18 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
                 throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
             }
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE)
-                    || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_PERFORMANCE)
+                    || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
                 throw new ServiceException("此数据为【待审核】的数据，不能撤销审核");
             }
             // 只能撤销完结状态下的履职回顾评优
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL)) {
                 // 查询履职回顾
                 EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
-                entryExcellentStateDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN);
+                entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF);
                 entryExcellentStateDetail.setMinisterReview("");
                 entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
-                reviewDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A);
+                reviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
                 entryCasReviewDetailMapper.updateById(reviewDetail);
             }
         }
@@ -446,7 +446,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         entryExcellentStateDetail.setCreateDate(LocalDate.now());
         entryExcellentStateDetail.setCreateName(user.getName());
         entryExcellentStateDetail.setCreateId(user.getId());
-        entryExcellentStateDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SUBMIT_AUDIT);
+        entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
         entryExcellentStateDetail.setApplyDate(LocalDate.now());
         int year = LocalDate.now().getYear();
         entryExcellentStateDetail.setYear(year);
@@ -550,11 +550,11 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 auditNote = auditNotes.get(i);
             }
             EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetails.get(i);
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN)) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
                 throw new ServiceException("不能审核此状态下的评优材料");
             }
             entryExcellentStateDetail.setClassReview(classReview);
-            entryExcellentStateDetail.setStatus(PerformanceConstant.REVIEW_DETAIL_STATUS_AUDIT_A_ZHUGUAN);
+            entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF);
             entryExcellentStateDetail.setClassReviewUser(GetTool.getUser().getName());
             entryExcellentStateDetail.setClassReviewUserId(GetTool.getUser().getId());
             entryExcellentStateDetail.setClassReviewDate(LocalDate.now());
@@ -574,7 +574,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 auditNote = auditNotes.get(i);
             }
             EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetails.get(i);
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_FINAL)) {
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL)) {
                 throw new ServiceException("不能审核完结状态的评优材料");
             }
             QueryWrapper<EntryCasReviewDetail> entryCasReviewDetailQueryWrapper = new QueryWrapper<>();
@@ -596,19 +596,19 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 entryExcellentStateDetail.setAuditDate(LocalDate.now());
                 // 通过“bs_performance_entry_excellent_state_detail”的字段“casReviewId”修改id为“casReviewId”的“bs_performance_employee_entry_cas_review_detail”表字段“finalNontransactionEvaluateLevel”
                 reviewDetai.setFinalNontransactionEvaluateLevel(PerformanceConstant.EXCELLENT);
-                entryExcellentStateDetail.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 评优材料状态完结
+                entryExcellentStateDetail.setStatus(PerformanceConstant.FINAL);// 评优材料状态完结
                 User user = GetTool.getUser();
                 reviewDetai.setAuditId(user.getId());
                 reviewDetai.setAuditName(user.getName());
                 reviewDetai.setAuditDate(LocalDate.now());
-                reviewDetai.setStatus(PerformanceConstant.EVENT_LIST_STATUS_FINAL);// 设置回顾状态为完结
+                reviewDetai.setStatus(PerformanceConstant.FINAL);// 设置回顾状态为完结
                 // 计算分数
                 BigDecimal score = GetTool.getScore(reviewDetai, entryExcellentStateDetail.getClassReview());// classReview
                 reviewDetai.setAutoScore(score);
                 reviewDetai.setArtifactualScore(score);
             } else {
                 // 经营管理部审为“不符合”,返回绩效科复核;
-                entryExcellentStateDetail.setStatus(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_PERFORMANCE);
+                entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_PERFORMANCE);
             }
             entryExcellentStateDetail.setAuditNote(auditNote);
             entryCasReviewDetailMapper.updateById(reviewDetai);
