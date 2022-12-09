@@ -193,7 +193,9 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                status: '待提交审核'
+                status: '待提交审核',
+                userName:[[${userName}]],//登录用户
+                departmentName: [[${departmentName}]],// 登录用户本部门
             },
             cols: [
                 [
