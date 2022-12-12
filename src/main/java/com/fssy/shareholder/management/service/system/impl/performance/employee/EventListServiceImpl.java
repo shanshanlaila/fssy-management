@@ -412,27 +412,21 @@ public class EventListServiceImpl implements EventListService {
                 continue;
             }
             String duration = cells.get(SheetService.columnToIndex("G"));
-            String level = cells.get(SheetService.columnToIndex("H"));
-            if (ObjectUtils.isEmpty(level)) {
-                setFailedContent(result, String.format("第%s行的评价等级是空的", j + 1));
-                cell.setCellValue("评价等级是空的");
-                continue;
-            }
-            String standardValue = cells.get(SheetService.columnToIndex("I"));
+            String standardValue = cells.get(SheetService.columnToIndex("H"));
             if (ObjectUtils.isEmpty(standardValue)) {
                 setFailedContent(result, String.format("第%s行的事件标准价值是空的", j + 1));
                 cell.setCellValue("事件标准价值是空的");
                 continue;
             }
 
-            String note = cells.get(SheetService.columnToIndex("J"));
-            String departmentName = cells.get(SheetService.columnToIndex("K"));
+            String note = cells.get(SheetService.columnToIndex("I"));
+            String departmentName = cells.get(SheetService.columnToIndex("J"));
             if (ObjectUtils.isEmpty(departmentName)) {
                 setFailedContent(result, String.format("第%s行的部门名称是空的", j + 1));
                 cell.setCellValue("部门名称是空的");
                 continue;
             }
-            String office = cells.get(SheetService.columnToIndex("L"));
+            String office = cells.get(SheetService.columnToIndex("K"));
             if (ObjectUtils.isEmpty(office)) {
                 setFailedContent(result, String.format("第%s行的科室是空的", j + 1));
                 cell.setCellValue("科室是空的");
@@ -470,15 +464,10 @@ public class EventListServiceImpl implements EventListService {
             eventList.setYear(InstandTool.stringToInteger(year));
 
             eventList.setDuration(new BigDecimal(duration));
-            eventList.setLevel(level);
             eventList.setStandardValue(new BigDecimal(standardValue));
             eventList.setNote(note);
             eventList.setDepartmentName(departmentName);
             eventList.setDepartmentId(departmentList.get(0).getDepartmentId());
-            /*eventList.setDelow(new BigDecimal(delow));
-            eventList.setMiddle(new BigDecimal(middle));
-            eventList.setFine(new BigDecimal(fine));
-            eventList.setExcellent(new BigDecimal(excellent));*/
             String month = Arrays.asList(format.split("-")).get(1);
             eventList.setMonth(Integer.valueOf(month));
             eventList.setCreateDate(new Date());
