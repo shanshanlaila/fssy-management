@@ -23,6 +23,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCas
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
+import com.fssy.shareholder.management.tools.common.IteratorTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -572,12 +573,14 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     @Override
     public boolean affirmStore(List<String> planDetailIds, String event, List<String> auditNotes) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
+        Map<String, EntryCasPlanDetail> keyByPlanDetailMap = IteratorTool.keyByPattern("id", entryCasPlanDetails);
         for (int i = 0; i < entryCasPlanDetails.size(); i++) {
+            String planId = planDetailIds.get(i);
             String auditNote = null;
             if (!ObjectUtils.isEmpty(auditNotes)) {
                 auditNote = auditNotes.get(i);
             }
-            EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetails.get(i);
+            EntryCasPlanDetail entryCasPlanDetail = keyByPlanDetailMap.get(planId);
             if (event.equals("pass")) {
                 // 部长、科长审核通过
                 entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);

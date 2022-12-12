@@ -150,7 +150,12 @@
                     {
                         field: 'eventsFirstType',
                         title: '事件类型',
-                        width: 80
+                        width: 80,
+                        templet: function (d) {
+                            if (d.isNewEvent === '是') {
+                                return '新增工作流'
+                            }else return d.eventsFirstType
+                        }
                     },
                     {
                         field: 'standardValue',

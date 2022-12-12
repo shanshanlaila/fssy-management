@@ -15,6 +15,7 @@ import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.*;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
+import com.fssy.shareholder.management.tools.common.IteratorTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.SecurityUtils;
@@ -544,12 +545,14 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 
         //根据ID集合去找对应的实体类集合
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
+        Map<String, EntryExcellentStateDetail> keyByExcellentMap = IteratorTool.keyByPattern("id", entryExcellentStateDetails);
         for (int i = 0; i < entryExcellentStateDetails.size(); i++) {
+            String excellentId = excellentStateDetailIds.get(i);
             String auditNote = null;
             if (!ObjectUtils.isEmpty(auditNotes)) {
                 auditNote = auditNotes.get(i);
             }
-            EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetails.get(i);
+            EntryExcellentStateDetail entryExcellentStateDetail = keyByExcellentMap.get(excellentId);
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
                 throw new ServiceException("不能审核此状态下的评优材料");
             }
@@ -565,15 +568,18 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     }
 
     @Override
+    @Transactional
     public boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview, List<String> auditNotes) {
         //根据Id集合去找对应的实体类集合
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
+        Map<String, EntryExcellentStateDetail> keyByExcellentMap = IteratorTool.keyByPattern("id", entryExcellentStateDetails);
         for (int i = 0; i < entryExcellentStateDetails.size(); i++) {
+            String excellentId = excellentStateDetailIds.get(i);
             String auditNote = null;
             if (!ObjectUtils.isEmpty(auditNotes)) {
                 auditNote = auditNotes.get(i);
             }
-            EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetails.get(i);
+            EntryExcellentStateDetail entryExcellentStateDetail = keyByExcellentMap.get(excellentId);
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL)) {
                 throw new ServiceException("不能审核完结状态的评优材料");
             }
@@ -583,7 +589,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
                 throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
             }
-            EntryCasReviewDetail reviewDetai = entryCasReviewDetails.get(0);//查到对应ID的数据，然后取这条数据
+            EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);//查到对应ID的数据，然后取这条数据
             // 经营管理部审核为“符合”，设置最终非事务类评价等级为“优”
             if (ministerReview.equals(PerformanceConstant.CONFORM)) {
                 // 修改“ministerReview”、“ministerReviewUser”、“ministerReviewUserId”、“ministerReviewDate”字段，status字段为“完结”
@@ -595,23 +601,27 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 entryExcellentStateDetail.setAuditName(GetTool.getUser().getName());
                 entryExcellentStateDetail.setAuditDate(LocalDate.now());
                 // 通过“bs_performance_entry_excellent_state_detail”的字段“casReviewId”修改id为“casReviewId”的“bs_performance_employee_entry_cas_review_detail”表字段“finalNontransactionEvaluateLevel”
-                reviewDetai.setFinalNontransactionEvaluateLevel(PerformanceConstant.EXCELLENT);
+                reviewDetail.setFinalNontransactionEvaluateLevel(PerformanceConstant.EXCELLENT);
                 entryExcellentStateDetail.setStatus(PerformanceConstant.FINAL);// 评优材料状态完结
                 User user = GetTool.getUser();
-                reviewDetai.setAuditId(user.getId());
-                reviewDetai.setAuditName(user.getName());
-                reviewDetai.setAuditDate(LocalDate.now());
-                reviewDetai.setStatus(PerformanceConstant.FINAL);// 设置回顾状态为完结
+                reviewDetail.setAuditId(user.getId());
+                reviewDetail.setAuditName(user.getName());
+                reviewDetail.setAuditDate(LocalDate.now());
+                reviewDetail.setStatus(PerformanceConstant.FINAL);// 设置回顾状态为完结
+                // 如果事件类型为‘新增工作流’，则将它设置为‘非事务类’，便于统计
+                if (reviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
+                    reviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
+                }
                 // 计算分数
-                BigDecimal score = GetTool.getScore(reviewDetai, entryExcellentStateDetail.getClassReview());// classReview
-                reviewDetai.setAutoScore(score);
-                reviewDetai.setArtifactualScore(score);
+                BigDecimal score = GetTool.getScore(reviewDetail, entryExcellentStateDetail.getClassReview());// classReview
+                reviewDetail.setAutoScore(score);
+                reviewDetail.setArtifactualScore(score);
             } else {
                 // 经营管理部审为“不符合”,返回绩效科复核;
                 entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_PERFORMANCE);
             }
             entryExcellentStateDetail.setAuditNote(auditNote);
-            entryCasReviewDetailMapper.updateById(reviewDetai);
+            entryCasReviewDetailMapper.updateById(reviewDetail);
             entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
         }
         return true;

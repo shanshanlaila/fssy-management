@@ -18,6 +18,7 @@ import java.util.Map;
 public interface EntryExcellentStateDetailService extends IService<EntryExcellentStateDetail> {
     /**
      * 根据参数分页查询数据
+     *
      * @param params 查询参数
      * @return 数据分页
      */
@@ -25,6 +26,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
 
     /**
      * 绩效科撤销审核评优材料
+     *
      * @param excellentStateDetailIds 履职回顾的Ids
      * @return 撤销成功
      */
@@ -32,6 +34,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
 
     /**
      * 绩效科审核评优材料（修改按钮）
+     *
      * @param entryExcellentStateDetail 履职回顾
      * @return 提交成功
      */
@@ -39,6 +42,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
 
     /**
      * 评优材料提交审核
+     *
      * @param excellentStateDetailIds 履职回顾的Ids
      * @return 提交成功
      */
@@ -46,6 +50,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
 
     /**
      * 评优材料撤销审核
+     *
      * @param excellentStateDetailIds 履职回顾的Ids
      * @return 撤销成功
      */
@@ -53,6 +58,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
 
     /**
      * 经营管理部主管审核评优材料（修改按钮）
+     *
      * @param entryExcellentStateDetail 履职回顾表
      * @return 提交成功
      */
@@ -61,6 +67,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
 
     /**
      * 经营管理部主管撤销审核评优材料
+     *
      * @param excellentStateDetailIds 履职回顾的Ids
      * @return 撤销成功
      */
@@ -78,20 +85,22 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
 
     /**
      * 绩效科评优材料批量审核
-     * @param excellentStateDetailIds
-     * @param classReview
-     * @return
+     *
+     * @param excellentStateDetailIds 评优ids
+     * @param classReview             回顾
+     * @return 结果
      */
-    boolean batchAudit(List<String> excellentStateDetailIds, String classReview,List<String> auditNotes);
+    boolean batchAudit(List<String> excellentStateDetailIds, String classReview, List<String> auditNotes);
 
     /**
      * 经营管理部主管评优材料批量审核
-     * @param excellentStateDetailIds
-     * @param ministerReview
-     * @return
+     *
+     * @param excellentStateDetailIds 评优ids
+     * @param ministerReview          部长审核结果
+     * @return 结果
      */
 
-    boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview,List<String> auditNotes);
+    boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview, List<String> auditNotes);
 
 
 }

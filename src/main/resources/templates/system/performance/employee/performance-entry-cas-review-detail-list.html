@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>工作计划完成情况审核</title>
+    <title>履职回顾提交审核</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -205,7 +205,12 @@
                     {
                         field: 'eventsFirstType',
                         title: '事件类型',
-                        width: 80
+                        width: 80,
+                        templet: function (d) {
+                            if (d.isNewEvent === '是') {
+                                return '新增工作流'
+                            }else return d.eventsFirstType
+                        }
                     },
                     {
                         field: 'jobName',
@@ -343,6 +348,10 @@
                         }
                     },
                     {
+                        field: 'isNewEvent',
+                        title: '是否为新增工作走流',
+                    },
+                    {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
@@ -356,7 +365,7 @@
         // 提交审核
         form.on('submit(confirm)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id)
-                data = checkStatus.data;
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
@@ -438,7 +447,7 @@
         // 撤销提交
         form.on('submit(retreat)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id);
-                data = checkStatus.data;
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;

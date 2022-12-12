@@ -16,21 +16,23 @@
                     <td colspan="6" style="background: #f7f7f7; color: black;">新增回顾</td>
                 </tr>
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;请关联事件岗位配比数据:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;请关联事件岗位配比数据:
+                    </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
+                            <input type="hidden" name="eventsId" id="eventsId">
                             <input type="text" class="layui-input" name="eventsRoleId" id="eventsRoleId"
-                                   lay-verify="required"/>
+                                   lay-verify="required" autocomplete="off"/>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;事件类型:</td>
                     <td>
-                            <div class="layui-input-inline" style="width: 100%">
-                                <input type="text" class="layui-input" name="eventsFirstType" id="eventsFirstType"
-                                       lay-verify="required"/>
-                            </div>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="eventsFirstType" id="eventsFirstType"
+                                   lay-verify="required"/>
+                        </div>
                     </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;工作职责:</td>
                     <td>
@@ -87,7 +89,7 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input laydate" name="applyDate" id="applyDate"
-                                   lay-verify="required"/>
+                                   lay-verify="required" autocomplete="off"/>
                         </div>
                     </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;主/次担:</td>
@@ -127,7 +129,7 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input laydate" name="planStartDate" id="planStartDate"
-                                   lay-verify="required"/>
+                                   lay-verify="required" autocomplete="off"/>
                         </div>
                     </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;计划完成时间:
@@ -135,15 +137,16 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input laydate" name="planEndDate" id="planEndDate"
-                                   lay-verify="required"/>
+                                   lay-verify="required" autocomplete="off"/>
                         </div>
                     </td>
 
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;实际完成时间:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input laydate" name="actualCompleteDate" id="actualCompleteDate"
-                                   lay-verify="required"/>
+                            <input type="text" class="layui-input laydate" name="actualCompleteDate"
+                                   id="actualCompleteDate"
+                                   lay-verify="required" autocomplete="off"/>
                         </div>
                     </td>
                 </tr>
@@ -151,7 +154,8 @@
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;工作完成描述：</td>
                     <td colspan="6">
                         <div class="layui-input-inline" style="width: 100%">
-                            <textarea name="completeDesc" rowspan="3" class="layui-textarea" style="width: 100%"></textarea>
+                            <textarea name="completeDesc" rowspan="3" class="layui-textarea"
+                                      style="width: 100%"></textarea>
                         </div>
                     </td>
                 </tr>
