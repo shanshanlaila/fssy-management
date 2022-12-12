@@ -177,7 +177,7 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                status: '待经营管理部主管复核'
+                status: '待经管部主管复核'
             },
             cols: [
                 [
@@ -195,7 +195,7 @@
                         fixed: 'left',
                         width: 110,
                         templet: function (d) {
-                            if (d.status === "待经营管理部主管复核") {
+                            if (d.status === "待经管部主管复核") {
                                 return '<span class="layui-badge layui-bg">待审核</span>';
                             } else return d.status;
                         },

@@ -137,7 +137,14 @@ public class GetTool {
                 .orderByDesc(EventsRelationRole::getActiveDate);
         List<EventsRelationRole> eventsRelationRoles = eventsRelationRoleMappers.selectList(relationRoleLambdaQueryWrapper);
         if (ObjectUtils.isEmpty(eventsRelationRoles)) {
-            throw new ServiceException("不存在该事件的岗位配比数据");
+            throw new ServiceException(String.format("不存在该【%s】、【%s】、【%s】、【%s】、【%s】、生效日期小于【%s】事件的岗位配比数据",
+                    entryCasReviewDetail.getDepartmentName(),
+                    entryCasReviewDetail.getRoleName(),
+                    entryCasReviewDetail.getUserName(),
+                    entryCasReviewDetail.getYear(),
+                    entryCasReviewDetail.getMonth(),
+                    DateTool.getLastDayOfTodayString(entryCasReviewDetail.getYear(), entryCasReviewDetail.getMonth())
+            ));
         }
         EventsRelationRole eventsRelationRole = eventsRelationRoles.get(0);
         BigDecimal autoScore;
@@ -163,10 +170,11 @@ public class GetTool {
         // 以年份，月份，事件岗位关系序号查询有多少条回顾，以回顾数除以分数，就是最终分数
         LambdaQueryWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaQueryWrapper = new LambdaQueryWrapper<>();
         entryCasReviewDetailLambdaQueryWrapper
-                .eq(EntryCasReviewDetail::getYear, eventsRelationRole.getYear())
-                .eq(EntryCasReviewDetail::getMonth, eventsRelationRole.getMonth())
                 .eq(EntryCasReviewDetail::getEventsRoleId, eventsRelationRole.getId());
         Long count = entryCasReviewDetailMappers.selectCount(entryCasReviewDetailLambdaQueryWrapper);
+        if (count == 0) {
+            throw new ServiceException(String.format("未查出岗位配比序号为【%s】的数据", eventsRelationRole.getId()));
+        }
         return autoScore.divide(new BigDecimal(count)).setScale(2, RoundingMode.HALF_UP);
     }
 
