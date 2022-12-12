@@ -15,9 +15,10 @@
 		<span class="layui-breadcrumb">
 			<a> <cite>回顾关联事件岗位配比</cite></a>
 		</span>
-    <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right" onclick="location.reload()" title="刷新">
+    <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+       onclick="location.reload()" title="刷新">
         <i class="layui-icon layui-icon-refresh" style="line-height: 30px"></i>
-</a>
+    </a>
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
@@ -45,9 +46,11 @@
                             <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
                                    autocomplete="off" class="layui-input laydate search-laydate">
                         </div>
+                        <!--部门查询-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
+                        <!--岗位查询-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
@@ -124,89 +127,89 @@
                         field: 'id',
                         title: '序号',
                         fixed: 'left',
+                        width: 50
+                    },
+                    {
+                        field: 'jobName',
+                        title: '工作职责',
+                        fixed: 'left',
+                        width: 130
+                    },
+                    {
+                        field: 'workEvents',
+                        title: '工作事件',
+                        fixed: 'left',
+                        width: 180
+                    },
+                    {
+                        field: 'eventsFirstType',
+                        title: '事件类型',
+                        width: 70
+                    },
+                    {
+                        field: 'standardValue',
+                        title: '事件标准价值',
+                        width: 90,
+                        align: 'center'
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90
+                    },
+                    {
+                        field: 'proportion',
+                        title: '比重',
+                        width: 50,
+                        style: 'cursor:pointer;background-color: pink;',
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位名称',
                         width: 80
+                    },
+                    {
+                        field: 'isMainOrNext',
+                        title: '主担/次担',
+                        width: 80
+                    },
+                    {
+                        field: 'userName',
+                        title: '职员名称',
+                        width: 80
+                    },
+                    {
+                        field: 'activeDate',
+                        title: '生效日期',
+                        width: 100,
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        fixed: 'left',
-                        width: 130
-                    }, {
-                    field: 'workEvents',
-                    title: '工作事件',
-                    fixed: 'left',
-                    width: 150
-                }, {
-                    field: 'userName',
-                    title: '用户名称',
-                    width: 120
-                }, {
-                    field: 'roleName',
-                    title: '岗位名称',
-                    width: 100
-                }, {
-                    field: 'departmentName',
-                    title: '部门名称',
-                    width: 140
-                }, {
-                    field: 'isMainOrNext',
-                    title: '主担/次担',
-                    width: 110
-                }, {
-                    field: 'proportion',
-                    title: '比重',
-                    width: 90
-                },{
-                    field: 'standardValue',
-                    title: '事件标准价值',
-                    width: 90,
-                    align: 'center'
-                },{
-                    field: 'delow',
-                    title: '不合格价值',
-                    width: 90
-                },{
-                    field: 'middle',
-                    title: '中价值',
-                    width: 90
-                },{
-                    field: 'fine',
-                    title: '良价值',
-                    width: 90
-                },{
-                    field: 'excellent',
-                    title: '优价值',
-                    width: 90
-                },
+                        width: 100
+                    },
                     {
-                    field: 'activeDate',
-                    title: '生效日期',
-                    width: 130
-                }, {
-                    field: 'year',
-                    title: '编制年份',
-                    width: 110
-                }, {
-                    field: 'month',
-                    title: '编制月份',
-                    width: 110
-                }, {
-                    field: 'jobName',
-                    title: '工作职责',
-                    width: 130
-                }, {
-                    field: 'eventsFirstType',
-                    title: '事件类型',
-                    width: 130
-                }, {
-                    field: 'roleId',
-                    title: '岗位序号',
-                    width: 80,
-                }, {
-                    field: 'eventsId',
-                    title: '事件序号',
-                    width: 80
-                }
+                        field: 'year',
+                        title: '编制年份',
+                        width: 80
+                    },
+                    {
+                        field: 'month',
+                        title: '编制月份',
+                        width: 80
+                    },
+                    {
+                        field: 'eventsId',
+                        title: '事件序号',
+                        width: 80
+                    },
+                    {
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    },
                 ]
             ]
         });
@@ -238,6 +241,7 @@
             setValue(data['userName'], '#userName');
             setValue(data['isMainOrNext'], '#isMainOrNext');
             setValue(data['isMainOrNext'], '#mainOrNext');
+            setValue(data['eventsId'], '#eventsId');
 
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

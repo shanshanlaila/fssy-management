@@ -21,7 +21,7 @@ public interface PerformanceConstant {
     String WAIT_AUDIT_CHIEF ="待科长审核";
     String PLAN_DETAIL_STATUS_AUDIT_HR="待人力资源部审核";
     String WAIT_AUDIT_MANAGEMENT ="待经营管理部审核";// management
-    String WAIT_AUDIT_MANAGEMENT_CHIEF ="待经营管理部主管复核";
+    String WAIT_AUDIT_MANAGEMENT_CHIEF ="待经管部主管复核";
     String WAIT_AUDIT_PERFORMANCE ="待绩效科复核";
     String PLAN_DETAIL_STATUS_SELECT="待选择基础事件";
     String EVENT_FIRST_TYPE_TRANSACTION ="事务类";//transaction

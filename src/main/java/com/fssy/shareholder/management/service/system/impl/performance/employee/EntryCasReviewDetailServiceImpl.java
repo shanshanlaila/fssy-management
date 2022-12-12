@@ -19,6 +19,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.*;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
+import com.fssy.shareholder.management.tools.common.IteratorTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -291,7 +292,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     }
 
     /**
-     * 修改更新部 门 领导、非事务审核评价
+     * 修改回顾-部门领导审核结果
      *
      * @param entryCasReviewDetail 履职回顾
      * @return 审核结果
@@ -309,6 +310,10 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setAutoScore(actualAutoScore);
             entryCasReviewDetail.setArtifactualScore(actualAutoScore);
             entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
+            // 回顾完结时设置事件类型 将‘新增工作流’变成‘非事务类’
+            if (entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
+                entryCasReviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
+            }
         }
         User user = GetTool.getUser();
         entryCasReviewDetail.setAuditNote(entryCasReviewDetail.getAuditNote());
@@ -753,12 +758,14 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     @Override
     public boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
+        Map<String, EntryCasReviewDetail> keyByReviewDetailMap = IteratorTool.keyByPattern("id", entryCasReviewDetails);
         for (int i = 0; i < entryCasReviewDetails.size(); i++) {
+            String reviewId = entryReviewDetailIds.get(i);
             String auditNote = null;
             if (!ObjectUtils.isEmpty(auditNotes)) {
                 auditNote = auditNotes.get(i);
             }
-            EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetails.get(i);
+            EntryCasReviewDetail entryCasReviewDetail = keyByReviewDetailMap.get(reviewId);
             entryCasReviewDetail.setMinisterReview(ministerReview);
             // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
             if (ministerReview.equals(PerformanceConstant.EXCELLENT)) {
@@ -771,6 +778,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 entryCasReviewDetail.setAutoScore(actualAutoScore);
                 entryCasReviewDetail.setArtifactualScore(actualAutoScore);
                 entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
+                if (entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
+                    entryCasReviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
+                }
             }
             User user = GetTool.getUser();
             entryCasReviewDetail.setAuditNote(auditNote);
@@ -784,22 +794,25 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
 
     /**
-     * 批量审核——工作计划完成情况审核评价（科长复核）
+     * 批量审核——回顾-科长审核
      *
-     * @param entryReviewDetailIds
-     * @param chargeTransactionEvaluateLevel
-     * @param chargeTransactionBelowType
-     * @return
+     * @param entryReviewDetailIds           回顾ids
+     * @param chargeTransactionEvaluateLevel 事务类评价等级
+     * @param chargeTransactionBelowType     不符合标准
+     * @return 结果
      */
     @Override
+    @Transactional
     public boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
+        Map<String, EntryCasReviewDetail> keyByReviewDetailMap = IteratorTool.keyByPattern("id", entryCasReviewDetails);
         for (int i = 0; i < entryCasReviewDetails.size(); i++) {
+            String reviewId = entryReviewDetailIds.get(i);
             String auditNote = null;
             if (!ObjectUtils.isEmpty(auditNotes)) {
                 auditNote = auditNotes.get(i);
             }
-            EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetails.get(i);
+            EntryCasReviewDetail entryCasReviewDetail = keyByReviewDetailMap.get(reviewId);
             // 当事务评价等级为合格，事务类评价不同类型就取值为空，因为事务类评价不同类型是针对事务类评价等级为不合格时的情况。
             if (chargeTransactionEvaluateLevel.equals(PerformanceConstant.QUALIFIED)) {
                 entryCasReviewDetail.setChargeTransactionEvaluateLevel(PerformanceConstant.QUALIFIED);
@@ -809,6 +822,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 entryCasReviewDetail.setChargeTransactionBelowType(chargeTransactionBelowType);
             }
             entryCasReviewDetail.setStatus(PerformanceConstant.FINAL);
+            if (entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
+                entryCasReviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
+            }
             // 审核信息
             User user = GetTool.getUser();
             entryCasReviewDetail.setAuditId(user.getId());
@@ -903,7 +919,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasPlanDetail.setMonth(Integer.valueOf(month));
         entryCasPlanDetail.setPlanStartDate(entryCasReviewDetail.getPlanStartDate());
         entryCasPlanDetail.setPlanEndDate(entryCasReviewDetail.getPlanEndDate());
-        // cas-merge
+        // 添加cas-merge
         LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
         entryCasMergeLambdaQueryWrapper
                 .eq(EntryCasMerge::getDepartmentName, entryCasReviewDetail.getDepartmentName())
