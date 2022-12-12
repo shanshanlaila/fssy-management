@@ -75,12 +75,195 @@
             value : moment().format("YYYY")
         });
 
+        var cols =  [
+
+        ]
+
+        var item = [
+            {
+                type: 'checkbox',
+                fixed: 'left',
+                width: 60
+            },
+            {
+                field: 'companyName',
+                title: '企业名称',
+                width: 150
+            },
+            {
+                field: 'managerName',
+                title: '经理人姓名',
+                width: 130
+            },
+            {
+                field: 'position',
+                title: '职务',
+                width: 80,
+            }
+        ]
+
+        var yearTemp= moment().format("YYYY")
+        item.push(
+            {
+                field: yearTemp - 3 + "",
+                title: yearTemp - 3 + "年",
+                event: yearTemp + '年',
+                sort: true,
+                width: 80
+            }
+        )
+        item.push(
+            {
+                field: yearTemp - 2 + "",
+                title: yearTemp - 2 + "年",
+                event: yearTemp + '年',
+                sort: true,
+                width: 80
+            }
+        )
+        item.push(
+            {
+                field: yearTemp - 1 + "",
+                title: yearTemp - 1 + "年",
+                event: yearTemp + '年',
+                sort: true,
+                width: 80
+            }
+        )
+        item.push(
+            {
+                field: yearTemp - 0 + "",
+                title: yearTemp - 0 + "年",
+                event: yearTemp + '年',
+                sort: true,
+                width: 80
+            }
+        )
+        item.push(
+            {
+                field: Number(yearTemp) + 1 + "",
+                title: Number(yearTemp) + 1 + "年",
+                event: Number(yearTemp) + '年',
+                sort: true,
+                width: 80
+            }
+        )
+        item.push(
+            {
+                field: Number(yearTemp) + 2 + "",
+                title: Number(yearTemp) + 2 + "年",
+                event: Number(yearTemp) + '年',
+                sort: true,
+                width: 80
+            }
+        )
+        item.push(
+            {
+                field: Number(yearTemp) + 3 + "",
+                title: Number(yearTemp) + 3 + "年",
+                event: Number(yearTemp) + '年',
+                sort: true,
+                width: 80
+            }
+        )
+
+        cols.push(item);
+
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
-            console.log(data.field)
+           item = [
+                {
+                    type: 'checkbox',
+                    fixed: 'left',
+                    width: 60
+                },
+                {
+                    field: 'companyName',
+                    title: '企业名称',
+                    width: 150
+                },
+                {
+                    field: 'managerName',
+                    title: '经理人姓名',
+                    width: 130
+                },
+                {
+                    field: 'position',
+                    title: '职务',
+                    width: 80,
+                }
+            ]
+
+            yearTemp= Number(data.field.year);
+            item.push(
+                {
+                    field: yearTemp - 3 + "",
+                    title: yearTemp - 3 + "年",
+                    event: yearTemp + '年',
+                    sort: true,
+                    width: 80
+                }
+            )
+            item.push(
+                {
+                    field: yearTemp - 2 + "",
+                    title: yearTemp - 2 + "年",
+                    event: yearTemp + '年',
+                    sort: true,
+                    width: 80
+                }
+            )
+            item.push(
+                {
+                    field: yearTemp - 1 + "",
+                    title: yearTemp - 1 + "年",
+                    event: yearTemp + '年',
+                    sort: true,
+                    width: 80
+                }
+            )
+            item.push(
+                {
+                    field: yearTemp - 0 + "",
+                    title: yearTemp - 0 + "年",
+                    event: yearTemp + '年',
+                    sort: true,
+                    width: 80
+                }
+            )
+            item.push(
+                {
+                    field: Number(yearTemp) + 1 + "",
+                    title: Number(yearTemp) + 1 + "年",
+                    event: Number(yearTemp) + '年',
+                    sort: true,
+                    width: 80
+                }
+            )
+            item.push(
+                {
+                    field: Number(yearTemp) + 2 + "",
+                    title: Number(yearTemp) + 2 + "年",
+                    event: Number(yearTemp) + '年',
+                    sort: true,
+                    width: 80
+                }
+            )
+            item.push(
+                {
+                    field: Number(yearTemp) + 3 + "",
+                    title: Number(yearTemp) + 3 + "年",
+                    event: Number(yearTemp) + '年',
+                    sort: true,
+                    width: 80
+                }
+            )
+            cols =[];
+            cols.push(item);
             // 重新加载表格
             table.reload('dataTable', {
                 where: data.field,
+                cols:cols,
                 page: {
                     curr: 1
                 }
@@ -119,121 +302,9 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
-            cols: [
-                [
-                    {
-                        type: 'checkbox',
-                        fixed: 'left',
-                        width: 60
-                    },
-                    {
-                        field: 'companyName',
-                        title: '企业名称',
-                        width: 150
-                    },
-                    {
-                        field: 'managerName',
-                        title: '经理人姓名',
-                        width: 130
-                    },
-                    {
-                        field: 'position',
-                        title: '职务',
-                        width: 80,
-                    },
-                    // {
-                    //     field: 'threeYear',
-                    //     title: '2020年',
-                    //     sort: true,
-                    //     event:'2020年',
-                    //     width: 80
-                    // },
-                    // {
-                    //     field: 'twoYear',
-                    //     title: '2021年',
-                    //     sort: true,
-                    //     event:'2021年',
-                    //     width: 80
-                    // },
-                    // {
-                    //     field: 'oneYear',
-                    //     title: '2022年',
-                    //     sort: true,
-                    //     event:'2022年',
-                    //     width: 80
-                    // },
-                    {
-                        field: '2017',
-                        title: '2017年',
-                        event:'2022年',
-                        sort: true,
-                        width: 80
-                    },
-                    {
-                        field: '2018',
-                        title: '2018年',
-                        event:'2022年',
-                        sort: true,
-                        width: 80
-                    },
-                    {
-                        field: '2019',
-                        title: '2019年',
-                        event:'2022年',
-                        sort: true,
-                        width: 80
-                    },
-                    {
-                        field: '2020',
-                        title: '2020年',
-                        event:'2022年',
-                        sort: true,
-                        width: 80
-                    },
-                    {
-                        field: '2021',
-                        title: '2021年',
-                        sort: true,
-                        event:'2022年',
-                        width: 80
-                    },
-                    {
-                        field: '2022',
-                        title: '2022年',
-                        event:'2022年',
-                        sort: true,
-                        width: 80
-                    },
-                    {
-                        field: '2023',
-                        title: '2023年',
-                        event:'2022年',
-                        sort: true,
-                        width: 80
-                    }
-                    // {
-                    //     fixed: 'right',
-                    //     title: '操作',
-                    //     width: 100,
-                    //     align: 'center',
-                    //     toolbar: '#tool'
-                    // }
-                ]
-            ]
+            cols: cols
         });
-        // 监听搜索按钮
-        form.on('submit(search)', function (data) {
-            // 重新加载表格
-            table.reload('dataTable',
-                {
-                    where: data.field,
-                    page:
-                        {
-                            curr: 1
-                        }
-                });
-            return false;
-        });
+
         // 监听表格单击事件
         table.on('tool(dataTable)', function(obj)
         {

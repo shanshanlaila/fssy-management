@@ -9,6 +9,7 @@ import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.Mana
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -68,16 +69,23 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
                 "( SELECT scoreAdjust  FROM bs_manager_kpi_score AS b WHERE b.YEAR = 2019 and month=12 and b.companyName=bs_manager_kpi_score.companyName and b.managerName=bs_manager_kpi_score.managerName ) AS 'twoYear'," +
                 "(  SELECT scoreAdjust  FROM bs_manager_kpi_score AS c WHERE c.YEAR = 2018 and month=12 and c.companyName=bs_manager_kpi_score.companyName and c.managerName=bs_manager_kpi_score.managerName ) AS 'threeYear' ");
         queryWrapper.select(stringBuilder.toString()).groupBy("managerName");*/
+
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
+        String yearStr = (String) params.get("year");
+        Integer year = InstandTool.stringToInteger(yearStr);
+        if (ObjectUtils.isEmpty(year) || year == 0) {
+            Calendar instance = Calendar.getInstance();
+            year = instance.get(Calendar.YEAR);
+        }
         StringBuilder stringBuilder = new StringBuilder("managerName,companyName,position," +
-                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS c WHERE c.YEAR = bs_manager_kpi_score.`year`-3 AND MONTH = 12 AND c.companyName = bs_manager_kpi_score.companyName AND c.managerName = bs_manager_kpi_score.managerName ) AS '2017'," +
-                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS b WHERE b.YEAR = bs_manager_kpi_score.`year`-2 AND MONTH = 12 AND b.companyName = bs_manager_kpi_score.companyName AND b.managerName = bs_manager_kpi_score.managerName ) AS '2018'," +
-                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS a WHERE a.YEAR = bs_manager_kpi_score.`year`-1 AND MONTH = 12 AND a.companyName = bs_manager_kpi_score.companyName AND a.managerName = bs_manager_kpi_score.managerName ) AS '2019'," +
-                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS d WHERE d.YEAR = bs_manager_kpi_score.`year` AND MONTH = 12 AND d.companyName = bs_manager_kpi_score.companyName AND d.managerName = bs_manager_kpi_score.managerName ) AS '2020'," +
-                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS e WHERE e.YEAR = bs_manager_kpi_score.`year`+1 AND MONTH = 12 AND e.companyName = bs_manager_kpi_score.companyName AND e.managerName = bs_manager_kpi_score.managerName ) AS '2021'," +
-                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS f WHERE f.YEAR = bs_manager_kpi_score.`year`+2 AND MONTH = 12 AND f.companyName = bs_manager_kpi_score.companyName AND f.managerName = bs_manager_kpi_score.managerName ) AS '2022'," +
-                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS g WHERE g.YEAR = bs_manager_kpi_score.`year`+3 AND MONTH = 12 AND g.companyName = bs_manager_kpi_score.companyName AND g.managerName = bs_manager_kpi_score.managerName ) AS '2023' ");
-                queryWrapper.select(stringBuilder.toString()).groupBy("managerName,companyName,position");
+                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS c WHERE c.YEAR = bs_manager_kpi_score.`year`-3 AND MONTH = 12 AND c.companyName = bs_manager_kpi_score.companyName AND c.managerName = bs_manager_kpi_score.managerName ) AS '" + (year - 3) + "'," +
+                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS b WHERE b.YEAR = bs_manager_kpi_score.`year`-2 AND MONTH = 12 AND b.companyName = bs_manager_kpi_score.companyName AND b.managerName = bs_manager_kpi_score.managerName ) AS '" + (year - 2) + "'," +
+                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS a WHERE a.YEAR = bs_manager_kpi_score.`year`-1 AND MONTH = 12 AND a.companyName = bs_manager_kpi_score.companyName AND a.managerName = bs_manager_kpi_score.managerName ) AS '" + (year - 1) + "'," +
+                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS d WHERE d.YEAR = bs_manager_kpi_score.`year` AND MONTH = 12 AND d.companyName = bs_manager_kpi_score.companyName AND d.managerName = bs_manager_kpi_score.managerName ) AS '" + year + "'," +
+                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS e WHERE e.YEAR = bs_manager_kpi_score.`year`+1 AND MONTH = 12 AND e.companyName = bs_manager_kpi_score.companyName AND e.managerName = bs_manager_kpi_score.managerName ) AS '" + (year + 1) + "'," +
+                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS f WHERE f.YEAR = bs_manager_kpi_score.`year`+2 AND MONTH = 12 AND f.companyName = bs_manager_kpi_score.companyName AND f.managerName = bs_manager_kpi_score.managerName ) AS '" + (year + 2) + "'," +
+                "(SELECT scoreAdjust FROM bs_manager_kpi_score AS g WHERE g.YEAR = bs_manager_kpi_score.`year`+3 AND MONTH = 12 AND g.companyName = bs_manager_kpi_score.companyName AND g.managerName = bs_manager_kpi_score.managerName ) AS '" + (year + 3) + "'");
+        queryWrapper.select(stringBuilder.toString()).groupBy("managerName,companyName,position");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<Map<String, Object>> myPage = new Page<>(page, limit);
@@ -208,10 +216,10 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             managerKpiScoreOldUpdateWrapper.set("advantageAnalyze", advantageAnalyze)
                     .set("disadvantageAnalyze", disadvantageAnalyze).set("riskDesc", riskDesc)
                     .set("respDepartment", respDepartment).set("groupImproveAction", groupImproveAction)
-                    .set("anomalyType",anomalyType)
+                    .set("anomalyType", anomalyType)
                     .eq("managerName", managerName).eq("year", year)
                     .eq("month", month).eq("companyName", companyName);
-            managerKpiScoreOldUpdateWrapper.set("anomalyMark",1).ne("anomalyType","");
+            managerKpiScoreOldUpdateWrapper.set("anomalyMark", 1).ne("anomalyType", "");
             managerKpiScoreMapper.update(null, managerKpiScoreOldUpdateWrapper);
             cell.setCellValue("导入成功");
 

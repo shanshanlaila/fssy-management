@@ -214,44 +214,32 @@ public class ManagerKpiYearScoreController {
         if (!ObjectUtils.isEmpty(request.getParameter("groupImproveAction"))) {
             params.put("groupImproveAction", request.getParameter("groupImproveAction"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("newYear"))) {
-            params.put("newYear", request.getParameter("newYear"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("oneYear"))) {
-            params.put("oneYear", request.getParameter("oneYear"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("twoYear"))) {
-            params.put("twoYear", request.getParameter("twoYear"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("threeYear"))) {
-            params.put("threeYear", request.getParameter("threeYear"));
-        }
         if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
             params.put("companyIds", request.getParameter("companyIds"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("companyList"))) {
             params.put("companyList", request.getParameter("companyList"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("2017"))) {
-            params.put("2017", request.getParameter("2017"));
+        if (!ObjectUtils.isEmpty(request.getParameter("oneYearQian"))) {
+            params.put("oneYearQian", request.getParameter("oneYearQian"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("2018"))) {
-            params.put("2018", request.getParameter("2018"));
+        if (!ObjectUtils.isEmpty(request.getParameter("twoYearQian"))) {
+            params.put("twoYearQian", request.getParameter("twoYearQian"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("2019"))) {
-            params.put("2019", request.getParameter("2019"));
+        if (!ObjectUtils.isEmpty(request.getParameter("threeYearQian"))) {
+            params.put("threeYearQian", request.getParameter("threeYearQian"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("2020"))) {
-            params.put("2020", request.getParameter("2020"));
+        if (!ObjectUtils.isEmpty(request.getParameter("newYear"))) {
+            params.put("newYear", request.getParameter("newYear"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("2021"))) {
-            params.put("2021", request.getParameter("2021"));
+        if (!ObjectUtils.isEmpty(request.getParameter("oneYearHou"))) {
+            params.put("oneYearHou", request.getParameter("oneYearHou"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("2022"))) {
-            params.put("2022", request.getParameter("2022"));
+        if (!ObjectUtils.isEmpty(request.getParameter("twoYearHou"))) {
+            params.put("twoYearHou", request.getParameter("twoYearHou"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("2023"))) {
-            params.put("2023", request.getParameter("2023"));
+        if (!ObjectUtils.isEmpty(request.getParameter("threeYearHou"))) {
+            params.put("threeYearHou", request.getParameter("threeYearHou"));
         }
 
         return params;
