@@ -191,11 +191,6 @@
                                             width: 100
                                         },
                                         {
-                                            field: 'level',
-                                            title: '评价等级',
-                                            width: 100
-                                        },
-                                        {
                                             field: 'standardValue',
                                             title: '事件标准价值',
                                             width: 90,
@@ -295,7 +290,7 @@
                     language: 'zn',
                     data: [[${departmentNameList}]],
                     filterable: true,
-                    // radio: true,
+                    radio: true,// 开启单选
                     tips: '部门查询',
                     toolbar: {
                         show: true
@@ -347,8 +342,12 @@
                     field.status = '完结';
                     // 必填项控制
                     var year = data.field.year;
+                    if (!field.departmentIds) {
+                        layer.msg("部门为必选项，请选择编制年份", {icon: 5, time: 4000});
+                        return false;
+                    }
                     if (!year) {
-                        layer.msg("编制年份为必须项，请选择编制年份", {icon: 5, time: 4000});
+                        layer.msg("编制年份为必选项，请选择编制年份", {icon: 5, time: 4000});
                         return false;
                     }
                     field.url = "/system/performance/employee/eventsList/downloadToCompleteRole";
