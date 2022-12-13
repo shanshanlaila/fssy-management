@@ -15,7 +15,7 @@ public interface PerformanceConstant {
     String FINAL = "完结";
     String EVENT_LIST_STATUS_WAIT = "待填报标准";
     String CANCEL = "取消";
-    String WAIT_WRITE_REVIEW ="待填报回顾";
+    String WAIT_WRITE_REVIEW ="待填报总结";
     String WAIT_SUBMIT_AUDIT ="待提交审核";
     String WAIT_AUDIT_MINISTER ="待部长审核";
     String WAIT_AUDIT_CHIEF ="待科长审核";

@@ -232,7 +232,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     /**
      * 评优材料提交审核
      *
-     * @param excellentStateDetailIds 履职回顾的Ids
+     * @param excellentStateDetailIds 履职总结的Ids
      * @return
      */
     @Override
@@ -253,7 +253,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     /**
      * 评优材料撤销审核
      *
-     * @param excellentStateDetailIds 履职回顾的Ids
+     * @param excellentStateDetailIds 履职总结的Ids
      * @return
      */
     @Override
@@ -279,7 +279,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     /**
      * 绩效科撤销审核评优材料
      *
-     * @param excellentStateDetailIds 履职回顾的Ids
+     * @param excellentStateDetailIds 履职总结的Ids
      * @return
      */
     @Override
@@ -298,7 +298,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 //                entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
 //                List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
 //                if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
-//                    throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
+//                    throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职总结", entryExcellentStateDetail.getId()));
 //                }
 //                EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
 //                reviewDetail.setFinalNontransactionEvaluateLevel(PerformanceConstant.REVIEW_DETAIL_MINISTER_REVIEW_EXCELLENT);
@@ -313,7 +313,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     /**
      * 绩效科审核评优材料
      *
-     * @param entryExcellentStateDetail 履职回顾的
+     * @param entryExcellentStateDetail 履职总结的
      * @return
      */
     @Override
@@ -324,7 +324,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 //        entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
 //        List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
 //        if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
-//            throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
+//            throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职总结", entryExcellentStateDetail.getId()));
 //        }
 //        EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
 //        reviewDetail.setFinalNontransactionEvaluateLevel(entryExcellentStateDetail.getClassReview());
@@ -336,7 +336,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     /**
      * 经营管理部主管审核评优材料
      *
-     * @param entryExcellentStateDetail 履职回顾
+     * @param entryExcellentStateDetail 履职总结
      * @return
      */
     @Override
@@ -346,7 +346,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
         if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
-            throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
+            throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职总结", entryExcellentStateDetail.getId()));
         }
         EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
         reviewDetail.setFinalNontransactionEvaluateLevel(entryExcellentStateDetail.getMinisterReview());
@@ -358,7 +358,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     /**
      * 经营管理部主管撤销审核评优材料
      *
-     * @param excellentStateDetailIds 需要评优履职回顾的Ids
+     * @param excellentStateDetailIds 需要评优履职总结的Ids
      * @return
      */
     @Override
@@ -369,15 +369,15 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
             List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
             if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
-                throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职回顾", entryExcellentStateDetail.getId()));
+                throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职总结", entryExcellentStateDetail.getId()));
             }
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_PERFORMANCE)
                     || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
                 throw new ServiceException("此数据为【待审核】的数据，不能撤销审核");
             }
-            // 只能撤销完结状态下的履职回顾评优
+            // 只能撤销完结状态下的履职总结评优
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL)) {
-                // 查询履职回顾
+                // 查询履职总结
                 EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
                 entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF);
                 entryExcellentStateDetail.setMinisterReview("");

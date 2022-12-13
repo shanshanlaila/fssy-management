@@ -26,9 +26,9 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     Page<EntryCasReviewDetail> findDataListByParams(Map<String, Object> params);
 
     /**
-     * 履职回顾-部长审核（单条）
+     * 履职总结-部长审核（单条）
      *
-     * @param entryCasReviewDetail 回顾
+     * @param entryCasReviewDetail 总结
      * @return 结果
      */
     boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail);
@@ -52,7 +52,7 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     /**
      * 工作计划完成情况审核评价 （科长，事务类）
      *
-     * @param entryCasReviewDetail 回顾履职
+     * @param entryCasReviewDetail 总结履职
      * @return 结果
      */
     boolean sectionWorkAudit(EntryCasReviewDetail entryCasReviewDetail);
@@ -60,8 +60,8 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     /**
      * 读取附件数据到数据库表
      *
-     * @param attachment 履职计划回顾表附件
-     * @return 履职管控计划回顾表附件map集合
+     * @param attachment 履职计划总结表附件
+     * @return 履职管控计划总结表附件map集合
      */
     Map<String, Object> readEntryCasReviewDetailDataSource(Attachment attachment);
 
@@ -69,7 +69,7 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     /**
      * 批量审核-计划工作完成情况评价（部长）
      *
-     * @param entryReviewDetailIds 履职回顾的dis
+     * @param entryReviewDetailIds 履职总结的dis
      * @param ministerReview       部长复核
      * @return 审核结果
      */
@@ -78,7 +78,7 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     /**
      * 批量审核-计划工作完成评价（科长）
      *
-     * @param entryReviewDetailIds           履职回顾的Ids
+     * @param entryReviewDetailIds           履职总结的Ids
      * @param chargeTransactionEvaluateLevel 事务类评价等级
      * @param chargeTransactionBelowType     事务类评价不同类型
      * @return
@@ -86,7 +86,7 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType,List<String> auditNotes);
 
     /**
-     * 新增单履职回顾
+     * 新增单履职总结
      *
      * @param entryCasReviewDetail
      * @return
@@ -94,9 +94,9 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     boolean saveOneReviewDetail(EntryCasReviewDetail entryCasReviewDetail);
 
     /**
-     * 不根据计划创建履职回顾
+     * 不根据计划创建履职总结
      *
-     * @param entryCasReviewDetail 回顾
+     * @param entryCasReviewDetail 总结
      * @return 结果
      */
     Boolean storeReviewNotPlan(EntryCasReviewDetail entryCasReviewDetail);

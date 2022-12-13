@@ -32,23 +32,9 @@
 
             <table class="layui-table layui-form" lay-size="sm">
                 <tr>
-                    <td colspan="6" style="background: #f7f7f7; color: black;">事件清单内容</td>
+                    <td colspan="6" style="background: #f7f7f7; color: black;">基础事件内容</td>
                 </tr>
                 <tr>
-                    <td style="width:14%; text-align: right">&nbsp;&nbsp;系统序号:
-                    </td>
-                    <td style="width:22%">
-                        <div class="layui-input-inline" style="width: 50px">
-                            <span>[[${eventsRelationRole.id}]]</span>
-                        </div>
-                    </td>
-                    <td style="width: 12%; text-align: right">&nbsp;&nbsp;事件清单序号:
-                    </td>
-                    <td style="width: 21%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <span>[[${eventsRelationRole.eventsId}]]</span>
-                        </div>
-                    </td>
                     <td style="width: 12%; text-align: right">&nbsp;&nbsp;事务类型
                     </td>
                     <td style="width: 21%">
@@ -56,13 +42,18 @@
                             <span>[[${eventsRelationRole.eventsFirstType}]]</span>
                         </div>
                     </td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: right">工作职责</td>
-                    <td colspan="5">
+                    <td style=" text-align: right">&nbsp;&nbsp;主担/次担:
+                    </td>
+                    <td >
                         <div class="layui-input-inline" style="width: 100%">
-                            <span>[[${eventsRelationRole.jobName}]]</span>
+                            <span>[[${eventsRelationRole.isMainOrNext}]]</span>
+                        </div>
+                    </td>
+                    <td style=" text-align: right">&nbsp;&nbsp;岗位人员名称:
+                    </td>
+                    <td >
+                        <div class="layui-input-inline" style="width: 100%">
+                            <span>[[${eventsRelationRole.userName}]]</span>
                         </div>
                     </td>
                 </tr>
@@ -90,25 +81,14 @@
                         </div>
                     </td>
                 </tr>
-
                 <tr>
-                    <td style=" text-align: right">&nbsp;&nbsp;主担/次担:
-                    </td>
-                    <td >
+                    <td style="text-align: right">工作职责</td>
+                    <td colspan="5">
                         <div class="layui-input-inline" style="width: 100%">
-                            <span>[[${eventsRelationRole.isMainOrNext}]]</span>
+                            <span>[[${eventsRelationRole.jobName}]]</span>
                         </div>
                     </td>
-                    <td style=" text-align: right">&nbsp;&nbsp;
-                    </td>
-                    <td >
-                    </td>
-                    <td style=" text-align: right">&nbsp;&nbsp;
-                    </td>
-                    <td >
-                    </td>
                 </tr>
-
                 <tr>
                     <td colspan="6" style="background: #f7f7f7; color: black;">履职计划内容填写</td>
                 </tr>
@@ -124,11 +104,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;频次:</td>
+                    <td style="text-align: right">&nbsp;&nbsp;频次:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input " name="times"
-                                   id="times" lay-verify="required"
+                                   id="times"
                                    autocomplete="off" />
                         </div>
                     </td>
@@ -137,14 +117,6 @@
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input " name="planOutput"
                                    id="planOutput" lay-verify="required"
-                                   autocomplete="off" />
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;岗位人员姓名:</td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input " name="useName"
-                                   id="useName" lay-verify="required"
                                    autocomplete="off" />
                         </div>
                     </td>

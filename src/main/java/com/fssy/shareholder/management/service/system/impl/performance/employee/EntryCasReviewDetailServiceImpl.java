@@ -292,9 +292,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     }
 
     /**
-     * 修改回顾-部门领导审核结果
+     * 修改总结-部门领导审核结果
      *
-     * @param entryCasReviewDetail 履职回顾
+     * @param entryCasReviewDetail 履职总结
      * @return 审核结果
      */
     @Override
@@ -310,7 +310,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setAutoScore(actualAutoScore);
             entryCasReviewDetail.setArtifactualScore(actualAutoScore);
             entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
-            // 回顾完结时设置事件类型 将‘新增工作流’变成‘非事务类’
+            // 总结完结时设置事件类型 将‘新增工作流’变成‘非事务类’
             if (entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                 entryCasReviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
             }
@@ -378,7 +378,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     /**
      * 修改更新科长、事物类审核评价
      *
-     * @param entryCasReviewDetail 回顾履职
+     * @param entryCasReviewDetail 总结履职
      * @return
      */
     @Override
@@ -407,7 +407,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     @Override
     @Transactional
     public Map<String, Object> readEntryCasReviewDetailDataSource(Attachment attachment) {
-        // 导入履职回顾
+        // 导入履职总结
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         StringBuffer sb = new StringBuffer();// 用于数据校验的StringBuffer
@@ -416,11 +416,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         // 读取附件
         sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
         // 读取表单
-        sheetService.readByName("导出履职计划填报月底回顾"); //根据表单名称获取该工作表单
+        sheetService.readByName("导出履职计划填报月底总结"); //根据表单名称获取该工作表单
         // 获取表单数据
         Sheet sheet = sheetService.getSheet();
         if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【导出履职计划填报月底回顾】不存在，无法读取数据，请检查");
+            throw new ServiceException("表单【导出履职计划填报月底总结】不存在，无法读取数据，请检查");
         }
 
         // 导入成功数
@@ -561,11 +561,6 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue("对应工作事件的计划内容不能为空");
                 continue;
             }
-            if (ObjectUtils.isEmpty(times)) {
-                setFailedContent(result, String.format("第%s行的频次为空", j + 1));
-                cell.setCellValue("频次不能为空");
-                continue;
-            }
             if (ObjectUtils.isEmpty(planStartDate)) {
                 setFailedContent(result, String.format("第%s行的计划开始时间为空", j + 1));
                 cell.setCellValue("计划开始时间不能为空");
@@ -587,7 +582,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 continue;
             }
             // 数据检查校验
-            // 一条计划只能对应一条回顾，即导入的表中不能有重复的计划id且数据库中不能存在此id
+            // 一条计划只能对应一条总结，即导入的表中不能有重复的计划id且数据库中不能存在此id
             if (planIds.contains(Long.parseLong(planId))) {
                 throw new ServiceException(String.format("第%s行的计划序号【%s】重复,本次导入失败", j + 1, planId));
             }
@@ -595,7 +590,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId, planId);
             List<EntryCasReviewDetail> reviewDetails = entryCasReviewDetailMapper.selectList(reviewQueryWrapper);
             if (reviewDetails.size() > 0) {
-                throw new ServiceException(String.format("第%s行的计划序号【%s】已创建回顾,本次导入失败", j + 1, planId));
+                throw new ServiceException(String.format("第%s行的计划序号【%s】已创建总结,本次导入失败", j + 1, planId));
             }
             planIds.add(Long.valueOf(planId));
 
@@ -630,7 +625,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             }
             entryCasReviewDetail.setJobName(jobName);
             entryCasReviewDetail.setWorkEvents(workEvents);
-            // 给事件类型不为‘新增工作流’的回顾写入价值分
+            // 给事件类型不为‘新增工作流’的总结写入价值分
             if (!eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                 entryCasReviewDetail.setStandardValue(new BigDecimal(standardValue));
             }
@@ -648,12 +643,6 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setCompleteDesc(completeDesc);
             // 写入是否为新增工作流的字段标识
             entryCasReviewDetail.setIsNewEvent(eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT) ? PerformanceConstant.YES : PerformanceConstant.NO);
-            /*// 将‘新增工作流’转换为‘非事务类’,方便报表统计sql
-            if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
-                entryCasReviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
-            } else {
-                entryCasReviewDetail.setEventsFirstType(eventsFirstType);
-            }*/
             entryCasReviewDetail.setEventsFirstType(eventsFirstType);
             // 查询部门id
             LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -740,18 +729,17 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             cell.setCellValue("导入成功");
 
         }
-
+        sheetService.write(attachment.getPath(), attachment.getFilename());
         if (successNumber == 0) {
             throw new ServiceException("没有成功导入一条，导入失败");
         }
-        sheetService.write(attachment.getPath(), attachment.getFilename());
         return result;
     }
 
     /**
      * 批量审核——工作计划完成情况审核评价（部长复核）
      *
-     * @param entryReviewDetailIds 履职回顾的Ids
+     * @param entryReviewDetailIds 履职总结的Ids
      * @param ministerReview       部长复核
      * @return
      */
@@ -794,9 +782,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
 
     /**
-     * 批量审核——回顾-科长审核
+     * 批量审核——总结-科长审核
      *
-     * @param entryReviewDetailIds           回顾ids
+     * @param entryReviewDetailIds           总结ids
      * @param chargeTransactionEvaluateLevel 事务类评价等级
      * @param chargeTransactionBelowType     不符合标准
      * @return 结果
@@ -846,12 +834,12 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (ObjectUtils.isEmpty(planDetail)) {
             throw new ServiceException(String.format("序号为【%s】的计划不存在,创建失败", entryCasReviewDetail.getCasPlanId()));
         }
-        // 判断是否重复创建回顾
+        // 判断是否重复创建总结
         LambdaQueryWrapper<EntryCasReviewDetail> reviewQueryWrapper = new LambdaQueryWrapper<>();
         reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId, entryCasReviewDetail.getCasPlanId());
         List<EntryCasReviewDetail> reviewDetails = entryCasReviewDetailMapper.selectList(reviewQueryWrapper);
         if (reviewDetails.size() > 0) {
-            throw new ServiceException(String.format("序号为【%s】的计划已经创建回顾，不能重复创建", entryCasReviewDetail.getCasPlanId()));
+            throw new ServiceException(String.format("序号为【%s】的计划已经创建总结，不能重复创建", entryCasReviewDetail.getCasPlanId()));
         }
         // 查询MergeNo
         LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -959,7 +947,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasPlanDetail.setMergeId(entryCasMerge.getId());
         entryCasPlanDetail.setMergeNo(entryCasMerge.getMergeNo());
         entryCasPlanDetailMapper.insert(entryCasPlanDetail);
-        // 新增回顾(数据写入根据回顾导入代码)
+        // 新增总结(数据写入根据总结导入代码)
         entryCasReviewDetail.setYear(Integer.valueOf(year));
         entryCasReviewDetail.setMonth(Integer.valueOf(month));
         entryCasReviewDetail.setCasPlanId(entryCasPlanDetail.getId());
