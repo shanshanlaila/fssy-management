@@ -477,6 +477,10 @@ public class EntryExcellentStateDetailController {
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
         model.addAttribute("roleNameList", roleNameList);//传到前端去
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams,selectedUserIds);
+        model.addAttribute("userList", userList);
         return "system/performance/employee/entry-review-detail-wait-upload-list";
     }
 

@@ -12,6 +12,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Map.Entry;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import org.apache.poi.ss.usermodel.Cell;
@@ -90,6 +93,9 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 
     @Autowired
     private EventsRelationRoleService eventsRelationRoleService;
+
+    @Autowired
+    private ViewDepartmentRoleUserMapper viewDepartmentRoleUserMapper;
 
     /**
      * 设置失败的内容
@@ -317,6 +323,17 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 throw new ServiceException(String.format("第%s行的职员名称【%s】未在系统中维护", j + 1, userName));
             }
             User signUser = userList.get(0);
+            // 校验部门、岗位、员工是否维护
+            LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepRoleUser = new LambdaQueryWrapper<>();
+            viewDepRoleUser.eq(ViewDepartmentRoleUser::getDepartmentName, departmentName)
+                    .eq(ViewDepartmentRoleUser::getRoleName, roleName)
+                    .eq(ViewDepartmentRoleUser::getUserName, userName);
+            List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepRoleUser);
+            if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
+                StringTool.setMsg(sb, String.format("第【%s】行部门为【%s】、岗位为【%s】、员工姓名为【%s】未维护", j + 1, departmentName, roleName, userName));
+                cell.setCellValue(String.format("部门为【%s】、岗位为【%s】、员工姓名为【%s】未维护", departmentName, roleName, userName));
+                throw new ServiceException(String.format("第【%s】行部门为【%s】、岗位为【%s】、员工姓名为【%s】未维护，请检查信息准确性", j + 1, departmentName, roleName, userName));
+            }
             // endregion
 
             // region 组装配比数据，相同事件序号的所有项比重之各必须等于100%，否则导入不成功

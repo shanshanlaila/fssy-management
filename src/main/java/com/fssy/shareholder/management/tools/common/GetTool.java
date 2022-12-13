@@ -119,8 +119,6 @@ public class GetTool {
      * @return 分数
      */
     public static BigDecimal getScore(EntryCasReviewDetail entryCasReviewDetail, String EvaluationGrade) {
-        // 通过事件清单序号（eventsId）找对应的事件清单，delow、middle、fine、excellent，
-        //EventsRelationRole eventsRelationRole = eventsRelationRoleMappers.selectById(entryCasReviewDetail.getEventsRoleId());
         // 获取方式改变：查询条件为部门review的departmentId、roleId、userId、year、month找事件岗位配比表，生效日期是year+month+当月最后一天之前（生效日期《=），取最近的那个（倒序，get（0））
         if (ObjectUtils.isEmpty(entryCasReviewDetail.getEventsRoleId())) {
             return null;
@@ -137,7 +135,7 @@ public class GetTool {
                 .orderByDesc(EventsRelationRole::getActiveDate);
         List<EventsRelationRole> eventsRelationRoles = eventsRelationRoleMappers.selectList(relationRoleLambdaQueryWrapper);
         if (ObjectUtils.isEmpty(eventsRelationRoles)) {
-            throw new ServiceException(String.format("不存在该【%s】、【%s】、【%s】、【%s】、【%s】、生效日期小于【%s】事件的岗位配比数据",
+            throw new ServiceException(String.format("不存在该部门为【%s】、岗位为【%s】、姓名【%s】、年份【%s】、月份【%s】、生效日期小于【%s】事件的岗位配比数据",
                     entryCasReviewDetail.getDepartmentName(),
                     entryCasReviewDetail.getRoleName(),
                     entryCasReviewDetail.getUserName(),

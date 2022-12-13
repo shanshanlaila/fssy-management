@@ -675,6 +675,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 cell.setCellValue(String.format("履职计划序号为【%s】的用户名称未查到，不能导入", planId));
                 continue;
             }
+            // 查询当前登录用户
+            User user = GetTool.getUser();
+            // 只能导入本人的总结
+            if (!userName.equals(user.getName())) {
+                StringTool.setMsg(sb, String.format("第【%s】行的员工姓名【%s】与当前登录用户不相等，导入失败", j + 1, userName));
+                throw new ServiceException(String.format("第【%s】行的员工姓名【%s】与当前登录用户不相等，导入失败", j + 1, userName));
+            }
             Long userId = users.get(0).getId();
             entryCasReviewDetail.setUserId(userId);
             // 查询MergeNo
@@ -692,8 +699,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             EntryCasMerge entryCasMerge = entryCasMerges.get(0);
             entryCasReviewDetail.setMergeNo(entryCasMerge.getMergeNo());
             entryCasReviewDetail.setMergeId(entryCasMerge.getId());
-            // 查询当前登录用户
-            User user = (User) SecurityUtils.getSubject().getPrincipal();
+
             // 根据user查询 部门-角色-用户 视图
             LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
             viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getUserId, user.getId());

@@ -82,7 +82,7 @@
                                     <option value="待提交审核">待提交审核</option>
                                     <option value="待部长审核">待部长审核</option>
                                     <option value="待科长审核">待科长审核</option>
-                                    <option value="待填报回顾">待填报回顾</option>
+                                    <option value="待填报总结">待填报总结</option>
                                 </select>
                             </label>
                         </div>
@@ -107,8 +107,8 @@
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="export"
-                                        title="请选择查询条件进行导出状态为‘待填报回顾’履职计划">
-                                    导出履职计划填报月底回顾
+                                        title="请选择查询条件进行导出状态为‘待填报总结’履职计划">
+                                    导出履职计划填报月底总结
                                 </button>
                             </div>
                         </div>
@@ -455,16 +455,15 @@
         // 导出
         form.on('submit(export)', function (data) {
             var field = data.field;
-            data.field.status = '待填报总结'
+            data.field.status = '待填报总结'// 只能导出‘待太填报总结’
+            data.field.userName=[[${userName}]];// 只能导出本人的
+            // 必填项控制
             var roleIds = data.field.roleIds;
             var userIds = data.field.userIds;
-            // 必填项控制
             var departmentIds = data.field.departmentIds;
-            if ([[${departmentName}]] !== '人力资源部' && [[${departmentName}]] !== '绩效科') {
-                if (!departmentIds && !roleIds && !userIds) {
-                    layer.msg("请选择【部门】或者【岗位】导出", {icon: 5, time: 4000});
-                    return false;
-                }
+            if (!userIds) {
+                layer.msg("请选择姓名进行导出", {icon: 5, time: 4000});
+                return false;
             }
             field.url = "/system/entry-cas-plan-detail/downloadForCharge";
             var url = createUrl(field);
@@ -571,7 +570,7 @@
         language: 'zn',
         data: [[${userList}]],// model过来的
         filterable: true,
-        // radio: true,// 是否是单选
+        //radio: true,// 是否是单选
         tips: '用户查询',
         toolbar: {
             show: true
