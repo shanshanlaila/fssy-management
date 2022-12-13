@@ -212,7 +212,7 @@ public class ViewManagerKpiYearController {
         //Sql语句 companyName,year
         params.put("select", "id,projectDesc,unit,dataSource,projectType,benchmarkCompany,benchmarkValue," +
                 "pastThreeYearsActual,pastTwoYearsActual,pastOneYearActual,basicTarget,mustInputTarget" +
-                "reachTarget,challengeTarget,managerName,generalManager,position,proportion,note");
+                "reachTarget,challengeTarget");
         //查询
         List<Map<String,Object>> viewManagerKpiYearDataByParams = viewManagerKpiYearService.findViewManagerKpiYearDataByParams(params);
 
@@ -234,11 +234,11 @@ public class ViewManagerKpiYearController {
         fieldMap.put("mustInputTarget", "必达目标");
         fieldMap.put("reachTarget", "达标目标");
         fieldMap.put("challengeTarget", "挑战目标");
-        fieldMap.put("managerName", "经理人姓名");
-        fieldMap.put("generalManager", "是否总经理");
-        fieldMap.put("position", "职位类别");
-        fieldMap.put("proportion", "权重");
-        fieldMap.put("note", "备注");
+        fieldMap.put("经理人姓名", "经理人姓名");
+        fieldMap.put("是否总经理", "是否总经理");
+        fieldMap.put("职位类别", "职位类别");
+        fieldMap.put("权重", "权重");
+        fieldMap.put("备注", "备注");
         //标识字符串的列
         List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18);
         //选用导出模板
