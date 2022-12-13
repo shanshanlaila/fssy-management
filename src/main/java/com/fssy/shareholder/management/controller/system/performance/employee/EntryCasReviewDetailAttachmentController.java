@@ -51,9 +51,9 @@ public class EntryCasReviewDetailAttachmentController {
 
 
     /**
-     * 履职计划回顾附件列表（导入履职回顾）
+     * 履职计划总结附件列表（导入履职总结）
      *
-     * @return 履职计划回顾附件列表html路径
+     * @return 履职计划总结附件列表html路径
      */
     @RequiredLog("履职计划附件列表")
     @GetMapping("import")
@@ -68,24 +68,24 @@ public class EntryCasReviewDetailAttachmentController {
 
         // 查询导入场景
         Map<String, Object> params = new HashMap<>();
-        params.put("noteEq", "履职计划回顾");
+        params.put("noteEq", "履职总结");
         List<ImportModule> importModules = importModuleService.findImportModuleDataListByParams(params);
         if (ObjectUtils.isEmpty(importModules)) {
-            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "履职计划回顾"));
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "履职计划总结"));
         }
         model.addAttribute("module", importModules.get(0).getId());
         return "system/performance/employee/entry-cas-plan-review-detail-attachment-list";
     }
 
     /**
-     * 履职回顾附件上传导入
+     * 履职总结附件上传导入
      *
      * @param file       前台传来的附件数据
      * @param attachment 附件表实体类
      * @return 附件ID
      */
     @PostMapping("uploadFile")
-    @RequiredLog("履职计划回顾上传导入")
+    @RequiredLog("履职计划总结上传导入")
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                 HttpServletRequest request) {

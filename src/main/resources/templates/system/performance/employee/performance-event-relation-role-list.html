@@ -26,6 +26,18 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
+                        <!--部门查询-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="departmentSelect"></div>
+                        </div>
+                        <!--岗位查询-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="roleSelect"></div>
+                        </div>
+                        <!--用户查询-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="userSelect"></div>
+                        </div>
                         <div class="layui-inline layui-show-xs-block">
                             <label class="layui-form-label"
                                    style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
@@ -48,16 +60,6 @@
                             <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
                                    autocomplete="off" class="layui-input laydate search-laydate">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
-                            <div id="departmentSelect"></div>
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
-                            <div id="roleSelect"></div>
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
-                            <div id="userSelect"></div>
-                        </div>
-
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="year" id="year" placeholder="编制年份查询" autocomplete="off"
                                    class="layui-input">
@@ -170,7 +172,7 @@
                         field: 'workEvents',
                         title: '工作事件',
                         fixed: 'left',
-                        width: 180
+                        width: 250
                     },
                     {
                         field: 'eventsFirstType',

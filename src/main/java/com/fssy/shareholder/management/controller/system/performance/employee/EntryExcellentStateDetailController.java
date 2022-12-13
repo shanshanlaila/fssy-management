@@ -250,7 +250,7 @@ public class EntryExcellentStateDetailController {
      *
      * @return 结果
      */
-    @RequiredLog("回顾评优提交审核")
+    @RequiredLog("总结评优提交审核")
     //@RequiresPermissions("system:performance:entryCasPlanDetail:indexStatus")
     @PostMapping("indexStatus")
     @ResponseBody
@@ -268,7 +268,7 @@ public class EntryExcellentStateDetailController {
      * @param excellentStateDetailIds
      * @return
      */
-    @RequiredLog("回顾评优撤销审核")
+    @RequiredLog("总结评优撤销审核")
     @PostMapping("retreat")
     @ResponseBody
     public SysResult retreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
@@ -285,7 +285,7 @@ public class EntryExcellentStateDetailController {
      * @param excellentStateDetailIds
      * @return
      */
-    @RequiredLog("绩效科回顾评优撤销审核")
+    @RequiredLog("绩效科总结评优撤销审核")
     @PostMapping("PerformanceRetreat")
     @ResponseBody
     public SysResult PerformanceRetreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
@@ -463,12 +463,12 @@ public class EntryExcellentStateDetailController {
 
 
     /**
-     * 菜单跳转待评优的履职回顾
+     * 菜单跳转待评优的履职总结
      *
      * @param model 数据模型
      */
     @GetMapping("waitUploadList")
-    @RequiredLog("菜单跳转待评优的履职回顾")
+    @RequiredLog("菜单跳转待评优的履职总结")
     public String waitUploadList(Model model) {
         // 部门下拉选择
         Map<String, Object> departmentParams = new HashMap<>();
@@ -508,7 +508,7 @@ public class EntryExcellentStateDetailController {
     @RequiredLog("创建履职评价说明明细")
     public SysResult create(EntryExcellentStateDetail entryExcellentStateDetail, HttpServletRequest request) {
         if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT))) {
-            return SysResult.build(500, "只能上传待经营管理部审核的回顾评优材料");
+            return SysResult.build(500, "只能上传待经营管理部审核的总结评优材料");
         }
         String mainIds = request.getParameter("mainIds");
         String nextIds = request.getParameter("nextIds");

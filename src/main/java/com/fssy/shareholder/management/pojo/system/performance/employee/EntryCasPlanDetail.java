@@ -252,7 +252,7 @@ public class EntryCasPlanDetail extends BaseModel {
     private String auditNote;
 
     /**
-     * 履职计划状态，待填报回顾、完结
+     * 履职计划状态，待填报总结、完结
      */
     @TableField("status")
     private String status;

@@ -48,7 +48,7 @@ public class EntryCasReviewDetailController {
      * @return
      */
     @GetMapping("index")
-    @RequiredLog("员工履职回顾明细")
+    @RequiredLog("员工履职总结明细")
     @RequiresPermissions("system:performance:entryCasReviewDetail")
     public String showEntryCasReviewDetail(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -280,42 +280,42 @@ public class EntryCasReviewDetailController {
      * @return 修改页面
      */
     @GetMapping("edit/{id}")
-    @RequiredLog("展示回顾修改页面")
+    @RequiredLog("展示总结修改页面")
     public String showEditPage(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
-            throw new ServiceException("不能修改取消状态下的回顾");
+            throw new ServiceException("不能修改取消状态下的总结");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         return "system/performance/employee/performance-entry-cas-review-detail-edit";
     }
 
     /**
-     * 更新单条回顾
+     * 更新单条总结
      *
-     * @param entryCasReviewDetail 回顾
+     * @param entryCasReviewDetail 总结
      * @return 结果
      */
     @PostMapping("update")
     @ResponseBody
-    @RequiredLog("更新回顾")
+    @RequiredLog("更新总结")
     public SysResult update(EntryCasReviewDetail entryCasReviewDetail) {
         boolean result = entryCasReviewDetailService.updateEntryCasReviewDetail(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "回顾审核失败");
+        return SysResult.build(500, "总结审核失败");
     }
 
     /**
-     * 取消回顾
+     * 取消总结
      *
      * @param id id
      * @return 取消结果
      */
     @PostMapping("cancel/{id}")
     @ResponseBody
-    @RequiredLog("取消回顾")
+    @RequiredLog("取消总结")
     public SysResult cancel(@PathVariable Long id) {
         EntryCasReviewDetail reviewDetail = entryCasReviewDetailService.getById(id);
         reviewDetail.setStatus(PerformanceConstant.CANCEL);
@@ -327,13 +327,13 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 回顾审核-部长
+     * 总结审核-部长
      *
      * @param model
      * @return
      */
     @GetMapping("MinisterIndex")
-    @RequiredLog("回顾审核-部长页面")
+    @RequiredLog("总结审核-部长页面")
     @RequiresPermissions("system:performance:entryCasReviewDetail:MinisterIndex")
     public String showEntryCasReviewDetailByMinster(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -350,13 +350,13 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 回顾审核-科长
+     * 总结审核-科长
      *
      * @param model
      * @return
      */
     @GetMapping("index1")
-    @RequiredLog("回顾审核-科长页面")
+    @RequiredLog("总结审核-科长页面")
     @RequiresPermissions("system:performance:entryCasPlanDetail:index1")
     public String showEntryCasPlanDetailListBySection_chief(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
@@ -373,14 +373,14 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 单条回顾审核-部长
+     * 单条总结审核-部长
      *
-     * @param id    回顾id
+     * @param id    总结id
      * @param model 模型
      * @return 页面
      */
     @GetMapping("MinisterEdit/{id}")
-    @RequiredLog("单条回顾审核-部长")
+    @RequiredLog("单条总结审核-部长")
     public String showEditPageByMinister(@PathVariable Long id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
@@ -397,7 +397,7 @@ public class EntryCasReviewDetailController {
      * @return 路径
      */
     @GetMapping("sectionEdit/{id}")
-    @RequiredLog("单条回顾审核-科长")
+    @RequiredLog("单条总结审核-科长")
     public String showEditPageBySection(@PathVariable String id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {

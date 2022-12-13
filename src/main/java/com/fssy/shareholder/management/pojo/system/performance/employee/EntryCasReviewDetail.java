@@ -15,7 +15,7 @@ import java.time.LocalDate;
 
 /**
  * <p>
- * *****业务部门：	绩效科		*****数据表中文名：	员工履职回顾明细		*****数据表名：	bs_performance_employee_entry_cas_review_detail		*****数据表作用：	员工每月月末对月初计划的回顾		*****变更记录：	时间         	变更人		变更内容	20220915	兰宇铧           	初始设计
+ * *****业务部门：	绩效科		*****数据表中文名：	员工履职总结明细		*****数据表名：	bs_performance_employee_entry_cas_review_detail		*****数据表作用：	员工每月月末对月初计划的回顾		*****变更记录：	时间         	变更人		变更内容	20220915	兰宇铧           	初始设计
  * </p>
  *
  * @author 农浩
@@ -238,7 +238,7 @@ public class EntryCasReviewDetail extends BaseModel {
     private String auditNote;
 
     /**
-     * 履职回顾状态，待主管审核，待部长审核，完结，待经营管理部审核（评优时）
+     * 履职总结状态，待主管审核，待部长审核，完结，待经营管理部审核（评优时）
      */
     @TableField("status")
     private String status;
@@ -300,7 +300,7 @@ public class EntryCasReviewDetail extends BaseModel {
     private String excellentDesc;
 
     /**
-     * 回顾是否为优，取值：是，否
+     * 总结是否为优，取值：是，否
      */
     @TableField("isExcellent")
     private String isExcellent;

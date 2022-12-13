@@ -164,7 +164,7 @@ public class EntryExcellentStateDetail extends BaseModel {
     private Long casPlanId;
 
     /**
-     * 对应的履职回顾明细主键
+     * 对应的履职总结明细主键
      */
     @TableField("casReviewId")
     private Long casReviewId;
@@ -190,13 +190,13 @@ public class EntryExcellentStateDetail extends BaseModel {
     private Integer month;
 
     /**
-     * 经营管理部主管复核，取值：不合格，中，良，优，会修改对应的回顾的评价内容
+     * 经营管理部主管复核，取值：不合格，中，良，优，会修改对应的总结的评价内容
      */
     @TableField("ministerReview")
     private String ministerReview;
 
     /**
-     * 绩效科复核，取值：不合格，中，良，优，结果为优时，转经营管理部主管复核，其他结果状态完结，会修改对应的回顾的评价内容
+     * 绩效科复核，取值：不合格，中，良，优，结果为优时，转经营管理部主管复核，其他结果状态完结，会修改对应的总结的评价内容
      */
     @TableField("classReview")
     private String classReview;
@@ -267,6 +267,12 @@ public class EntryExcellentStateDetail extends BaseModel {
      */
     @TableField("eventsRoleId")
     private Long eventsRoleId;
+
+    /**
+     * 对应工作计划内容
+     */
+    @TableField("planningWork")
+    private String planningWork;
 
 
 }

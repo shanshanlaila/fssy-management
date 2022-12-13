@@ -208,13 +208,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 cell.setCellValue("职员名称不能为空");
                 continue;
             }
-            // 只能导入当前登录用户的数据
-            User userByLogin = GetTool.getUser();
-            if (!userName.equals(userByLogin.getName())) {
-                StringTool.setMsg(sb, String.format("第【%s】行职员名称不能为其他人的", j + 1));
-                cell.setCellValue("职员名称不能为其他人的");
-                throw new ServiceException("只能导入本人的数据，导入失败");
-            }
             BigDecimal proportion;
             try {
                 proportion = new BigDecimal(temp.get(SheetService.columnToIndex("G")));
@@ -241,68 +234,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 cell.setCellValue("事件标准价值不能为空");
                 continue;
             }
-            // 计算事件标准价值分
-            standardValue = (standardValue.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
-
-            /*BigDecimal delow;
-            try {
-                delow = new BigDecimal(temp.get(SheetService.columnToIndex("K")));
-            } catch (Exception e) {
-                StringTool.setMsg(sb, String.format("第【%s】行不合格价值格式不正确，必须为【数值】", j + 1));
-                cell.setCellValue("不合格价值格式不正确，必须为【数值】");
-                continue;
-            }
-            if (ObjectUtils.isEmpty(delow)) {
-                StringTool.setMsg(sb, String.format("第【%s】行事件标准价值不能为空", j + 1));
-                cell.setCellValue("事件标准价值不能为空");
-                continue;
-            }
-            delow = (delow.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
-
-            BigDecimal middle;
-            try {
-                middle = new BigDecimal(temp.get(SheetService.columnToIndex("L")));
-            } catch (Exception e) {
-                StringTool.setMsg(sb, String.format("第【%s】行中价值格式不正确，必须为【数值】", j + 1));
-                cell.setCellValue("中价值格式不正确，必须为【数值】");
-                continue;
-            }
-            if (ObjectUtils.isEmpty(middle)) {
-                StringTool.setMsg(sb, String.format("第【%s】行中价值不能为空", j + 1));
-                cell.setCellValue("中价值不能为空");
-                continue;
-            }
-            middle = (middle.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
-
-            BigDecimal fine;
-            try {
-                fine = new BigDecimal(temp.get(SheetService.columnToIndex("M")));// 事件标准价值
-            } catch (Exception e) {
-                StringTool.setMsg(sb, String.format("第【%s】行良价值格式不正确，必须为【数值】", j + 1));
-                cell.setCellValue("良价值格式不正确，必须为【数值】");
-                continue;
-            }
-            if (ObjectUtils.isEmpty(fine)) {
-                StringTool.setMsg(sb, String.format("第【%s】行良价值不能为空", j + 1));
-                cell.setCellValue("良价值不能为空");
-                continue;
-            }
-            fine = (fine.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);
-
-            BigDecimal excellent;
-            try {
-                excellent = new BigDecimal(temp.get(SheetService.columnToIndex("N")));// 事件标准价值
-            } catch (Exception e) {
-                StringTool.setMsg(sb, String.format("第【%s】行优价值格式不正确，必须为【数值】", j + 1));
-                cell.setCellValue("优价值格式不正确，必须为【数值】");
-                continue;
-            }
-            if (ObjectUtils.isEmpty(excellent)) {
-                StringTool.setMsg(sb, String.format("第【%s】行优价值不能为空", j + 1));
-                cell.setCellValue("优价值不能为空");
-                continue;
-            }
-            excellent = (excellent.multiply(proportion)).setScale(2, RoundingMode.HALF_UP);*/
 
             String activeDateStr = temp.get(SheetService.columnToIndex("K"));
             LocalDate activeDate;
@@ -428,9 +359,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventsRelationRole.setCreatedAt(LocalDateTime.now());
             eventsRelationRole.setUpdatedAt(LocalDateTime.now());
             // endregion
-
-            // 写入更新
-            //eventsRelationRoleService.save(eventsRelationRole);
             // 存入集合，用于读取循环数据完毕后批量写入数据库
             relationRoleList.add(eventsRelationRole);
             updatedEventsIds.add(eventList.getId());

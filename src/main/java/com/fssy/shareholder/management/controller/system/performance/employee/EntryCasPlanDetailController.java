@@ -283,9 +283,9 @@ public class EntryCasPlanDetailController {
      * @param response 响应
      */
     @GetMapping("downloadForCharge")
-    @RequiredLog("导出履职计划填报月底回顾")
+    @RequiredLog("导出履职计划填报月底总结")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
-        // 导出履职计划填报月底回顾
+        // 导出履职计划填报月底总结
         Map<String, Object> params = getParams(request);
         params.put("select",
                 "id,eventsRoleId," +
@@ -330,7 +330,7 @@ public class EntryCasPlanDetailController {
         if (ObjectUtils.isEmpty(eventLists)) {
             throw new ServiceException("未查出数据");
         }
-        sheetOutputService.exportNum("导出履职计划填报月底回顾", eventLists, fieldMap, response, strList, null);
+        sheetOutputService.exportNum("导出履职计划填报月底总结", eventLists, fieldMap, response, strList, null);
     }
 
     /**
@@ -485,7 +485,7 @@ public class EntryCasPlanDetailController {
     }
 
     /**
-     * 展示新增单条履职回顾页面
+     * 展示新增单条履职总结页面
      *
      * @param id 履职明细id
      * @return 修改页面

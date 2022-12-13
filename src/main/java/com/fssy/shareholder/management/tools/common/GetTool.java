@@ -114,7 +114,7 @@ public class GetTool {
     /**
      * 计算分数
      *
-     * @param entryCasReviewDetail 回顾
+     * @param entryCasReviewDetail 总结
      * @param EvaluationGrade      评价等级
      * @return 分数
      */
@@ -167,7 +167,7 @@ public class GetTool {
                 autoScore = eventsRelationRole.getExcellent();
                 break;
         }
-        // 以年份，月份，事件岗位关系序号查询有多少条回顾，以回顾数除以分数，就是最终分数
+        // 以年份，月份，事件岗位关系序号查询有多少条总结，以总结数除以分数，就是最终分数
         LambdaQueryWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaQueryWrapper = new LambdaQueryWrapper<>();
         entryCasReviewDetailLambdaQueryWrapper
                 .eq(EntryCasReviewDetail::getEventsRoleId, eventsRelationRole.getId());

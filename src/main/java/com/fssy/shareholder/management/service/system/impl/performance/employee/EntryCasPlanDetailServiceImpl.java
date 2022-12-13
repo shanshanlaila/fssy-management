@@ -261,10 +261,11 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 根据条件查询或生成bs_performance_employee_entry_cas_merge表数据
             LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
             entryCasMergeLambdaQueryWrapper
-                    .eq(EntryCasMerge::getDepartmentName, departmentName)
-                    .eq(EntryCasMerge::getYear, LocalDate.now().getYear());
+                    .eq(EntryCasMerge::getDepartmentId, departments.get(0).getId())
+                    .eq(EntryCasMerge::getYear, LocalDate.now().getYear())
+                    .eq(EntryCasMerge::getMonth,LocalDate.now().getMonthValue());
 
-            String key = departmentName + ":" + LocalDate.now().getYear();
+            String key = departments.get(0).getId() + ":" + LocalDate.now().getYear()+":"+LocalDate.now().getMonthValue();
             EntryCasMerge entryCasMerge;
             if (mergeMap.containsKey(key)) // 缓存存在则获取
             {
@@ -646,10 +647,11 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         // 根据条件查询或生成bs_performance_employee_entry_cas_merge表数据
         LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
         entryCasMergeLambdaQueryWrapper
-                .eq(EntryCasMerge::getDepartmentId, viewDepartmentRoleUser.getTheDepartmentId())
-                .eq(EntryCasMerge::getYear, LocalDate.now().getYear());
+                .eq(EntryCasMerge::getDepartmentId, viewDepartmentRoleUser.getDepartmentId())
+                .eq(EntryCasMerge::getYear, LocalDate.now().getYear())
+                .eq(EntryCasMerge::getMonth,LocalDate.now().getMonthValue())
+        ;
 
-        String key = viewDepartmentRoleUser.getTheDepartmentId() + ":" + LocalDate.now().getYear();
         EntryCasMerge entryCasMerge;
         List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
         // 只查到一条数据

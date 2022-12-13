@@ -115,7 +115,7 @@ public class EventListServiceImpl implements EventListService {
             queryWrapper.eq("year", params.get("year"));
         }
         if (params.containsKey("eventsFirstType")) {
-            queryWrapper.like("eventsFirstType", params.get("eventsFirstType"));
+            queryWrapper.eq("eventsFirstType", params.get("eventsFirstType"));
         }
         if (params.containsKey("level")) {
             queryWrapper.like("level", params.get("level"));
