@@ -134,7 +134,7 @@ public class ManagerKpiCoefficientController {
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         Map<String,Object> params = getParams(request);
         //Sql语句
-        params.put("select","companyName,year,id,managerName,position,generalManager,difficultCoefficient,incentiveCoefficient");
+        params.put("select","companyName,year,id,managerName,position,generalManager");
         //查询
         List<Map<String,Object>> managerKpiCoefficientMapDataByParams = managerKpiCoefficientService.findManagerKpiCoefficientMapDataByParams(params);
         LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();
@@ -144,8 +144,8 @@ public class ManagerKpiCoefficientController {
         fieldMap.put("managerName", "经理人姓名");
         fieldMap.put("position", "职务");
         fieldMap.put("generalManager", "是否总经理");
-        fieldMap.put("difficultCoefficient", "绩效难度系数");
-        fieldMap.put("incentiveCoefficient", "绩效考核系数");
+        fieldMap.put("绩效难度系数", "绩效难度系数");
+        fieldMap.put("绩效考核系数", "绩效考核系数");
         //标识字符串的列
         List<Integer> strList = Arrays.asList(0,1,2,3,4,5);
         SheetOutputService sheetOutputService = new ManagerKpiCoefficientSheetOutputService();

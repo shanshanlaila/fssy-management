@@ -319,7 +319,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             }
             //导入结果写入列
             //错误信息提示存入到AD单元格内
-            Cell cell = row.createCell(SheetService.columnToIndex("U"));
+            Cell cell = row.createCell(SheetService.columnToIndex("X"));
             String projectDesc = cells.get(SheetService.columnToIndex("C"));
             String monthTarget = cells.get(SheetService.columnToIndex("R"));
             String monthActualValue = cells.get(SheetService.columnToIndex("S"));
@@ -663,18 +663,20 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany,benchmarkValue," +
                 "monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget,reachTarget," +
                 "dataSource,challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual," +
-                "kpiDefinition,kpiDecomposeMode,analyzeRes");
+                "kpiDefinition,kpiDecomposeMode");
         do {
             selectStr1.append(", sum(if(MONTH =" + MONTH + ",monthTarget,null)) AS 'monthTarget" + MONTH + "'"
                     + ", sum(if(MONTH =" + MONTH + ",monthActualValue,null)) AS 'monthActual" + MONTH + "'");
             MONTH--;
         } while (MONTH>0);
-        selectStr1.append(", sum(if(MONTH =" + month + ",accumulateActual,null)) AS 'monthATarget' , sum(if(MONTH =" + month + ",accumulateTarget,null)) AS 'monthAActual'");
+        selectStr1.append(", sum(if(MONTH =" + month + ",accumulateActual,null)) AS 'monthATarget' , " +
+                "sum(if(MONTH =" + month + ",accumulateTarget,null)) AS 'monthAActual'" +
+                ", sum(if(MONTH =" + month + ",analyzeRes,null)) AS 'analyzeRes' ");
         queryWrapper.select(selectStr1.toString()).eq("year",year)
                 .groupBy("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany," +
                         "benchmarkValue,monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget," +
                         "reachTarget,dataSource,challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual," +
-                        "pastThreeYearsActual,kpiDefinition,kpiDecomposeMode,analyzeRes");
+                        "pastThreeYearsActual,kpiDefinition,kpiDecomposeMode");
 
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
