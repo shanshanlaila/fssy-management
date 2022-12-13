@@ -149,7 +149,6 @@
             limits: [50, 100, 200, 500],
             where: {
                 // 向controller传入额外参数
-                eventsFirstType: '非事务类',
                 status: '待部长审核',
                 // 按人名分组
                 groupByUserName: true
@@ -189,7 +188,7 @@
             id: 'dataTableRight',
             page: true,
             totalRow: true,
-            url: "/system/entry-cas-review-detail/getObjects?isEmpty=true",
+            url: "/system/entry-cas-review-detail/getObjects?isEmpty=true",// isEmpty=true 使得数据表格初始化加载为空
             size: 'sm',
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
             limit: 50,

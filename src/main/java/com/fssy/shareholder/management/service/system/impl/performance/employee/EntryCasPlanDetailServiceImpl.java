@@ -206,6 +206,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             // 查询视图
             ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(userName);
+            // 新增工作流不用设置set eventsRoleId
             if (!ObjectUtils.isEmpty(eventsRoleId)) {
                 entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
             }

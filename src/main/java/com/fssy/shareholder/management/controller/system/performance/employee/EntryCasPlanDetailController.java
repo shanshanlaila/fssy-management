@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
@@ -83,6 +84,8 @@ public class EntryCasPlanDetailController {
         model.addAttribute("userList", userList);
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", viewDepartmentRoleUser.getDepartmentName());
+        User user = GetTool.getUser();
+        model.addAttribute("userName",user.getName());
         return "system/performance/employee/performance-entry-cas-plan-detail-list";
     }
 

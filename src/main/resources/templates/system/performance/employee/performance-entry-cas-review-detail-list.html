@@ -83,7 +83,7 @@
                         <div class="layui-inline layui-show-xs-block">
                             <button shiro:haspermission="system:performance:entryCasReviewDetail:import"
                                     class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
-                                导入履职回顾
+                                导入履职总结
                             </button>
                         </div>
                     </div>
@@ -137,7 +137,7 @@
         form.on('submit(import)', function (data) {
             var createLayer = layer.open({
                 type: 2,
-                title: "导入履职回顾",
+                title: "导入履职总结",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
                 content: '/system/entry-cas-review-detail/attachment/import',
                 scrollbar: true,
