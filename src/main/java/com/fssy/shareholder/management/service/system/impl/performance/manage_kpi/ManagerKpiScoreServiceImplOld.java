@@ -219,7 +219,6 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
                     .set("anomalyType", anomalyType)
                     .eq("managerName", managerName).eq("year", year)
                     .eq("month", month).eq("companyName", companyName);
-            managerKpiScoreOldUpdateWrapper.set("anomalyMark", 1).ne("anomalyType", "");
             managerKpiScoreMapper.update(null, managerKpiScoreOldUpdateWrapper);
             cell.setCellValue("导入成功");
 

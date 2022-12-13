@@ -185,10 +185,10 @@
                     {
                         field: 'scoreAdjust', title: '人工调整分数', width: 120,align: 'center',sort: true,
                         templet: function (d) {
-                            if (d.anomalyMark === "1") {
-                                return "<span class=\"layui-badge\">"+d.scoreAdjust+"</span>";
-                            } else if (d.anomalyMark === "") {
+                            if (d.anomalyType === "" || d.anomalyType === null) {
                                 return d.scoreAdjust;
+                            } else if (d.anomalyType != "") {
+                                return "<span class=\"layui-badge\">"+d.scoreAdjust+"</span>";
                             } else {
                                 return "无对应状态";
                             }
