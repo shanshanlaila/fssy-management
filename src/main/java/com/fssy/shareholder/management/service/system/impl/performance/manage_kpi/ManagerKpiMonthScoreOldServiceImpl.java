@@ -55,7 +55,7 @@ public class ManagerKpiMonthScoreOldServiceImpl extends ServiceImpl<ManagerKpiSc
         StringBuilder selectStr = new StringBuilder("companyName,managerName,position,year");
         do{
             selectStr.append(", sum(if(MONTH =" +  month + ",scoreAdjust,null)) AS 'month" + month + "'");
-            selectStr.append(", sum(if(MONTH =" +  month + ",anomalyMark,null)) AS 'abnormal" + month + "'");
+            selectStr.append(", sum(if(MONTH =" +  month + ",IF(anomalyType!=\"\",1,0),null)) AS 'abnormal" + month + "'");
             month++;
         }while (month <= 12);
         queryWrapper.select(selectStr.toString()).groupBy("companyName,managerName,position,year");
