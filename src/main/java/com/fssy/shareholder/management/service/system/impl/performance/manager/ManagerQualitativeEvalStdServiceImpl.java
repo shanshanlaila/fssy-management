@@ -176,6 +176,7 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         if (gm!=1){
             return false;
         }
+        managerQualitativeEvalStd.setStatus("生效");
         int result = managerQualitativeEvalStdMapper.insert(managerQualitativeEvalStd);
         if (result > 0) {
             return true;
