@@ -73,7 +73,9 @@
                     </script>
                     <!--行工具栏-->
                     <script type="text/html" id="tool">
+                        {{# if(d.status != '完结') {}}
                         <a lay-event="createAndUpload" title="上传评分说明材料"><i class="layui-icon">&#xe62f;</i></a>
+                        {{# } }}
                     </script>
                 </div>
             </div>
@@ -136,7 +138,7 @@
                     {
                         field: 'roleName',
                         title: '岗位名称',
-                        width: 60
+                        width: 70
                     },
                     {
                         field: 'userName',
@@ -202,7 +204,7 @@
                     {
                         field: 'status',
                         title: '履职计划状态',
-                        width: 120
+                        width: 100
                     },
                     {
                         field: 'createDate',

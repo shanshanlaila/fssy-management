@@ -229,6 +229,9 @@ public class EventsEventsRelationRoleServiceImpl
             List<String> asList = Arrays.asList(yearAndMonth.split("-"));
             queryWrapper.eq("year", asList.get(0)).eq("month", asList.get(1));
         }
+        if (params.containsKey("eventsFirstType")) {
+            queryWrapper.eq("eventsFirstType", params.get("eventsFirstType"));
+        }
         return queryWrapper;
     }
 }

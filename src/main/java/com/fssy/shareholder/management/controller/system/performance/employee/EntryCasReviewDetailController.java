@@ -541,11 +541,18 @@ public class EntryCasReviewDetailController {
     @GetMapping("matchReview")
     public String matchReview(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
+        // 部门下拉框数据
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        // 岗位下拉框数据
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
+        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        // 用户下拉框数据
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams,selectedUserIds);
+        model.addAttribute("userList", userList);
         return "system/performance/employee/event-relation-role-choose-list";
     }
 
