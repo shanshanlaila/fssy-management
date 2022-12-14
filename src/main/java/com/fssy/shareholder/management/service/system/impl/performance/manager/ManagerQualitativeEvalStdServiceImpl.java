@@ -163,7 +163,7 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         Double democraticEvalScoreR = managerQualitativeEvalStd.getDemocraticEvalScoreR();
         Double superiorEvalScoreR = managerQualitativeEvalStd.getSuperiorEvalScoreR();
         double vgm = skillScoreR + democraticEvalScoreR + superiorEvalScoreR;
-        if (vgm!=100){
+        if (vgm!=1){
             return false;
         }
         Double auditEvalScoreR = managerQualitativeEvalStd.getAuditEvalScoreR();
@@ -173,7 +173,7 @@ public class ManagerQualitativeEvalStdServiceImpl extends ServiceImpl<ManagerQua
         Double investScoreR = managerQualitativeEvalStd.getInvestScoreR();
         Double workReportScoreR = managerQualitativeEvalStd.getWorkReportScoreR();
         double gm = auditEvalScoreR + financialAuditScoreR + operationScoreR + leadershipScoreR + investScoreR + workReportScoreR;
-        if (gm!=100){
+        if (gm!=1){
             return false;
         }
         int result = managerQualitativeEvalStdMapper.insert(managerQualitativeEvalStd);
