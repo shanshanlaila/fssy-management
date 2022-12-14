@@ -8,6 +8,7 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerPerformanceEvalStd;
 import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.performance.manager.ManagerPerformanceEvalStdService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/system/performance/manager/manager-performance-eval-std")
+@RequiresPermissions("system:performance:manager:manager:performance:eval:std:index1")
 public class ManagerPerformanceEvalStdController {
 
     @Autowired
