@@ -266,21 +266,29 @@
             // 行数据
             var data = obj.data;
             var url = '';
+            let map = new Map(Object.entries(data))
+            console.log(map)
             //经理人KPI定量评价分数下转
             if (obj.event === 'detail') {
-                layer.open({
-                    type: 2,
-                    title: data.year + '年' + data.kpiScoreMonth + '月--' + data.managerName + '--的各项分数信息如下:',
-                    area: [
-                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
-                    ],
-                    //①获取需要查看的此条记录的指定数据
-                    content: '/system/performance/manager/manager-performance-eval/search-detail?kpiScoreMonth=' + data.kpiScoreMonth + '&year=' + data.year + '&month=' + data.kpiScoreMonth + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
-                    maxmin: true
-                });
+                if(map.get("kpiScore")==null){}
+                else{
+                    layer.open({
+                        type: 2,
+                        title: data.year + '年' + data.kpiScoreMonth + '月--' + data.managerName + '--的各项分数信息如下:',
+                        area: [
+                            $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                        ],
+                        //①获取需要查看的此条记录的指定数据
+                        content: '/system/performance/manager/manager-performance-eval/search-detail?kpiScoreMonth=' + data.kpiScoreMonth + '&year=' + data.year + '&month=' + data.kpiScoreMonth + '&companyName=' + data.companyName + '&managerName=' + data.managerName,
+                        maxmin: true
+                    });
+                }
+
             }
             //经理人定性评价分数下转
             else if (obj.event === 'qualitative') {
+                if(map.get("qualitativeScore")==null){}
+                else{
                 layer.open({
                     type: 2,
                     title: data.year + '年 ' + data.managerName + '的定性评价分数明细',
@@ -292,6 +300,7 @@
                         data.year + '&companyName=' + data.companyName + '&managerName=' + data.managerName + '&position=' + data.position,
                     maxmin: true
                 })
+                }
             }
             // 修改页面
             else if (obj.event === 'edit') {
