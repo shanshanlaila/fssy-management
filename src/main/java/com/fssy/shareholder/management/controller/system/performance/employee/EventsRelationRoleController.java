@@ -274,6 +274,10 @@ public class EventsRelationRoleController
 		if (!ObjectUtils.isEmpty(request.getParameter("yearAndMonth"))){
 			params.put("yearAndMonth",request.getParameter("yearAndMonth"));
 		}
+		// 事务类型
+		if (!ObjectUtils.isEmpty(request.getParameter("eventsFirstType"))){
+			params.put("eventsFirstType",request.getParameter("eventsFirstType"));
+		}
 		return params;
 	}
 
