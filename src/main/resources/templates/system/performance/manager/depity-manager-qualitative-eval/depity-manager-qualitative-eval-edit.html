@@ -13,7 +13,7 @@
         <form class="layui-form" style="margin-top: 10px;" id="head">
             <table class="layui-table layui-form" lay-size="sm">
                 <tr>
-                    <td colspan="4" style="background: #f7f7f7; color: black;">修改分管经理定性评价信息</td>
+                    <td colspan="4" style="background: #f7f7f7; color: black;text-align: center">修改分管经理定性评价信息</td>
                 </tr>
                 <input type="hidden" th:value="${managerQualitativeEval['id']}" name="id">
                 <!--第一行-->
@@ -70,6 +70,39 @@
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="textarea" placeholder="请输入修改[原因\时间\操作人]" class="layui-input" name="adjustCause" id="adjustCause"
                                    lay-verify="required" th:value="${managerQualitativeEval['adjustCause']}"/>
+                        </div>
+                    </td>
+                </tr>
+                <!--第四行-->
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;年度重点工作事件:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" placeholder="请输入年度重点工作事件" class="layui-input" name="yearImportantEvents" id="yearImportantEvents"
+                                   lay-verify="required" th:value="${managerQualitativeEval['yearImportantEvents']}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="background: #f7f7f7; color: black;text-align: center">项目跟踪情况</td>
+                </tr>
+                <!--第五行-->
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;半年度:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="eventsTrackSemiannual" id="eventsTrackSemiannual"
+                                   lay-verify="required" th:value="${managerQualitativeEval['eventsTrackSemiannual']}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;年度:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="textarea" class="layui-input" name="eventsTrackAnnual" id="eventsTrackAnnual"
+                                   lay-verify="required" th:value="${managerQualitativeEval['eventsTrackAnnual']}"/>
                         </div>
                     </td>
                 </tr>

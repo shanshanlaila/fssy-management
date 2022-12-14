@@ -112,19 +112,19 @@ public class ManagerQualitativeEval extends BaseModel {
      * 年度重点工作事件(非总经理)
      */
     @TableField("yearImportantEvents")
-    private Double yearImportantEvents;
+    private String yearImportantEvents;
 
     /**
      * 年度跟踪结果(非总经理)
      */
     @TableField("eventsTrackAnnual")
-    private Double eventsTrackAnnual;
+    private String eventsTrackAnnual;
 
     /**
      * 半年度跟踪结果(非总经理)
      */
     @TableField("eventsTrackSemiannual")
-    private Double eventsTrackSemiannual;
+    private String eventsTrackSemiannual;
 
     /**
      * 审计评分(总经理)
