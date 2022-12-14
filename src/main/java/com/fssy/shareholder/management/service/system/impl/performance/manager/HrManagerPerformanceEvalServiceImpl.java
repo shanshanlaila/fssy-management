@@ -9,6 +9,7 @@ import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.Manage
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScore;
 import com.fssy.shareholder.management.pojo.system.performance.manager.*;
 import com.fssy.shareholder.management.mapper.system.performance.manager.HrManagerPerformanceEvalMapper;
+import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.manager.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -120,8 +121,12 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
             }
             //定性评价分数表查询
             QueryWrapper<ManagerQualitativeEval> performanceEvalQueryWrapper = new QueryWrapper<>();
-            performanceEvalQueryWrapper.eq("year", year).eq("managerName", userName).eq("position", positionName);
+            performanceEvalQueryWrapper.eq("year", year).eq("managerName", userName).eq("position", positionName).eq("status","已计算");
             List<ManagerQualitativeEval> performanceEvalList = managerQualitativeEvalMapper.selectList(performanceEvalQueryWrapper);
+            if (performanceEvalList.size()==0){
+                temp.put("qualitativeEvalId", null);
+                temp.put("qualitativeScore",null);
+            }
             for (ManagerQualitativeEval managerQualitativeEval : performanceEvalList) {
                 //定性评价经理人分数表获取数据
                 Integer qualitativeEvalId = managerQualitativeEval.getId();
@@ -156,9 +161,12 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
             }
             //判断是否生成分数
             QueryWrapper<HrManagerPerformanceEval> hrManagerPerformanceEvalQueryWrapper = new QueryWrapper<>();
-            hrManagerPerformanceEvalQueryWrapper.eq("kpiScoreId", kpiScoreId).eq("evalStdId", evalStdId)
-                    .eq("qualitativeEvalId", qualitativeEvalId).eq("userPositionId", userPositionId);
+            hrManagerPerformanceEvalQueryWrapper.eq("evalStdId", evalStdId).eq("userPositionId", userPositionId)
+                    .eq("year", year).eq("kpiScoreMonth", month);
             List<HrManagerPerformanceEval> hrManagerPerformanceEvalList = hrManagerPerformanceEvalMapper.selectList(hrManagerPerformanceEvalQueryWrapper);
+            if (hrManagerPerformanceEvalList.size()>1) {
+                throw new ServiceException("该条件下的分数存在多条，生成分数失败，请检查数据！");
+            }
             if (hrManagerPerformanceEvalList.size() == 1) {
                 hrManagerPerformanceEval.setId(hrManagerPerformanceEvalList.get(0).getId());
             }
