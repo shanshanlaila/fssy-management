@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>重点产线产能</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div th:replace="~{common/jquery :: jquery}"></div>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">非权益投资</a> <a href="">重点产线产能</a>
+		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+                   onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+                                                              style="line-height: 30px"></i>
+</a>
+</div>
+<!-- 引入xadmin -->
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body">
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="companyName" placeholder="按企业名称查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="productLineName" placeholder="按产线名称查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="year" id="year" placeholder="按年份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="quarter" id="quarter" placeholder="按季度查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button shiro:haspermission="system:operate:invest:view-product-line-capacity:index"
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
+                                    title="导入重点产线产能季度数据">导入重点产线产能季度数据
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body ">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="tool">
+                        <a lay-event="edit" title="填写存在问题及对策"><i class="layui-icon">&#xe642;</i></a>
+                        <a lay-event="delete" title="删除此条信息"><i class="layui-icon">&#xe640;</i></a>
+                    </script>
+                    <script type="text/html" id="toolbar">
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use([
+        'table', 'form', 'layer', 'laydate'
+    ], function () {
+        var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+        //--------------↓用来实现动态历年数据表头↓--------------
+        //1.定义一个空的数据源数组
+        var cols = [];
+        //2.将页面中不需要动态改变的项目拿出来存放在item中
+        var item1 = [
+            {
+                field: 'companyName',
+                title: '企业名称',
+                align: 'center',
+                width: 120,
+                rowspan: 2
+            },
+            {
+                field: 'year',
+                title: '年份',
+                align: 'center',
+                width: 100,
+                rowspan: 2
+            },
+            {
+                field: 'productTypeName',
+                title: '类别',
+                align: 'center',
+                width: 120,
+                rowspan: 2
+            },
+            {
+                field: 'productLineName',
+                title: '产线名称',
+                align: 'center',
+                width: 130,
+                rowspan: 2
+            },
+            {
+                field: 'yearVehicle',
+                title: '年生产车型',
+                align: 'center',
+                width: 180,
+                rowspan: 2
+            },
+            {
+                field: 'productLineTypeName',
+                title: '产线类型',
+                align: 'center',
+                width: 120,
+                rowspan: 2
+            },
+            {
+                title: '产线设计信息',
+                colspan: 4,
+                width: 510,
+                align: 'center'
+            },
+            {
+                title: '近三年产量',
+                colspan: 3,
+                width: 360,
+                align: 'center'
+            },
+            {
+                field: 'designActualTakt',
+                title: '实际节拍',
+                align: 'center',
+                width: 120,
+                sort: true,
+                rowspan: 2
+            },
+            {
+                field: 'designCapacityPerMonth',
+                title: '理论月产能（双班）',
+                align: 'center',
+                width: 140,
+                sort: true,
+                rowspan: 2
+            },
+            {
+                title: '负荷率',
+                colspan: 3,
+                width: 390,
+                align: 'center'
+            },
+            {
+                field: 'issueQuarter',
+                title: '季度存在问题',
+                align: 'center',
+                width: 130,
+                rowspan: 2
+            },
+            {
+                field: 'improveAction',
+                title: '对策',
+                align: 'center',
+                width: 120,
+                rowspan: 2
+            },
+            {
+                field: 'quarterMark', title: '季度产量趋势', width: 120,align: 'center',rowspan: 2,event:'quarterMark',
+                templet: function (d) {
+                    if (d.quarterMark == 1) {
+                        return "<span>"+"第一季度"+"</span>";
+                    } else if (d.quarterMark == 2) {
+                        return "<span>"+"第二季度"+"</span>";
+                    } else if (d.quarterMark == 3){
+                        return "<span>"+"第三季度"+"</span>";
+                    } else if (d.quarterMark == 4){
+                        return "<span>"+"第四季度"+"</span>";
+                    }
+                }
+            },
+            {
+                fixed: 'right',
+                title: '操作',
+                width: 100,
+                align: 'center',
+                toolbar: '#tool'
+            }
+        ];
+        var item2 = [
+            //产线设计信息
+            {
+                field: 'sopDate',
+                title: '量产时间',
+                align: 'center',
+                width: 150
+            },
+            {
+                field: 'designProductionTakt',
+                title: '理论节拍',
+                align: 'center',
+                sort: true,
+                width: 120
+            },
+            {
+                field: 'designCapacityPerYear',
+                title: '理论年产能',
+                align: 'center',
+                sort: true,
+                width: 120
+            },
+            {
+                field: 'marketShares',
+                title: '市场份额',
+                align: 'center',
+                sort: true,
+                width: 120
+            },
+        ];
+        //3.获取本年年份
+        var yearTemp = moment().format("YYYY");
+        //4.将历年三年的数据push
+        item2.push(
+            {
+                field: 'yeildYearAccumulate', title: Number(yearTemp) - 2 + "年", width: 80,align: 'center',sort: true,
+                templet: function (d) {
+                    if (d.year - 2 === (Number(yearTemp) - 2)) {
+                        return d.yeildYearAccumulate;
+                    } else {
+                        return "";
+                    }
+                }
+            }
+        );
+        item2.push(
+            {
+                field: 'yeildYearAccumulate', title: Number(yearTemp) - 1 + "年", width: 80,align: 'center',sort: true,
+                templet: function (d) {
+                    if (d.year - 1 === (Number(yearTemp) - 1)) {
+                        return d.yeildYearAccumulate;
+                    } else {
+                        return "";
+                    }
+                }
+            }
+        );
+        item2.push(
+            {
+                field: 'yeildYearAccumulate', title: Number(yearTemp) + "年", width: 80,align: 'center',sort: true,
+                templet: function (d) {
+                    if (d.year === Number(yearTemp)) {
+                        return d.yeildYearAccumulate;
+                    } else {
+                        return "";
+                    }
+                }
+            }
+        );
+        item2.push(
+            {
+                field: 'yearAim',
+                title: '年度目标',
+                align: 'center',
+                sort: true,
+                width: 120
+            },
+        );
+        item2.push(
+            {
+                field: 'lineLoadRateQuarter',
+                title: '截至当前季度负荷率',
+                align: 'center',
+                sort: true,
+                width: 150
+            },
+        );
+        item2.push(
+            {
+                field: 'lineLoadRateQuarter', title: '评价', width: 80,align: 'center',
+                templet: function (d) {
+                    if (d.lineLoadRateQuarter >= 0.8 && d.lineLoadRateQuarter != null) {
+                        return "<span>"+"⚪"+"</span>";// class="layui-badge layui-bg-green"
+                    } else if (d.lineLoadRateQuarter < 0.8 && d.lineLoadRateQuarter >= 0.6) {
+                        return "<span>"+"▲"+"</span>";// class="layui-badge layui-bg-orange"
+                    } else if (d.lineLoadRateQuarter < 0.6 && d.lineLoadRateQuarter != null){
+                        return "<span class=\"layui-badge\">"+"×"+"</span>";
+                    } else {
+                        return "";
+                    }
+                }
+            }
+        );
+        //5.将此数据赋值给数据源
+        cols.push(item1);
+        cols.push(item2);
+        //--------------↑用来实现动态历年数据表头↑--------------
+        //--------------↓接着在搜索时动态加载页面↓--------------
+        // 监听搜索按钮
+        form.on('submit(search)', function (data) {
+            //6.搜索时重新加载数据源
+            var item1 = [
+                {
+                    field: 'companyName',
+                    title: '企业名称',
+                    align: 'center',
+                    width: 120,
+                    rowspan: 2
+                },
+                {
+                    field: 'year',
+                    title: '年份',
+                    align: 'center',
+                    width: 100,
+                    rowspan: 2
+                },
+                {
+                    field: 'productTypeName',
+                    title: '类别',
+                    align: 'center',
+                    width: 120,
+                    rowspan: 2
+                },
+                {
+                    field: 'productLineName',
+                    title: '产线名称',
+                    align: 'center',
+                    width: 130,
+                    rowspan: 2
+                },
+                {
+                    field: 'yearVehicle',
+                    title: '年生产车型',
+                    align: 'center',
+                    width: 180,
+                    rowspan: 2
+                },
+                {
+                    field: 'productLineTypeName',
+                    title: '产线类型',
+                    align: 'center',
+                    width: 120,
+                    rowspan: 2
+                },
+                {
+                    title: '产线设计信息',
+                    colspan: 4,
+                    width: 510,
+                    align: 'center'
+                },
+                {
+                    title: '近三年产量',
+                    colspan: 3,
+                    width: 360,
+                    align: 'center'
+                },
+                {
+                    field: 'designActualTakt',
+                    title: '实际节拍',
+                    align: 'center',
+                    width: 120,
+                    sort: true,
+                    rowspan: 2
+                },
+                {
+                    field: 'designCapacityPerMonth',
+                    title: '理论月产能（双班）',
+                    align: 'center',
+                    width: 140,
+                    sort: true,
+                    rowspan: 2
+                },
+                {
+                    title: '负荷率',
+                    colspan: 3,
+                    width: 390,
+                    align: 'center'
+                },
+                {
+                    field: 'issueQuarter',
+                    title: '季度存在问题',
+                    align: 'center',
+                    width: 130,
+                    rowspan: 2
+                },
+                {
+                    field: 'improveAction',
+                    title: '对策',
+                    align: 'center',
+                    width: 120,
+                    rowspan: 2
+                },
+                {
+                    field: 'quarterMark', title: '季度产量趋势', width: 120,align: 'center',rowspan: 2,event:'quarterMark',
+                    templet: function (d) {
+                        if (d.quarterMark == 1) {
+                            return "<span>"+"第一季度"+"</span>";
+                        } else if (d.quarterMark == 2) {
+                            return "<span>"+"第二季度"+"</span>";
+                        } else if (d.quarterMark == 3){
+                            return "<span>"+"第三季度"+"</span>";
+                        } else if (d.quarterMark == 4){
+                            return "<span>"+"第四季度"+"</span>";
+                        }
+                    }
+                },
+                {
+                    fixed: 'right',
+                    title: '操作',
+                    width: 100,
+                    align: 'center',
+                    toolbar: '#tool'
+                }
+            ];
+            var item2 = [
+                //产线设计信息
+                {
+                    field: 'sopDate',
+                    title: '量产时间',
+                    align: 'center',
+                    width: 150
+                },
+                {
+                    field: 'designProductionTakt',
+                    title: '理论节拍',
+                    align: 'center',
+                    sort: true,
+                    width: 120
+                },
+                {
+                    field: 'designCapacityPerYear',
+                    title: '理论年产能',
+                    align: 'center',
+                    sort: true,
+                    width: 120
+                },
+                {
+                    field: 'marketShares',
+                    title: '市场份额',
+                    align: 'center',
+                    sort: true,
+                    width: 120
+                },
+            ];
+            //7.获取输入的年份
+            yearTemp = Number(data.field.year);
+            //8.再次执行步骤4
+            item2.push(
+                {
+                    field: 'yeildYearAccumulate', title: Number(yearTemp) - 2 + "年", width: 80,align: 'center',sort: true,
+                    templet: function (d) {
+                        if (d.year - 2 === (Number(yearTemp) - 2)) {
+                            return d.yeildYearAccumulate;
+                        } else {
+                            return "";
+                        }
+                    }
+                }
+            );
+            item2.push(
+                {
+                    field: 'yeildYearAccumulate', title: Number(yearTemp) - 1 + "年", width: 80,align: 'center',sort: true,
+                    templet: function (d) {
+                        if (d.year - 1 === (Number(yearTemp) - 1)) {
+                            return d.yeildYearAccumulate;
+                        } else {
+                            return "";
+                        }
+                    }
+                }
+            );
+            item2.push(
+                {
+                    field: 'yeildYearAccumulate', title: Number(yearTemp) + "年", width: 80,align: 'center',sort: true,
+                    templet: function (d) {
+                        if (d.year === Number(yearTemp)) {
+                            return d.yeildYearAccumulate;
+                        } else {
+                            return "";
+                        }
+                    }
+                }
+            );
+            item2.push(
+                {
+                    field: 'yearAim',
+                    title: '年度目标',
+                    align: 'center',
+                    sort: true,
+                    width: 120
+                },
+            );
+            item2.push(
+                {
+                    field: 'lineLoadRateQuarter',
+                    title: '截至当前季度负荷率',
+                    align: 'center',
+                    sort: true,
+                    width: 150
+                },
+            );
+            item2.push(
+                {
+                    field: 'lineLoadRateQuarter', title: '评价', width: 80,align: 'center',
+                    templet: function (d) {
+                        if (d.lineLoadRateQuarter >= 0.8 && d.lineLoadRateQuarter != null) {
+                            return "<span>"+"⚪"+"</span>";// class="layui-badge layui-bg-green"
+                        } else if (d.lineLoadRateQuarter < 0.8 && d.lineLoadRateQuarter >= 0.6) {
+                            return "<span>"+"▲"+"</span>";// class="layui-badge layui-bg-orange"
+                        } else if (d.lineLoadRateQuarter < 0.6 && d.lineLoadRateQuarter != null){
+                            return "<span class=\"layui-badge\">"+"×"+"</span>";
+                        } else {
+                            return "";
+                        }
+                    }
+                }
+            );
+            //9.清空数据源
+            var cols = [];
+            //10.将搜索后的数据push
+            cols.push(item1);
+            cols.push(item2);
+            // 重新加载表格
+            table.reload('dataTable', {
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false
+        });
+        //监听导出按钮
+        form.on('submit(downloadForCharge)', function (data) {
+            var field = data.field;
+            field.url = "/system/operate/invest/view-product-line-capacity/downloadForCharge";
+            var url = createUrl(field);
+            layer.msg("正在导出重点产线产能数据，请稍候");
+            window.open(url, true);
+            return false;
+        });
+        // 导入按钮
+        form.on('submit(import)', function (data) {
+            var createLayer = layer.open({
+                type: 2,
+                title: "上传重点产线产能季度数据",
+                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                content: '/system/operate/invest/view-product-line-capacity/index',
+                scrollbar: true,
+                maxmin: true,
+            });
+            return false;
+        });
+        //layui数据表格合并行
+        function merge(res, columsName, columsIndex) {
+            var data = res.data;
+            var mergeIndex = 0;//定位需要添加合并属性的行数
+            var mark = 1; //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+            var columsName = [columsName];//需要合并的列名称
+            var columsIndex = [columsIndex];//需要合并的列索引值
+            for (var k = 0; k < columsName.length; k++) { //这里循环所有要合并的列
+                var trArr = $(".layui-table-body>.layui-table").find("tr");//所有行
+                for (var i = 1; i < res.data.length; i++) { //这里循环表格当前的数据
+                    var tdCurArr = trArr.eq(i).find("td").eq(columsIndex[k]);//获取当前行的当前列
+                    var tdPreArr = trArr.eq(mergeIndex).find("td").eq(columsIndex[k]);//获取相同列的第一列
+                    if (data[i][columsName[k]] === data[i - 1][columsName[k]]) { //后一行的值与前一行的值做比较，相同就需要合并
+
+                        mark += 1;
+                        tdPreArr.each(function () {//相同列的第一列增加rowspan属性
+                            $(this).attr("rowspan", mark);
+                        });
+                        tdCurArr.each(function () {//当前行隐藏
+                            $(this).css("display", "none");
+                        });
+                    } else {
+                        mergeIndex = i;
+                        mark = 1;//一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+                    }
+                }
+                mergeIndex = 0;
+                mark = 1;
+            }
+        }
+        // 实例表格
+        var dataTable = table.render({
+            elem: '#dataTable',
+            id: 'dataTable',
+            page: true,
+            totalRow: true,
+            url: "/system/operate/invest/view-product-line-capacity/getObjects",
+            size: 'sm',
+            height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            limit: 50,
+            limits: [50, 100, 200, 500],
+            toolbar: '#toolbar',
+            cols: cols,
+            where:{year:moment().format("YYYY"), quarter:moment().quarter()},
+            //进行单元格的合并
+            done : function(res, curr, count) {
+                merge(res, 'productTypeName', 2);
+                merge(res, 'productLineName', 3);
+                merge(res, 'quarterMark', 20);
+            }
+        });
+
+        // 监听行工具事件
+        table.on('tool(dataTable)', function (obj) {
+            // 填写存在问题及对策
+            var data = obj.data;//获取当前行数据
+            var url = '';
+            if (obj.event === 'quarterMark') {
+                let map = new Map(Object.entries(data))
+                //①获取需要查看的此条记录的指定数据
+                url = '/system/operate/invest/view-product-line-capacity/search-detail?quarterMark=' + data.quarterMark + '&year' + data.year;
+            }
+            // 打开生产计划查询页面
+            if (url) {
+                xadmin.open('截至第'+data.quarterMark+'季度--'+data.companyName+'--重点产线基础数据表如下：', url);
+            }
+            if (obj.event === 'edit') {
+                layer.open({
+                    type: 2,
+                    title: data.productTypeName + '--' + data.productLineName + '--产线的季度信息如下:',
+                    area: [
+                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                    ],
+                    content: '/system/operate/invest/view-product-line-capacity/edit?quarter=' + data.quarter + '&productTypeName=' + data.productTypeName + '&productLineName=' + data.productLineName + '&year=' + data.year + '&id=' + data.id,
+                    maxmin: true
+                });
+            } else if (obj.event === 'delete') { // 删除
+                layer.confirm('确认删除【' + data.productTypeName + '--' + data.productLineName + '】产线本季度信息吗？', function () {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '/system/operate/invest/view-product-line-capacity/' + data.id,
+                        success: function (result) {
+                            layer.msg(result.msg);
+                            if (result.status == 200) {
+                                table.reload('dataTable');
+                            }
+                        }
+                    })
+                });
+            }
+        })
+    });
+</script>
+</body>
+</html>
