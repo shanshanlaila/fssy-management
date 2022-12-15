@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>查看季度产量趋势</title>
+	<link rel="stylesheet" th:href="@{/css/common.css}" />
+	<script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+<body>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="layui-fluid">
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md12">
+			<h3 style="margin: 5px;text-align:center">季度产量趋势表</h3>
+			<div class="layui-card-body ">
+				<table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+			</div>
+			<script type="text/html" id="toolbar"></script>
+			<script th:inline="javascript">
+				layui.use([
+					'table', 'form', 'layer', 'laydate'
+				], function() {
+					var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+					//layui数据表格合并行
+					function merge(res, columsName, columsIndex) {
+						var data = res.data;
+						var mergeIndex = 0;//定位需要添加合并属性的行数
+						var mark = 1; //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+						var columsName = [columsName];//需要合并的列名称
+						var columsIndex = [columsIndex];//需要合并的列索引值
+						for (var k = 0; k < columsName.length; k++) { //这里循环所有要合并的列
+							var trArr = $(".layui-table-body>.layui-table").find("tr");//所有行
+							for (var i = 1; i < res.data.length; i++) { //这里循环表格当前的数据
+								var tdCurArr = trArr.eq(i).find("td").eq(columsIndex[k]);//获取当前行的当前列
+								var tdPreArr = trArr.eq(mergeIndex).find("td").eq(columsIndex[k]);//获取相同列的第一列
+								if (data[i][columsName[k]] === data[i - 1][columsName[k]]) { //后一行的值与前一行的值做比较，相同就需要合并
+
+									mark += 1;
+									tdPreArr.each(function () {//相同列的第一列增加rowspan属性
+										$(this).attr("rowspan", mark);
+									});
+									tdCurArr.each(function () {//当前行隐藏
+										$(this).css("display", "none");
+									});
+								} else {
+									mergeIndex = i;
+									mark = 1;//一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+								}
+							}
+							mergeIndex = 0;
+							mark = 1;
+						}
+					}
+				// 实例表格
+				table.render(
+				{
+					elem : '#dataTable',
+					id : 'dataTable',
+					//③在弹出页面将获取到的此条记录的值交给数据库去查
+					url : "/system/operate/invest/view-product-line-capacity/getQuarterMarkData?quarterMark=" + [[${quarterMark}]],
+					totalRow: true,
+					size: 'sm',
+					page:false,
+					cols:
+						[
+							[
+								{
+									field: 'productTypeName',
+									title: '类别',
+									align: 'center',
+									width: 120,
+									rowspan: 2
+								},
+								{
+									field: 'productLineName',
+									title: '产线名称',
+									align: 'center',
+									width: 130,
+									rowspan: 2
+								},
+								{
+									field: 'yearVehicle',
+									title: '年生产车型',
+									align: 'center',
+									width: 180,
+									rowspan: 2
+								},
+								{
+									title: '截至本季度各月产量',
+									colspan: 12,
+									width: 960,
+									align: 'center'
+								}
+							],
+							[
+								//各月产量
+								{
+									field: 'month1', title: '1月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month2', title: '2月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month3', title: '3月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month4', title: '4月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month5', title: '5月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month6', title: '6月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month7', title: '7月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month8', title: '8月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month9', title: '9月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month10', title: '10月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month11', title: '11月', width: 80,align: 'center',sort: true
+								},
+								{
+									field: 'month12', title: '12月', width: 80,align: 'center',sort: true
+								}
+							]
+						],
+					//进行单元格的合并
+					done : function(res, curr, count) {
+						merge(res, 'productTypeName', 0);
+					}
+					});
+				});
+			</script>
+		</div>
+	</div>
+</div>
+</body>
+</html>
