@@ -7,6 +7,7 @@ package com.fssy.shareholder.management.tools.common;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -160,4 +161,28 @@ public class DateTool {
         calendar.set(Calendar.DAY_OF_MONTH, 0); // 减一天
         return sdf.format(calendar.getTime());
     }
+    
+	/**
+	 * 将 Date 转为 LocalDateTime
+	 *
+	 * @param date
+	 * @return java.time.LocalDate;
+	 */
+	public static LocalDateTime dateToLocalDateTime(Date date)
+	{
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+	
+	/**
+	 * 转换字符串为日期(LocalDateTime)（格式为yyyy-MM-dd HH:mm:ss)
+	 *
+	 * @param dateString 日期字符串
+	 * @return
+	 */
+	public static LocalDateTime transferTimeToLocalDateTime(String timeString)
+	{
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime localDateTime = LocalDateTime.parse(timeString, dtf);
+		return localDateTime;
+	}
 }

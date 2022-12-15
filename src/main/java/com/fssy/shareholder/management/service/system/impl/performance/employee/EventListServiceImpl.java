@@ -79,7 +79,8 @@ public class EventListServiceImpl implements EventListService {
         return eventListMapper.selectPage(myPage, queryWrapper);
     }
 
-    private QueryWrapper<EventList> getQueryWrapper(Map<String, Object> params) {
+    @SuppressWarnings("unchecked")
+	private QueryWrapper<EventList> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EventList> queryWrapper = Wrappers.query();
         if (params.containsKey("select")) {
             queryWrapper.select(InstandTool.objectToString(params.get("select")));
@@ -129,6 +130,12 @@ public class EventListServiceImpl implements EventListService {
         if (params.containsKey("activeDate")) {
             queryWrapper.ge("activeDate", params.get("activeDate"));
         }
+		if (params.containsKey("departmentIds"))
+		{
+			String departmentIdsStr = InstandTool.objectToString(params.get("departmentIds"));
+			List<String> departmentIdList = Arrays.asList(departmentIdsStr.split(","));
+			queryWrapper.in("departmentId", departmentIdList);
+		}
         if (params.containsKey("performanceForm")) {
             queryWrapper.like("performanceForm", params.get("performanceForm"));
         }

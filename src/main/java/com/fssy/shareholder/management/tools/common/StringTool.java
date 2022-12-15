@@ -3,6 +3,9 @@
  */
 package com.fssy.shareholder.management.tools.common;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -61,5 +64,23 @@ public class StringTool
 			sb.append(";" + content);
 		}
 		return sb;
+	}
+
+	/**
+	 * 取消右边空白
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static String rightTrim(String str)
+	{
+		String regex = "(.*\\S+)(\\s+$)";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(str);
+		if (m.matches())
+		{
+			str = m.group(1);
+		}
+		return str;
 	}
 }

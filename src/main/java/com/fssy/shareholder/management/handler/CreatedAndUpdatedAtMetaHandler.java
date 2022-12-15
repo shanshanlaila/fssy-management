@@ -7,15 +7,17 @@
 
 package com.fssy.shareholder.management.handler;
 
-import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import com.fssy.shareholder.management.pojo.manage.user.User;
+import java.time.LocalDateTime;
+
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 
 /**
  * 重写mybatis-plus添加和修改数据时更新两个时间戳
@@ -26,7 +28,7 @@ import java.time.LocalDateTime;
 public class CreatedAndUpdatedAtMetaHandler implements MetaObjectHandler {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CreatedAndUpdatedAtMetaHandler.class);
+			.getLogger(CreatedAndUpdatedAtMetaHandler.class);
 
     @Override
     public void insertFill(MetaObject metaObject) {
@@ -57,14 +59,25 @@ public class CreatedAndUpdatedAtMetaHandler implements MetaObjectHandler {
 
     }
 
-    @Override
-    public void updateFill(MetaObject metaObject) {
-        LOGGER.info("start update fill ....");
-        this.setFieldValByName("updatedAt", LocalDateTime.now(), metaObject); // 起始版本3.3.3(推荐)
-        // 添加修改人id
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        this.setFieldValByName("updatedId", user.getId(), metaObject);
-        this.setFieldValByName("updatedName",user.getName(),metaObject);
-    }
+	@Override
+	public void updateFill(MetaObject metaObject)
+	{
+		LOGGER.info("start update fill ....");
+		this.setFieldValByName("updatedAt", LocalDateTime.now(), metaObject); // 起始版本3.3.3(推荐)
+		// 添加修改人id
+		User user;
+		if (ObjectUtils.isEmpty(SecurityUtils.getSubject())
+				|| ObjectUtils.isEmpty(SecurityUtils.getSubject().getPrincipal()))
+		{
+			this.setFieldValByName("updatedId", 0L, metaObject);
+			this.setFieldValByName("updatedName", "超级用户", metaObject);
+		}
+		else
+		{
+			user = (User) SecurityUtils.getSubject().getPrincipal();
+			this.setFieldValByName("updatedId", user.getId(), metaObject);
+			this.setFieldValByName("updatedName", user.getName(), metaObject);
+		}
+	}
 
 }

@@ -89,4 +89,10 @@ public interface CommonConstant
 
 	/** 组织结构分类：班/课室的细分 */
 	Integer DEPARTMENT_TYPE_CLASS = 3;
+    
+    /** 状态：启用 */
+    String COMMON_STATUS_STRING_ACTIVE = "启用";
+    
+    /** 状态：停用 */
+    String COMMON_STATUS_STRING_INACTIVE = "停用";
 }

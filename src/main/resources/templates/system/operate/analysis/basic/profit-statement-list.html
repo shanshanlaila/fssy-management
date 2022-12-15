@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>利润表管理</title>
+<script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+<script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+	<!-- 引入xadmin -->
+	<div th:replace="~{common/xadmin :: xadmin}"></div>
+	<!-- 引入zTree -->
+	<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">经营分析管理</a> <a href="">分析基础数据</a><a>
+				<cite>利润表管理</cite>
+		</a>
+		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+			onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+			style="line-height: 30px"></i></a>
+	</div>
+	<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+			<div class="layui-col-md12">
+				<div class="layui-card">
+					<form class="layui-form layui-col-space5">
+						<div class="layui-card-body">
+							<div class="layui-inline layui-show-xs-block">
+								<label class="layui-form-label"
+									style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">录入日期</label> <input
+									type="text" name="createDateStart" placeholder="录入日期起" id="createDateStart"
+									autocomplete="off" class="layui-input laydate search-laydate">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="createDateEnd" placeholder="录入日期止" id="createDateEnd"
+									autocomplete="off" class="layui-input laydate search-laydate">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<div id="companySelect"></div>
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="companyName" placeholder="公司名称查询" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="companyCodeEq" placeholder="编码查询" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="projectCodeEq" placeholder="项目代码查询" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="project" placeholder="项目名称查询" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="year" placeholder="年份查询" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="month" placeholder="月份查询" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="createName" placeholder="录入人查询" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
+								<button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
+									<i class="layui-icon">&#xe615;</i>
+								</button>
+								<button class="layui-btn layui-btn-sm" lay-submit lay-filter="receive-data">同步财务系统</button>
+							</div>
+						</div>
+					</form>
+					<div class="layui-card-body ">
+						<table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:inline="javascript">
+		layui.use([
+			'laydate', 'layer', 'table', 'form'
+		], function() {
+			var $ = layui.$, laydate = layui.laydate, table = layui.table, layer = layui.layer, form = layui.form;
+
+			// 实例表格
+			table.render({
+				elem : '#dataTable',
+				id : 'dataTable',
+				url : "/operate/analysis/profit-statement/getObjects",
+				page : true,
+				height : 'full-100' // 设置高度，使数据置于滚动条控制下
+				,
+				limit : 50,
+				limits : [
+					50, 100, 200, 500
+				],
+				where : {
+					idDesc : true
+				},
+				totalRow: true,
+				toolbar : '#toolbar',
+				size : 'sm',
+				cols : [
+					[
+						{
+							field : 'companyName',
+							title : '公司名称',
+							fixed : 'left',
+							width : 120
+						}, {
+							field : 'project',
+							title : '项目名称',
+							fixed : 'left',
+							width : 150
+						}, {
+							field : 'projectCode',
+							title : '项目代码',
+							width : 110
+						}, {
+							field : 'year',
+							title : '年份',
+							width : 80
+						}, {
+							field : 'month',
+							title : '月份',
+							width : 80
+						}, {
+							field : 'amount',
+							title : '金额',
+							style: 'background-color: pink;',
+							width : 110,
+							totalRow: true
+						}, {
+							field : 'cumulativeBalance',
+							title : '累积金额',
+							style: 'background-color: pink;',
+							width : 110,
+							totalRow: true
+						}, {
+							field : 'id',
+							title : '序号',
+							width : 90
+						}, {
+							field : 'companyCode',
+							title : '公司编码',
+							width : 110
+						}, {
+							field : 'createDate',
+							title : '录入日期',
+							width : 120
+						}, {
+							field : 'createName',
+							title : '录入人',
+							width : 120
+						}, {
+							field : 'createdName',
+							title : '创建人',
+							width : 100
+						}, {
+							field : 'note',
+							title : '备注',
+							width : 140
+						}, {
+							field : 'createdAt',
+							title : '创建时间',
+							width : 120
+						}
+					]
+				]
+			});
+			
+			// 每个标签加一个class，名为laydate
+			$(".laydate").each(function()
+			{
+				laydate.render(
+				{
+					elem : this,
+					//更换触发方式
+					trigger : 'click',
+					type : 'date'
+				});
+			});
+
+			// 监听搜索按钮
+			form.on('submit(search)', function(data) {
+				// 重新加载表格
+				table.reload('dataTable', {
+					where : data.field,
+					page : {
+						curr : 1
+					}
+				});
+				return false;
+			});
+
+			// 监听同步按钮
+			form.on('submit(receive-data)', function(data) {
+				// 重新加载表格
+				var elem = data.elem;
+      	data.field.url = '/operate/analysis/profit-statement/receive-data';
+      	var url = createUrl(data.field);
+      	
+      	layer.confirm('确认对接吗？', {
+					icon: 3,
+					title : '提示'
+				}, function (index, layero) {
+			    $(elem).addClass('layui-btn-disabled');//设置不可用状态类，避免重复提交
+			    $(elem).attr('disabled', 'disabled');//设置不可用状态样式，避免重复提交
+			    layer.load(); //loading
+			    
+          $.get(url, function(result) {
+          	if (result.status == 200) {
+							layer.msg(result.msg, {
+								icon : 6,
+								time : 2000
+							});
+							setTimeout(function() {
+								table.reload('dataTable');
+								$(elem).removeClass('layui-btn-disabled');//提交失败，修改回原来状态
+	     						$(elem).removeAttr('disabled');//提交失败，修改回原来状态
+								layer.closeAll('loading'); // 关闭loading
+							}, 2000);
+						}
+						else {
+							layer.open({
+								title: '操作失败',
+                content: result.msg,
+                yes: function (index) {
+                  layer.close(index);
+                  $(elem).removeClass('layui-btn-disabled');//提交失败，修改回原来状态
+ 	     						$(elem).removeAttr('disabled');//提交失败，修改回原来状态
+ 	     						layer.closeAll('loading'); // 关闭loading
+                },
+                cancel: function (index) {
+                  layer.close(index);
+                  $(elem).removeClass('layui-btn-disabled');//提交失败，修改回原来状态
+ 	     						$(elem).removeAttr('disabled');//提交失败，修改回原来状态
+ 	     						layer.closeAll('loading'); // 关闭loading
+                },
+							});
+						}
+          });  
+				});
+				return false;
+			});
+			
+			var companySelect = xmSelect.render({
+				el: '#companySelect',
+				language: 'zn',
+				data: [[${companyList}]],
+				filterable: true,
+				tips: '请选择经营公司',
+				toolbar: {
+					show: true
+				},
+				style: {
+					width: '155px',
+					'min-height': '28px',
+					'line-height': '28px',
+				},
+				layVerify: '',
+				layVerType: '经营公司不能为空',
+				name: 'companyIds'
+			});
+		});
+	</script>
+</body>
+</html>
