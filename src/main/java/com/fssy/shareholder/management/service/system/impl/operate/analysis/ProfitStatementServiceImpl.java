@@ -28,6 +28,7 @@ import com.fssy.shareholder.management.tools.common.DateTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.common.IteratorTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
+import com.fssy.shareholder.management.tools.exception.ServiceException;
 
 /**
  * <p>
@@ -204,6 +205,18 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 		transmitParams.put("report", "lyb");
 		if (params.containsKey("year"))
 		{
+			// 格式校验
+			Integer year = InstandTool
+					.stringToInteger(InstandTool.objectToString(params.get("year")));
+			if (0 >= year && year >= 9999)
+			{
+				throw new ServiceException(String.format("年份【%s】必须为4位数", year));
+			}
+			String pattern = ".";
+			if (year.toString().matches(pattern))
+			{
+				throw new ServiceException(String.format("年份【%s】必须为整数", year));
+			}
 			transmitParams.put("y", params.get("year"));
 		}
 		else
@@ -212,6 +225,18 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 		}
 		if (params.containsKey("month"))
 		{
+			// 格式校验
+			Integer month = InstandTool
+					.stringToInteger(InstandTool.objectToString(params.get("month")));
+			if (0 >= month && month > 12)
+			{
+				throw new ServiceException(String.format("月份【%s】必须为【1到12】的数", month));
+			}
+			String pattern = ".";
+			if (month.toString().matches(pattern))
+			{
+				throw new ServiceException(String.format("月份【%s】必须为整数", month));
+			}
 			transmitParams.put("m", params.get("month"));
 		}
 		// endregion
