@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manager.DepityManagerQualitativeEvalMapper;
+import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerQualitativeEvalMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manager.ManagerQualitativeEvalStdMapper;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
@@ -19,6 +22,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
@@ -42,6 +46,10 @@ public class DepityManagerQualitativeEvalServiceImpl extends ServiceImpl<DepityM
     private ManagerQualitativeEvalStdMapper managerQualitativeEvalStdMapper;
     @Autowired
     private DepityManagerQualitativeEvalMapper depityManagerQualitativeEvalMapper;
+    @Autowired
+    private ManagerQualitativeEvalMapper managerQualitativeEvalMapper;
+    @Autowired
+    private CompanyMapper companyMapper;
     @Autowired
     private SheetService sheetService;
 
@@ -87,6 +95,7 @@ public class DepityManagerQualitativeEvalServiceImpl extends ServiceImpl<DepityM
      * @return
      */
     @Override
+    @Transactional
     public Map<String, Object> readManagerQualitativeEvalDataSource(Attachment attachment,String year) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
@@ -139,7 +148,7 @@ public class DepityManagerQualitativeEvalServiceImpl extends ServiceImpl<DepityM
             }
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("R"));// 报错信息上传到excel R列（暂未实现）
-            String id = cells.get(SheetService.columnToIndex("A"));
+//            String id = cells.get(SheetService.columnToIndex("A"));
             String managerName = cells.get(SheetService.columnToIndex("B"));
             String companyName = cells.get(SheetService.columnToIndex("C"));
             String position = cells.get(SheetService.columnToIndex("D"));
@@ -147,12 +156,43 @@ public class DepityManagerQualitativeEvalServiceImpl extends ServiceImpl<DepityM
             String skillScore = cells.get(SheetService.columnToIndex("F"));
             String democraticEvalScore = cells.get(SheetService.columnToIndex("G"));
             String superiorEvalScore = cells.get(SheetService.columnToIndex("H"));
+            //添加公司id
+            QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+            companyQueryWrapper.eq("name",companyName);
+            List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+            if (companyList.size() > 1) {
+                setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
+                cell.setCellValue("存在多个公司名称，公司名称是否正确");
+                continue;
+            }
+            if (companyList.size() == 0) {
+                setFailedContent(result, String.format("第%s行的公司不存在", j + 1));
+                cell.setCellValue("公司名称不存在，公司名称是否正确");
+                continue;
+            }
+            //公司表中存在数据，获取这个公司名称的id
+            Company company = companyMapper.selectList(companyQueryWrapper).get(0);
+            Integer companyId = company.getId();
 
+            //对数据库中的数据进行验证，检查当年是否导入过定性评价分数，如果存在则更新，不存在则添加
+            QueryWrapper<ManagerQualitativeEval> managerQualitativeEvalQueryWrapper = new QueryWrapper<>();
+            managerQualitativeEvalQueryWrapper.eq("companyId",companyId).eq("year",year).
+                    eq("managerName",managerName).eq("position",position);
+            List<ManagerQualitativeEval> qualitativeEvals = managerQualitativeEvalMapper.selectList(managerQualitativeEvalQueryWrapper);
+            if (qualitativeEvals.size()>1){
+                setFailedContent(result, String.format("第%s行的分数存在多条", j + 1));
+                cell.setCellValue("存在多条数据，请检查数据！");
+                continue;
+            }
             //构建实体类  ManagerQualitativeEval
             ManagerQualitativeEval managerQualitativeEval = new ManagerQualitativeEval();
-//            managerQualitativeEval.setId(Integer.valueOf(id));
+            //设置id
+            if (qualitativeEvals.size()==1){
+                managerQualitativeEval.setId(qualitativeEvals.get(0).getId());
+            }
             managerQualitativeEval.setManagerName(managerName);
             managerQualitativeEval.setCompanyName(companyName);
+            managerQualitativeEval.setCompanyId(companyId);
             managerQualitativeEval.setPosition(position);
             managerQualitativeEval.setYear(Integer.valueOf(yearExcel));
             managerQualitativeEval.setSkillScore(Double.valueOf(skillScore));
@@ -160,7 +200,22 @@ public class DepityManagerQualitativeEvalServiceImpl extends ServiceImpl<DepityM
             managerQualitativeEval.setSuperiorEvalScore(Double.valueOf(superiorEvalScore));
             managerQualitativeEval.setStatus("待计算");
             managerQualitativeEval.setGeneralManager("否");
-
+            //导入当年的定性评价占比明细
+            QueryWrapper<ManagerQualitativeEvalStd> stdQueryWrapper = new QueryWrapper<>();
+            //查询当年最新的占比
+            stdQueryWrapper.eq("year",year).orderByDesc("id").last("LIMIT 1");
+            List<ManagerQualitativeEvalStd> evalStdList = managerQualitativeEvalStdMapper.selectList(stdQueryWrapper);
+            if (evalStdList.size()==0){
+                setFailedContent(result, String.format("第%s行的年度占比没有", j + 1));
+                cell.setCellValue("当年占比未写入，请写入年度占比后尝试！");
+                continue;
+            }
+            Double skillScoreR = evalStdList.get(0).getSkillScoreR();
+            Double democraticEvalScoreR = evalStdList.get(0).getDemocraticEvalScoreR();
+            Double superiorEvalScoreR = evalStdList.get(0).getSuperiorEvalScoreR();
+            managerQualitativeEval.setSkillScoreR(skillScoreR);
+            managerQualitativeEval.setDemocraticEvalScoreR(democraticEvalScoreR);
+            managerQualitativeEval.setSuperiorEvalScoreR(superiorEvalScoreR);
             //根据id进行导入，存在则更新，不存在则新增，并且每次导入都会刷新分数，回归待计算状态
             saveOrUpdate(managerQualitativeEval);
             cell.setCellValue("导入成功");
