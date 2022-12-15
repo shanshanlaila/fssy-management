@@ -185,5 +185,58 @@ public class ManagerQualitativeEval extends BaseModel {
      */
     @TableField("evalStdId")
     private Integer evalStdId;
+    /**
+     * 技能评价占比(非总经理)
+     */
+    @TableField("skillScoreR")
+    private Double skillScoreR;
+
+    /**
+     * 民主评议占比(非总经理)
+     */
+    @TableField("democraticEvalScoreR")
+    private Double democraticEvalScoreR;
+
+    /**
+     * 上级评价占比(非总经理)
+     */
+    @TableField("superiorEvalScoreR")
+    private Double superiorEvalScoreR;
+
+    /**
+     * 审计评分占比(总经理)
+     */
+    @TableField("auditEvalScoreR")
+    private Double auditEvalScoreR;
+
+    /**
+     * 财务稽核占比(总经理)
+     */
+    @TableField("financialAuditScoreR")
+    private Double financialAuditScoreR;
+
+    /**
+     * 运营管理占比(总经理)
+     */
+    @TableField("operationScoreR")
+    private Double operationScoreR;
+
+    /**
+     * 组织领导力占比(总经理)
+     */
+    @TableField("leadershipScoreR")
+    private Double leadershipScoreR;
+
+    /**
+     * 投资评价占比(总经理)
+     */
+    @TableField("investScoreR")
+    private Double investScoreR;
+
+    /**
+     * 述职报告占比(总经理)
+     */
+    @TableField("workReportScoreR")
+    private Double workReportScoreR;
 
 }
