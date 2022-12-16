@@ -41,23 +41,24 @@
 								<button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
 									<i class="layui-icon">&#xe615;</i>
 								</button>
-								<button class="layui-btn layui-btn-sm" lay-submit lay-filter="receive-data">同步财务系统经营公司</button>
+								<button shiro:hasPermission="operate:analysis:manage:company:receive:data"
+									class="layui-btn layui-btn-sm" lay-submit lay-filter="receive-data">同步财务系统</button>
 							</div>
 						</div>
 					</form>
 					<div class="layui-card-body ">
 						<table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
 						<script type="text/html" id="tool">
-              <a lay-event="edit" title="修改经营公司"><i class="layui-icon">&#xe642;</i></a>
+              <a shiro:hasPermission="operate:analysis:manage:company:edit" lay-event="edit" title="修改经营公司"><i class="layui-icon">&#xe642;</i></a>
               {{# if(d.status == 1) { }}
-              <a lay-event="inactive" title="停用"><i class="layui-icon">&#x1007;</i></a>
+              <a shiro:hasPermission="operate:analysis:manage:company:active" lay-event="inactive" title="停用"><i class="layui-icon">&#x1007;</i></a>
               {{# } else { }}
-              <a lay-event="active" title="启用"><i class="layui-icon">&#x1005;</i></a>
+              <a shiro:hasPermission="operate:analysis:manage:company:active" lay-event="active" title="启用"><i class="layui-icon">&#x1005;</i></a>
               {{# } }}
             </script>
 						<script type="text/html" id="toolbar">
               <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" lay-event="create">创建经营公司</button>
+                <button shiro:hasPermission="operate:analysis:manage:company:create" class="layui-btn layui-btn-sm" lay-event="create">创建经营公司</button>
               </div>
             </script>
 					</div>

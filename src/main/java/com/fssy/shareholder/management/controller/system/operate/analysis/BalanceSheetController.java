@@ -56,7 +56,7 @@ public class BalanceSheetController
 	 *
 	 * @return 资产负债表数据管理页面
 	 */
-//	@RequiredLog("资产负债表管理")
+	@RequiredLog("资产负债表管理")
 	@GetMapping("index")
 	@RequiresPermissions("operate:analysis:balance:sheet:index")
 	public String index(Model model)
@@ -200,6 +200,7 @@ public class BalanceSheetController
 	 */
 	@RequiredLog("人工对接财务系统资产负债表")
 	@RequestMapping("receive-data")
+	@RequiresPermissions("operate:analysis:balance:sheet:receive:data")
 	@ResponseBody
 	public SysResult receiveData(HttpServletRequest request)
 	{

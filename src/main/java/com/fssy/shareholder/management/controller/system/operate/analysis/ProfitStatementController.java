@@ -56,7 +56,7 @@ public class ProfitStatementController
 	 *
 	 * @return 利润表数据管理页面
 	 */
-//	@RequiredLog("利润表管理")
+	@RequiredLog("利润表管理")
 	@GetMapping("index")
 	@RequiresPermissions("operate:analysis:profit:index")
 	public String index(Model model)
@@ -199,6 +199,7 @@ public class ProfitStatementController
 	 */
 	@RequiredLog("人工对接财务系统利润表")
 	@RequestMapping("receive-data")
+	@RequiresPermissions("operate:analysis:profit:receive:data")
 	@ResponseBody
 	public SysResult receiveData(HttpServletRequest request)
 	{

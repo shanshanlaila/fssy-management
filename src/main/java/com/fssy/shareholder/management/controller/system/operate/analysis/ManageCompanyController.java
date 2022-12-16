@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.service.system.operate.analysis.ManageCompanyService;
 
@@ -41,6 +43,8 @@ public class ManageCompanyController
 	 *
 	 * @return 经营公司管理页面
 	 */
+	@RequiredLog("经营公司管理")
+	@RequiresPermissions("operate:analysis:manage:company:index")
 	@GetMapping("index")
 	public String index(Model model)
 	{
@@ -128,6 +132,8 @@ public class ManageCompanyController
 	 * @param request 前端请求参数
 	 * @return Map集合
 	 */
+	@RequiredLog("人工对接财务系统经营公司")
+	@RequiresPermissions("operate:analysis:manage:company:receive:data")
 	@RequestMapping("receive-data")
 	@ResponseBody
 	public SysResult receiveData(HttpServletRequest request)
