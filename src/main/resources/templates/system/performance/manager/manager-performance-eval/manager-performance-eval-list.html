@@ -81,7 +81,6 @@
         form.on('submit(search)', function (data) {
             // 重新加载表格
             table.reload('dataTable', {
-                url: "/system/performance/manager/manager-performance-eval/getObject",
                 where: data.field,
                 page: {
                     curr: 1
@@ -106,22 +105,21 @@
             totalRow: true,
             size: 'sm',
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            url: "/system/performance/manager/manager-performance-eval/getObject",
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
+            //默认展示上一年最后一个月
+            where:{year:Number(moment().format("YYYY"))-1,kpiScoreMonth:12},//Number(moment().month())+1
             cols: [
                 [
                     {
-                        type: 'checkbox',
-                        fixed: 'left',
-                        width: 60
-                    },
-                    {
-                        field: 'id',
-                        title: '序号',
+                        field: 'index',
+                        title: '编号',
+                        type: 'numbers',
                         align: 'center',
-                        fixed: 'left',
-                        width: 80
+                        width: 80,
+                        fixed: 'left'
                     },
                     {
                         field: 'managerName',
@@ -135,7 +133,7 @@
                         title: '企业名称',
                         align: 'center',
                         fixed: 'left',
-                        width: 180
+                        width: 130
                     },
                     {
                         field: 'position',
@@ -147,6 +145,12 @@
                     {
                         field: 'year',
                         title: '年份',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'kpiScoreMonth',
+                        title: '月份',
                         align: 'center',
                         width: 80
                     },
@@ -315,15 +319,6 @@
                 });
             }
         });
-        //界面初始化的时候进行加载
-        $(document).ready(function () {
-            table.reload('dataTable', {
-                url: "/system/performance/manager/manager-performance-eval/getObject?year=" + moment().format("YYYY"),
-                page: {
-                    curr: 1
-                }
-            });
-        })
     });
 </script>
 </body>
