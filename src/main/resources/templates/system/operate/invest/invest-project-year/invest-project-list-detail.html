@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<title>查看指定经理人的分数组成</title>
+	<link rel="stylesheet" th:href="@{/css/common.css}" />
+	<script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+	<script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div th:replace="~{common/jquery :: jquery}"></div>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="layui-fluid">
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md12">
+			<div class="layui-card">
+				<form class="layui-form layui-col-space5">
+					<div class="layui-card-body">
+<!--						<div class="layui-inline layui-show-xs-block" style="width: 150px;">-->
+<!--							<input type="text" name="companyName" placeholder="企业名称" autocomplete="off"-->
+<!--								   class="layui-input">-->
+<!--						</div>-->
+
+<!--						<div class="layui-inline layui-show-xs-block" style="width: 120px;">-->
+<!--							<input type="projectListId" name="projectListId" placeholder="查询年份" id="projectListId"-->
+<!--								   autocomplete="off" class="layui-input laydate">-->
+<!--						</div>-->
+
+
+<!--						<div class="layui-inline layui-show-xs-block">-->
+<!--							<button class="layui-btn" lay-submit lay-filter="search">-->
+<!--								<i class="layui-icon">&#xe615;</i>-->
+<!--							</button>-->
+<!--						</div>-->
+						<div class="layui-inline layui-show-xs-block">
+							<button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
+									lay-filter="downloadForCharge" title="填写项目跟踪计划，导出数据修改">导出
+							</button>
+						</div>
+
+						<div class="layui-inline layui-show-xs-block">
+							<button shiro:haspermission="system:operate:invest:invest-project-year:index"
+									class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
+									title="导入项目进度计划跟踪表附件">导入项目进度计划跟踪表附件
+							</button>
+						</div>
+
+
+					</div>
+				</form>
+				<div class="layui-card-body ">
+					<table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+			<script type="text/html" id="toolbar"></script>
+			<script th:inline="javascript">
+				layui.use([
+					'table', 'form', 'layer', 'laydate'
+				], function() {
+					var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+					// 实例表格
+					table.render(
+							{
+								elem : '#dataTable',
+								id : 'dataTable',
+								//③在弹出页面将获取到的此条记录的值交给数据库去查
+								url : "/system/operate/invest/invest-project-year/getTraceObjects?year=" + [[${year}]]+ '&month=' + [[${month}]] + '&companyName=' + [[${companyName}]] + '&projectName=' + [[${projectName}]]+ '&projectListId=' + [[${projectListId}]],
+								totalRow: true,
+								size: 'sm',
+								page:false,
+								cols:
+										[
+											[
+												{
+													field: 'projectName',
+													title: '项目名称',
+													fixed: 'left',
+													width: 150
+												},
+												{
+													field: 'month',
+													title: '月份',
+													fixed: 'left',
+													width: 60
+												},
+
+												// {
+												// 	field: 'projectListId',
+												// 	title: '年度投资项目清单序号',
+												// 	fixed: 'left',
+												// 	width: 60
+												// },
+												{
+													field: 'serial',
+													title: '序号',
+													fixed: 'left',
+													width: 60
+												},
+												{
+													field: 'projectPhase',
+													title: '项目阶段',
+													fixed: 'left',
+													width: 120
+												},
+												{
+													field: 'projectTarget',
+													title: '项目目标',
+													width: 120
+												},
+												{
+													field: 'projectIndicators',
+													title: '具体事项/指标',
+													width: 120
+												},
+
+												{
+													field: 'feasibilityDate',
+													title: '可研报告计划完成时间',
+													width: 120
+												},
+												{
+													field: 'contractDate',
+													title: '合同计划完成时间',
+													width: 120
+												},
+												{
+													field: 'actualEndDate',
+													title: '实际完成时间',
+													width: 120
+												},
+												{
+													field: 'inspectionDate',
+													title: '检查时间/频次',
+													width: 120
+												},
+												{
+													field: 'responsePerson',
+													title: '负责人',
+													width: 120
+												},
+												{
+													field: 'status',
+													title: '完成状态',
+													width: 120
+												},
+												{
+													field: 'Inspectedby',
+													title: '检查人',
+													width: 120
+												},
+												{
+													field: 'inspectionResults',
+													title: '检查结果',
+													width: 120
+												},
+												{
+													field: 'evaluate',
+													title: '评价',
+													width: 120
+												},
+												{
+													field: 'projectContent',
+													title: '课题内容',
+													width: 120
+												},
+												{
+													field: 'abstracte',
+													title: '摘要',
+													width: 60
+												},
+												{
+													field: 'evaluates',
+													title: '总体评价',
+													width: 60
+												},
+												{
+													field: 'note',
+													title: '备注',
+													width: 120
+												}
+											]
+										]
+							});
+					//监听导出按钮
+					// form.on('submit(downloadForCharge)', function (data) {
+					// 	var field = data.field;
+					// 	var companyName = data.field.companyName;
+					// 	var year =data.field.year;
+					// 	var month = data.field.month;
+					// 	var projectName =data.field.projectName;
+					// 	console.log(companyName);
+					// 	console.log(year)
+					// 	if(companyName == "")
+					// 	{
+					// 		layer.msg("公司名称未空!");
+					// 		return false;
+					// 	}
+					// 	if (year == ""){
+					// 		layer.msg("年份为空！");
+					// 		return false;
+					// 	}
+					// 	if (month == ""){
+					// 		layer.msg("月份为空！");
+					// 		return false;
+					// 	}
+					// 	if (projectName == ""){
+					// 		layer.msg("项目姓名为空！");
+					// 		return false;
+					// 	}
+					// 	field.url = "/system/operate/invest/invest-project-year/downloadForCharge";
+					// 	var url = createUrl(field);
+					// 	layer.msg("正在导出项目跟踪计划，请稍候");
+					// 	window.open(url, true);
+					// 	return false;
+					// });
+					// 导入按钮
+					form.on('submit(import)', function (data) {
+						var createLayer = layer.open({
+							type: 2,
+							title: "上传项目进度计划跟踪附件",
+							area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+							content: '/system/operate/invest/invest-project-year/index?month='+ [[${month}]]+ '&projectName=' + [[${projectName}]]+ '&projectListId=' + [[${projectListId}]],
+							scrollbar: true,
+							maxmin: true,
+						});
+						return false;
+					});
+					//监听导出按钮
+					form.on('submit(downloadForCharge)', function (data) {
+						var field = data.field;
+						field.url = "/system/operate/invest/invest-project-year/downloadForCharge?year="+ [[${year}]]+ '&month=' + [[${month}]] + '&companyName=' + [[${companyName}]] + '&projectName=' + [[${projectName}]]+ '&projectListId=' + [[${projectListId}]];
+						var url = createUrl(field);
+						layer.msg("正在导出项目跟踪计划，请稍候");
+						window.open(url, true);
+						return false;
+					});
+
+
+				});
+			</script>
+			<!--			</div>-->
+		</div>
+	</div>
+</div>
+</body>
+</html>

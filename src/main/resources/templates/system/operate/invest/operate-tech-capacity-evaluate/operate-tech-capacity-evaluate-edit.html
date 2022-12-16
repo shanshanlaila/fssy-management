@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+
+                    <input type="hidden" th:value="${operateTechCapacityEvaluate['year']}" name="year">
+                    <input type="hidden" th:value="${operateTechCapacityEvaluate['id']}" name="id">
+
+
+                <!--第一行-->
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;管理方法:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input layui-disabled" name="manageMethod" id="manageMethod"
+                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['manageMethod']}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;关键指标:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input layui-disabled" name="kpiDesc" id="kpiDesc"
+                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['kpiDesc']}"/>
+                        </div>
+                    </td>
+                </tr>
+                <!--第二行-->
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;标杆企业名称:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input layui-disabled" name="benchmarkCompany" id="benchmarkCompany"
+                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['benchmarkCompany']}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;标杆值:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input layui-disabled" name="benchmark" id="benchmark"
+                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['benchmark']}"/>
+                        </div>
+                    </td>
+                </tr>
+                <!--第三行-->
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;过去第一年值:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input layui-disabled" name="pastOneYearActual" id="pastOneYearActual"
+                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['pastOneYearActual']}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;过去第二年值:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input layui-disabled" name="pastTwoYearsActual" id="pastTwoYearsActual"
+                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['pastTwoYearsActual']}"/>
+                        </div>
+                    </td>
+                </tr>
+                <!--第四行-->
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;过去第三年值:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input layui-disabled" name="pastThreeYearsActual" id="pastThreeYearsActual"
+                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['pastThreeYearsActual']}"/>
+                        </div>
+                    </td>
+
+                </tr>
+
+
+            </table>
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<!--laui-->
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            console.log(data.field)
+
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/operate/invest/operate-tech-capacity-evaluate/update',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status == 200) {
+                        layer.msg(result.msg, {icon: 6, time: 1000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</body>
+</html>
