@@ -249,116 +249,101 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 		// region 处理返回数据
 		if (resultMap.containsKey("data"))
 		{
-			@SuppressWarnings("unchecked")
-			List<Map<String, Object>> resultDataList = (List<Map<String, Object>>) resultMap
-					.get("data");
-
 			boolean flag = true;
 			StringBuffer sb = new StringBuffer();
 			List<ProfitStatement> insertDataList = new ArrayList<>();
-			if (!ObjectUtils.isEmpty(resultDataList))
+			// 2022-12-16 添加空值判断，当查询数据为空时，记录对接情况
+			if (ObjectUtils.isEmpty(resultMap.get("data")))
 			{
-				// 查询系统中已经存在的利润数据
-				QueryWrapper<ManageCompany> queryWrapper = new QueryWrapper<>();
-				List<ManageCompany> manageCompanies = manageCompanyMapper.selectList(queryWrapper);
-				Map<String, ManageCompany> manageCompanyKeyBy = IteratorTool.keyByPattern("code",
-						manageCompanies);
+				flag = false;
+				StringTool.setMsg(sb, String.format("年【%s】，月【%s】的利润数据,无法找到",
+						transmitParams.get("y"), transmitParams.get("m")));
+			}
+			else
+			{
+				@SuppressWarnings("unchecked")
+				List<Map<String, Object>> resultDataList = (List<Map<String, Object>>) resultMap
+						.get("data");
 
-				// 系统查询利润表缓存map
-				Map<String, ProfitStatement> cacheProfitStatement = new HashMap<>();
-				QueryWrapper<ProfitStatement> profitStatementQueryWrapper;
-				for (Map<String, Object> transmitData : resultDataList)
+				if (!ObjectUtils.isEmpty(resultDataList))
 				{
-					// region 整理对接数据
-					String companyCode = InstandTool.objectToString(transmitData.get("公司代码"));
-					ManageCompany tempCompany = manageCompanyKeyBy.get(companyCode);
-					Integer year = InstandTool
-							.stringToInteger(InstandTool.objectToString(transmitData.get("年")));
-					Integer month = InstandTool
-							.stringToInteger(InstandTool.objectToString(transmitData.get("月")));
-					String projectCode = InstandTool.objectToString(transmitData.get("项目代码"));
-					String project = StringTool
-							.rightTrim(InstandTool.objectToString(transmitData.get("项目")));
-					Double amount = InstandTool
-							.stringToDouble(InstandTool.objectToString(transmitData.get("金额")));
-					Double cumulativeBalance = InstandTool
-							.stringToDouble(InstandTool.objectToString(transmitData.get("金额累计")));
-					String createName = StringTool
-							.rightTrim(InstandTool.objectToString(transmitData.get("录入")));
-					String createDateStr = InstandTool.objectToString(transmitData.get("录入日期"));
-					LocalDateTime createDate = null;
-					try
-					{
-						createDate = DateTool.transferTimeToLocalDateTime(createDateStr);
-					}
-					catch (Exception e)
-					{
-						flag = false;
-						StringTool.setMsg(sb, String.format(
-								"公司【%s】,项目【%s】，年【%s】，月【%s】的利润数据，录入日期【%s】格式不对，正确格式为【yyyy-MM-dd HH:mm:ss】",
-								tempCompany.getName(), project, year, month, createDateStr));
-						continue;
-					}
-					// endregion
+					// 查询系统中已经存在的利润数据
+					QueryWrapper<ManageCompany> queryWrapper = new QueryWrapper<>();
+					List<ManageCompany> manageCompanies = manageCompanyMapper
+							.selectList(queryWrapper);
+					Map<String, ManageCompany> manageCompanyKeyBy = IteratorTool
+							.keyByPattern("code", manageCompanies);
 
-					// 查询系统的利润表数据
-					// region 缓存查询系统已经有的利润表数据
-					String key = projectCode + "_" + tempCompany.getCode() + "_" + year + "_"
-							+ month;
-					ProfitStatement exitProfitData;
-					if (cacheProfitStatement.containsKey(key))
+					// 系统查询利润表缓存map
+					Map<String, ProfitStatement> cacheProfitStatement = new HashMap<>();
+					QueryWrapper<ProfitStatement> profitStatementQueryWrapper;
+					for (Map<String, Object> transmitData : resultDataList)
 					{
-						exitProfitData = cacheProfitStatement.get(key);
-					}
-					else
-					{
-						profitStatementQueryWrapper = new QueryWrapper<>();
-						profitStatementQueryWrapper.eq("projectCode", projectCode)
-								.eq("companyCode", tempCompany.getCode()).eq("year", year)
-								.eq("month", month);
-						List<ProfitStatement> profitStatementList = profitStatementMapper
-								.selectList(profitStatementQueryWrapper);
-						if (!ObjectUtils.isEmpty(profitStatementList))
+						// region 整理对接数据
+						String companyCode = InstandTool.objectToString(transmitData.get("公司代码"));
+						ManageCompany tempCompany = manageCompanyKeyBy.get(companyCode);
+						Integer year = InstandTool
+								.stringToInteger(InstandTool.objectToString(transmitData.get("年")));
+						Integer month = InstandTool
+								.stringToInteger(InstandTool.objectToString(transmitData.get("月")));
+						String projectCode = InstandTool.objectToString(transmitData.get("项目代码"));
+						String project = StringTool
+								.rightTrim(InstandTool.objectToString(transmitData.get("项目")));
+						Double amount = InstandTool
+								.stringToDouble(InstandTool.objectToString(transmitData.get("金额")));
+						Double cumulativeBalance = InstandTool.stringToDouble(
+								InstandTool.objectToString(transmitData.get("金额累计")));
+						String createName = StringTool
+								.rightTrim(InstandTool.objectToString(transmitData.get("录入")));
+						String createDateStr = InstandTool.objectToString(transmitData.get("录入日期"));
+						LocalDateTime createDate = null;
+						try
 						{
-							exitProfitData = profitStatementList.get(0);
-							cacheProfitStatement.put(key, exitProfitData);
+							createDate = DateTool.transferTimeToLocalDateTime(createDateStr);
+						}
+						catch (Exception e)
+						{
+							flag = false;
+							StringTool.setMsg(sb, String.format(
+									"公司【%s】,项目【%s】，年【%s】，月【%s】的利润数据，录入日期【%s】格式不对，正确格式为【yyyy-MM-dd HH:mm:ss】",
+									tempCompany.getName(), project, year, month, createDateStr));
+							continue;
+						}
+						// endregion
+
+						// 查询系统的利润表数据
+						// region 缓存查询系统已经有的利润表数据
+						String key = projectCode + "_" + tempCompany.getCode() + "_" + year + "_"
+								+ month;
+						ProfitStatement exitProfitData;
+						if (cacheProfitStatement.containsKey(key))
+						{
+							exitProfitData = cacheProfitStatement.get(key);
 						}
 						else
-						{
-							exitProfitData = null;
-							cacheProfitStatement.put(key, null);
-						}
-					}
-					// endregion
-
-					// region 判断如果利润数据不存在，需要添加利润数据;存在时，判断createDate是否相同，不同时删除原来的，重新添加
-					if (ObjectUtils.isEmpty(exitProfitData))
-					{
-						ProfitStatement profitStatement = new ProfitStatement();
-						profitStatement.setNote("");
-						profitStatement.setCompanyCode(tempCompany.getCode());
-						profitStatement.setCompanyName(tempCompany.getName());
-						profitStatement.setCompanyId(tempCompany.getId());
-						profitStatement.setYear(year);
-						profitStatement.setMonth(month);
-						profitStatement.setProjectCode(projectCode);
-						profitStatement.setProject(project);
-						profitStatement.setAmount(new BigDecimal(amount));
-						profitStatement.setCumulativeBalance(new BigDecimal(cumulativeBalance));
-						profitStatement.setCreateName(createName);
-						profitStatement.setCreateDate(createDate);
-						insertDataList.add(profitStatement);
-					}
-					// 存在时，判断createDate是否相同，不同时删除原来的，重新添加
-					else
-					{
-						if (!exitProfitData.getCreateDate().isEqual(createDate))
 						{
 							profitStatementQueryWrapper = new QueryWrapper<>();
 							profitStatementQueryWrapper.eq("projectCode", projectCode)
 									.eq("companyCode", tempCompany.getCode()).eq("year", year)
 									.eq("month", month);
-							profitStatementMapper.delete(profitStatementQueryWrapper);
+							List<ProfitStatement> profitStatementList = profitStatementMapper
+									.selectList(profitStatementQueryWrapper);
+							if (!ObjectUtils.isEmpty(profitStatementList))
+							{
+								exitProfitData = profitStatementList.get(0);
+								cacheProfitStatement.put(key, exitProfitData);
+							}
+							else
+							{
+								exitProfitData = null;
+								cacheProfitStatement.put(key, null);
+							}
+						}
+						// endregion
+
+						// region 判断如果利润数据不存在，需要添加利润数据;存在时，判断createDate是否相同，不同时删除原来的，重新添加
+						if (ObjectUtils.isEmpty(exitProfitData))
+						{
 							ProfitStatement profitStatement = new ProfitStatement();
 							profitStatement.setNote("");
 							profitStatement.setCompanyCode(tempCompany.getCode());
@@ -374,8 +359,35 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 							profitStatement.setCreateDate(createDate);
 							insertDataList.add(profitStatement);
 						}
+						// 存在时，判断createDate是否相同，不同时删除原来的，重新添加
+						else
+						{
+							if (!exitProfitData.getCreateDate().isEqual(createDate))
+							{
+								profitStatementQueryWrapper = new QueryWrapper<>();
+								profitStatementQueryWrapper.eq("projectCode", projectCode)
+										.eq("companyCode", tempCompany.getCode()).eq("year", year)
+										.eq("month", month);
+								profitStatementMapper.delete(profitStatementQueryWrapper);
+								ProfitStatement profitStatement = new ProfitStatement();
+								profitStatement.setNote("");
+								profitStatement.setCompanyCode(tempCompany.getCode());
+								profitStatement.setCompanyName(tempCompany.getName());
+								profitStatement.setCompanyId(tempCompany.getId());
+								profitStatement.setYear(year);
+								profitStatement.setMonth(month);
+								profitStatement.setProjectCode(projectCode);
+								profitStatement.setProject(project);
+								profitStatement.setAmount(new BigDecimal(amount));
+								profitStatement
+										.setCumulativeBalance(new BigDecimal(cumulativeBalance));
+								profitStatement.setCreateName(createName);
+								profitStatement.setCreateDate(createDate);
+								insertDataList.add(profitStatement);
+							}
+						}
+						// endregion
 					}
-					// endregion
 				}
 			}
 

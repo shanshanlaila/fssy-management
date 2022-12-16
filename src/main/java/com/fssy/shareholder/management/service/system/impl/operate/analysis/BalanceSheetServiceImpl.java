@@ -248,116 +248,101 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 		// region 处理返回数据
 		if (resultMap.containsKey("data"))
 		{
-			@SuppressWarnings("unchecked")
-			List<Map<String, Object>> resultDataList = (List<Map<String, Object>>) resultMap
-					.get("data");
-
 			boolean flag = true;
 			StringBuffer sb = new StringBuffer();
 			List<BalanceSheet> insertDataList = new ArrayList<>();
-			if (!ObjectUtils.isEmpty(resultDataList))
+			// 2022-12-16 添加空值判断，当查询数据为空时，记录对接情况
+			if (ObjectUtils.isEmpty(resultMap.get("data")))
 			{
-				// 查询系统中已经存在的资产负债数据
-				QueryWrapper<ManageCompany> queryWrapper = new QueryWrapper<>();
-				List<ManageCompany> manageCompanies = manageCompanyMapper.selectList(queryWrapper);
-				Map<String, ManageCompany> manageCompanyKeyBy = IteratorTool.keyByPattern("code",
-						manageCompanies);
+				flag = false;
+				StringTool.setMsg(sb, String.format("年【%s】，月【%s】的资产负债数据,无法找到",
+						transmitParams.get("y"), transmitParams.get("m")));
+			}
+			else
+			{
+				@SuppressWarnings("unchecked")
+				List<Map<String, Object>> resultDataList = (List<Map<String, Object>>) resultMap
+						.get("data");
 
-				// 系统查询资产负债表缓存map
-				Map<String, BalanceSheet> cacheBalanceSheet = new HashMap<>();
-				QueryWrapper<BalanceSheet> balanceSheetQueryWrapper;
-				for (Map<String, Object> transmitData : resultDataList)
+				if (!ObjectUtils.isEmpty(resultDataList))
 				{
-					// region 整理对接数据
-					String companyCode = InstandTool.objectToString(transmitData.get("公司代码"));
-					ManageCompany tempCompany = manageCompanyKeyBy.get(companyCode);
-					Integer year = InstandTool
-							.stringToInteger(InstandTool.objectToString(transmitData.get("年")));
-					Integer month = InstandTool
-							.stringToInteger(InstandTool.objectToString(transmitData.get("月")));
-					String projectCode = InstandTool.objectToString(transmitData.get("项目代码"));
-					String project = StringTool
-							.rightTrim(InstandTool.objectToString(transmitData.get("项目")));
-					Double amount = InstandTool
-							.stringToDouble(InstandTool.objectToString(transmitData.get("金额")));
-					Double initialAmount = InstandTool
-							.stringToDouble(InstandTool.objectToString(transmitData.get("期初")));
-					String createName = StringTool
-							.rightTrim(InstandTool.objectToString(transmitData.get("录入")));
-					String createDateStr = InstandTool.objectToString(transmitData.get("录入日期"));
-					LocalDateTime createDate = null;
-					try
-					{
-						createDate = DateTool.transferTimeToLocalDateTime(createDateStr);
-					}
-					catch (Exception e)
-					{
-						flag = false;
-						StringTool.setMsg(sb, String.format(
-								"公司【%s】,项目【%s】，年【%s】，月【%s】的资产负债数据，录入日期【%s】格式不对，正确格式为【yyyy-MM-dd HH:mm:ss】",
-								tempCompany.getName(), project, year, month, createDateStr));
-						continue;
-					}
-					// endregion
+					// 查询系统中已经存在的资产负债数据
+					QueryWrapper<ManageCompany> queryWrapper = new QueryWrapper<>();
+					List<ManageCompany> manageCompanies = manageCompanyMapper
+							.selectList(queryWrapper);
+					Map<String, ManageCompany> manageCompanyKeyBy = IteratorTool
+							.keyByPattern("code", manageCompanies);
 
-					// 查询系统的资产负债表数据
-					// region 缓存查询系统已经有的资产负债表数据
-					String key = projectCode + "_" + tempCompany.getCode() + "_" + year + "_"
-							+ month;
-					BalanceSheet exitBalanceSheet;
-					if (cacheBalanceSheet.containsKey(key))
+					// 系统查询资产负债表缓存map
+					Map<String, BalanceSheet> cacheBalanceSheet = new HashMap<>();
+					QueryWrapper<BalanceSheet> balanceSheetQueryWrapper;
+					for (Map<String, Object> transmitData : resultDataList)
 					{
-						exitBalanceSheet = cacheBalanceSheet.get(key);
-					}
-					else
-					{
-						balanceSheetQueryWrapper = new QueryWrapper<>();
-						balanceSheetQueryWrapper.eq("projectCode", projectCode)
-								.eq("companyCode", tempCompany.getCode()).eq("year", year)
-								.eq("month", month);
-						List<BalanceSheet> balanceSheetList = balanceSheetMapper
-								.selectList(balanceSheetQueryWrapper);
-						if (!ObjectUtils.isEmpty(balanceSheetList))
+						// region 整理对接数据
+						String companyCode = InstandTool.objectToString(transmitData.get("公司代码"));
+						ManageCompany tempCompany = manageCompanyKeyBy.get(companyCode);
+						Integer year = InstandTool
+								.stringToInteger(InstandTool.objectToString(transmitData.get("年")));
+						Integer month = InstandTool
+								.stringToInteger(InstandTool.objectToString(transmitData.get("月")));
+						String projectCode = InstandTool.objectToString(transmitData.get("项目代码"));
+						String project = StringTool
+								.rightTrim(InstandTool.objectToString(transmitData.get("项目")));
+						Double amount = InstandTool
+								.stringToDouble(InstandTool.objectToString(transmitData.get("金额")));
+						Double initialAmount = InstandTool
+								.stringToDouble(InstandTool.objectToString(transmitData.get("期初")));
+						String createName = StringTool
+								.rightTrim(InstandTool.objectToString(transmitData.get("录入")));
+						String createDateStr = InstandTool.objectToString(transmitData.get("录入日期"));
+						LocalDateTime createDate = null;
+						try
 						{
-							exitBalanceSheet = balanceSheetList.get(0);
-							cacheBalanceSheet.put(key, exitBalanceSheet);
+							createDate = DateTool.transferTimeToLocalDateTime(createDateStr);
+						}
+						catch (Exception e)
+						{
+							flag = false;
+							StringTool.setMsg(sb, String.format(
+									"公司【%s】,项目【%s】，年【%s】，月【%s】的资产负债数据，录入日期【%s】格式不对，正确格式为【yyyy-MM-dd HH:mm:ss】",
+									tempCompany.getName(), project, year, month, createDateStr));
+							continue;
+						}
+						// endregion
+
+						// 查询系统的资产负债表数据
+						// region 缓存查询系统已经有的资产负债表数据
+						String key = projectCode + "_" + tempCompany.getCode() + "_" + year + "_"
+								+ month;
+						BalanceSheet exitBalanceSheet;
+						if (cacheBalanceSheet.containsKey(key))
+						{
+							exitBalanceSheet = cacheBalanceSheet.get(key);
 						}
 						else
-						{
-							exitBalanceSheet = null;
-							cacheBalanceSheet.put(key, null);
-						}
-					}
-					// endregion
-
-					// region 判断如果资产负债数据不存在，需要添加资产负债数据;存在时，判断createDate是否相同，不同时删除原来的，重新添加
-					if (ObjectUtils.isEmpty(exitBalanceSheet))
-					{
-						BalanceSheet balanceSheet = new BalanceSheet();
-						balanceSheet.setNote("");
-						balanceSheet.setCompanyCode(tempCompany.getCode());
-						balanceSheet.setCompanyName(tempCompany.getName());
-						balanceSheet.setCompanyId(tempCompany.getId());
-						balanceSheet.setYear(year);
-						balanceSheet.setMonth(month);
-						balanceSheet.setProjectCode(projectCode);
-						balanceSheet.setProject(project);
-						balanceSheet.setAmount(new BigDecimal(amount));
-						balanceSheet.setInitialAmount(new BigDecimal(initialAmount));
-						balanceSheet.setCreateName(createName);
-						balanceSheet.setCreateDate(createDate);
-						insertDataList.add(balanceSheet);
-					}
-					// 存在时，判断createDate是否相同，不同时删除原来的，重新添加
-					else
-					{
-						if (!exitBalanceSheet.getCreateDate().isEqual(createDate))
 						{
 							balanceSheetQueryWrapper = new QueryWrapper<>();
 							balanceSheetQueryWrapper.eq("projectCode", projectCode)
 									.eq("companyCode", tempCompany.getCode()).eq("year", year)
 									.eq("month", month);
-							balanceSheetMapper.delete(balanceSheetQueryWrapper);
+							List<BalanceSheet> balanceSheetList = balanceSheetMapper
+									.selectList(balanceSheetQueryWrapper);
+							if (!ObjectUtils.isEmpty(balanceSheetList))
+							{
+								exitBalanceSheet = balanceSheetList.get(0);
+								cacheBalanceSheet.put(key, exitBalanceSheet);
+							}
+							else
+							{
+								exitBalanceSheet = null;
+								cacheBalanceSheet.put(key, null);
+							}
+						}
+						// endregion
+
+						// region 判断如果资产负债数据不存在，需要添加资产负债数据;存在时，判断createDate是否相同，不同时删除原来的，重新添加
+						if (ObjectUtils.isEmpty(exitBalanceSheet))
+						{
 							BalanceSheet balanceSheet = new BalanceSheet();
 							balanceSheet.setNote("");
 							balanceSheet.setCompanyCode(tempCompany.getCode());
@@ -373,8 +358,34 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 							balanceSheet.setCreateDate(createDate);
 							insertDataList.add(balanceSheet);
 						}
+						// 存在时，判断createDate是否相同，不同时删除原来的，重新添加
+						else
+						{
+							if (!exitBalanceSheet.getCreateDate().isEqual(createDate))
+							{
+								balanceSheetQueryWrapper = new QueryWrapper<>();
+								balanceSheetQueryWrapper.eq("projectCode", projectCode)
+										.eq("companyCode", tempCompany.getCode()).eq("year", year)
+										.eq("month", month);
+								balanceSheetMapper.delete(balanceSheetQueryWrapper);
+								BalanceSheet balanceSheet = new BalanceSheet();
+								balanceSheet.setNote("");
+								balanceSheet.setCompanyCode(tempCompany.getCode());
+								balanceSheet.setCompanyName(tempCompany.getName());
+								balanceSheet.setCompanyId(tempCompany.getId());
+								balanceSheet.setYear(year);
+								balanceSheet.setMonth(month);
+								balanceSheet.setProjectCode(projectCode);
+								balanceSheet.setProject(project);
+								balanceSheet.setAmount(new BigDecimal(amount));
+								balanceSheet.setInitialAmount(new BigDecimal(initialAmount));
+								balanceSheet.setCreateName(createName);
+								balanceSheet.setCreateDate(createDate);
+								insertDataList.add(balanceSheet);
+							}
+						}
+						// endregion
 					}
-					// endregion
 				}
 			}
 
