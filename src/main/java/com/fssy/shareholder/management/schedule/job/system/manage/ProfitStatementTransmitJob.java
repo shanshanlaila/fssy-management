@@ -72,7 +72,7 @@ public class ProfitStatementTransmitJob implements Job
 		params = new HashMap<>();
 		params.put("year", theMonthYear);
 		params.put("month", theMonthValue);
-//		profitStatementService.receiveData(params);
+		profitStatementService.receiveData(params);
 		// endregion
 	}
 

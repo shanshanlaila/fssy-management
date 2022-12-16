@@ -53,8 +53,8 @@ public class CronSchedulerJob
 				.withIdentity("profitStatementTransmitJob", "transmit").build();
 		// 每个月1号到15号凌晨2点15分调度
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
-//				.cronSchedule("0/6 * * * * ?");
-				.cronSchedule("0 15 2 1-15 * ?");
+				.cronSchedule("0/6 * * * * ?");
+//				.cronSchedule("0 15 2 1-15 * ?");
 		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
 				.withIdentity("profitStatementTransmitTrigger", "transmitTrigger")
 				.withSchedule(cronScheduleBuilder).build();
@@ -73,7 +73,6 @@ public class CronSchedulerJob
 				.withIdentity("balanceSheetTransmitJob", "transmit").build();
 		// 每个月1号到15号凌晨2点45分调度
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
-//				.cronSchedule("0/6 * * * * ?");
 				.cronSchedule("0 45 2 1-15 * ?");
 		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
 				.withIdentity("profitStatementTransmitTrigger", "transmitTrigger")
@@ -90,8 +89,8 @@ public class CronSchedulerJob
 	{
 		Scheduler scheduler = schedulerFactoryBean.getScheduler();
 		// 对接财务系统利润表定时任务
-//		profitStatementTransmitJob(scheduler);
+		profitStatementTransmitJob(scheduler);
 		// 对接财务系统资产负债表定时任务
-//		balanceSheetTransmitJob(scheduler);
+		balanceSheetTransmitJob(scheduler);
 	}
 }

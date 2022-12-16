@@ -246,10 +246,17 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 		// endregion
 
 		// region 处理返回数据
+		StringBuffer sb = new StringBuffer();
+		if (ObjectUtils.isEmpty(resultMap))
+		{
+			StringTool.setMsg(sb, String.format("年【%s】，月【%s】的资产负债数据,无法找到", transmitParams.get("y"),
+					transmitParams.get("m")));
+			System.out.println(String.format("部分数据对接失败，错误描述为【%s】", sb.toString()));
+			return result;
+		}
 		if (resultMap.containsKey("data"))
 		{
 			boolean flag = true;
-			StringBuffer sb = new StringBuffer();
 			List<BalanceSheet> insertDataList = new ArrayList<>();
 			// 2022-12-16 添加空值判断，当查询数据为空时，记录对接情况
 			if (ObjectUtils.isEmpty(resultMap.get("data")))
