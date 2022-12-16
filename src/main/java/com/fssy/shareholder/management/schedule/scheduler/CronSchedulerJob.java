@@ -50,13 +50,13 @@ public class CronSchedulerJob
 	private void profitStatementTransmitJob(Scheduler scheduler) throws SchedulerException
 	{
 		JobDetail jobDetail = JobBuilder.newJob(ProfitStatementTransmitJob.class)
-				.withIdentity("profitStatementTransmitJob", "transmit").build();
+				.withIdentity("profitStatementTransmitJob", "transmit1").build();
 		// 每个月1号到15号凌晨2点15分调度
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
-				.cronSchedule("0/6 * * * * ?");
-//				.cronSchedule("0 15 2 1-15 * ?");
+//				.cronSchedule("0/6 * * * * ?");
+				.cronSchedule("0 15 2 1-15 * ?");
 		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
-				.withIdentity("profitStatementTransmitTrigger", "transmitTrigger")
+				.withIdentity("profitStatementTransmitTrigger", "profitStatementTransmitTrigger")
 				.withSchedule(cronScheduleBuilder).build();
 		scheduler.scheduleJob(jobDetail, cronTrigger);
 	}
@@ -70,12 +70,12 @@ public class CronSchedulerJob
 	private void balanceSheetTransmitJob(Scheduler scheduler) throws SchedulerException
 	{
 		JobDetail jobDetail = JobBuilder.newJob(BalanceSheetTransmitJob.class)
-				.withIdentity("balanceSheetTransmitJob", "transmit").build();
+				.withIdentity("balanceSheetTransmitJob", "transmit2").build();
 		// 每个月1号到15号凌晨2点45分调度
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
 				.cronSchedule("0 45 2 1-15 * ?");
 		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
-				.withIdentity("profitStatementTransmitTrigger", "transmitTrigger")
+				.withIdentity("balanceSheetTransmitTrigger", "balanceSheetTransmitTrigger")
 				.withSchedule(cronScheduleBuilder).build();
 		scheduler.scheduleJob(jobDetail, cronTrigger);
 	}
