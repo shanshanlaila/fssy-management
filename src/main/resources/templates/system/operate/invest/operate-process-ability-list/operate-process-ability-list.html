@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>工艺基础能力台账管理</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div th:replace="~{common/jquery :: jquery}"></div>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">工艺基础能力台账</a> <a href="">工艺基础能力台账管理</a>
+		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+                   onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+                                                              style="line-height: 30px"></i>
+</a>
+</div>
+<!-- 引入xadmin -->
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body">
+
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="year" placeholder="查询年份" id="year"
+                                   autocomplete="off" class="layui-input laydate">
+                        </div>
+
+
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                        </div>
+
+                        <div class="layui-inline layui-show-xs-block">
+                            <button
+                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
+                                    title="导入工艺基础能力台账附件">导入工艺基础能力台账附件
+                            </button>
+
+                        </div>
+
+
+                    </div>
+                </form>
+                <div class="layui-card-body ">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="tool">
+                        <a lay-event="edit" title="修改经理人绩效定性评分各项目占比信息"><i class="layui-icon">&#xe642;</i></a>
+                        <a lay-event="delete" title="删除经理人绩效定性评分各项目占比信息"><i class="layui-icon">&#xe640;</i></a>
+                    </script>
+<!--                    <script type="text/html" id="toolbar">-->
+<!--                        <div class="layui-btn-container">-->
+<!--                            <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>-->
+<!--                        </div>-->
+<!--                    </script>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use([
+        'table', 'form', 'layer', 'laydate'
+    ], function () {
+        var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+        // 重新重置日期控件
+        laydate.render({
+            elem : '#year',
+            trigger : 'click',
+            type : 'year',
+            value : moment().format("YYYY")
+        });
+
+        // 监听搜索按钮
+        form.on('submit(search)', function (data) {
+            console.log(data.field)
+            // 重新加载表格
+            table.reload('dataTable', {
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false
+        });
+
+        // 监听头工具栏事件
+        table.on('toolbar(dataTable)', function (obj) {
+
+            /**
+             * 弹出添加页面
+             */
+            var date = obj.date;
+            if (obj.event === 'create') {
+                layer.open({
+                    type: 2,
+                    title: '添加经理人绩效评分定性、定量分数占比信息',
+                    area: [
+                        $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
+                    ],
+                    content: '/system/performance/manager/manager-performance-eval-std/create',
+                    scrollbar: true,
+                    // 设置点击遮盖关闭
+                    // shadeClose: true,
+                    maxmin: true
+                });
+            }
+        });
+
+        // 实例表格
+        const title = '工艺基础能力台账';
+        var dataTable = table.render({
+            elem: '#dataTable',
+            id: 'dataTable',
+            url: "/system/operate/invest/operate-process-ability-list/getObjects",
+            page: true,
+            totalRow: true,
+            size: 'sm',
+            height: 'full-100', // 设置高度，使数据置于滚动条控制下
+            limit: 50,
+            limits: [50, 100, 200, 500],
+            toolbar: '#toolbar',
+            cols: [
+                [
+
+                    {
+                        field: 'index',
+                        title: '编号',
+                        fixed: 'left',
+                        type: 'numbers',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        field: 'year',
+                        title: '年份',
+                        fixed: 'left',
+                        width: 60
+                    },
+                    {
+                        field: 'companyName',
+                        title: '企业名称',
+                        fixed: 'left',
+                        width: 150
+                    },
+                    {
+                        field: 'companyId',
+                        title: '企业名称ID',
+                        fixed: 'left',
+                        width: 150
+                    },
+                    {
+                        field: 'companyShortName',
+                        title: '企业名称简称',
+                        width: 120
+                    },
+                    {
+                        field: 'productLineTypeName',
+                        title: '产品类别名称',
+                        width: 120
+                    },
+                    {
+                        field: 'competeCompanyName',
+                        title: '主要竞争对手',
+                        width: 120
+                    },
+                    {
+                        field: 'benchmarkCompanyName',
+                        title: '行业标杆企业',
+                        width: 120
+                    },
+                    {
+                        field: 'processAbilityStatus',
+                        title: '工艺能力状态',
+                        width: 120
+                    },
+
+                    {
+                        field: 'productName',
+                        title: '产品名称',
+                        width: 120
+                    },
+
+                    {
+                        field: 'reportDate',
+                        title: '报告完成日期',
+                        width: 120
+                    },
+
+                    {
+                        fixed: 'right',
+                        title: '操作',
+                        width: 100,
+                        align: 'center',
+                        toolbar: '#tool'
+                    }
+                ]
+
+            ]
+        });
+        // 监听搜索按钮
+        form.on('submit(search)', function (data) {
+            // 重新加载表格
+            table.reload('dataTable',
+                {
+                    where: data.field,
+                    page:
+                        {
+                            curr: 1
+                        }
+                });
+            return false;
+        });
+
+        // 导入按钮
+        form.on('submit(import)', function (data) {
+            var createLayer = layer.open({
+                type: 2,
+                title: "上传工艺基础能力台账附件",
+                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                content: '/system/operate/invest/operate-process-ability-list/index',
+                scrollbar: true,
+                maxmin: true,
+            });
+            return false;
+        });
+
+        // 监听行工具事件
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') { // 修改
+                layer.open({
+                    type: 2,
+                    title:data.year + '年的工艺能力台账信息修改',
+                    area: [
+                        $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
+                    ],
+                    content: '/system/operate/invest/operate-process-ability-list/edit?id=' + data.id,
+                    maxmin: true
+                });
+            } else if (obj.event === 'delete') { // 删除
+                layer.confirm('确认删除年份为：' + data.year + '的工艺能力台账信息吗？', function () {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '/system/operate/invest/operate-process-ability-list/' + data.id,
+                        success: function (result) {
+                            layer.msg(result.msg);
+                            if (result.status == 200) {
+                                table.reload('dataTable');
+                            }
+                        }
+                    })
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
