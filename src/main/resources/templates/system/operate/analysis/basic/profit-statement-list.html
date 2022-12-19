@@ -209,16 +209,24 @@
 			    
           $.get(url, function(result) {
           	if (result.status == 200) {
-							layer.msg(result.msg, {
-								icon : 6,
-								time : 2000
+          		layer.open({
+								title: '操作成功',
+                content: result.msg,
+                yes: function (index) {
+                  layer.close(index);
+                  table.reload('dataTable');
+                  $(elem).removeClass('layui-btn-disabled');//提交失败，修改回原来状态
+ 	     						$(elem).removeAttr('disabled');//提交失败，修改回原来状态
+ 	     						layer.closeAll('loading'); // 关闭loading
+                },
+                cancel: function (index) {
+                  layer.close(index);
+                  table.reload('dataTable');
+                  $(elem).removeClass('layui-btn-disabled');//提交失败，修改回原来状态
+ 	     						$(elem).removeAttr('disabled');//提交失败，修改回原来状态
+ 	     						layer.closeAll('loading'); // 关闭loading
+                },
 							});
-							setTimeout(function() {
-								table.reload('dataTable');
-								$(elem).removeClass('layui-btn-disabled');//提交失败，修改回原来状态
-	     						$(elem).removeAttr('disabled');//提交失败，修改回原来状态
-								layer.closeAll('loading'); // 关闭loading
-							}, 2000);
 						}
 						else {
 							layer.open({

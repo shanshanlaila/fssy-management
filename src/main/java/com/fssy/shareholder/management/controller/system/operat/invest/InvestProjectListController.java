@@ -11,7 +11,6 @@ import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTraceDetail;
-import com.fssy.shareholder.management.pojo.system.operate.invest.ViewOperateProcessAbility;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.InverstProjectPlanTraceOutputService;
 import com.fssy.shareholder.management.service.common.override.ManagerKpiCoefficientSheetOutputService;

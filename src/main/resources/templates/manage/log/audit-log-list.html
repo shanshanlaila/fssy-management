@@ -55,7 +55,7 @@
 						<table class="layui-table layui-form" id="dataTable"
 							lay-filter="dataTable"></table>
 						<script type="text/html" id="toolbar">
-							<div shiro:hasPermission="log:destroy" class="layui-btn-container">
+							<div shiro:hasPermission="manage:log:destroy" class="layui-btn-container">
               	<button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
             	</div>
 						</script>
@@ -129,6 +129,10 @@
 						}, {
 							field : 'params',
 							title : '请求参数',
+							width : 200
+						}, {
+							field : 'note',
+							title : '失败原因',
 							width : 200
 						}, {
 							field : 'ip',

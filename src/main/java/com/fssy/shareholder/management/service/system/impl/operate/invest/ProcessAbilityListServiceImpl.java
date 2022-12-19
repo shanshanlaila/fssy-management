@@ -7,7 +7,6 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.ProcessAbilityList;
 import com.fssy.shareholder.management.mapper.system.operate.invest.ProcessAbilityListMapper;
 import com.fssy.shareholder.management.pojo.system.operate.invest.TechCapacityEvaluate;
-import com.fssy.shareholder.management.pojo.system.operate.invest.ViewOperateProcessAbility;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.common.SheetService;

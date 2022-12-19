@@ -89,8 +89,8 @@ public class CronSchedulerJob
 	{
 		Scheduler scheduler = schedulerFactoryBean.getScheduler();
 		// 对接财务系统利润表定时任务
-		profitStatementTransmitJob(scheduler);
+//		profitStatementTransmitJob(scheduler);
 		// 对接财务系统资产负债表定时任务
-		balanceSheetTransmitJob(scheduler);
+//		balanceSheetTransmitJob(scheduler);
 	}
 }
