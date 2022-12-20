@@ -17,23 +17,23 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.fssy.shareholder.management.pojo.manage.log.ScheduleAuditLog;
 import com.fssy.shareholder.management.service.manage.log.ScheduleAuditLogService;
-import com.fssy.shareholder.management.service.system.operate.analysis.ProfitStatementService;
+import com.fssy.shareholder.management.service.system.operate.analysis.ProfitAnalysisService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 
 /**
- * @Title: ProfitStatementTransmitJob.java
- * @Description: 利润表对接任务
+ * @Title: ProfitAnalysisTransmitJob.java
+ * @Description: 变动分析表对接任务
  * @author Solomon
- * @date 2022年12月15日 下午5:42:55
+ * @date 2022年12月20日 下午4:06:45
  */
-public class ProfitStatementTransmitJob implements Job
+public class ProfitAnalysisTransmitJob implements Job
 {
 	/**
-	 * 利润表数据业务实现类
+	 * 变动分析表功能业务实现类
 	 */
 	@Autowired
-	private ProfitStatementService profitStatementService;
+	private ProfitAnalysisService profitAnalysisService;
 
 	/**
 	 * 定时任务记录表功能业务实现类
@@ -43,7 +43,7 @@ public class ProfitStatementTransmitJob implements Job
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException
+	public void execute(JobExecutionContext arg0) throws JobExecutionException
 	{
 		// region 设置查询条件
 		// 设置查前两个月、上月、当月
@@ -77,7 +77,7 @@ public class ProfitStatementTransmitJob implements Job
 			params = new HashMap<>();
 			params.put("year", twoAgoYear);
 			params.put("month", twoAgoMonth);
-			Map<String, Object> result = profitStatementService.receiveData(params);
+			Map<String, Object> result = profitAnalysisService.receiveData(params);
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
 			scheduleAuditLog.setNote(InstandTool.objectToString(result.get("msg")));
@@ -96,7 +96,7 @@ public class ProfitStatementTransmitJob implements Job
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
 			// 手工回滚异常,回滚到savePoint
-			 TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savePoint);
+			TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savePoint);
 		}
 
 		// 上月
@@ -107,8 +107,8 @@ public class ProfitStatementTransmitJob implements Job
 			params = new HashMap<>();
 			params.put("year", lastMonthYear);
 			params.put("month", lastMonthValue);
-			profitStatementService.receiveData(params);
-			Map<String, Object> result = profitStatementService.receiveData(params);
+			profitAnalysisService.receiveData(params);
+			Map<String, Object> result = profitAnalysisService.receiveData(params);
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
 			scheduleAuditLog.setNote(InstandTool.objectToString(result.get("msg")));
@@ -138,7 +138,7 @@ public class ProfitStatementTransmitJob implements Job
 //			params = new HashMap<>();
 //			params.put("year", theMonthYear);
 //			params.put("month", theMonthValue);
-//			Map<String, Object> result = profitStatementService.receiveData(params);
+//			Map<String, Object> result = profitAnalysisService.receiveData(params);
 //			scheduleAuditLog = new ScheduleAuditLog();
 //			scheduleAuditLog.setName("系统定时任务");
 //			scheduleAuditLog.setNote(InstandTool.objectToString(result.get("msg")));

@@ -194,7 +194,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 	}
 
 	@Override
-	public Map<String, Object> receiveData(Map<String, Object> params)
+	public synchronized Map<String, Object> receiveData(Map<String, Object> params)
 	{
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", true);
@@ -422,16 +422,16 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 						result.put("result", true);
 						result.put("msg", totalStatistics + String.format("全部数据对接失败，数据未改变;"));
 					}
-					else if (successInsertDataCount + successUpdateDataCount == totalDataCount)
-					{
-						result.put("result", true);
-						result.put("msg", totalStatistics + String.format("数据对接成功;"));
-					}
 					else
 					{
 						result.put("result", true);
 						result.put("msg", totalStatistics + String.format("部分数据对接失败，部分数据未改变;"));
 					}
+				}
+				else
+				{
+					result.put("result", true);
+					result.put("msg", totalStatistics + String.format("数据对接成功;"));
 				}
 			}
 			else

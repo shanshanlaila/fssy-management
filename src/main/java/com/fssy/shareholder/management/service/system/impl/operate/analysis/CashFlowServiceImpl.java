@@ -1,3 +1,7 @@
+/**   
+ * ------------------------修改日志---------------------------------
+ * 修改人			修改日期			修改内容
+ */
 package com.fssy.shareholder.management.service.system.impl.operate.analysis;
 
 import java.math.BigDecimal;
@@ -18,11 +22,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fssy.shareholder.management.mapper.system.operate.analysis.BalanceSheetMapper;
+import com.fssy.shareholder.management.mapper.system.operate.analysis.CashFlowMapper;
 import com.fssy.shareholder.management.mapper.system.operate.analysis.ManageCompanyMapper;
-import com.fssy.shareholder.management.pojo.system.operate.analysis.BalanceSheet;
+import com.fssy.shareholder.management.pojo.system.operate.analysis.CashFlow;
 import com.fssy.shareholder.management.pojo.system.operate.analysis.ManageCompany;
-import com.fssy.shareholder.management.service.system.operate.analysis.BalanceSheetService;
+import com.fssy.shareholder.management.service.system.operate.analysis.CashFlowService;
 import com.fssy.shareholder.management.tools.common.ClientTool;
 import com.fssy.shareholder.management.tools.common.DateTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
@@ -31,24 +35,20 @@ import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 
 /**
- * <p>
- * *****业务部门： 经营分析科 *****数据表中文名： 资产负债表 *****数据表名： bs_operate_balance_sheet
- * *****数据表作用： 各企业公司的资产负债表，以每月出的财务报表为基础 *****变更记录： 时间 变更人 变更内容 20221213 兰宇铧 初始设计
- * 服务实现类
- * </p>
- *
+ * @Title: CashFlowServiceImpl.java
+ * @Description: 现金流量功能业务实现类
  * @author Solomon
- * @since 2022-12-13
+ * @date 2022年12月20日 上午10:06:58
  */
 @Service
-public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, BalanceSheet>
-		implements BalanceSheetService
+public class CashFlowServiceImpl extends ServiceImpl<CashFlowMapper, CashFlow>
+		implements CashFlowService
 {
 	/**
-	 * 资产负债表数据访问实现类
+	 * 现金流量数据访问实现类
 	 */
 	@Autowired
-	private BalanceSheetMapper balanceSheetMapper;
+	private CashFlowMapper cashFlowMapper;
 
 	/**
 	 * 双系统对接工具类
@@ -69,41 +69,41 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 	private ManageCompanyMapper manageCompanyMapper;
 
 	@Override
-	public List<BalanceSheet> findBalanceSheetDataByParams(Map<String, Object> params)
+	public List<CashFlow> findCashFlowDataByParams(Map<String, Object> params)
 	{
-		QueryWrapper<BalanceSheet> queryWrapper = getQueryWrapper(params);
-		return balanceSheetMapper.selectList(queryWrapper);
+		QueryWrapper<CashFlow> queryWrapper = getQueryWrapper(params);
+		return cashFlowMapper.selectList(queryWrapper);
 	}
 
 	@Override
-	public Page<BalanceSheet> findBalanceSheetDataPerPageByParams(Map<String, Object> params)
+	public Page<CashFlow> findCashFlowDataPerPageByParams(Map<String, Object> params)
 	{
-		QueryWrapper<BalanceSheet> queryWrapper = getQueryWrapper(params).orderByDesc("id");
-		Page<BalanceSheet> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
-		return balanceSheetMapper.selectPage(myPage, queryWrapper);
+		QueryWrapper<CashFlow> queryWrapper = getQueryWrapper(params).orderByDesc("id");
+		Page<CashFlow> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
+		return cashFlowMapper.selectPage(myPage, queryWrapper);
 	}
 
 	@Override
-	public List<Map<String, Object>> findBalanceSheetMapDataByParams(Map<String, Object> params)
+	public List<Map<String, Object>> findCashFlowMapDataByParams(Map<String, Object> params)
 	{
-		QueryWrapper<BalanceSheet> queryWrapper = getQueryWrapper(params);
-		return balanceSheetMapper.selectMaps(queryWrapper);
+		QueryWrapper<CashFlow> queryWrapper = getQueryWrapper(params);
+		return cashFlowMapper.selectMaps(queryWrapper);
 	}
 
 	@Override
-	public Page<Map<String, Object>> findBalanceSheetMapPerPageByParams(Map<String, Object> params)
+	public Page<Map<String, Object>> findCashFlowMapPerPageByParams(Map<String, Object> params)
 	{
-		QueryWrapper<BalanceSheet> queryWrapper = getQueryWrapper(params).orderByDesc("id");
+		QueryWrapper<CashFlow> queryWrapper = getQueryWrapper(params).orderByDesc("id");
 		Page<Map<String, Object>> myPage = new Page<>((int) params.get("page"),
 				(int) params.get("limit"));
-		return balanceSheetMapper.selectMapsPage(myPage, queryWrapper);
+		return cashFlowMapper.selectMapsPage(myPage, queryWrapper);
 	}
 
 	@SuppressWarnings("unchecked")
-	private QueryWrapper<BalanceSheet> getQueryWrapper(Map<String, Object> params)
+	private QueryWrapper<CashFlow> getQueryWrapper(Map<String, Object> params)
 	{
 		// region 构建query
-		QueryWrapper<BalanceSheet> queryWrapper = Wrappers.query();
+		QueryWrapper<CashFlow> queryWrapper = Wrappers.query();
 		if (params.containsKey("id"))
 		{
 			queryWrapper.eq("id", params.get("id"));
@@ -196,12 +196,12 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 	{
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", true);
-
+		result.put("msg", "操作成功；");
 		// region 构建参数
 		Map<String, Object> transmitParams = new HashMap<>();
 		transmitParams.put("uid", uid);
 		transmitParams.put("pwd", pwd);
-		transmitParams.put("report", "zcfzb");
+		transmitParams.put("report", "xjllb");
 		if (params.containsKey("year"))
 		{
 			// 格式校验
@@ -253,7 +253,7 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 		int successSameDataCount = 0;
 		if (ObjectUtils.isEmpty(resultMap))
 		{
-			StringTool.setMsg(sb, String.format("年【%s】，月【%s】的资产负债数据,无法找到", transmitParams.get("y"),
+			StringTool.setMsg(sb, String.format("年【%s】，月【%s】的现金流量数据,无法找到;", transmitParams.get("y"),
 					transmitParams.get("m")));
 			result.put("result", false);
 			result.put("msg", sb.toString());
@@ -262,12 +262,12 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 		if (resultMap.containsKey("data"))
 		{
 			boolean flag = true;
-			List<BalanceSheet> insertDataList = new ArrayList<>();
+			List<CashFlow> insertDataList = new ArrayList<>();
 			// 2022-12-16 添加空值判断，当查询数据为空时，记录对接情况
 			if (ObjectUtils.isEmpty(resultMap.get("data")))
 			{
 				flag = false;
-				StringTool.setMsg(sb, String.format("年【%s】，月【%s】的资产负债数据,无法找到",
+				StringTool.setMsg(sb, String.format("年【%s】，月【%s】的现金流量数据,无法找到",
 						transmitParams.get("y"), transmitParams.get("m")));
 			}
 			else
@@ -278,16 +278,16 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 
 				if (!ObjectUtils.isEmpty(resultDataList))
 				{
-					// 查询系统中已经存在的资产负债数据
+					// 查询系统中已经存在的现金流量数据
 					QueryWrapper<ManageCompany> queryWrapper = new QueryWrapper<>();
 					List<ManageCompany> manageCompanies = manageCompanyMapper
 							.selectList(queryWrapper);
 					Map<String, ManageCompany> manageCompanyKeyBy = IteratorTool
 							.keyByPattern("code", manageCompanies);
 
-					// 系统查询资产负债表缓存map
-					Map<String, BalanceSheet> cacheBalanceSheet = new HashMap<>();
-					QueryWrapper<BalanceSheet> balanceSheetQueryWrapper;
+					// 系统查询现金流量表缓存map
+					Map<String, CashFlow> cacheCashFlow = new HashMap<>();
+					QueryWrapper<CashFlow> cashFlowQueryWrapper;
 					for (Map<String, Object> transmitData : resultDataList)
 					{
 						totalDataCount++;
@@ -303,8 +303,8 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 								.rightTrim(InstandTool.objectToString(transmitData.get("项目")));
 						Double amount = InstandTool
 								.stringToDouble(InstandTool.objectToString(transmitData.get("金额")));
-						Double initialAmount = InstandTool
-								.stringToDouble(InstandTool.objectToString(transmitData.get("期初")));
+						Double cumulativeBalance = InstandTool.stringToDouble(
+								InstandTool.objectToString(transmitData.get("金额累计")));
 						String createName = StringTool
 								.rightTrim(InstandTool.objectToString(transmitData.get("录入")));
 						String createDateStr = InstandTool.objectToString(transmitData.get("录入日期"));
@@ -317,85 +317,85 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 						{
 							flag = false;
 							StringTool.setMsg(sb, String.format(
-									"公司【%s】,项目【%s】，年【%s】，月【%s】的资产负债数据，录入日期【%s】格式不对，正确格式为【yyyy-MM-dd HH:mm:ss】",
+									"公司【%s】,项目【%s】，年【%s】，月【%s】的现金流量数据，录入日期【%s】格式不对，正确格式为【yyyy-MM-dd HH:mm:ss】",
 									tempCompany.getName(), project, year, month, createDateStr));
 							continue;
 						}
 						// endregion
 
-						// 查询系统的资产负债表数据
-						// region 缓存查询系统已经有的资产负债表数据
+						// 查询系统的现金流量表数据
+						// region 缓存查询系统已经有的现金流量表数据
 						String key = projectCode + "_" + tempCompany.getCode() + "_" + year + "_"
 								+ month;
-						BalanceSheet exitBalanceSheet;
-						if (cacheBalanceSheet.containsKey(key))
+						CashFlow exitProfitData;
+						if (cacheCashFlow.containsKey(key))
 						{
-							exitBalanceSheet = cacheBalanceSheet.get(key);
+							exitProfitData = cacheCashFlow.get(key);
 						}
 						else
 						{
-							balanceSheetQueryWrapper = new QueryWrapper<>();
-							balanceSheetQueryWrapper.eq("projectCode", projectCode)
+							cashFlowQueryWrapper = new QueryWrapper<>();
+							cashFlowQueryWrapper.eq("projectCode", projectCode)
 									.eq("companyCode", tempCompany.getCode()).eq("year", year)
 									.eq("month", month);
-							List<BalanceSheet> balanceSheetList = balanceSheetMapper
-									.selectList(balanceSheetQueryWrapper);
-							if (!ObjectUtils.isEmpty(balanceSheetList))
+							List<CashFlow> cashFlowList = cashFlowMapper
+									.selectList(cashFlowQueryWrapper);
+							if (!ObjectUtils.isEmpty(cashFlowList))
 							{
-								exitBalanceSheet = balanceSheetList.get(0);
-								cacheBalanceSheet.put(key, exitBalanceSheet);
+								exitProfitData = cashFlowList.get(0);
+								cacheCashFlow.put(key, exitProfitData);
 							}
 							else
 							{
-								exitBalanceSheet = null;
-								cacheBalanceSheet.put(key, null);
+								exitProfitData = null;
+								cacheCashFlow.put(key, null);
 							}
 						}
 						// endregion
 
-						// region 判断如果资产负债数据不存在，需要添加资产负债数据;存在时，判断createDate是否相同，不同时删除原来的，重新添加
-						if (ObjectUtils.isEmpty(exitBalanceSheet))
+						// region 判断如果现金流量数据不存在，需要添加现金流量数据;存在时，判断createDate是否相同，不同时删除原来的，重新添加
+						if (ObjectUtils.isEmpty(exitProfitData))
 						{
-							BalanceSheet balanceSheet = new BalanceSheet();
-							balanceSheet.setNote("");
-							balanceSheet.setCompanyCode(tempCompany.getCode());
-							balanceSheet.setCompanyName(tempCompany.getName());
-							balanceSheet.setCompanyId(tempCompany.getId());
-							balanceSheet.setYear(year);
-							balanceSheet.setMonth(month);
-							balanceSheet.setProjectCode(projectCode);
-							balanceSheet.setProject(project);
-							balanceSheet.setAmount(new BigDecimal(amount));
-							balanceSheet.setInitialAmount(new BigDecimal(initialAmount));
-							balanceSheet.setCreateName(createName);
-							balanceSheet.setCreateDate(createDate);
-							insertDataList.add(balanceSheet);
+							CashFlow cashFlow = new CashFlow();
+							cashFlow.setNote("");
+							cashFlow.setCompanyCode(tempCompany.getCode());
+							cashFlow.setCompanyName(tempCompany.getName());
+							cashFlow.setCompanyId(tempCompany.getId());
+							cashFlow.setYear(year);
+							cashFlow.setMonth(month);
+							cashFlow.setProjectCode(projectCode);
+							cashFlow.setProject(project);
+							cashFlow.setAmount(new BigDecimal(amount));
+							cashFlow.setCumulativeBalance(new BigDecimal(cumulativeBalance));
+							cashFlow.setCreateName(createName);
+							cashFlow.setCreateDate(createDate);
+							insertDataList.add(cashFlow);
 							successInsertDataCount++;
 						}
 						// 存在时，判断createDate是否相同，不同时删除原来的，重新添加
 						else
 						{
-							if (!exitBalanceSheet.getCreateDate().isEqual(createDate))
+							if (!exitProfitData.getCreateDate().isEqual(createDate))
 							{
-								balanceSheetQueryWrapper = new QueryWrapper<>();
-								balanceSheetQueryWrapper.eq("projectCode", projectCode)
+								cashFlowQueryWrapper = new QueryWrapper<>();
+								cashFlowQueryWrapper.eq("projectCode", projectCode)
 										.eq("companyCode", tempCompany.getCode()).eq("year", year)
 										.eq("month", month);
-								balanceSheetMapper.delete(balanceSheetQueryWrapper);
-								BalanceSheet balanceSheet = new BalanceSheet();
-								balanceSheet.setNote("");
-								balanceSheet.setCompanyCode(tempCompany.getCode());
-								balanceSheet.setCompanyName(tempCompany.getName());
-								balanceSheet.setCompanyId(tempCompany.getId());
-								balanceSheet.setYear(year);
-								balanceSheet.setMonth(month);
-								balanceSheet.setProjectCode(projectCode);
-								balanceSheet.setProject(project);
-								balanceSheet.setAmount(new BigDecimal(amount));
-								balanceSheet.setInitialAmount(new BigDecimal(initialAmount));
-								balanceSheet.setCreateName(createName);
-								balanceSheet.setCreateDate(createDate);
-								insertDataList.add(balanceSheet);
+								cashFlowMapper.delete(cashFlowQueryWrapper);
+								CashFlow cashFlow = new CashFlow();
+								cashFlow.setNote("");
+								cashFlow.setCompanyCode(tempCompany.getCode());
+								cashFlow.setCompanyName(tempCompany.getName());
+								cashFlow.setCompanyId(tempCompany.getId());
+								cashFlow.setYear(year);
+								cashFlow.setMonth(month);
+								cashFlow.setProjectCode(projectCode);
+								cashFlow.setProject(project);
+								cashFlow.setAmount(new BigDecimal(amount));
+								cashFlow.setCumulativeBalance(new BigDecimal(cumulativeBalance));
+								cashFlow.setCreateName(createName);
+								cashFlow.setCreateDate(createDate);
+								insertDataList.add(cashFlow);
 								successUpdateDataCount++;
 							}
 							else
@@ -441,11 +441,11 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 
 			if (!ObjectUtils.isEmpty(insertDataList))
 			{
-				balanceSheetMapper.insertBatchSomeColumn(insertDataList);
+				cashFlowMapper.insertBatchSomeColumn(insertDataList);
 			}
 		}
 		// endregion
-
 		return result;
 	}
+
 }
