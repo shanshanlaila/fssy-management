@@ -13,8 +13,13 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.fssy.shareholder.management.pojo.manage.log.ScheduleAuditLog;
+import com.fssy.shareholder.management.service.manage.log.ScheduleAuditLogService;
 import com.fssy.shareholder.management.service.system.operate.analysis.ProfitStatementService;
+import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
 
 /**
  * @Title: ProfitStatementTransmitJob.java
@@ -30,8 +35,14 @@ public class ProfitStatementTransmitJob implements Job
 	@Autowired
 	private ProfitStatementService profitStatementService;
 
+	/**
+	 * 定时任务记录表功能业务实现类
+	 */
+	@Autowired
+	private ScheduleAuditLogService scheduleAuditLogService;
+
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException
 	{
 		// region 设置查询条件
@@ -56,23 +67,98 @@ public class ProfitStatementTransmitJob implements Job
 		// endregion
 
 		// region 构造条件并发送
+		Map<String, Object> params;
+		ScheduleAuditLog scheduleAuditLog;
 		// 两个月前
-		Map<String, Object> params = new HashMap<>();
-		params.put("year", twoAgoYear);
-		params.put("month", twoAgoMonth);
-		profitStatementService.receiveData(params);
+		// 设置回滚点,只回滚以下异常
+		Object savePoint = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
+		try
+		{
+			params = new HashMap<>();
+			params.put("year", twoAgoYear);
+			params.put("month", twoAgoMonth);
+			Map<String, Object> result = profitStatementService.receiveData(params);
+			scheduleAuditLog = new ScheduleAuditLog();
+			scheduleAuditLog.setName("系统定时任务");
+			scheduleAuditLog.setNote(InstandTool.objectToString(result.get("msg")));
+			scheduleAuditLog
+					.setStatus(Boolean.valueOf(InstandTool.objectToString(result.get("result")))
+							? CommonConstant.COMMON_STATUS_STRING_SUCCESS
+							: CommonConstant.COMMON_STATUS_STRING_ERROR);
+			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
+		}
+		catch (Exception e)
+		{
+			scheduleAuditLog = new ScheduleAuditLog();
+			scheduleAuditLog.setName("系统定时任务");
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", twoAgoYear,
+					twoAgoMonth, e.getMessage()));
+			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
+			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
+			// 手工回滚异常,回滚到savePoint
+			 TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savePoint);
+		}
 
 		// 上月
-		params = new HashMap<>();
-		params.put("year", lastMonthYear);
-		params.put("month", lastMonthValue);
-		profitStatementService.receiveData(params);
+		// 设置回滚点,只回滚以下异常
+		Object savePoint2 = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
+		try
+		{
+			params = new HashMap<>();
+			params.put("year", lastMonthYear);
+			params.put("month", lastMonthValue);
+			profitStatementService.receiveData(params);
+			Map<String, Object> result = profitStatementService.receiveData(params);
+			scheduleAuditLog = new ScheduleAuditLog();
+			scheduleAuditLog.setName("系统定时任务");
+			scheduleAuditLog.setNote(InstandTool.objectToString(result.get("msg")));
+			scheduleAuditLog
+					.setStatus(Boolean.valueOf(InstandTool.objectToString(result.get("result")))
+							? CommonConstant.COMMON_STATUS_STRING_SUCCESS
+							: CommonConstant.COMMON_STATUS_STRING_ERROR);
+			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
+		}
+		catch (Exception e)
+		{
+			scheduleAuditLog = new ScheduleAuditLog();
+			scheduleAuditLog.setName("系统定时任务");
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", lastMonthYear,
+					lastMonthValue, e.getMessage()));
+			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
+			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
+			// 手工回滚异常,回滚到savePoint
+			TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savePoint2);
+		}
 
 		// 当月
-		params = new HashMap<>();
-		params.put("year", theMonthYear);
-		params.put("month", theMonthValue);
-		profitStatementService.receiveData(params);
+		// 设置回滚点,只回滚以下异常
+		Object savePoint3 = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
+		try
+		{
+			params = new HashMap<>();
+			params.put("year", theMonthYear);
+			params.put("month", theMonthValue);
+			Map<String, Object> result = profitStatementService.receiveData(params);
+			scheduleAuditLog = new ScheduleAuditLog();
+			scheduleAuditLog.setName("系统定时任务");
+			scheduleAuditLog.setNote(InstandTool.objectToString(result.get("msg")));
+			scheduleAuditLog
+					.setStatus(Boolean.valueOf(InstandTool.objectToString(result.get("result")))
+							? CommonConstant.COMMON_STATUS_STRING_SUCCESS
+							: CommonConstant.COMMON_STATUS_STRING_ERROR);
+			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
+		}
+		catch (Exception e)
+		{
+			// 手工回滚异常,回滚到savePoint
+			TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savePoint3);
+			scheduleAuditLog = new ScheduleAuditLog();
+			scheduleAuditLog.setName("系统定时任务");
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", theMonthYear,
+					theMonthValue, e.getMessage()));
+			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
+			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
+		}
 		// endregion
 	}
 

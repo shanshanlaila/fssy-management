@@ -22,6 +22,7 @@ import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.service.system.operate.analysis.ManageCompanyService;
 import com.fssy.shareholder.management.service.system.operate.analysis.ProfitStatementService;
+import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 
 /**
@@ -204,7 +205,12 @@ public class ProfitStatementController
 	public SysResult receiveData(HttpServletRequest request)
 	{
 		Map<String, Object> params = getParams(request);
-		profitStatementService.receiveDataByArtificial(params);
-		return SysResult.ok();
+		Map<String, Object> result = profitStatementService.receiveDataByArtificial(params);
+		if (!Boolean.valueOf(InstandTool.objectToString(result.get("result"))))
+		{
+			SysResult.build(500, InstandTool.objectToString(result.get("msg")));
+		}
+		return SysResult.build(200, InstandTool.objectToString(result.get("msg")));
+
 	}
 }

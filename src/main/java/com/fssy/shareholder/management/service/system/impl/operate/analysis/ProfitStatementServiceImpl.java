@@ -248,11 +248,16 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 
 		// region 处理返回数据
 		StringBuffer sb = new StringBuffer();
+		int totalDataCount = 0;
+		int successInsertDataCount = 0;
+		int successUpdateDataCount = 0;
+		int successSameDataCount = 0;
 		if (ObjectUtils.isEmpty(resultMap))
 		{
-			StringTool.setMsg(sb, String.format("年【%s】，月【%s】的利润数据,无法找到", transmitParams.get("y"),
+			StringTool.setMsg(sb, String.format("年【%s】，月【%s】的利润数据,无法找到;", transmitParams.get("y"),
 					transmitParams.get("m")));
-			System.out.println(String.format("部分数据对接失败，错误描述为【%s】", sb.toString()));
+			result.put("result", false);
+			result.put("msg", sb.toString());
 			return result;
 		}
 		if (resultMap.containsKey("data"))
@@ -286,6 +291,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 					QueryWrapper<ProfitStatement> profitStatementQueryWrapper;
 					for (Map<String, Object> transmitData : resultDataList)
 					{
+						totalDataCount++;
 						// region 整理对接数据
 						String companyCode = InstandTool.objectToString(transmitData.get("公司代码"));
 						ManageCompany tempCompany = manageCompanyKeyBy.get(companyCode);
@@ -365,6 +371,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 							profitStatement.setCreateName(createName);
 							profitStatement.setCreateDate(createDate);
 							insertDataList.add(profitStatement);
+							successInsertDataCount++;
 						}
 						// 存在时，判断createDate是否相同，不同时删除原来的，重新添加
 						else
@@ -391,6 +398,11 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 								profitStatement.setCreateName(createName);
 								profitStatement.setCreateDate(createDate);
 								insertDataList.add(profitStatement);
+								successUpdateDataCount++;
+							}
+							else
+							{
+								successSameDataCount++;
 							}
 						}
 						// endregion
@@ -398,10 +410,34 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 				}
 			}
 
-			if (!flag)
+			String totalStatistics = String.format("【%s】年-【%s】月,共对接数据【%s】条，成功添加【%s】条，成功变更【%s】条，成功对接但未改变【%s】条；",
+					transmitParams.get("y"), transmitParams.get("m"), totalDataCount, successInsertDataCount, successUpdateDataCount,
+					successSameDataCount);
+			if (flag)
 			{
-				// TODO 写到记录表
-				System.out.println(String.format("部分数据对接失败，错误描述为【%s】", sb.toString()));
+				if (successSameDataCount > 0)
+				{
+					if (successSameDataCount == totalDataCount)
+					{
+						result.put("result", true);
+						result.put("msg", totalStatistics + String.format("全部数据对接失败，数据未改变;"));
+					}
+					else if (successInsertDataCount + successUpdateDataCount == totalDataCount)
+					{
+						result.put("result", true);
+						result.put("msg", totalStatistics + String.format("数据对接成功;"));
+					}
+					else
+					{
+						result.put("result", true);
+						result.put("msg", totalStatistics + String.format("部分数据对接失败，部分数据未改变;"));
+					}
+				}
+			}
+			else
+			{
+				result.put("result", false);
+				result.put("msg", totalStatistics + sb.toString());
 			}
 
 			if (!ObjectUtils.isEmpty(insertDataList))
