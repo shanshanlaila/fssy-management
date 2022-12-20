@@ -212,7 +212,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 			{
 				throw new ServiceException(String.format("年份【%s】必须为4位数", year));
 			}
-			String pattern = ".";
+			String pattern = "/.";
 			if (year.toString().matches(pattern))
 			{
 				throw new ServiceException(String.format("年份【%s】必须为整数", year));
@@ -232,7 +232,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 			{
 				throw new ServiceException(String.format("月份【%s】必须为【1到12】的数", month));
 			}
-			String pattern = ".";
+			String pattern = "/.";
 			if (month.toString().matches(pattern))
 			{
 				throw new ServiceException(String.format("月份【%s】必须为整数", month));

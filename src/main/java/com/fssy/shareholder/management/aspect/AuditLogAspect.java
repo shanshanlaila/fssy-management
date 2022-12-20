@@ -36,17 +36,18 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.manage.log.AuditLogMapper;
+import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.department.DepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.log.AuditLog;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.tools.common.IPTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
+import com.fssy.shareholder.management.tools.exception.ServiceException;
 
 /**
  * 日志切面类型（基于此类进行用户行为记录）</br>
@@ -177,19 +178,28 @@ public class AuditLogAspect
 			{
 				// 返回错误页面
 				ModelAndView modelAndView = new ModelAndView("error");// 配置错误页面
-				modelAndView.getModel().put("msg", e.toString());
+				if (e instanceof ServiceException)
+				{
+					modelAndView.getModel().put("msg", e.getMessage());
+				}
+				else
+				{
+					modelAndView.getModel().put("msg", "系统错误，请联系管理员");
+				}
 				modelAndView.getModel().put("judgeSystem", judgeSystem);
 				return modelAndView;
 			}
 			else
 			{
-				// 返回json对象
-				ModelAndView modelAndView = new ModelAndView(
-						new MappingJackson2JsonView());
-				modelAndView.addObject("status", "500");
-				modelAndView.addObject("msg", e.toString());
-				modelAndView.addObject("data", null);
-				return modelAndView;
+				if (e instanceof ServiceException)
+				{
+					// 返回json对象
+					return SysResult.build(500, e.getMessage());
+				}
+				else
+				{
+					return SysResult.build(500, "系统错误，请联系管理员");
+				}
 			}
 		}
 		return result;

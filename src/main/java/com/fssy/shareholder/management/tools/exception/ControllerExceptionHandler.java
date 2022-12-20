@@ -111,7 +111,7 @@ public class ControllerExceptionHandler
 		{
 			// 返回错误页面
 			ModelAndView modelAndView = new ModelAndView("error");// 配置错误页面
-			modelAndView.getModel().put("msg", e.toString());
+			modelAndView.getModel().put("msg", e.getMessage());
 			modelAndView.getModel().put("judgeSystem", judgeSystem);
 			return modelAndView;
 		}
@@ -121,7 +121,7 @@ public class ControllerExceptionHandler
 			ModelAndView modelAndView = new ModelAndView(
 					new MappingJackson2JsonView());
 			modelAndView.addObject("status", "500");
-			modelAndView.addObject("msg", e.toString());
+			modelAndView.addObject("msg", e.getMessage());
 			modelAndView.addObject("data", null);
 			return modelAndView;
 		}
@@ -276,7 +276,7 @@ public class ControllerExceptionHandler
 			}
 			else
 			{
-				modelAndView.getModel().put("msg", e.toString());
+				modelAndView.getModel().put("msg", e.getMessage());
 			}
 			return modelAndView;
 		}
@@ -292,7 +292,7 @@ public class ControllerExceptionHandler
 			}
 			else
 			{
-				modelAndView.addObject("msg", e.toString());
+				modelAndView.addObject("msg", e.getMessage());
 			}
 			return modelAndView;
 		}
@@ -401,7 +401,7 @@ public class ControllerExceptionHandler
 		String methodName = s.getMethodName();
 		int lineNumber = s.getLineNumber();
 		String msg = String.format("[%s] L%s 执行方法（%s）时报错，错误信息为: %s，当前操作人为:%s", className,
-				lineNumber, methodName, e.toString(),
+				lineNumber, methodName, e.getMessage(),
 				ObjectUtils.isEmpty(user) ? "" : user.getName());
 		return msg;
 	}
