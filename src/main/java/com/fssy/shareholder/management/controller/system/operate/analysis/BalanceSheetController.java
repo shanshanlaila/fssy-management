@@ -7,17 +7,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.system.operate.analysis.BalanceSheetService;
 import com.fssy.shareholder.management.service.system.operate.analysis.ManageCompanyService;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
+import com.fssy.shareholder.management.tools.exception.ServiceException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,6 +210,50 @@ public class BalanceSheetController
 	{
 		Map<String, Object> params = getParams(request);
 		balanceSheetService.receiveDataByArtificial(params);
+		return SysResult.ok();
+	}
+	
+	/**
+	 * 导出资产负债表数据
+	 * 
+	 * @param request  请求
+	 * @param response 响应
+	 */
+	@RequiredLog("导出资产负债表数据")
+	@RequiresPermissions("operate:analysis:balance:sheet:download")
+	@GetMapping("download")
+	@ResponseBody
+	public SysResult download(HttpServletRequest request, HttpServletResponse response)
+	{
+		Map<String, Object> params = getParams(request);
+		// region 业务判断，年份必填
+		if (!params.containsKey("year"))
+		{
+			throw new ServiceException(String.format("导出数据时【年份】必须选择"));
+		}
+		// endregion
+
+		List<Map<String, Object>> balanceSheetList = balanceSheetService
+				.findBalanceSheetMapDataByParams(params);
+
+		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+		// 需要改背景色的格子
+		fieldMap.put("companyCode", "公司代码");
+		fieldMap.put("companyName", "公司名称");
+		fieldMap.put("year", "年");
+		fieldMap.put("month", "月");
+		fieldMap.put("projectCode", "项目代码");
+		fieldMap.put("project", "项目名称");
+		fieldMap.put("amount", "金额");
+		fieldMap.put("initialAmount", "期初金额");
+		fieldMap.put("createName", "录入人");
+		fieldMap.put("createDate", "录入时间");
+		SheetOutputService sheetOutputService = new SheetOutputService();
+		if (ObjectUtils.isEmpty(balanceSheetList))
+		{
+			throw new ServiceException("未查出数据");
+		}
+		sheetOutputService.export("资产负债表", balanceSheetList, fieldMap, response);
 		return SysResult.ok();
 	}
 }

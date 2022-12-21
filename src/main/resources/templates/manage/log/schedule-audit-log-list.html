@@ -45,6 +45,13 @@
 									autocomplete="off" class="layui-input">
 							</div>
 							<div class="layui-inline layui-show-xs-block">
+								<select name="status" id="status">
+									<option value="" selected>请选择操作状态</option>
+									<option value="成功">成功</option>
+									<option value="失败">失败</option>
+								</select>
+							</div>
+							<div class="layui-inline layui-show-xs-block">
 								<button class="layui-btn" lay-submit lay-filter="search">
 									<i class="layui-icon">&#xe615;</i>
 								</button>
@@ -74,7 +81,7 @@
 				elem: '#createdAtStart',
 				//更换触发方式
 				trigger: 'click',
-				value: new Date()
+				value: moment().subtract(7, "days").format("YYYY-MM-DD")
 			});
 			laydate.render({
 				elem: '#createdAtEnd',
@@ -88,7 +95,7 @@
 				id : 'dataTable',
 				url : "/manage/scheduleAuditLog/getObjects",
 				where: {
-					createdAtStart: [[${createdAtStart}]]
+					createdAtStart: moment().subtract(7, "days").format("YYYY-MM-DD")
 				},
 				page : true,
 				height : 'full-100' // 设置高度，使数据置于滚动条控制下

@@ -3,10 +3,12 @@ package com.fssy.shareholder.management.controller.system.operate.analysis;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.system.operate.analysis.ManageCompanyService;
 import com.fssy.shareholder.management.service.system.operate.analysis.ProfitAnalysisService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
+import com.fssy.shareholder.management.tools.exception.ServiceException;
 
 /**
  * 变动分析表管理控制器
@@ -42,7 +46,7 @@ public class ProfitAnalysisController
 	private ProfitAnalysisService profitAnalysisService;
 
 	/**
-	 *  经营公司功能业务实现类
+	 * 经营公司功能业务实现类
 	 */
 	@Autowired
 	private ManageCompanyService manageCompanyService;
@@ -186,7 +190,7 @@ public class ProfitAnalysisController
 		// endregion
 		return params;
 	}
-	
+
 	/**
 	 * 获取对接系统数据（人工）
 	 *
@@ -206,6 +210,65 @@ public class ProfitAnalysisController
 			SysResult.build(500, InstandTool.objectToString(result.get("msg")));
 		}
 		return SysResult.build(200, InstandTool.objectToString(result.get("msg")));
+	}
 
+	/**
+	 * 导出变动分析表数据
+	 * 
+	 * @param request  请求
+	 * @param response 响应
+	 */
+	@RequiredLog("导出变动分析表数据")
+	@RequiresPermissions("operate:analysis:profit:analysis:download")
+	@GetMapping("download")
+	@ResponseBody
+	public SysResult download(HttpServletRequest request, HttpServletResponse response)
+	{
+		Map<String, Object> params = getParams(request);
+		// region 业务判断，年份必填
+		if (!params.containsKey("year"))
+		{
+			throw new ServiceException(String.format("导出数据时【年份】必须选择"));
+		}
+		// endregion
+
+		List<Map<String, Object>> profitList = profitAnalysisService
+				.findProfitAnalysisMapDataByParams(params);
+
+		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+		// 需要改背景色的格子
+		fieldMap.put("companyCode", "公司代码");
+		fieldMap.put("companyName", "公司名称");
+		fieldMap.put("year", "年");
+		fieldMap.put("month", "月");
+		fieldMap.put("projectCode", "项目代码");
+		fieldMap.put("project", "项目名称");
+
+		fieldMap.put("accumulateMoney", "累计实际");
+		fieldMap.put("accumulateBudget", "累计预算");
+		fieldMap.put("lastYearAccumulate", "上年金额累计");
+		fieldMap.put("yearBudget", "全年预算");
+
+		fieldMap.put("moneyChangeToLastYear", "上年_金额差");
+		fieldMap.put("differenceToLastYear", "上年_量差");
+		fieldMap.put("structureToLastYear", "上年_结构差");
+		fieldMap.put("priceToLastYear", "上年_价差");
+		fieldMap.put("comparisonToLastYear", "上年_比对");
+
+		fieldMap.put("moneyChangeToBudget", "预算_金额差");
+		fieldMap.put("differenceToBudget", "预算_量差");
+		fieldMap.put("structureToBudget", "预算_结构差");
+		fieldMap.put("priceToBudget", "预算_价差");
+		fieldMap.put("comparisonToBudget", "预算_比对");
+
+		fieldMap.put("createName", "录入人");
+		fieldMap.put("createDate", "录入时间");
+		SheetOutputService sheetOutputService = new SheetOutputService();
+		if (ObjectUtils.isEmpty(profitList))
+		{
+			throw new ServiceException("未查出数据");
+		}
+		sheetOutputService.export("变动分析表", profitList, fieldMap, response);
+		return SysResult.ok();
 	}
 }

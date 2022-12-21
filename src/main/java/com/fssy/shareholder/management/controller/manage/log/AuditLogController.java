@@ -133,6 +133,11 @@ public class AuditLogController
 		{
 			params.put("createdAtEnd", request.getParameter("createdAtEnd"));
 		}
+		// 操作状态查询
+		if (!ObjectUtils.isEmpty(request.getParameter("status")))
+		{
+			params.put("status", request.getParameter("status"));
+		}
 		// endregion
 		return params;
 	}

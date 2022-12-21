@@ -65,6 +65,10 @@
 								<button class="layui-btn layui-btn-sm"
 									shiro:hasPermission="operate:analysis:profit:analysis:receive:data" lay-submit
 									lay-filter="receive-data">同步财务系统</button>
+								<button shiro:hasPermission="operate:analysis:profit:analysis:download" type="button"
+									class="layui-btn" lay-submit lay-filter="download">
+									<i class="layui-icon" title="根据搜索条件导出数据">&#xe601;</i>
+								</button>
 							</div>
 						</div>
 					</form>
@@ -330,6 +334,25 @@
 				layVerify: '',
 				layVerType: '经营公司不能为空',
 				name: 'companyIds'
+			});
+			
+			form.on('submit(download)',function (data) {
+				var field = data.field;
+				
+				if (!field.year) {
+					layer.msg('导出数据时【年份】必须选择', {
+						icon : 5,
+						time : 4000
+					});
+					return false;
+				}
+				
+				field.url = '/operate/analysis/profit-analysis/download';
+				var url = createUrl(field)
+				
+				layer.msg("正在导出数据，请稍候……");
+				window.open(url,true);
+				return false;
 			});
 		});
 	</script>

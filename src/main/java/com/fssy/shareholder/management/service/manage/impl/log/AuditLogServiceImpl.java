@@ -76,6 +76,11 @@ public class AuditLogServiceImpl implements AuditLogService
 		{
 			queryWrapper.eq("id", params.get("id"));
 		}
+		// 操作状态查询
+		if (params.containsKey("status"))
+		{
+			queryWrapper.eq("status", params.get("status"));
+		}
 		// 操作时间查询
 		if (params.containsKey("createdAtStart"))
 		{

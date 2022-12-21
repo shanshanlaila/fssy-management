@@ -1,12 +1,8 @@
 package com.fssy.shareholder.management.controller.manage.log;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,13 +45,6 @@ public class ScheduleAuditLogController
 	@GetMapping("index")
 	public String index(HttpServletRequest request, Model model)
 	{
-		SimpleDateFormat sdf = new SimpleDateFormat();
-		sdf.applyPattern("yyyy-MM-dd");
-		Calendar calendar = Calendar.getInstance(Locale.CHINA);
-		Date date = calendar.getTime();
-		String createdAtStart = sdf.format(date);
-		model.addAttribute("createdAtStart", createdAtStart);
-
 		return "manage/log/schedule-audit-log-list";
 	}
 
