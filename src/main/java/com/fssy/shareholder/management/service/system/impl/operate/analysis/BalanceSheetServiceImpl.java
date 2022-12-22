@@ -409,7 +409,7 @@ public class BalanceSheetServiceImpl extends ServiceImpl<BalanceSheetMapper, Bal
 			}
 
 			String totalStatistics = String.format(
-					"【%s】年-【%s】月,共对接数据【%s】条，成功添加【%s】条，成功变更【%s】条，成功对接但未改变【%s】条；",
+					"【%s】年-【%s】月【资产负债表】,共对接数据【%s】条，成功添加【%s】条，成功变更【%s】条，成功对接但未改变【%s】条；",
 					transmitParams.get("y"), transmitParams.get("m"), totalDataCount,
 					successInsertDataCount, successUpdateDataCount, successSameDataCount);
 			if (flag)

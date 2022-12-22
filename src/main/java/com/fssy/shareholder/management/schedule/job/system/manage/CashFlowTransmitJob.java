@@ -107,7 +107,6 @@ public class CashFlowTransmitJob implements Job
 			params = new HashMap<>();
 			params.put("year", lastMonthYear);
 			params.put("month", lastMonthValue);
-			cashFlowService.receiveData(params);
 			Map<String, Object> result = cashFlowService.receiveData(params);
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");

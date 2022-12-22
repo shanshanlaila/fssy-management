@@ -107,7 +107,6 @@ public class ProfitStatementTransmitJob implements Job
 			params = new HashMap<>();
 			params.put("year", lastMonthYear);
 			params.put("month", lastMonthValue);
-			profitStatementService.receiveData(params);
 			Map<String, Object> result = profitStatementService.receiveData(params);
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");

@@ -410,7 +410,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 				}
 			}
 
-			String totalStatistics = String.format("【%s】年-【%s】月,共对接数据【%s】条，成功添加【%s】条，成功变更【%s】条，成功对接但未改变【%s】条；",
+			String totalStatistics = String.format("【%s】年-【%s】月【利润表】,共对接数据【%s】条，成功添加【%s】条，成功变更【%s】条，成功对接但未改变【%s】条；",
 					transmitParams.get("y"), transmitParams.get("m"), totalDataCount, successInsertDataCount, successUpdateDataCount,
 					successSameDataCount);
 			if (flag)
