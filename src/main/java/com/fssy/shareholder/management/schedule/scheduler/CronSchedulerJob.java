@@ -171,7 +171,7 @@ public class CronSchedulerJob
 				.withIdentity("profitStatementInitJob", "transmitInit1").build();
 		// 每月26日10点5分
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
-				.cronSchedule("0 05 10 26 * ?");
+				.cronSchedule("0 5 10 26 * ?");
 		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
 				.withIdentity("profitStatementInitTrigger", "profitStatementInitTrigger")
 				.withSchedule(cronScheduleBuilder).build();

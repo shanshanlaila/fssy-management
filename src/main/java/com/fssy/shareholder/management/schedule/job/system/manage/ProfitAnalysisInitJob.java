@@ -11,6 +11,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.fssy.shareholder.management.pojo.manage.log.ScheduleAuditLog;
@@ -40,6 +41,7 @@ public class ProfitAnalysisInitJob implements Job
 	private ScheduleAuditLogService scheduleAuditLogService;
 
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public void execute(JobExecutionContext arg0) throws JobExecutionException
 	{
 		// region 设置查询条件
