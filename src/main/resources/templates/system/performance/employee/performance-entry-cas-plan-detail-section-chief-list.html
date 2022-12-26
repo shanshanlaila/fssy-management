@@ -81,14 +81,10 @@
                             <input type="text" name="jobName" placeholder="按工作职责查询"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="times" placeholder="按频次查询"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                        <div class="layui-inline layui-show-xs-block" style="width: 130px;">
                             <label>
                                 <select id=“mainOrNext” name="mainOrNext" class="layui-select">
-                                    <option style="display: none" value="">请选择主担/次担</option>
+                                    <option style="display: none" value="">请选择主/次担</option>
                                     <option value="主担">主担</option>
                                     <option value="次担">次担</option>
                                 </select>
@@ -211,6 +207,11 @@
                         width: 70
                     },
                     {
+                        field: 'workEvents',
+                        title: '流程（工作事件）',
+                        width: 200,
+                    },
+                    {
                         field: 'planningWork',
                         title: '对应工作事件的计划内容',
                         width: 150
@@ -241,7 +242,7 @@
                         title: '主担/次担',
                         width: 90
                     },
-                    {
+                    /*{
                         field: 'id',
                         title: 'ID',
                         width: 50,
@@ -258,7 +259,7 @@
                                 return "无"
                             }
                         }
-                    },
+                    },*/
                 ]
             ]
         });
@@ -352,6 +353,7 @@
                         layer.msg(result.msg);
                         if (result.status === 200) {
                             table.reload('dataTableRight');
+                            table.reload('dataTableLeft');
                         }
                     }
                 })

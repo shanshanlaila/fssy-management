@@ -69,8 +69,8 @@ public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> 
     /**
      * 审核
      *
-     * @param planDetailIds
-     * @param event
+     * @param planDetailIds 计划ids
+     * @param event 审核结果
      * @return 通过/拒绝
      */
     boolean affirmStore(List<String> planDetailIds, String event, List<String> auditNotes);

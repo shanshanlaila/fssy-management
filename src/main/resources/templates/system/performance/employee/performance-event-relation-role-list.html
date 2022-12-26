@@ -13,8 +13,7 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb"> <<a href="">首页</a> <a href="">总部员工绩效</a> <a href="">基础事件管理</a>
-			<a> <cite>导入事件清单岗位关系</cite>
-		</a>
+			<a> <cite>导入事件清单岗位关系</cite></a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
                                                               style="line-height: 30px"></i>
@@ -60,15 +59,15 @@
                             <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
                                    autocomplete="off" class="layui-input laydate search-laydate">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="year" id="year" placeholder="编制年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="yearAndMonth" id="month" placeholder="编制月份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
+                        <div class="layui-inline layui-show-xs-block" style="width: 140px">
                             <select name="eventsFirstType" id="eventsFirstType">
                                 <option value="" selected>请选择事件类型</option>
                                 <option value="事务类">事务类</option>
@@ -156,12 +155,12 @@
             },
             cols: [
                 [
-                    {
+                    /*{
                         field: 'id',
                         title: '序号',
                         fixed: 'left',
                         width: 50
-                    },
+                    },*/
                     {
                         field: 'jobName',
                         title: '工作职责',
@@ -177,7 +176,8 @@
                     {
                         field: 'eventsFirstType',
                         title: '事件类型',
-                        width: 70
+                        width: 70,
+                        align: "center"
                     },
                     {
                         field: 'standardValue',
@@ -188,55 +188,64 @@
                     {
                         field: 'departmentName',
                         title: '部门名称',
-                        width: 90
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'proportion',
                         title: '比重',
                         width: 50,
                         style: 'cursor:pointer;background-color: pink;',
+                        align: "center"
                     },
                     {
                         field: 'roleName',
                         title: '岗位名称',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'isMainOrNext',
                         title: '主担/次担',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'userName',
                         title: '职员名称',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'activeDate',
                         title: '生效日期',
                         width: 100,
                         style: 'cursor:pointer;background-color: pink;',
+                        align: "center"
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 100
+                        width: 100,
+                        align: "center"
                     },
                     {
                         field: 'year',
                         title: '编制年份',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'month',
                         title: '编制月份',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
-                    {
+                    /*{
                         field: 'eventsId',
                         title: '事件序号',
                         width: 80
-                    },
+                    },*/
                     {
                         fixed: 'right',
                         title: '操作',
@@ -277,15 +286,11 @@
             var field = data.field;
             // 导出参数设置-只导出完结状态下的数据-status=“完结”
             data.field.status = '完结';
-            var roleIds = data.field.roleIds;
             var userIds = data.field.userIds;
-            // 必填项控制
-            var departmentIds = data.field.departmentIds;
-            if ([[${departmentName}]] !== '人力资源部' && [[${departmentName}]] !== '绩效科') {
-                if (!departmentIds && !roleIds && !userIds) {
-                    layer.msg("部门名称或者岗位名称或者员工姓名为必填项，请选择！", {icon: 5, time: 4000});
-                    return false;
-                }
+            // 必填项控制，必须选择用户名进行导出
+            if (!userIds) {
+                layer.msg("请点击员工姓名选择后导出", {icon: 5, time: 4000});
+                return false;
             }
             field.url = "/system/performance/employee/events-relation-role/downloadForCharge";
             var url = createUrl(field);

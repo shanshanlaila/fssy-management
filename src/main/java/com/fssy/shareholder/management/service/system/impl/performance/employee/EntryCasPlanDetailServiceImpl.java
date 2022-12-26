@@ -264,9 +264,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasMergeLambdaQueryWrapper
                     .eq(EntryCasMerge::getDepartmentId, departments.get(0).getId())
                     .eq(EntryCasMerge::getYear, LocalDate.now().getYear())
-                    .eq(EntryCasMerge::getMonth,LocalDate.now().getMonthValue());
+                    .eq(EntryCasMerge::getMonth, LocalDate.now().getMonthValue());
 
-            String key = departments.get(0).getId() + ":" + LocalDate.now().getYear()+":"+LocalDate.now().getMonthValue();
+            String key = departments.get(0).getId() + ":" + LocalDate.now().getYear() + ":" + LocalDate.now().getMonthValue();
             EntryCasMerge entryCasMerge;
             if (mergeMap.containsKey(key)) // 缓存存在则获取
             {
@@ -309,7 +309,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setMergeNo(entryCasMerge.getMergeNo());
             entryCasPlanDetail.setMergeId(entryCasMerge.getId());
 
-            // 更新
+            // 写入
             entryCasPlanDetailMapper.insert(entryCasPlanDetail);
             cell.setCellValue("导入成功");// 写在upload目录下的excel表格
         }
@@ -473,7 +473,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
-            queryWrapper.select("userName,roleName,departmentName").groupBy("userName","roleName","departmentName");
+            queryWrapper.select("userName,roleName,departmentName").groupBy("userName", "roleName", "departmentName");
         }
         // 审核页面，右侧表格根据左侧双击选择的名字显示
         if (params.containsKey("userNameRight")) {
@@ -513,12 +513,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         return entryCasMerge;
     }
 
-    /**
-     * 提交审核
-     *
-     * @param planDetailIds
-     * @return
-     */
     @Override
     public boolean submitAudit(List<String> planDetailIds) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
@@ -542,12 +536,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         return true;
     }
 
-    /**
-     * 撤销审核
-     *
-     * @param planDetailIds
-     * @return
-     */
     @Override
     public boolean retreat(List<String> planDetailIds) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
@@ -565,13 +553,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         return true;
     }
 
-    /**
-     * 审核结果
-     *
-     * @param planDetailIds
-     * @param
-     * @return 通过/拒绝
-     */
     @Override
     public boolean affirmStore(List<String> planDetailIds, String event, List<String> auditNotes) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
@@ -583,18 +564,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 auditNote = auditNotes.get(i);
             }
             EntryCasPlanDetail entryCasPlanDetail = keyByPlanDetailMap.get(planId);
-            if (event.equals("pass")) {
-                // 部长、科长审核通过
-                entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
-                entryCasPlanDetail.setAuditNote(auditNote);
-                entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
-            }
-            // 部长、科长审核拒绝
-            else if (event.equals("noPass")) {
-                entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
-                entryCasPlanDetail.setAuditNote(auditNote);
-                entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
-            }
+            // 审核通过设置状态为‘待填报总结’ 审核不通过设置状态为‘待提交审核’
+            entryCasPlanDetail.setStatus(event.equals("pass") ? PerformanceConstant.WAIT_WRITE_REVIEW : PerformanceConstant.WAIT_SUBMIT_AUDIT);
+            entryCasPlanDetail.setAuditNote(auditNote);
+            entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
         }
         return true;
     }
@@ -620,7 +593,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
     @Override
     public boolean saveOneCasPlanDetail(EntryCasPlanDetail entryCasPlanDetail, HttpServletRequest request) {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        // 查询用户姓名
+        Long userId = Long.valueOf(request.getParameter("userId"));
+        User user = userMapper.selectById(userId);
+        // 查询视图
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser(user);
         entryCasPlanDetail.setUserId(user.getId());
         entryCasPlanDetail.setCreatedAt(LocalDateTime.now());
@@ -635,8 +611,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         String eventsFirstType = request.getParameter("eventsFirstType");
         entryCasPlanDetail.setEventsFirstType(eventsFirstType);
 
-        // 查询视图
-        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(user);
+
         if (!ObjectUtils.isEmpty(eventsRoleId)) {
             entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
         }
@@ -650,7 +625,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         entryCasMergeLambdaQueryWrapper
                 .eq(EntryCasMerge::getDepartmentId, viewDepartmentRoleUser.getDepartmentId())
                 .eq(EntryCasMerge::getYear, LocalDate.now().getYear())
-                .eq(EntryCasMerge::getMonth,LocalDate.now().getMonthValue())
+                .eq(EntryCasMerge::getMonth, LocalDate.now().getMonthValue())
         ;
 
         EntryCasMerge entryCasMerge;

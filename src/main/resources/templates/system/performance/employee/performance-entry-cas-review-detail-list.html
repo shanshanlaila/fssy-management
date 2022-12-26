@@ -200,7 +200,8 @@
                                 default:
                                     return d.status;
                             }
-                        }
+                        },
+                        align: "center"
                     },
                     {
                         field: 'eventsFirstType',
@@ -210,7 +211,8 @@
                             if (d.isNewEvent === '是') {
                                 return '新增工作流'
                             }else return d.eventsFirstType
-                        }
+                        },
+                        align: "center"
                     },
                     {
                         field: 'jobName',
@@ -232,16 +234,19 @@
                         field: 'departmentName',
                         title: '部门名称',
                         width: 90,
+                        align: "center"
                     },
                     {
                         field: 'roleName',
-                        title: '岗位（角色）名称',
-                        width: 110
+                        title: '岗位名称',
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'userName',
                         title: '员工姓名',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'planningWork',
@@ -262,22 +267,26 @@
                     {
                         field: 'mainOrNext',
                         title: '主担/次担',
-                        width: 90
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 90
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 90
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'actualCompleteDate',
                         title: '实际完成时间',
-                        width: 90
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'completeDesc',
@@ -287,12 +296,14 @@
                     {
                         field: 'times',
                         title: '频次',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 100
+                        width: 100,
+                        align: "center"
                     },
                     {
                         field: 'note',
@@ -302,22 +313,26 @@
                     {
                         field: 'applyDate',
                         title: '申报日期',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'year',
                         title: '申报年份',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'month',
                         title: '申报月份',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'createName',
                         title: '编制人',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'auditNote',
@@ -326,13 +341,15 @@
                     },
                     {
                         field: 'mergeNo',
-                        title: '员工月度履职计划表编号',
-                        width: 150
+                        title: '月度计划表编号',
+                        width: 150,
+                        align: "center"
                     },
                     {
                         field: 'id',
                         title: '序号',
                         width: 50,
+                        align: "center"
                     },
                     {
                         field: 'eventsId',
@@ -345,11 +362,19 @@
                             } else {
                                 return "无"
                             }
-                        }
+                        },
+                        align: "center"
                     },
                     {
                         field: 'isNewEvent',
                         title: '是否为新增工作走流',
+                        align: "center"
+                    },
+                    {
+                        field: 'autoScore',
+                        title: '系统自动算分',
+                        width: 100,
+                        align: "center"
                     },
                     {
                         fixed: 'right',
