@@ -15,9 +15,13 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
 import com.fssy.shareholder.management.schedule.job.system.AttachmentScheduleJob;
+import com.fssy.shareholder.management.schedule.job.system.manage.BalanceSheetInitJob;
 import com.fssy.shareholder.management.schedule.job.system.manage.BalanceSheetTransmitJob;
+import com.fssy.shareholder.management.schedule.job.system.manage.CashFlowInitJob;
 import com.fssy.shareholder.management.schedule.job.system.manage.CashFlowTransmitJob;
+import com.fssy.shareholder.management.schedule.job.system.manage.ProfitAnalysisInitJob;
 import com.fssy.shareholder.management.schedule.job.system.manage.ProfitAnalysisTransmitJob;
+import com.fssy.shareholder.management.schedule.job.system.manage.ProfitStatementInitJob;
 import com.fssy.shareholder.management.schedule.job.system.manage.ProfitStatementTransmitJob;
 
 /**
@@ -144,5 +148,90 @@ public class CronSchedulerJob
 //		cashFlowTransmitJob(scheduler);
 		// 对接财务系统变动分析表定时任务
 //		profitAnalysisTransmitJob(scheduler);
+		// 初始化财务系统利润表定时任务
+//		profitStatementInitJob(scheduler);
+		// 初始化财务系统资产负债表定时任务
+//		balanceSheetInitJob(scheduler);
+		// 初始化财务系统现金流量表定时任务
+//		cashFlowInitJob(scheduler);
+		// 初始化财务系统变动分析表定时任务
+//		profitAnalysisInitJob(scheduler);
+	}
+	
+
+	/**
+	 * 初始化财务系统利润表定时任务
+	 * 
+	 * @param scheduler
+	 * @throws SchedulerException
+	 */
+	private void profitStatementInitJob(Scheduler scheduler) throws SchedulerException
+	{
+		JobDetail jobDetail = JobBuilder.newJob(ProfitStatementInitJob.class)
+				.withIdentity("profitStatementInitJob", "transmitInit1").build();
+		// 每月26日10点5分
+		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
+				.cronSchedule("0 05 10 26 * ?");
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
+				.withIdentity("profitStatementInitTrigger", "profitStatementInitTrigger")
+				.withSchedule(cronScheduleBuilder).build();
+		scheduler.scheduleJob(jobDetail, cronTrigger);
+	}
+
+	/**
+	 * 初始化财务系统资产负债表定时任务
+	 * 
+	 * @param scheduler
+	 * @throws SchedulerException
+	 */
+	private void balanceSheetInitJob(Scheduler scheduler) throws SchedulerException
+	{
+		JobDetail jobDetail = JobBuilder.newJob(BalanceSheetInitJob.class)
+				.withIdentity("balanceSheetInitJob", "transmitInit2").build();
+		// 每月26日10点30分
+		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
+				.cronSchedule("0 30 10 26 * ?");
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
+				.withIdentity("balanceSheetInitTrigger", "balanceSheetInitTrigger")
+				.withSchedule(cronScheduleBuilder).build();
+		scheduler.scheduleJob(jobDetail, cronTrigger);
+	}
+
+	/**
+	 * 初始化财务系统现金流量表定时任务
+	 * 
+	 * @param scheduler
+	 * @throws SchedulerException
+	 */
+	private void cashFlowInitJob(Scheduler scheduler) throws SchedulerException
+	{
+		JobDetail jobDetail = JobBuilder.newJob(CashFlowInitJob.class)
+				.withIdentity("cashFlowInitJob", "transmitInit3").build();
+		// 每月26日11点00分
+		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
+				.cronSchedule("0 0 11 26 * ?");
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
+				.withIdentity("cashFlowInitTrigger", "cashFlowInitTrigger")
+				.withSchedule(cronScheduleBuilder).build();
+		scheduler.scheduleJob(jobDetail, cronTrigger);
+	}
+
+	/**
+	 * 初始化财务系统变动分析表定时任务
+	 * 
+	 * @param scheduler
+	 * @throws SchedulerException
+	 */
+	private void profitAnalysisInitJob(Scheduler scheduler) throws SchedulerException
+	{
+		JobDetail jobDetail = JobBuilder.newJob(ProfitAnalysisInitJob.class)
+				.withIdentity("profitAnalysisInitJob", "transmitInit4").build();
+		// 每月26日11点45分
+		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
+				.cronSchedule("0 45 11 26 * ?");
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
+				.withIdentity("profitAnalysisInitTrigger", "profitAnalysisInitTrigger")
+				.withSchedule(cronScheduleBuilder).build();
+		scheduler.scheduleJob(jobDetail, cronTrigger);
 	}
 }

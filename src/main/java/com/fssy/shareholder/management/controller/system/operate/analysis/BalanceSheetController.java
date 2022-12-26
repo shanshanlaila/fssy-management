@@ -10,6 +10,7 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.system.operate.analysis.BalanceSheetService;
 import com.fssy.shareholder.management.service.system.operate.analysis.ManageCompanyService;
+import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 
@@ -209,8 +210,12 @@ public class BalanceSheetController
 	public SysResult receiveData(HttpServletRequest request)
 	{
 		Map<String, Object> params = getParams(request);
-		balanceSheetService.receiveDataByArtificial(params);
-		return SysResult.ok();
+		Map<String, Object> result = balanceSheetService.receiveDataByArtificial(params);
+		if (!Boolean.valueOf(InstandTool.objectToString(result.get("result"))))
+		{
+			SysResult.build(500, InstandTool.objectToString(result.get("msg")));
+		}
+		return SysResult.build(200, InstandTool.objectToString(result.get("msg")));
 	}
 	
 	/**
