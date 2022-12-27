@@ -330,9 +330,9 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                     .eq(ViewDepartmentRoleUser::getUserName, userName);
             List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepRoleUser);
             if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
-                StringTool.setMsg(sb, String.format("第【%s】行部门为【%s】、岗位为【%s】、员工姓名为【%s】未维护", j + 1, departmentName, roleName, userName));
-                cell.setCellValue(String.format("部门为【%s】、岗位为【%s】、员工姓名为【%s】未维护", departmentName, roleName, userName));
-                throw new ServiceException(String.format("第【%s】行部门为【%s】、岗位为【%s】、员工姓名为【%s】未维护，请检查信息准确性", j + 1, departmentName, roleName, userName));
+                StringTool.setMsg(sb, String.format("第【%s】行部门为【%s】、岗位为【%s】、职员名称为【%s】未维护", j + 1, departmentName, roleName, userName));
+                cell.setCellValue(String.format("部门为【%s】、岗位为【%s】、职员名称为【%s】未维护", departmentName, roleName, userName));
+                throw new ServiceException(String.format("第【%s】行部门为【%s】、岗位为【%s】、职员名称为【%s】未维护，请检查信息准确性", j + 1, departmentName, roleName, userName));
             }
             // endregion
 

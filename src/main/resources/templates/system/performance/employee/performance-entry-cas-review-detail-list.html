@@ -63,6 +63,7 @@
                                     <option value="待部长审核">待部长审核</option>
                                     <option value="待科长审核">待科长审核</option>
                                     <option value="待经营管理部审核">待经营管理部审核</option>
+                                    <option value="完结">完结</option>
                                 </select>
                             </label>
                         </div>
@@ -190,7 +191,7 @@
                     },
                     {
                         field: 'status',
-                        title: '履职计划状态',
+                        title: '状态',
                         width: 90,
                         fixed: 'left',
                         templet: function (d) {
@@ -201,6 +202,24 @@
                                     return d.status;
                             }
                         },
+                        align: "center"
+                    },
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                        align: "center"
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位名称',
+                        width: 80,
+                        align: "center"
+                    },
+                    {
+                        field: 'userName',
+                        title: '职员名称',
+                        width: 80,
                         align: "center"
                     },
                     {
@@ -230,24 +249,7 @@
                         width: 100,
                         align: 'center'
                     },
-                    {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                        align: "center"
-                    },
-                    {
-                        field: 'roleName',
-                        title: '岗位名称',
-                        width: 80,
-                        align: "center"
-                    },
-                    {
-                        field: 'userName',
-                        title: '员工姓名',
-                        width: 80,
-                        align: "center"
-                    },
+
                     {
                         field: 'planningWork',
                         title: '对应工作事件的计划内容',
@@ -552,7 +554,7 @@
         name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
 
-    // 员工姓名查询下拉列表
+    // 职员名称查询下拉列表
     let userSelect = xmSelect.render({
         el: '#userSelect', // 绑定
         language: 'zn',

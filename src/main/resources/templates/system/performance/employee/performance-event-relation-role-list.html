@@ -50,7 +50,7 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <label class="layui-form-label"
-                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">生效日期</label>
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0;">生效日期</label>
                             <input
                                     type="text" name="activeDateStart" placeholder="生效日期起" id="activeDateStart"
                                     autocomplete="off" class="layui-input laydate search-laydate">
@@ -155,22 +155,32 @@
             },
             cols: [
                 [
-                    /*{
-                        field: 'id',
-                        title: '序号',
-                        fixed: 'left',
-                        width: 50
-                    },*/
+                    {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                        align: "center"
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位名称',
+                        width: 80,
+                        align: "center"
+                    },
+                    {
+                        field: 'userName',
+                        title: '职员名称',
+                        width: 80,
+                        align: "center"
+                    },
                     {
                         field: 'jobName',
                         title: '工作职责',
-                        fixed: 'left',
                         width: 130
                     },
                     {
                         field: 'workEvents',
                         title: '工作事件',
-                        fixed: 'left',
                         width: 250
                     },
                     {
@@ -185,12 +195,7 @@
                         width: 90,
                         align: 'center'
                     },
-                    {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                        align: "center"
-                    },
+
                     {
                         field: 'proportion',
                         title: '比重',
@@ -198,24 +203,14 @@
                         style: 'cursor:pointer;background-color: pink;',
                         align: "center"
                     },
-                    {
-                        field: 'roleName',
-                        title: '岗位名称',
-                        width: 80,
-                        align: "center"
-                    },
+
                     {
                         field: 'isMainOrNext',
-                        title: '主担/次担',
+                        title: '主/次担',
                         width: 80,
                         align: "center"
                     },
-                    {
-                        field: 'userName',
-                        title: '职员名称',
-                        width: 80,
-                        align: "center"
-                    },
+
                     {
                         field: 'activeDate',
                         title: '生效日期',
@@ -241,11 +236,6 @@
                         width: 80,
                         align: "center"
                     },
-                    /*{
-                        field: 'eventsId',
-                        title: '事件序号',
-                        width: 80
-                    },*/
                     {
                         fixed: 'right',
                         title: '操作',
@@ -289,7 +279,7 @@
             var userIds = data.field.userIds;
             // 必填项控制，必须选择用户名进行导出
             if (!userIds) {
-                layer.msg("请点击员工姓名选择后导出", {icon: 5, time: 4000});
+                layer.msg("请点击职员名称选择后导出", {icon: 5, time: 4000});
                 return false;
             }
             field.url = "/system/performance/employee/events-relation-role/downloadForCharge";
@@ -353,7 +343,7 @@
             },
             name: 'roleIds',// 传到后端选择的departmentId集合字符串
         });
-        // 员工姓名查询下拉列表
+        // 职员名称查询下拉列表
         let userSelect = xmSelect.render({
             el: '#userSelect', // 绑定
             language: 'zn',

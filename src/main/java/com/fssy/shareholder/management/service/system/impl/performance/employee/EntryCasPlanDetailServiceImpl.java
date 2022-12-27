@@ -105,7 +105,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         // 导入月度履职计划
         // 返回消息
         Map<String, Object> result = new HashMap<>();
-        StringBuffer sb = new StringBuffer();
         result.put("content", "");
         result.put("failed", false);
         // 读取附件
@@ -153,19 +152,19 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 检查必填项
             String eventsRoleId = cells.get(SheetService.columnToIndex("A"));// 岗位关系序号
             String eventsId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
-            String eventsFirstType = cells.get(SheetService.columnToIndex("C"));//事务类别
-            String jobName = cells.get(SheetService.columnToIndex("D"));//工作职责
-            String workEvents = cells.get(SheetService.columnToIndex("E"));//流程（工作事件）
-            String departmentName = cells.get(SheetService.columnToIndex("F"));//部门
-            String standardValue = cells.get(SheetService.columnToIndex("G"));// 事件价值标准分
-            String mainOrNext = cells.get(SheetService.columnToIndex("H"));// 主/次担
-            String userName = cells.get(SheetService.columnToIndex("I"));// 岗位人员姓名
+            String departmentName = cells.get(SheetService.columnToIndex("C"));//部门
+            String userName = cells.get(SheetService.columnToIndex("E"));// 岗位人员姓名
+            String eventsFirstType = cells.get(SheetService.columnToIndex("F"));// 事件类型
+            String jobName = cells.get(SheetService.columnToIndex("J"));//工作职责
+            String workEvents = cells.get(SheetService.columnToIndex("H"));//流程（工作事件）
+            String standardValue = cells.get(SheetService.columnToIndex("I"));// 事件价值标准分
+            String mainOrNext = cells.get(SheetService.columnToIndex("J"));// 主/次担
             // 填写的数据
-            String planningWork = cells.get(SheetService.columnToIndex("J"));// 对应工作事件的计划内容
-            String times = cells.get(SheetService.columnToIndex("K"));// 频次
-            String planOutput = cells.get(SheetService.columnToIndex("L"));// 表单（输出内容）
-            String planStartDateStr = cells.get(SheetService.columnToIndex("M"));// 计划开始时间
-            String planEndDateStr = cells.get(SheetService.columnToIndex("N"));// 计划完成时间
+            String planningWork = cells.get(SheetService.columnToIndex("K"));// 对应工作事件的计划内容
+            String times = cells.get(SheetService.columnToIndex("L"));// 频次
+            String planOutput = cells.get(SheetService.columnToIndex("M"));// 表单（输出内容）
+            String planStartDateStr = cells.get(SheetService.columnToIndex("N"));// 计划开始时间
+            String planEndDateStr = cells.get(SheetService.columnToIndex("O"));// 计划完成时间
 
             // 检查必填项
             if (StringUtils.isEmpty(departmentName)) {
