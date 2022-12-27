@@ -43,8 +43,19 @@
                             <input type="text" name="createDate" placeholder="编制日期" autocomplete="off"
                                    class="layui-input laydate search-laydate" id="createDate">
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="planningWork" placeholder="计划内容"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <select name="eventsFirstType">
+                                <option value="" selected>请选择事件类型</option>
+                                <option value="新增工作流">新增工作流</option>
+                                <option value="非事务类">非事务类</option>
+                            </select>
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="times" placeholder="频次"
+                            <input type="text" name="workEvents" placeholder="工作事件"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
@@ -53,7 +64,7 @@
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="待经营管理部审核">待经营管理部审核</option>
                                     <option value="待绩效科复核">待绩效科复核</option>
-                                    <option value="待经营管理部主管复核">待经营管理部主管复核</option>
+                                    <option value="待经管部主管复核">待经管部主管复核</option>
                                     <option value="完结">完结</option>
                                 </select>
                             </label>
@@ -134,16 +145,34 @@
                         field: 'departmentName',
                         title: '部门名称',
                         width: 90,
+                        fixed: 'left',
+                        align: "center"
                     },
                     {
                         field: 'roleName',
                         title: '岗位名称',
-                        width: 70
+                        width: 70,
+                        fixed: 'left',
+                        align: "center"
                     },
                     {
                         field: 'userName',
                         title: '员工姓名',
-                        width: 60
+                        width: 60,
+                        fixed: 'left',
+                        align: "center"
+                    },
+                    {
+                        field: 'status',
+                        title: '状态',
+                        width: 120,
+                        templet: function (d) {
+                            if (d.status === '待经营管理部审核') {
+                                return '<span class="layui-badge layui-bg">待经营管理部审核</span>';
+                            } else d.status;
+                        },
+                        align: 'center',
+                        fixed: 'left'
                     },
                     {
                         field: 'planningWork',
@@ -157,8 +186,9 @@
                         templet: function (d) {
                             if (d.isNewEvent === '是') {
                                 return '新增工作流'
-                            }else return d.eventsFirstType
-                        }
+                            } else return d.eventsFirstType
+                        },
+                        align: "center"
                     },
                     {
                         field: 'standardValue',
@@ -184,7 +214,8 @@
                     {
                         field: 'times',
                         title: '频次',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'jobName',
@@ -194,22 +225,20 @@
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 100
+                        width: 100,
+                        align: "center"
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 100
-                    },
-                    {
-                        field: 'status',
-                        title: '履职计划状态',
-                        width: 100
+                        width: 100,
+                        align: "center"
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
                         width: 80,
+                        align: "center"
                     },
                     {
                         field: 'note',
@@ -219,37 +248,44 @@
                     {
                         field: 'mainOrNext',
                         title: '主/次担',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'applyDate',
                         title: '申报日期',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'year',
                         title: '申报年份',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'month',
                         title: '申报月份',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'createName',
                         title: '编制人',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'auditName',
                         title: '审核人',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'auditDate',
                         title: '审核日期',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'auditNote',
@@ -258,15 +294,17 @@
                     },
                     {
                         field: 'mergeNo',
-                        title: '员工月度履职计划表编号',
-                        width: 150
+                        title: '编号',
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'auditStatus',
-                        title: '履职计划审核状态',
-                        width: 120
+                        title: '审核状态',
+                        width: 90,
+                        align: "center"
                     },
-                    {
+                    /*{
                         field: 'id',
                         title: '序号',
                         width: 50
@@ -275,7 +313,7 @@
                         field: 'casPlanId',
                         title: '对应的履职计划id',
                         width: 110
-                    },
+                    },*/
                     {
                         fixed: 'right',
                         title: '操作',

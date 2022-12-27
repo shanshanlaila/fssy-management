@@ -678,10 +678,10 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             // 查询当前登录用户
             User user = GetTool.getUser();
             // 只能导入本人的总结
-            if (!userName.equals(user.getName())) {
+            /*if (!userName.equals(user.getName())) {
                 StringTool.setMsg(sb, String.format("第【%s】行的员工姓名【%s】与当前登录用户不相等，导入失败", j + 1, userName));
                 throw new ServiceException(String.format("第【%s】行的员工姓名【%s】与当前登录用户不相等，导入失败", j + 1, userName));
-            }
+            }*/
             Long userId = users.get(0).getId();
             entryCasReviewDetail.setUserId(userId);
             // 查询MergeNo
@@ -730,10 +730,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             // 新增
             save(entryCasReviewDetail);
-
             successNumber++;
             cell.setCellValue("导入成功");
-
         }
         sheetService.write(attachment.getPath(), attachment.getFilename());
         if (successNumber == 0) {
@@ -742,13 +740,6 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         return result;
     }
 
-    /**
-     * 批量审核——工作计划完成情况审核评价（部长复核）
-     *
-     * @param entryReviewDetailIds 履职总结的Ids
-     * @param ministerReview       部长复核
-     * @return
-     */
     @Override
     public boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
@@ -772,6 +763,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 entryCasReviewDetail.setAutoScore(actualAutoScore);
                 entryCasReviewDetail.setArtifactualScore(actualAutoScore);
                 entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
+                // 在算分时，如果是新增工作流就把他设置为非事务类
                 if (entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                     entryCasReviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
                 }
@@ -786,15 +778,6 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         return true;
     }
 
-
-    /**
-     * 批量审核——总结-科长审核
-     *
-     * @param entryReviewDetailIds           总结ids
-     * @param chargeTransactionEvaluateLevel 事务类评价等级
-     * @param chargeTransactionBelowType     不符合标准
-     * @return 结果
-     */
     @Override
     @Transactional
     public boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType, List<String> auditNotes) {
@@ -829,6 +812,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasReviewDetail.setArtifactualScore(score);
             entryCasReviewDetail.setFinalTransactionEvaluateLevel(chargeTransactionEvaluateLevel);
             entryCasReviewDetail.setAuditNote(auditNote);
+            entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
             entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }
         return true;

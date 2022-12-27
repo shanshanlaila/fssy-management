@@ -437,7 +437,7 @@ public class EntryCasPlanDetailController {
     public SysResult affirm(HttpServletRequest request,
                             @RequestParam(value = "planDetailIds[]") List<String> planDetailIds,
                             @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
-        String event = request.getParameter("event");
+        String event = request.getParameter("event");// 审核结果标识
         boolean res = entryCasPlanDetailService.affirmStore(planDetailIds, event, auditNotes);
         if (res) {
             return SysResult.ok();

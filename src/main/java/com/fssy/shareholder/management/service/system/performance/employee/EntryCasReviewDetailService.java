@@ -102,4 +102,5 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     Boolean storeReviewNotPlan(EntryCasReviewDetail entryCasReviewDetail);
 
     Page<Map<String, Object>> findDataListByMapParams(Map<String, Object> params);
+
 }

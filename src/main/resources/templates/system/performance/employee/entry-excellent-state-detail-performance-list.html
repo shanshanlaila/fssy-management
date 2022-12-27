@@ -43,7 +43,7 @@
                                 <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="待绩效科复核">待绩效科复核</option>
-                                    <option value="待经营管理部主管复核">待经营管理部主管复核</option>
+                                    <option value="待经管部主管复核">待经管部主管复核</option>
                                     <option value="完结">完结</option>
                                 </select>
                             </label>
@@ -179,7 +179,7 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                statusOr: true//显示两种状态，筛选status为“待经营管理部主管复核”或者status为“完结”且classReview字段不等于“优”的
+                statusOr: true//显示两种状态，筛选status为“待经管部主管复核”或者status为“完结”且classReview字段不等于“优”的
             },
             cols: [
                 [

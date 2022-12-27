@@ -5,6 +5,7 @@
 package com.fssy.shareholder.management.tools.common;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasReviewDetailMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
@@ -145,6 +146,7 @@ public class GetTool {
             ));
         }
         EventsRelationRole eventsRelationRole = eventsRelationRoles.get(0);
+        entryCasReviewDetail.setEventsRoleId(eventsRelationRole.getId());
         BigDecimal autoScore;
         switch (EvaluationGrade) {
             case PerformanceConstant.UNQUALIFIED:
@@ -168,12 +170,59 @@ public class GetTool {
         // 以年份，月份，事件岗位关系序号查询有多少条总结，以总结数除以分数，就是最终分数
         LambdaQueryWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaQueryWrapper = new LambdaQueryWrapper<>();
         entryCasReviewDetailLambdaQueryWrapper
-                .eq(EntryCasReviewDetail::getEventsRoleId, eventsRelationRole.getId());
+                .eq(EntryCasReviewDetail::getEventsRoleId, eventsRelationRole.getId())
+                .eq(EntryCasReviewDetail::getYear, entryCasReviewDetail.getYear())
+                .eq(EntryCasReviewDetail::getMonth, entryCasReviewDetail.getMonth());
         Long count = entryCasReviewDetailMappers.selectCount(entryCasReviewDetailLambdaQueryWrapper);
         if (count == 0) {
             throw new ServiceException(String.format("未查出岗位配比序号为【%s】的数据", eventsRelationRole.getId()));
         }
-        return autoScore.divide(new BigDecimal(count)).setScale(2, RoundingMode.HALF_UP);
+        // 2022-12-16 发现问题，已经生成autoScore之后重新新增总结，此时，原来生成的autoScore没有重新除以总结数，所以额外添加修改操作
+        // 重新修改
+        entryCasReviewDetailLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        entryCasReviewDetailLambdaQueryWrapper
+                .eq(EntryCasReviewDetail::getEventsRoleId, eventsRelationRole.getId())
+                .eq(EntryCasReviewDetail::getYear, entryCasReviewDetail.getYear())
+                .eq(EntryCasReviewDetail::getMonth, entryCasReviewDetail.getMonth())
+                .ne(EntryCasReviewDetail::getId, entryCasReviewDetail.getId())
+                .eq(EntryCasReviewDetail::getStatus, PerformanceConstant.FINAL)// 完结状态
+                .ne(EntryCasReviewDetail::getEventsFirstType, PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT);// 不等于新增工作流
+        List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMappers.selectList(entryCasReviewDetailLambdaQueryWrapper);
+        if (!ObjectUtils.isEmpty(entryCasReviewDetails)) {
+            for (EntryCasReviewDetail casReviewDetail : entryCasReviewDetails) {
+                String evaluationGrade;
+                if (PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION.equals(casReviewDetail.getEventsFirstType())) {
+                    evaluationGrade = casReviewDetail.getFinalTransactionEvaluateLevel();
+                } else {
+                    evaluationGrade = casReviewDetail.getFinalNontransactionEvaluateLevel();
+                }
+                BigDecimal reAutoScore;
+                switch (evaluationGrade) {
+                    case PerformanceConstant.UNQUALIFIED:
+                        // EvaluationGrade=‘不合格’时取delow，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                        reAutoScore = eventsRelationRole.getDelow();
+                        break;
+                    case PerformanceConstant.MIDDLE:
+                        // EvaluationGrade=‘中’时取middle，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                        reAutoScore = eventsRelationRole.getMiddle();
+                        break;
+                    case PerformanceConstant.FINE:
+                        // EvaluationGrade=‘良’时取fine，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                        reAutoScore = eventsRelationRole.getFine();
+                        break;
+                    default:
+                        // EvaluationGrade=‘优或者合格’excellent，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                        // 结果为符合，以绩效科的审核结果为准
+                        reAutoScore = eventsRelationRole.getExcellent();
+                        break;
+                }
+                BigDecimal newAutoScore = reAutoScore.divide(new BigDecimal(count), 2, RoundingMode.HALF_UP);
+                UpdateWrapper<EntryCasReviewDetail> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", casReviewDetail.getId()).set("autoScore", newAutoScore);
+                entryCasReviewDetailMappers.update(null, updateWrapper);
+            }
+        }
+        return autoScore.divide(new BigDecimal(count), 2, RoundingMode.HALF_UP);
     }
 
     /**

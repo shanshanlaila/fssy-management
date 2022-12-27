@@ -202,7 +202,7 @@ public class EntryExcellentStateDetail extends BaseModel {
     private String classReview;
 
     /**
-     * 申报材料复核状态，待绩效科复核，待经营管理部主管复核，完结
+     * 申报材料复核状态，待绩效科复核，待经管部主管复核，完结
      */
     @TableField("status")
     private String status;

@@ -194,8 +194,8 @@
             toolbar: '#toolbar',
             where: {
                 status: '待提交审核',
-                userName:[[${userName}]],//登录用户
-                departmentName: [[${departmentName}]],// 登录用户本部门
+                //userName:[[${userName}]],//登录用户
+                //departmentName: [[${departmentName}]],// 登录用户本部门
             },
             cols: [
                 [
@@ -203,6 +203,7 @@
                         type: 'checkbox',
                         fixed: 'left',
                         width: 50,
+                        align: "center"
                     },
                     {
                         field: 'status',
@@ -213,22 +214,24 @@
                             switch (d.status) {
                                 case '待提交审核':
                                     return '<span class="layui-badge layui-bg">待提交审核</span>';
-                                case '待填报回顾':
-                                    return '<span class="layui-badge layui-bg-green">待填报回顾</span>';
+                                case '待填报总结':
+                                    return '<span class="layui-badge layui-bg-green">待填报总结</span>';
                                 default:
                                     return d.status;
                             }
-                        }
+                        },
+                        align: "center"
                     },
                     {
                         field: 'eventsFirstType',
                         title: '事件类型',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'jobName',
                         title: '工作职责',
-                        width: 80
+                        width: 130
                     },
                     {
                         field: 'workEvents',
@@ -238,17 +241,20 @@
                     {
                         field: 'departmentName',
                         title: '部门名称',
-                        width: 100
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'roleName',
                         title: '岗位名称',
-                        width: 110
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'userName',
                         title: '员工姓名',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'standardValue',
@@ -259,7 +265,8 @@
                     {
                         field: 'mainOrNext',
                         title: '主/次担',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'planningWork',
@@ -280,57 +287,68 @@
                     {
                         field: 'planStartDate',
                         title: '计划开始日期',
-                        width: 90
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'planEndDate',
                         title: '计划完成日期',
-                        width: 90
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 90
+                        width: 90,
+                        align: "center"
                     },
                     {
                         field: 'createDate',
                         title: '编制日期',
                         width: 80,
+                        align: "center"
                     },
                     {
                         field: 'applyDate',
                         title: '申报日期',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'year',
                         title: '申报年份',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'month',
                         title: '申报月份',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'createName',
                         title: '编制人',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'mergeNo',
-                        title: '员工月度履职计划表编号',
-                        width: 150
+                        title: '月度计划表编号',
+                        width: 110,
+                        align: "center"
                     },
                     {
                         field: 'auditNote',
                         title: '履职计划审核意见',
-                        width: 120
+                        width: 120,
+                        align: "center"
                     },
                     {
                         field: 'id',
                         title: '序号',
                         width: 50,
+                        align: "center"
                     },
                     {
                         field: 'eventsId',
@@ -343,7 +361,8 @@
                             } else {
                                 return "无"
                             }
-                        }
+                        },
+                        align: "center"
                     },
                     {
                         fixed: 'right',
@@ -456,11 +475,9 @@
         form.on('submit(export)', function (data) {
             var field = data.field;
             data.field.status = '待填报总结'// 只能导出‘待太填报总结’
-            data.field.userName=[[${userName}]];// 只能导出本人的
+            //data.field.userName=[[${userName}]];// 只能导出本人的
             // 必填项控制
-            var roleIds = data.field.roleIds;
             var userIds = data.field.userIds;
-            var departmentIds = data.field.departmentIds;
             if (!userIds) {
                 layer.msg("请选择姓名进行导出", {icon: 5, time: 4000});
                 return false;

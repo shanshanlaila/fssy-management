@@ -26,12 +26,12 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body ">
-                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
-                            <div id="departmentSelect"></div>
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px">
                             <input type="text" id="year" name="year" placeholder="编制年份"
                                    autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="departmentSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="strategyFunctions" placeholder="战略职能"
@@ -49,18 +49,13 @@
                             <input type="text" name="workOutput" placeholder="表单（输出内容）"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px">
                             <select name="eventsFirstType" id="eventsFirstType">
                                 <option value="" selected>请选择事件类型</option>
                                 <option value="事务类">事务类</option>
                                 <option value="非事务类">非事务类</option>
                             </select>
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="office" placeholder="科室查询"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-
                         <div class="layui-inline layui-show-xs-block">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
@@ -150,25 +145,37 @@
                                             field: 'year',
                                             title: '年份',
                                             width: 50,
-                                            fixed: 'left'
+                                            fixed: 'left',
+                                            align: "center"
+                                        },
+                                        {
+                                            field: 'departmentName',
+                                            title: '部门',
+                                            width: 90,
+                                            align: "center",
+                                            fixed: 'left',
+                                        },
+                                        {
+                                            field: 'office',
+                                            title: '科室',
+                                            width: 70,
+                                            align: "center",
+                                            fixed: 'left',
                                         },
                                         {
                                             field: 'strategyFunctions',
                                             title: '战略职能',
-                                            width: 130,
-                                            fixed: 'left'
+                                            width: 180,
                                         },
                                         {
                                             field: 'supportFunctions',
                                             title: '支持职能',
-                                            width: 100,
-                                            fixed: 'left'
+                                            width: 100
                                         },
                                         {
                                             field: 'jobName',
                                             title: '工作职责',
-                                            width: 200,
-                                            fixed: 'left'
+                                            width: 200
                                         },
                                         {
                                             field: 'workEvents',
@@ -183,12 +190,14 @@
                                         {
                                             field: 'eventsFirstType',
                                             title: '事件类型',
-                                            width: 80
+                                            width: 80,
+                                            align: "center"
                                         },
                                         {
                                             field: 'duration',
                                             title: '月工作标准时长',
-                                            width: 100
+                                            width: 100,
+                                            align: "center"
                                         },
                                         {
                                             field: 'standardValue',
@@ -202,40 +211,36 @@
                                             title: '备注',
                                             width: 100
                                         },
-                                        {
-                                            field: 'departmentName',
-                                            title: '部门',
-                                            width: 90
-                                        },
-                                        {
-                                            field: 'office',
-                                            title: '科室',
-                                            width: 70
-                                        },
+
                                         {
                                             field: 'createDate',
                                             title: '编制日期',
                                             width: 80,
+                                            align: "center"
                                         },
                                         {
                                             field: 'activeDate',
                                             title: '生效日期',
                                             width: 80,
+                                            align: "center"
                                         },
                                         {
                                             field: 'listCreateUser',
                                             title: '事件清单创建人',
-                                            width: 130
+                                            width: 130,
+                                            align: "center"
                                         },
                                         {
                                             field: 'valueCreateUser',
                                             title: '事件价值创建人',
-                                            width: 130
+                                            width: 130,
+                                            align: "center"
                                         },
                                         {
                                             field: 'valueCreateDate',
                                             title: '事件价值创建日期',
-                                            width: 130
+                                            width: 130,
+                                            align: "center"
                                         },
                                         {
                                             fixed: 'right',
