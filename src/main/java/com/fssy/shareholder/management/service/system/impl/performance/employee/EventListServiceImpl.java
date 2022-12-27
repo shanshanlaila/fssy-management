@@ -433,16 +433,17 @@ public class EventListServiceImpl implements EventListService {
                 cell.setCellValue("部门名称是空的");
                 continue;
             }
+            // 有的部门没有科室，允许科室为空
             String office = cells.get(SheetService.columnToIndex("K"));
-            if (ObjectUtils.isEmpty(office)) {
+            /*if (ObjectUtils.isEmpty(office)) {
                 setFailedContent(result, String.format("第%s行的科室是空的", j + 1));
                 cell.setCellValue("科室是空的");
                 continue;
-            }
+            }*/
             // 数据校验
             if (!(eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION)
                     || eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION))) {
-                setFailedContent(result, String.format("第%s行的事务类型填写有误", j + 1));
+                setFailedContent(result, String.format("第%s行的事件类型填写有误", j + 1));
                 cell.setCellValue("表中事件类型填写有误");
                 continue;
             }

@@ -66,7 +66,7 @@ public class GetTool {
     /**
      * 获取部门-角色-用户视图实体类(重载)
      *
-     * @param userName 员工姓名
+     * @param userName 职员名称
      * @return 部门-角色-用户视图实体类
      */
     public static ViewDepartmentRoleUser getDepartmentRoleByUser(String userName) {

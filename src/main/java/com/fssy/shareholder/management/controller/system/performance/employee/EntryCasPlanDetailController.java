@@ -311,13 +311,13 @@ public class EntryCasPlanDetailController {
         // 需要改背景色的格子
         fieldMap.put("id", "履职计划序号");
         fieldMap.put("eventsRoleId", "事件岗位序号");
+        fieldMap.put("departmentName", "部门名称");
+        fieldMap.put("roleName", "岗位名称");
+        fieldMap.put("userName", "职员名称");
         fieldMap.put("eventsFirstType", "事件类型");
         fieldMap.put("jobName", "工作职责");
         fieldMap.put("workEvents", "流程（工作事件）");
         fieldMap.put("standardValue", "事件标准价值");
-        fieldMap.put("departmentName", "部门名称");
-        fieldMap.put("roleName", "岗位名称");
-        fieldMap.put("userName", "员工姓名");
         fieldMap.put("applyDate", "申报日期");
         fieldMap.put("mainOrNext", "主/次担任");
         fieldMap.put("planningWork", "对应工作事件的计划内容");

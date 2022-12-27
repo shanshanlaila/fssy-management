@@ -464,13 +464,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             // 读取数据
             String planId = cells.get(SheetService.columnToIndex("A"));// 履职计划主键
             String eventsRoleId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
-            String eventsFirstType = cells.get(SheetService.columnToIndex("C"));// 事件类型
-            String jobName = cells.get(SheetService.columnToIndex("D"));// 工作职责
-            String workEvents = cells.get(SheetService.columnToIndex("E"));// 流程（工作事件）
-            String standardValue = cells.get(SheetService.columnToIndex("F"));// 事件价值标准分
-            String departmentName = cells.get(SheetService.columnToIndex("G"));// 部门名称
-            String roleName = cells.get(SheetService.columnToIndex("H"));// 岗位名称
-            String userName = cells.get(SheetService.columnToIndex("I"));// 员工姓名
+            String departmentName = cells.get(SheetService.columnToIndex("C"));// 部门名称
+            String roleName = cells.get(SheetService.columnToIndex("D"));// 岗位名称
+            String userName = cells.get(SheetService.columnToIndex("E"));// 职员名称
+            String eventsFirstType = cells.get(SheetService.columnToIndex("F"));// 事件类型
+            String jobName = cells.get(SheetService.columnToIndex("G"));// 工作职责
+            String workEvents = cells.get(SheetService.columnToIndex("H"));// 流程（工作事件）
+            String standardValue = cells.get(SheetService.columnToIndex("I"));// 事件价值标准分
             String applyDate = cells.get(SheetService.columnToIndex("J"));// 申报日期
             String mainOrNext = cells.get(SheetService.columnToIndex("K"));// 主/次担
             String planningWork = cells.get(SheetService.columnToIndex("L"));// 对应工作事件的计划内容
@@ -542,8 +542,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 continue;
             }
             if (ObjectUtils.isEmpty(userName)) {
-                setFailedContent(result, String.format("第%s行的员工姓名为空", j + 1));
-                cell.setCellValue("员工姓名不能为空");
+                setFailedContent(result, String.format("第%s行的职员名称为空", j + 1));
+                cell.setCellValue("职员名称不能为空");
                 continue;
             }
             if (ObjectUtils.isEmpty(applyDate)) {
@@ -679,8 +679,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             User user = GetTool.getUser();
             // 只能导入本人的总结
             /*if (!userName.equals(user.getName())) {
-                StringTool.setMsg(sb, String.format("第【%s】行的员工姓名【%s】与当前登录用户不相等，导入失败", j + 1, userName));
-                throw new ServiceException(String.format("第【%s】行的员工姓名【%s】与当前登录用户不相等，导入失败", j + 1, userName));
+                StringTool.setMsg(sb, String.format("第【%s】行的职员名称【%s】与当前登录用户不相等，导入失败", j + 1, userName));
+                throw new ServiceException(String.format("第【%s】行的职员名称【%s】与当前登录用户不相等，导入失败", j + 1, userName));
             }*/
             Long userId = users.get(0).getId();
             entryCasReviewDetail.setUserId(userId);

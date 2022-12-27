@@ -223,6 +223,24 @@
                         align: "center"
                     },
                     {
+                        field: 'departmentName',
+                        title: '部门名称',
+                        width: 90,
+                        align: "center"
+                    },
+                    {
+                        field: 'roleName',
+                        title: '岗位名称',
+                        width: 80,
+                        align: "center"
+                    },
+                    {
+                        field: 'userName',
+                        title: '职员名称',
+                        width: 80,
+                        align: "center"
+                    },
+                    {
                         field: 'eventsFirstType',
                         title: '事件类型',
                         width: 80,
@@ -238,24 +256,7 @@
                         title: '流程（工作事件）',
                         width: 200,
                     },
-                    {
-                        field: 'departmentName',
-                        title: '部门名称',
-                        width: 90,
-                        align: "center"
-                    },
-                    {
-                        field: 'roleName',
-                        title: '岗位名称',
-                        width: 80,
-                        align: "center"
-                    },
-                    {
-                        field: 'userName',
-                        title: '员工姓名',
-                        width: 80,
-                        align: "center"
-                    },
+
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
@@ -303,12 +304,6 @@
                         align: "center"
                     },
                     {
-                        field: 'createDate',
-                        title: '编制日期',
-                        width: 80,
-                        align: "center"
-                    },
-                    {
                         field: 'applyDate',
                         title: '申报日期',
                         width: 80,
@@ -340,7 +335,7 @@
                     },
                     {
                         field: 'auditNote',
-                        title: '履职计划审核意见',
+                        title: '审核意见',
                         width: 120,
                         align: "center"
                     },
@@ -581,7 +576,7 @@
         name: 'roleIds',// 传到后端选择的roleId集合字符串
     });
 
-    // 员工姓名查询下拉列表
+    // 职员名称查询下拉列表
     let userSelect = xmSelect.render({
         el: '#userSelect', // 绑定
         language: 'zn',

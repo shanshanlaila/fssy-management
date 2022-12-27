@@ -300,7 +300,7 @@ public class EventsRelationRoleController
 						"departmentName," +
 						"standardValue," +
 						"eventsFirstType," +
-						"isMainOrNext,userName"
+						"isMainOrNext,userName,roleName"
 		);
 		List<Map<String, Object>> relationRoleLists = eventsRelationRoleService.findRelationRoleMapDataByParams(params);
 
@@ -308,20 +308,20 @@ public class EventsRelationRoleController
 		// 需要改背景色的格子
 		fieldMap.put("id", "系统序号");// A
 		fieldMap.put("eventsId", "事件清单序号");// B
-		fieldMap.put("eventsFirstType", "事务类型");// C
-		fieldMap.put("jobName", "工作职责");// D
-		fieldMap.put("workEvents", "流程（工作事件）");// E
-		fieldMap.put("departmentName", "部门");// F
-		fieldMap.put("standardValue", "事件标准价值");// G
-		fieldMap.put("isMainOrNext", "主/次担");// H
-		fieldMap.put("userName", "岗位人员姓名");// I
+		fieldMap.put("departmentName", "部门名称");// C
+		fieldMap.put("roleName", "岗位名称");// D
+		fieldMap.put("userName", "职员名称");// E
+		fieldMap.put("eventsFirstType", "事件类型");// F
+		fieldMap.put("jobName", "工作职责");// G
+		fieldMap.put("workEvents", "流程（工作事件）");// H
+		fieldMap.put("standardValue", "事件标准价值");// I
+		fieldMap.put("isMainOrNext", "主/次担");// J
 		// 需要填写的部分
-		fieldMap.put("duiyingjihuaneirong", "*对应工作事件的计划内容");// planningWork J
-		fieldMap.put("pinci", "频次");// K
-		fieldMap.put("biaodan", "*表单（输出内容）");// planOutput L
-		fieldMap.put("jihuakaishishijian", "*计划开始时间");// M
-		fieldMap.put("jihuawanchengshijian", "*计划完成时间");// N
-		//fieldMap.put("shengbaoyuefen", "*申报日期");
+		fieldMap.put("duiyingjihuaneirong", "*对应工作事件的计划内容");// planningWork K
+		fieldMap.put("pinci", "频次");// L
+		fieldMap.put("biaodan", "*表单（输出内容）");// planOutput M
+		fieldMap.put("jihuakaishishijian", "*计划开始时间");// N
+		fieldMap.put("jihuawanchengshijian", "*计划完成时间");// O
 		// 标识字符串的列
 		List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
 		SheetOutputService sheetOutputService = new SheetOutputService();
