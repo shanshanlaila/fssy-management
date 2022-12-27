@@ -369,6 +369,9 @@ public class HrManagerPerformanceEvalController {
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
             params.put("id", request.getParameter("id"));
         }
+        if (!com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isEmpty(request.getParameter("note"))) {
+            params.put("note", request.getParameter("note"));
+        }
         if (!com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isEmpty(request.getParameter("year"))) {
             params.put("year", request.getParameter("year"));
         }

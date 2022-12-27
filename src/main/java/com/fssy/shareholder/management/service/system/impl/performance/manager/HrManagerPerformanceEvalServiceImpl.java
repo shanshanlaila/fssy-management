@@ -208,12 +208,15 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
             if (ObjectUtils.isEmpty(kpiScore) && ObjectUtils.isEmpty(qualitativeScore)){
                 hrManagerPerformanceEval.setScoreAuto(null);
                 hrManagerPerformanceEval.setScoreAdjust(null);
+                hrManagerPerformanceEval.setNote("定量评价分未计算；定性评价分未计算");
             }else if (ObjectUtils.isEmpty(kpiScore)){
                 hrManagerPerformanceEval.setScoreAuto(qualitativeScoreAuto);
                 hrManagerPerformanceEval.setScoreAdjust(qualitativeScoreAuto);
+                hrManagerPerformanceEval.setNote("定量评价分未计算；");
             }else if (ObjectUtils.isEmpty(qualitativeScore)){
                 hrManagerPerformanceEval.setScoreAuto(kpiScore.multiply(kpiScoreR));
                 hrManagerPerformanceEval.setScoreAdjust(kpiScore.multiply(kpiScoreR));
+                hrManagerPerformanceEval.setNote("定性评价分未计算；");
             }
             saveOrUpdate(hrManagerPerformanceEval);//根据id进行更新或添加
         }

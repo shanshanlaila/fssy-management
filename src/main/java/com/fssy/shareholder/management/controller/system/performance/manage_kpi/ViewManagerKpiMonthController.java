@@ -8,6 +8,7 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
@@ -50,7 +51,8 @@ public class ViewManagerKpiMonthController {
     private FileAttachmentTool fileAttachmentTool;
     @Autowired
     private ImportModuleService importModuleService;
-
+    @Autowired
+    private CompanyService companyService;
     /**
      * 返回附件上传页面
      *
@@ -139,6 +141,8 @@ public class ViewManagerKpiMonthController {
     @RequiredLog("经理人月度KPI分数")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("companyNameList",companyNameList);
         return "system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-list";
     }
 
@@ -179,16 +183,6 @@ public class ViewManagerKpiMonthController {
     @ResponseBody
     public SysResult updateScore(HttpServletRequest request){
         Map<String, Object> params = getParams(request);
-
-        if (ObjectUtils.isEmpty(params.get("companyName"))){
-            throw new ServiceException("未填写企业名称，生成失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("year"))){
-            throw new ServiceException("未选择年份，生成失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("month"))){
-            throw new ServiceException("未选择年份，生成失败");
-        }
         boolean result = viewManagerKpiMonthService.createScore(params);
         if (result) {
             return SysResult.ok();
@@ -325,6 +319,9 @@ public class ViewManagerKpiMonthController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("yearMonth"))) {
             params.put("yearMonth", request.getParameter("yearMonth"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            params.put("companyIds", request.getParameter("companyIds"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))) {
             params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));

@@ -40,6 +40,12 @@ public class ViewManagerKpiMonth extends BaseModel {
     private String companyName;
 
     /**
+     * 公司id
+     */
+    @TableField("companyId")
+    private Integer companyId;
+
+    /**
      * 经理人姓名
      */
     @TableField("managerName")

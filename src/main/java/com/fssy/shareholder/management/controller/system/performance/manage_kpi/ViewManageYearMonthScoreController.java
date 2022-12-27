@@ -10,6 +10,7 @@ import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.Manage
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManageYearMonthScore;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.ManageMonthScoreSheetOutputService;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManageKpiMonthAimService;
@@ -53,6 +54,8 @@ public class ViewManageYearMonthScoreController {
     private ImportModuleService importModuleService;
     @Autowired
     private ManageKpiMonthAimService manageKpiMonthAimService;
+    @Autowired
+    private CompanyService companyService;
     /**
      * 计算经营管理月度分数视图 页面
      *
@@ -64,6 +67,8 @@ public class ViewManageYearMonthScoreController {
     @RequiredLog("经营管理月度项目分数管理")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("companyNameList",companyNameList);
         return "system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-list";
     }
 
@@ -82,8 +87,10 @@ public class ViewManageYearMonthScoreController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
+        //获取前端年月查询
         String yearMonth = request.getParameter("yearMonth");
         params.put("yearMonth",yearMonth);
+        //获取前端公司查询的主键
         Page<ViewManageYearMonthScore> scoreDataListPerPageByParams
                 = viewManageYearMonthScoreService.findViewManageYearMonthScoreDataListPerPageByParams(params);
         if (scoreDataListPerPageByParams.getTotal() == 0) {
@@ -287,6 +294,9 @@ public class ViewManageYearMonthScoreController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("yearMonth"))) {
             params.put("yearMonth", request.getParameter("yearMonth"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            params.put("companyIds", request.getParameter("companyIds"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("manageKpiYearId"))) {
             params.put("manageKpiYearId", request.getParameter("manageKpiYearId"));

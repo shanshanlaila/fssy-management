@@ -27,6 +27,11 @@ public class ViewManageYearMonthScore extends BaseModel {
      */
     @TableField("id")
     private Integer id;
+    /**
+     * 公司id
+     */
+    @TableField("companyId")
+    private Integer companyId;
 
     /**
      * 经理人KPI项目状态
