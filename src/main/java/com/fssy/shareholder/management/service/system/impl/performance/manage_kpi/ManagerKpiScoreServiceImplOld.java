@@ -63,14 +63,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
      */
     @Override
     public Page<Map<String, Object>> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
-       /* QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
-        StringBuilder stringBuilder = new StringBuilder("companyName, managerName,position," +
-                "( SELECT scoreAdjust  FROM bs_manager_kpi_score AS a WHERE a.YEAR = 2020 and month=12 and a.companyName=bs_manager_kpi_score.companyName and a.managerName=bs_manager_kpi_score.managerName ) AS 'oneYear'," +
-                "( SELECT scoreAdjust  FROM bs_manager_kpi_score AS b WHERE b.YEAR = 2019 and month=12 and b.companyName=bs_manager_kpi_score.companyName and b.managerName=bs_manager_kpi_score.managerName ) AS 'twoYear'," +
-                "(  SELECT scoreAdjust  FROM bs_manager_kpi_score AS c WHERE c.YEAR = 2018 and month=12 and c.companyName=bs_manager_kpi_score.companyName and c.managerName=bs_manager_kpi_score.managerName ) AS 'threeYear' ");
-        queryWrapper.select(stringBuilder.toString()).groupBy("managerName");*/
-
-        QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
+             QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
         String yearStr = (String) params.get("year");
         Integer year = InstandTool.stringToInteger(yearStr);
         if (ObjectUtils.isEmpty(year) || year == 0) {
@@ -276,13 +269,10 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             }
         }
         //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
-        Object companyId = params.get("companyIds");
-        if (!ObjectUtils.isEmpty(companyId)) {
-            if (params.containsKey("companyId")) {
-                String companyIds = (String) params.get("companyId");
-                List<String> strings = Arrays.asList(companyIds.split(","));
-                queryWrapper.in("companyId", strings);
-            }
+        if (params.containsKey("companyIds")) {
+            String companyIds = (String) params.get("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            queryWrapper.in("companyId", strings);
         }
         return queryWrapper;
     }

@@ -170,14 +170,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                     if(i == 0){
                         //对score表插入数据
                         ManagerKpiScoreOld managerKpiScore = new ManagerKpiScoreOld();
-                        //从前端获取公司名称
-                        String companyName = (String) params.get("companyName");
-                        //前端获取公司名称与公司表中的简称对应找出id值并写入
-                        QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-                        companyQueryWrapper.eq("shortName",companyName);
-                        List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
-                        Integer companyId = companyList.get(0).getId();
-                        managerKpiScore.setCompanyId(companyId);  //写入公司id
+                        managerKpiScore.setCompanyId(temp.getCompanyId());  //写入公司id
                         managerKpiScore.setManagerName(temp.getManagerName());
                         managerKpiScore.setCompanyName(temp.getCompanyName());
                         managerKpiScore.setYear(temp.getYear());
@@ -192,7 +185,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                         //插入数据,先判断数据库中是否有此条数据，有则不插，无则插
                         QueryWrapper<ManagerKpiScoreOld> queryWrapperss = new QueryWrapper<>();
                         queryWrapperss.eq("generalManager","是").eq("managerName",temp.getManagerName()).eq("year",temp.getYear())
-                                .eq("month",temp.getMonth()).eq("companyName",temp.getCompanyName());
+                                .eq("month",temp.getMonth()).eq("companyId",temp.getCompanyId());
                         List<Map<String, Object>> maps = managerKpiScoreMapper.selectMaps(queryWrapperss);
                         if(maps.size() != 0){
                             break;
@@ -298,6 +291,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                     if (j == 0) {
                         //对score表插入数据
                         ManagerKpiScoreOld managerKpiScore = new ManagerKpiScoreOld();
+                        managerKpiScore.setCompanyId(temp.getCompanyId());
                         managerKpiScore.setManagerName(temp.getManagerName());
                         managerKpiScore.setCompanyName(temp.getCompanyName());
                         managerKpiScore.setYear(temp.getYear());
@@ -313,7 +307,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                         //插入数据,先判断数据库中是否有此条数据，有则不插，无则插
                         QueryWrapper<ManagerKpiScoreOld> queryWrapperss = new QueryWrapper<>();
                         queryWrapperss.eq("generalManager","否").eq("managerName",temp.getManagerName()).eq("year",temp.getYear())
-                                .eq("month",temp.getMonth()).eq("companyName",temp.getCompanyName());
+                                .eq("month",temp.getMonth()).eq("companyId",temp.getCompanyId());
                         List<Map<String, Object>> maps = managerKpiScoreMapper.selectMaps(queryWrapperss);
                         if(maps.size() != 0){
                             continue;
@@ -357,6 +351,11 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
         if (params.containsKey("id")) {
             queryWrapper.eq("id", params.get("id"));
         }
+        if (params.containsKey("companyIds")) {
+            String companyIds = (String) params.get("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            queryWrapper.in("companyId", strings);
+        }
         return queryWrapper;
     }
     private QueryWrapper<ManagerKpiScoreOld> newGetQueryWrapper(Map<String, Object> params) {
@@ -379,6 +378,11 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
         if (params.containsKey("month")) {
             newQueryWrapper.eq("month", params.get("month"));
         }
+        if (params.containsKey("companyIds")) {
+            String companyIds = (String) params.get("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            newQueryWrapper.in("companyId", strings);
+        }
         return newQueryWrapper;
     }
     private QueryWrapper<ManagerKpiCoefficient> newGetQueryWrappers(Map<String, Object> params) {
@@ -400,6 +404,11 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
         }
         if (params.containsKey("difficultyCoefficient")) {
             newQueryWrappers.eq("difficultyCoefficient", params.get("difficultyCoefficient"));
+        }
+        if (params.containsKey("companyIds")) {
+            String companyIds = (String) params.get("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            newQueryWrappers.in("companyId", strings);
         }
         return newQueryWrappers;
     }

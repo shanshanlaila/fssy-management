@@ -52,7 +52,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Override
     public Page<ViewManageYearMonthScore> findViewManageYearMonthScoreDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ViewManageYearMonthScore> queryWrapper = getQueryWrapper(params);
-        queryWrapper.eq("managerKpiMark","经理人指标");
+        queryWrapper.eq("managerKpiMark", "经理人指标");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<ViewManageYearMonthScore> myPage = new Page<>(page, limit);
@@ -69,7 +69,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Override
     public List<Map<String, Object>> findViewManageYearMonthScoreMapDataByParams(Map<String, Object> params) {
         QueryWrapper<ViewManageYearMonthScore> queryWrapper = getQueryWrapper(params);
-        queryWrapper.eq("managerKpiMark","经理人指标").eq("evaluateMode","人工评分").eq("status","未锁定");
+        queryWrapper.eq("managerKpiMark", "经理人指标").eq("evaluateMode", "人工评分").eq("status", "未锁定");
         return viewManageYearMonthScoreMapper.selectMaps(queryWrapper);
     }
 
@@ -316,10 +316,10 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     @Override
     public boolean updateViewManageYearMonthScoreData(ManageKpiMonthAim manageKpiMonthAim) {
 
-        if(!manageKpiMonthAim.getStatus().equals("已锁定")){
+        if (!manageKpiMonthAim.getStatus().equals("已锁定")) {
             throw new ServiceException("分数未生成，请生成后再进行修改分数");
         }
-        if(!manageKpiMonthAim.getProjectDesc().equals("")){
+        if (!manageKpiMonthAim.getProjectDesc().equals("")) {
 
         }
         int result = manageKpiMonthAimMapper.updateById(manageKpiMonthAim);
@@ -359,10 +359,6 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         //判断指标状态为未锁定且累计实绩值不为空的数据？
         if (params.containsKey("status")) {
             queryWrapper.eq("status", params.get("status"));
-//            String status = (String) params.get("status");
-//            if (status.equals("未锁定")){
-//                queryWrapper.isNotNull("monthActualValue");
-//            }
         }
         if (params.containsKey("evaluateMode")) {
             queryWrapper.eq("evaluateMode", params.get("evaluateMode"));
@@ -375,6 +371,13 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
                 queryWrapper.eq("month", strings.get(1)).eq("year", strings.get(0));
             }
         }
+        //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
+        if (params.containsKey("companyIds")) {
+            String companyIds = (String) params.get("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            queryWrapper.in("companyId", strings);
+        }
+
         return queryWrapper;
     }
 }
