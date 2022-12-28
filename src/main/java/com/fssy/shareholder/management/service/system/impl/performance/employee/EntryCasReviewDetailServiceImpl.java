@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -298,7 +299,17 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
      * @return 审核结果
      */
     @Override
-    public boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail) {
+    public boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
+        String mark = request.getParameter("mark");
+        // 履职总结列表页面修改按钮
+        if (mark.equals("reviewList")) {
+            if (!(entryCasReviewDetail.getStatus().equals(PerformanceConstant.FINAL))) {
+                entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
+                return true;
+            } else {
+                throw new ServiceException(String.format("不可以修改【%s】状态下的履职总结", entryCasReviewDetail.getStatus()));
+            }
+        }
         // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
         if (entryCasReviewDetail.getMinisterReview().equals(PerformanceConstant.EXCELLENT)) {
             entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
@@ -349,28 +360,49 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         return true;
     }
 
-    /**
-     * 工作计划完成情况撤销审核
-     *
-     * @param reviewDetailIds
-     * @return
-     */
+
     @Override
-    public boolean retreat(List<String> reviewDetailIds) {
+    public boolean retreat(List<String> reviewDetailIds, String identification) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(reviewDetailIds);
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
-            LambdaUpdateWrapper<EntryCasReviewDetail> entryCasReviewDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF) ||
-                    entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER)) {
-                entryCasReviewDetail.setStatus("待提交审核");
-                entryCasReviewDetailLambdaUpdateWrapper.eq(EntryCasReviewDetail::getId, entryCasReviewDetail.getId());
-                entryCasReviewDetailMapper.update(entryCasReviewDetail, entryCasReviewDetailLambdaUpdateWrapper);
-                continue;
+            if (!ObjectUtils.isEmpty(identification)) {
+                if (identification.equals("retreatAuditByMinister")) {
+                    // 总结部长一键撤销审核：状态变为待部长审核
+                    if (!(entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT) || entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER))) {
+                        entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MINISTER);
+                        entryCasReviewDetail.setMinisterReview(null);
+                        entryCasReviewDetail.setFinalNontransactionEvaluateLevel(null);
+                        entryCasReviewDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION);
+                    } else {
+                        throw new ServiceException(String.format("不能撤销状态为【%S】的总结", entryCasReviewDetail.getStatus()));
+                    }
+                } else if (identification.equals("retreatAuditByChief")) {
+                    // 总结科长一键撤销审核：状态变为待科长审核
+                    if (!(entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT) || entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF))) {
+                        entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_CHIEF);
+                        entryCasReviewDetail.setChargeTransactionEvaluateLevel(null);
+                        entryCasReviewDetail.setChargeTransactionBelowType(null);
+                        entryCasReviewDetail.setFinalTransactionEvaluateLevel(null);
+                    } else {
+                        throw new ServiceException(String.format("不能撤销状态为【%S】的总结", entryCasReviewDetail.getStatus()));
+                    }
+                }
+                entryCasReviewDetail.setAutoScore(null);
+                entryCasReviewDetail.setArtifactualScore(null);
+                entryCasReviewDetail.setIsExcellent(null);
+                entryCasReviewDetail.setAuditId(null);
+                entryCasReviewDetail.setAuditName(null);
+                entryCasReviewDetail.setAuditDate(null);
+                entryCasReviewDetail.setAuditNote(null);
+            } else {
+                // 总结撤销提交审核
+                if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF) || entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER)) {
+                    entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
+                } else {
+                    throw new ServiceException(String.format("不能撤销提交状态为【%S】的履职总结", entryCasReviewDetail.getStatus()));
+                }
             }
-            //校验方法
-            if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT) || entryCasReviewDetail.getStatus().equals(PerformanceConstant.FINAL)) {
-                throw new ServiceException("不能撤销待提交审核状态或完结状态下的的履职明细");
-            }
+            entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
         }
         return true;
     }

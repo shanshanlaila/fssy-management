@@ -299,12 +299,12 @@ public class EntryCasReviewDetailController {
     @PostMapping("update")
     @ResponseBody
     @RequiredLog("更新总结")
-    public SysResult update(EntryCasReviewDetail entryCasReviewDetail) {
-        boolean result = entryCasReviewDetailService.updateEntryCasReviewDetail(entryCasReviewDetail);
+    public SysResult update(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request) {
+        boolean result = entryCasReviewDetailService.updateEntryCasReviewDetail(entryCasReviewDetail,request);
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "总结审核失败");
+        return SysResult.build(500, "总结更新失败");
     }
 
     /**
@@ -430,15 +430,16 @@ public class EntryCasReviewDetailController {
      * @param reviewDetailIds
      * @return
      */
-    @RequiredLog("回顾撤销审核")
+    @RequiredLog("履职总结撤销操作")
     @PostMapping("retreat")
     @ResponseBody
-    public SysResult retreat(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds) {
-        boolean result = entryCasReviewDetailService.retreat(reviewDetailIds);
+    public SysResult retreat(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds,HttpServletRequest request) {
+        String identification = request.getParameter("identification");
+        boolean result = entryCasReviewDetailService.retreat(reviewDetailIds,identification);
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "撤销审核失败");
+        return SysResult.build(500, "操作失败");
     }
 
     /**

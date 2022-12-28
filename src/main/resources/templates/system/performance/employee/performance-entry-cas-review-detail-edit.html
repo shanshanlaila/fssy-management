@@ -50,7 +50,7 @@
             </table>
             <table class="layui-table layui-form" lay-size="sm">
                 <tr>
-                    <td colspan="4" style="background: #f7f7f7; color: black;">回顾内容</td>
+                    <td colspan="4" style="background: #f7f7f7; color: black;">总结内容</td>
                 </tr>
                 <tr>
                     <td style="text-align: left;width: 100px"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;实际完成时间:
@@ -58,6 +58,7 @@
                     <td style="text-align: left">
                         <div class="layui-input-inline" style="width: 100%;text-align: left">
                             <input type="hidden" id="id" name="id" th:value="${entryCasReviewDetail.id}">
+                            <input type="hidden" id="status" name="status" th:value="${entryCasReviewDetail.status}">
                             <input type="text" class="layui-input laydate" name="actualCompleteDate"
                                    id="actualCompleteDate" lay-verify="required" th:value="${entryCasReviewDetail.actualCompleteDate}"
                                    autocomplete="off" />
@@ -109,7 +110,7 @@
             $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
             $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
             $.ajax({
-                url: '/system/entry-cas-review-detail/update',
+                url: '/system/entry-cas-review-detail/update?mark=reviewList',
                 type: 'POST',
                 data: data.field,
                 success: function (result) {

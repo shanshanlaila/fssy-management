@@ -540,11 +540,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
             //校验方法
-            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT) || entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_WRITE_REVIEW)) {
-                throw new ServiceException("不能撤销待提交审核状态或待填报回顾状态下的的履职明细");
+            if (!(entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER) || entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF))) {
+                throw new ServiceException("只能撤销【待部长审核】或【待科长审核】的计划");
             }
-            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF) ||
-                    entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER)) {
+            else {
                 entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }
