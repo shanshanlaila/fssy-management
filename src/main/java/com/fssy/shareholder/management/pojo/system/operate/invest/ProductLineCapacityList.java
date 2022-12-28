@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -91,7 +92,7 @@ public class ProductLineCapacityList extends BaseModel {
      * 量产时间
      */
     @TableField("sopDate")
-    private String sopDate;
+    private LocalDate sopDate;
 
     /**
      * 理论节拍
