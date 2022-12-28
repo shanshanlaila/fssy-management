@@ -155,7 +155,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             String departmentName = cells.get(SheetService.columnToIndex("C"));//部门
             String userName = cells.get(SheetService.columnToIndex("E"));// 岗位人员姓名
             String eventsFirstType = cells.get(SheetService.columnToIndex("F"));// 事件类型
-            String jobName = cells.get(SheetService.columnToIndex("J"));//工作职责
+            String jobName = cells.get(SheetService.columnToIndex("G"));//工作职责
             String workEvents = cells.get(SheetService.columnToIndex("H"));//流程（工作事件）
             String standardValue = cells.get(SheetService.columnToIndex("I"));// 事件价值标准分
             String mainOrNext = cells.get(SheetService.columnToIndex("J"));// 主/次担
