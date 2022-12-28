@@ -348,12 +348,12 @@
                     field.status = '完结';
                     // 必填项控制
                     var year = data.field.year;
-                    if (!field.departmentIds) {
-                        layer.msg("部门为必选项，请选择编制年份", {icon: 5, time: 4000});
-                        return false;
-                    }
                     if (!year) {
                         layer.msg("编制年份为必选项，请选择编制年份", {icon: 5, time: 4000});
+                        return false;
+                    }
+                    if (!field.departmentIds) {
+                        layer.msg("部门为必选项，请选择部门", {icon: 5, time: 4000});
                         return false;
                     }
                     field.url = "/system/performance/employee/eventsList/downloadToCompleteRole";
