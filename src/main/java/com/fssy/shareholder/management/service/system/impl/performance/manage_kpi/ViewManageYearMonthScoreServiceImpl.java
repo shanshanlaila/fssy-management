@@ -252,6 +252,27 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
             String accumulateActual = cells.get(SheetService.columnToIndex("L"));
             String scoreAdjust = cells.get(SheetService.columnToIndex("M"));
 
+            //必填性检查
+            if(ObjectUtils.isEmpty(projectDesc)){
+                setFailedContent(result, String.format("第%s行的项目名称存在多条", j + 1));
+                cell.setCellValue("项目名称未填写");
+                continue;
+            }
+            if(ObjectUtils.isEmpty(companyCellValue)){
+                setFailedContent(result, String.format("第%s行的公司名称存在多条", j + 1));
+                cell.setCellValue("公司名称未填写");
+                continue;
+            }
+            if(ObjectUtils.isEmpty(yearCellValue)){
+                setFailedContent(result, String.format("第%s行的年份存在多条", j + 1));
+                cell.setCellValue("年份未填写");
+                continue;
+            }
+            if(ObjectUtils.isEmpty(monthCellValue)){
+                setFailedContent(result, String.format("第%s行的月份存在多条", j + 1));
+                cell.setCellValue("月份未填写");
+                continue;
+            }
             //查询出对应的经营管理年度指标，如果存在两条及两条以上的数据就抛出错误,月度id
             QueryWrapper<ManageKpiMonthAim> manageKpiMonthAimQueryWrapper = new QueryWrapper<>();
             manageKpiMonthAimQueryWrapper.eq("companyName", companyName).eq("year", year)

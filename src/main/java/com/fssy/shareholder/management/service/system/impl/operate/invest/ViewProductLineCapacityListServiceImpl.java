@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +72,8 @@ public class ViewProductLineCapacityListServiceImpl extends ServiceImpl<ViewProd
         int limit = (int)params.get("limit");
         int page = (int)params.get("page");
         Page<ViewProductLineCapacityList> myPage = new Page<>(page,limit);
-        return viewProductLineCapacityListMapper.selectPage(myPage, queryWrapper);
+        Page<ViewProductLineCapacityList> viewProductLineCapacityListPage = viewProductLineCapacityListMapper.selectPage(myPage, queryWrapper);
+        return viewProductLineCapacityListPage;
     }
 
     /**
@@ -83,6 +85,22 @@ public class ViewProductLineCapacityListServiceImpl extends ServiceImpl<ViewProd
     public List<Map<String, Object>> findViewProductLineCapacityListDataByParams(Map<String, Object> params) {
         QueryWrapper<ViewProductLineCapacityList> queryWrapper = getQueryWrapper(params);
         return viewProductLineCapacityListMapper.selectMaps(queryWrapper);
+    }
+
+    /**
+     * 设置失败的内容
+     *
+     * @param result 结果map
+     * @param append 导入失败的原因
+     */
+    private void setFailedContent(Map<String, Object> result, String append) {
+        String content = result.get("content").toString();
+        if (ObjectUtils.isEmpty(content)) {
+            result.put("content", append);
+        } else {
+            result.put("content", content + "," + append);
+        }
+        result.put("failed", true);
     }
 
     /**
@@ -185,7 +203,15 @@ public class ViewProductLineCapacityListServiceImpl extends ServiceImpl<ViewProd
                 String productLineName = cells.get(SheetService.columnToIndex("C"));
                 String yearVehicle = cells.get(SheetService.columnToIndex("D"));
                 String productLineTypeName = cells.get(SheetService.columnToIndex("E"));
-                String sopDate = cells.get(SheetService.columnToIndex("F"));
+                LocalDate sopDate = null;
+                try{
+                    sopDate = LocalDate.parse(cells.get(SheetService.columnToIndex("F")));
+                }catch (Exception e){
+//                    setFailedContent(result, String.format("第%s行的部门名称为空", j + 1));
+                    cell.setCellValue("量产时间格式错误，正确格式为yyyy-mm-dd");
+                    continue;
+                }
+
                 String designProductionTakt = cells.get(SheetService.columnToIndex("G"));
                 String designCapacityPerYear = cells.get(SheetService.columnToIndex("H"));
                 String marketShares = cells.get(SheetService.columnToIndex("I"));
@@ -437,6 +463,24 @@ public class ViewProductLineCapacityListServiceImpl extends ServiceImpl<ViewProd
                     productLineCapacityList.setDesignActualTakt(designActualTakt);
                     productLineCapacityList.setDesignCapacityPerMonth(Integer.parseInt(designCapacityPerMonth));
                     productLineCapacityList.setYearAim(Double.valueOf(yearAim));
+
+                    //必填性检查
+                    if(ObjectUtils.isEmpty(companyNameCellValue)){
+                        setFailedContent(result, String.format("第%s行的公司名称存在多条", j + 1));
+                        cell.setCellValue("公司名称未填写");
+                        continue;
+                    }
+                    if(ObjectUtils.isEmpty(yearCellValue)){
+                        setFailedContent(result, String.format("第%s行的年份存在多条", j + 1));
+                        cell.setCellValue("年份未填写");
+                        continue;
+                    }
+                    if(ObjectUtils.isEmpty(quarterCellValue)){
+                        setFailedContent(result, String.format("第%s行的季度存在多条", j + 1));
+                        cell.setCellValue("季度未填写");
+                        continue;
+                    }
+
                     //不同季度可能会导入相同项目，但是么必要再次存储，因此需要根据类别、产线名称、生产车型来进行判断数据库中是否存在此条记录，
                     // 存在不插，不存在新增,并且如果yearVehicle为NULL的话就可以直接用类别、产线名称唯一确定
                     QueryWrapper<ProductLineCapacityList> queryWrapper = new QueryWrapper<>();
