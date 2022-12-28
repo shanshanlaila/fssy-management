@@ -466,17 +466,17 @@ public class ViewProductLineCapacityListServiceImpl extends ServiceImpl<ViewProd
 
                     //必填性检查
                     if(ObjectUtils.isEmpty(companyNameCellValue)){
-                        setFailedContent(result, String.format("第%s行的月度指标存在多条", j + 1));
+                        setFailedContent(result, String.format("第%s行的公司名称存在多条", j + 1));
                         cell.setCellValue("公司名称未填写");
                         continue;
                     }
                     if(ObjectUtils.isEmpty(yearCellValue)){
-                        setFailedContent(result, String.format("第%s行的月度指标存在多条", j + 1));
+                        setFailedContent(result, String.format("第%s行的年份存在多条", j + 1));
                         cell.setCellValue("年份未填写");
                         continue;
                     }
                     if(ObjectUtils.isEmpty(quarterCellValue)){
-                        setFailedContent(result, String.format("第%s行的月度指标存在多条", j + 1));
+                        setFailedContent(result, String.format("第%s行的季度存在多条", j + 1));
                         cell.setCellValue("季度未填写");
                         continue;
                     }

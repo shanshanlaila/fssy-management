@@ -254,22 +254,22 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
 
             //必填性检查
             if(ObjectUtils.isEmpty(projectDesc)){
-                setFailedContent(result, String.format("第%s行的月度指标存在多条", j + 1));
+                setFailedContent(result, String.format("第%s行的项目名称存在多条", j + 1));
                 cell.setCellValue("项目名称未填写");
                 continue;
             }
             if(ObjectUtils.isEmpty(companyCellValue)){
-                setFailedContent(result, String.format("第%s行的月度指标存在多条", j + 1));
+                setFailedContent(result, String.format("第%s行的公司名称存在多条", j + 1));
                 cell.setCellValue("公司名称未填写");
                 continue;
             }
             if(ObjectUtils.isEmpty(yearCellValue)){
-                setFailedContent(result, String.format("第%s行的月度指标存在多条", j + 1));
+                setFailedContent(result, String.format("第%s行的年份存在多条", j + 1));
                 cell.setCellValue("年份未填写");
                 continue;
             }
             if(ObjectUtils.isEmpty(monthCellValue)){
-                setFailedContent(result, String.format("第%s行的月度指标存在多条", j + 1));
+                setFailedContent(result, String.format("第%s行的月份存在多条", j + 1));
                 cell.setCellValue("月份未填写");
                 continue;
             }
