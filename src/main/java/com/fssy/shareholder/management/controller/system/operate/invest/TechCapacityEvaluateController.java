@@ -1,4 +1,4 @@
-package com.fssy.shareholder.management.controller.system.operat.invest;
+package com.fssy.shareholder.management.controller.system.operate.invest;
 
 
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
@@ -179,13 +179,14 @@ public class TechCapacityEvaluateController {
         List<Map<String, Object>> techCapacityEvaluateServices = operateTechCapacityEvaluateService.findOperateDataByParams(params);
         List<TechCapacityEvaluateRes> techCapacityEvaluateRes = techCapacityEvaluateResService.findTechCapacityEvaluateResDataByParams(params);
         TechCapacityEvaluateRes capacityEvaluateRes;
+
         if (!(ObjectUtils.isEmpty(techCapacityEvaluateRes) && ObjectUtils.isEmpty(techCapacityEvaluateServices))) {
             model.addAttribute("techCapacityEvaluateServices", techCapacityEvaluateServices);
             capacityEvaluateRes = techCapacityEvaluateRes.get(0);
             model.addAttribute("techCapacityEvaluateRes", capacityEvaluateRes);
         } else {
             TechCapacityEvaluateRes emptyTechCapacityEvaluateRes = new TechCapacityEvaluateRes();
-            emptyTechCapacityEvaluateRes.setEvalRes("未查出数据");
+            emptyTechCapacityEvaluateRes.setEvalRes("");
             model.addAttribute("techCapacityEvaluateRes", emptyTechCapacityEvaluateRes);
             List<Map<String, Object>> emptyTechCapacityEvaluateServices = new ArrayList<>();
             model.addAttribute("techCapacityEvaluateServices", emptyTechCapacityEvaluateServices);

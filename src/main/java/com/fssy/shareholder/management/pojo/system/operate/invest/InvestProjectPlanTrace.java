@@ -225,5 +225,23 @@ public class InvestProjectPlanTrace extends BaseModel {
     @TableField("projectContent")
     private String projectContent;
 
+    /**
+     * 序号id
+     */
+    @TableField("serialId")
+    private Integer serialId;
+
+    /**
+     * 摘要
+     */
+    @TableField("abstracte")
+    private String abstracte;
+
+    /**
+     * 总结评价
+     */
+    @TableField("evaluateSum")
+    private String evaluateSum;
+
 
 }

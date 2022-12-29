@@ -1,4 +1,4 @@
-package com.fssy.shareholder.management.controller.system.operat.invest;
+package com.fssy.shareholder.management.controller.system.operate.invest;
 
 
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
@@ -167,21 +167,21 @@ public class InvestProjectListController {
         params.put("projectName",projectName);
         params.put("projectListId",projectListId);
         List<Map<String, Object>> investProjectPlanTracejectDataByParams = investProjectPlanTraceService.findInvestProjectPlanTracejectDataByParams(params);
-        List<InvestProjectPlanTraceDetail> investProjectPlanTraceDetailDataByParams = investProjectPlanTraceDetailService.findInvestProjectPlanTraceDetailDataByParams(params);
-        String abstracte = null;
-        String evaluate = null;
-        if (investProjectPlanTraceDetailDataByParams.size()==0){
-             abstracte = null;
-             evaluate = null;
-        }else {
-             abstracte = investProjectPlanTraceDetailDataByParams.get(0).getAbstracte();
-             evaluate = investProjectPlanTraceDetailDataByParams.get(0).getEvaluate();
-        }
-
-        for (Map<String, Object> investProjectPlanTracejectDataByParam : investProjectPlanTracejectDataByParams) {
-            investProjectPlanTracejectDataByParam.put("abstracte",abstracte);
-            investProjectPlanTracejectDataByParam.put("evaluates",evaluate);
-        }
+        //List<InvestProjectPlanTraceDetail> investProjectPlanTraceDetailDataByParams = investProjectPlanTraceDetailService.findInvestProjectPlanTraceDetailDataByParams(params);
+//        String abstracte = null;
+//        String evaluate = null;
+//        if (investProjectPlanTraceDetailDataByParams.size()==0){
+//             abstracte = null;
+//             evaluate = null;
+//        }else {
+//             abstracte = investProjectPlanTraceDetailDataByParams.get(0).getAbstracte();
+//             evaluate = investProjectPlanTraceDetailDataByParams.get(0).getEvaluate();
+//        }
+//
+//        for (Map<String, Object> investProjectPlanTracejectDataByParam : investProjectPlanTracejectDataByParams) {
+//            investProjectPlanTracejectDataByParam.put("abstracte",abstracte);
+//            investProjectPlanTracejectDataByParam.put("evaluates",evaluate);
+//        }
         if (investProjectPlanTracejectDataByParams.size() == 0)
         {
             result.put("code", 404);
@@ -314,7 +314,7 @@ public class InvestProjectListController {
 
         //Sql语句
         params.put("select","projectListId,companyName,year,month,projectName,serial,projectPhase,projectContent,projectIndicators,projectTarget,feasibilityDate," +
-                "contractDate,actualEndDate,inspectionDate,responsePerson,Inspectedby,inspectionResult,evaluate,note");
+                "contractDate,actualEndDate,inspectionDate,responsePerson,Inspectedby,inspectionResult,evaluate,note,abstracte,evaluateSum");
         paramsTwo.put("select","companyName,year,month,projectName,evaluate,abstracte");
         //查询
         List<Map<String, Object>> investProjectPlanTracejectDataByParams = investProjectPlanTraceService.findInvestProjectPlanTracejectDataByParams(params);
@@ -338,9 +338,14 @@ public class InvestProjectListController {
         fieldMap.put("evaluate", "评价");
         fieldMap.put("note", "备注");
 
+//        for (Map<String, Object> investProjectPlanTracejectDataByParam : investProjectPlanTracejectDataByParams) {
+//            investProjectPlanTracejectDataByParam.put("evaluates",investProjectDataByParams.get(0).get("evaluate"));
+//            investProjectPlanTracejectDataByParam.put("abstracte",investProjectDataByParams.get(0).get("abstracte"));
+//        }
+
         for (Map<String, Object> investProjectPlanTracejectDataByParam : investProjectPlanTracejectDataByParams) {
-            investProjectPlanTracejectDataByParam.put("evaluates",investProjectDataByParams.get(0).get("evaluate"));
-            investProjectPlanTracejectDataByParam.put("abstracte",investProjectDataByParams.get(0).get("abstracte"));
+            investProjectPlanTracejectDataByParam.put("abstracte",investProjectPlanTracejectDataByParams.get(0).get("abstracte"));
+            investProjectPlanTracejectDataByParam.put("evaluateSum",investProjectPlanTracejectDataByParams.get(0).get("evaluateSum"));
         }
         //标识字符串的列
         List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);

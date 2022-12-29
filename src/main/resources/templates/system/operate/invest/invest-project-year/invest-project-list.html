@@ -59,8 +59,8 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>
-                        <a lay-event="edit" title="修改经理人绩效定性评分各项目占比信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除经理人绩效定性评分各项目占比信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a lay-event="edit" title="修改年度投资项目清单数据信息"><i class="layui-icon">&#xe642;</i></a>
+                        <a lay-event="delete" title="删除年度投资项目清单数据信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
 <!--                        <div class="layui-btn-container">-->
@@ -326,7 +326,7 @@
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除年份为：' + data.year + '的项目进度计划跟踪表吗？', function () {
+                layer.confirm('确认删除年份为：' + data.year + '的项目进度计划跟踪表信息吗？', function () {
                     $.ajax({
                         type: 'DELETE',
                         url: '/system/operate/invest/invest-project-year/' + data.id,

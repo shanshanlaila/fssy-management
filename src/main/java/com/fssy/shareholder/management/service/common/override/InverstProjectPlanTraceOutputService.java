@@ -294,8 +294,8 @@ public class InverstProjectPlanTraceOutputService extends SheetOutputService {
         XSSFCell getevaluatesValueCell = foreRow
                 .createCell(SheetService.columnToIndex("C"));
         getevaluatesValueCell.setCellStyle(style);
-        getevaluatesValueCell.setCellValue(ObjectUtils.isEmpty(data.get("evaluates")) ? ""
-                : data.get("evaluates").toString());
+        getevaluatesValueCell.setCellValue(ObjectUtils.isEmpty(data.get("evaluateSum")) ? ""
+                : data.get("evaluateSum").toString());
 
 
 
