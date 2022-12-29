@@ -3,6 +3,7 @@ package com.fssy.shareholder.management.service.manage.user;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 
@@ -10,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 用户功能业务接口
- * 
+ *
  * @author Solomon
  */
 /**
@@ -23,7 +24,7 @@ public interface UserService
 {
 	/**
 	 * 添加用户数据
-	 * 
+	 *
 	 * @param user 用户实体
 	 * @return 用户实体
 	 */
@@ -31,7 +32,7 @@ public interface UserService
 
 	/**
 	 * 根据id删除用户
-	 * 
+	 *
 	 * @param id 用户表主键
 	 * @return true/false
 	 */
@@ -39,7 +40,7 @@ public interface UserService
 
 	/**
 	 * 通过查询条件查询用户列表
-	 * 
+	 *
 	 * @param params 查询条件
 	 * @return 用户列表
 	 */
@@ -47,7 +48,7 @@ public interface UserService
 
 	/**
 	 * 通过查询条件分页查询用户列表
-	 * 
+	 *
 	 * @param params 查询条件
 	 * @return 用户分页数据
 	 */
@@ -55,7 +56,7 @@ public interface UserService
 
 	/**
 	 * 修改用户数据
-	 * 
+	 *
 	 * @param user 用户实体
 	 * @return true/false
 	 */
@@ -63,13 +64,13 @@ public interface UserService
 
 	/**
 	 * 启用或不启用用户
-	 * 
+	 *
 	 * @param id     用户表主键
 	 * @param active 状态
 	 * @return
 	 */
 	boolean activateOrInactivateUser(int id, int active);
-	
+
 	/**
 	 * 使用于xm-select控件使用数据
 	 * @param params 查询条件为active激活状态
@@ -77,10 +78,10 @@ public interface UserService
 	 * @return 列表数据
 	 */
 	List<Map<String,Object>> findUserSelectedDataListByParams(Map<String,Object> params,List<String> selectedIds);
-	
+
 	/**
 	 * 查询所有用户
-	 * 
+	 *
 	 * @return 用户列表
 	 */
 	List<Map<String, Object>> findAllUsers();
@@ -91,12 +92,19 @@ public interface UserService
 	 * @return
 	 */
 	boolean saveUserEdit(HttpServletRequest request);
-	
+
 	/**
 	 * 通过查询条件分页查询用户列表（map）
-	 * 
+	 *
 	 * @param params 查询条件
 	 * @return 用户分页数据
 	 */
 	Page<Map<String, Object>> findUserDataMapListPerPageByParams(Map<String, Object> params);
+
+	/**
+	 * 根据userName查询user实体
+	 * @param userQueryWrapper user条件构造器
+	 * @return user实体
+	 */
+    User getByName(LambdaQueryWrapper<User> userQueryWrapper);
 }

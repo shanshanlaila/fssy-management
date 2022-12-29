@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fssy.shareholder.management.tools.common.UserCacheTool;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService
 	 */
 	@Autowired
 	private UserCacheTool userCacheTool;
-    
+
 	/**
 	 * 组织结构，用户，角色关联表与组织结构表，角色表，用户表视图数据访问实现类
 	 */
@@ -371,4 +372,9 @@ public class UserServiceImpl implements UserService
 		}
 		return userPage;
 	}
+
+    @Override
+    public User getByName(LambdaQueryWrapper<User> userQueryWrapper) {
+        return userMapper.selectOne(userQueryWrapper);
+    }
 }

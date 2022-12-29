@@ -288,7 +288,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                     activeFlag = false;
                     break;
                 }
-
             }
             if (!activeFlag) {
                 throw new ServiceException(String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入", j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
@@ -348,11 +347,11 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventsRelationRole.setEventsId(eventsId);
             eventsRelationRole.setRoleName(role.getName());
             eventsRelationRole.setRoleId(role.getId());
-            eventsRelationRole.setStandardValue(standardValue);
-            eventsRelationRole.setDelow(standardValue.multiply(new BigDecimal(0)).setScale(2, RoundingMode.HALF_UP));
-            eventsRelationRole.setMiddle(standardValue.multiply(new BigDecimal("0.6")).setScale(2, RoundingMode.HALF_UP));
-            eventsRelationRole.setFine(standardValue.multiply(new BigDecimal("0.8")).setScale(2, RoundingMode.HALF_UP));
-            eventsRelationRole.setExcellent(standardValue.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_UP));
+            eventsRelationRole.setDelow(standardValue.multiply(new BigDecimal(0)).multiply(proportion).setScale(2, RoundingMode.HALF_UP));
+            eventsRelationRole.setMiddle(standardValue.multiply(new BigDecimal("0.6")).multiply(proportion).setScale(2, RoundingMode.HALF_UP));
+            eventsRelationRole.setFine(standardValue.multiply(new BigDecimal("0.8")).multiply(proportion).setScale(2, RoundingMode.HALF_UP));
+            eventsRelationRole.setExcellent(standardValue.multiply(new BigDecimal(1)).multiply(proportion).setScale(2, RoundingMode.HALF_UP));
+            eventsRelationRole.setStandardValue(standardValue.multiply(new BigDecimal(1)).multiply(proportion).setScale(2, RoundingMode.HALF_UP));
             LocalDate createDate = DateTool.dateToLocalDate(attachment.getImportDate());
             eventsRelationRole.setCreateDate(createDate);
             eventsRelationRole.setYear(createDate.getYear());

@@ -76,7 +76,7 @@
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit=""
-                                        lay-filter="retreat">撤销审核
+                                        lay-filter="retreat">一键撤销审核
                                 </button>
                             </div>
                         </form>
@@ -148,7 +148,7 @@
                     type: 'POST',
                     url: '/system/entry-excellent-state-detail/MinsterBatchAudit',
                     data: {
-                        "auditNotes":auditNotes,
+                        "auditNotes": auditNotes,
                         "excellentStateDetailIds": excellentStateDetailIds,
                         "ministerReview": $('#ministerReview').find("option:selected").val(),
                     },
@@ -193,13 +193,21 @@
                         title: '状态',
                         align: "center",
                         fixed: 'left',
-                        width: 110,
+                        width: 80,
                         templet: function (d) {
                             if (d.status === "待经管部主管复核") {
                                 return '<span class="layui-badge layui-bg">待审核</span>';
                             } else return d.status;
                         },
                         rowspan: 2
+                    },
+                    {
+                        field: 'classReview',
+                        title: '绩效科复核',
+                        width: 90,
+                        align: "center",
+                        fixed: 'left',
+                        rowspan: 2,
                     },
                     {
                         field: 'departmentName',
@@ -248,9 +256,9 @@
                         title: '审核意见',
                         width: 130,
                         align: 'center',
-                        edit : 'text',
-                        event  : 'auditNote',
-                        style  : 'cursor:pointer;background-color: pink;',
+                        edit: 'text',
+                        event: 'auditNote',
+                        style: 'cursor:pointer;background-color: pink;',
                         rowspan: 2
                     },
                     {
@@ -323,7 +331,7 @@
         // 撤销审核
         form.on('submit(retreat)', function (data) {
             var checkStatus = table.checkStatus(dataTable.config.id);
-                data = checkStatus.data;
+            data = checkStatus.data;
             if (data.length <= 0) {
                 layer.alert("请至少选择一行数据");
                 return false;
@@ -345,12 +353,12 @@
                         if (result.status === 200) {
                             table.reload('dataTable');
                             laydate.render({
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
+                                elem: this,
+                                //更换触发方式
+                                trigger: 'click',
+                                type: 'date',
+                                value: new Date()
+                            });
                         }
                     }
                 })

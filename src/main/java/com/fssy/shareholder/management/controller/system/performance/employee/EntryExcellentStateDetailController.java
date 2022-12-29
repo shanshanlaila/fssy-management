@@ -1,10 +1,12 @@
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.Module;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.StateRelationAttachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
@@ -305,30 +307,72 @@ public class EntryExcellentStateDetailController {
      */
     @GetMapping("edit/{id}")
     @RequiredLog("绩效科审核展示修改页面")
-    public String showEditPage(@PathVariable String id, Model model) {
+    public String showEditPage(@PathVariable Long id, Model model) {
+        // 查询评优材料对象
         EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetailService.getById(id);
-        if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
-            throw new ServiceException("不能修改取消状态下的事件请单");
+        // 查询总结对象
+        EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(entryExcellentStateDetail.getCasReviewId());
+        if (ObjectUtils.isEmpty(entryCasReviewDetail)) {
+            throw new ServiceException("不存在对应的总结");
         }
+        // 查询用户
+        Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> userNameList = userService.findUserSelectedDataListByParams(params, new ArrayList<>());
+        // 查询主/次担
+        String mainUserNameStr = entryExcellentStateDetail.getMainUserName();
+        ArrayList<String> mainNameValues = new ArrayList<>();
+        if (ObjectUtils.isEmpty(mainUserNameStr)) {
+            model.addAttribute("mainNameValues", mainNameValues);
+        } else {
+            String[] mainUserNames = mainUserNameStr.split(",");
+            for (String mainUserName : mainUserNames) {
+                LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
+                userQueryWrapper.eq(User::getName, mainUserName);
+                User user = userService.getByName(userQueryWrapper);
+                mainNameValues.add(String.valueOf(user.getId()));
+            }
+            model.addAttribute("mainNameValues", mainNameValues);
+        }
+        String nextUserNameStr = entryExcellentStateDetail.getNextUserName();
+        ArrayList<String> nextNameValues = new ArrayList<>();
+        if (ObjectUtils.isEmpty(nextUserNameStr)) {
+            model.addAttribute("nextNameValues", nextNameValues);
+        } else {
+            String[] nextUserNames = nextUserNameStr.split(",");
+            for (String nextUserName : nextUserNames) {
+                LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
+                userQueryWrapper.eq(User::getName, nextUserName);
+                User user = userService.getByName(userQueryWrapper);
+                nextNameValues.add(String.valueOf(user.getId()));
+            }
+            model.addAttribute("nextNameValues", nextNameValues);
+        }
+        model.addAttribute("userNameList", userNameList);
+        model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         model.addAttribute("entryExcellentStateDetail", entryExcellentStateDetail);
-        return "system/performance/employee/entry-excellent-state-detail-performance-edit";
+        return "system/performance/employee/entry-excellent-state-detail-edit";
     }
 
     /**
-     * 绩效科审核评优材料（修改按钮）
+     * 修改评优材料
      *
-     * @param entryExcellentStateDetail
+     * @param entryExcellentStateDetail 评优材料实体类
      * @return 结果
      */
     @PostMapping("update")
     @ResponseBody
-    @RequiredLog("绩效科审核评优材料（修改按钮）")
-    public SysResult update(EntryExcellentStateDetail entryExcellentStateDetail) {
-        boolean result = entryExcellentStateDetailService.updateEntryExcellentStateDetail(entryExcellentStateDetail);
+    @RequiredLog("修改评优材料")
+    public SysResult update(EntryExcellentStateDetail entryExcellentStateDetail, HttpServletRequest request) {
+        if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT))) {
+            return SysResult.build(500, String.format("只能修改【%s】状态的总结评优材料", entryExcellentStateDetail.getStatus()));
+        }
+        String mainIds = request.getParameter("mainIds");
+        String nextIds = request.getParameter("nextIds");
+        boolean result = entryExcellentStateDetailService.updateExcellent(entryExcellentStateDetail, mainIds, nextIds);
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "履职明细更新失败");
+        return SysResult.build(500, "修改失败");
     }
 
     /**
@@ -479,7 +523,7 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("roleNameList", roleNameList);//传到前端去
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams,selectedUserIds);
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
         return "system/performance/employee/entry-review-detail-wait-upload-list";
     }
@@ -511,8 +555,8 @@ public class EntryExcellentStateDetailController {
     @ResponseBody
     @RequiredLog("创建履职评价说明明细")
     public SysResult create(EntryExcellentStateDetail entryExcellentStateDetail, HttpServletRequest request) {
-        if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT))) {
-            return SysResult.build(500, "只能上传待经营管理部审核的总结评优材料");
+        if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.WAIT_SUBMIT_EXCELLENT))) {
+            return SysResult.build(500, String.format("只能提交【%s】状态的总结评优材料", entryExcellentStateDetail.getStatus()));
         }
         String mainIds = request.getParameter("mainIds");
         String nextIds = request.getParameter("nextIds");
@@ -533,12 +577,12 @@ public class EntryExcellentStateDetailController {
     @PostMapping("batchAudit")
     @ResponseBody
     @RequiredLog("绩效科评优材料批量审核")
-    public SysResult batchAudit( HttpServletRequest request,
-                                 @RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds,
-                                 @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
+    public SysResult batchAudit(HttpServletRequest request,
+                                @RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds,
+                                @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         System.out.println("auditNotes = " + auditNotes);
         String classReview = request.getParameter("classReview");
-        boolean result = entryExcellentStateDetailService.batchAudit(excellentStateDetailIds, classReview,auditNotes);
+        boolean result = entryExcellentStateDetailService.batchAudit(excellentStateDetailIds, classReview, auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -559,7 +603,7 @@ public class EntryExcellentStateDetailController {
                                           @RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds,
                                           @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String ministerReview = request.getParameter("ministerReview");
-        boolean result = entryExcellentStateDetailService.MinisterBatchAudit(excellentStateDetailIds, ministerReview,auditNotes);
+        boolean result = entryExcellentStateDetailService.MinisterBatchAudit(excellentStateDetailIds, ministerReview, auditNotes);
         if (result) {
             return SysResult.ok();
         }
