@@ -269,6 +269,10 @@ public class EntryCasReviewDetailController {
             List<String> userIds = Arrays.asList(userIdsStr.split(","));
             params.put("userIds", userIds);
         }
+        // 筛选两种状态：待经营管理部审核、待提交评优材料
+        if (!ObjectUtils.isEmpty(request.getParameter("towStatus"))) {
+            params.put("towStatus", request.getParameter("towStatus"));
+        }
         return params;
     }
 

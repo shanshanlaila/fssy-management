@@ -20,7 +20,8 @@
             <input type="hidden" name="status" id="status" th:value="${entryCasReviewDetail.status}">
             <input type="hidden" name="eventsRoleId" id="eventsRoleId" th:value="${entryCasReviewDetail.eventsRoleId}">
             <input type="hidden" name="completeDesc" id="completeDesc" th:value="${entryCasReviewDetail.completeDesc}">
-            <input type="hidden" name="actualCompleteDate" id="actualCompleteDate" th:value="${entryCasReviewDetail.actualCompleteDate}">
+            <input type="hidden" name="actualCompleteDate" id="actualCompleteDate"
+                   th:value="${entryCasReviewDetail.actualCompleteDate}">
             <input type="hidden" name="workEvents" id="workEvents" th:value="${entryCasReviewDetail.workEvents}">
             <input type="hidden" name="planningWork" id="planningWork" th:value="${entryCasReviewDetail.planningWork}">
             <table class="layui-table layui-form" lay-size="sm">
@@ -97,7 +98,7 @@
                     <td style="text-align: right">备注</td>
                     <td colspan="3">
                         <div class="layui-input-inline" style="width: 100%">
-                            <textarea name="note" id="node" rowspan="3" class="layui-textarea"
+                            <textarea name="note" id="note" rowspan="3" class="layui-textarea"
                                       style="width: 100%"></textarea>
                         </div>
                     </td>

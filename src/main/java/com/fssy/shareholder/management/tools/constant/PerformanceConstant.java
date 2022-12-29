@@ -39,4 +39,6 @@ public interface PerformanceConstant {
     String WAIT_CREATE_EVENT="待创建基础事件";
     String YES="是";
     String NO="否";
+    String WAIT_SUBMIT_EXCELLENT="待提交评优材料";
+    String WAIT_EXCELLENT="待评优材料审核完成";
 }

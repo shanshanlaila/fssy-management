@@ -38,7 +38,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
      * @param entryExcellentStateDetail 履职总结
      * @return 提交成功
      */
-    boolean updateEntryExcellentStateDetail(EntryExcellentStateDetail entryExcellentStateDetail);
+    boolean updateExcellent(EntryExcellentStateDetail entryExcellentStateDetail, String mainIdsStr, String nextIdsStr);
 
     /**
      * 评优材料提交审核

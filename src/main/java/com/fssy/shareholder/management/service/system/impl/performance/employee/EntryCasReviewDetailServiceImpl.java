@@ -287,17 +287,14 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (params.containsKey("userIds")) {
             queryWrapper.in("userId", (List<String>) params.get("userIds"));
         }
+        // 筛选两种状态：待经营管理部审核、待提交评优材料
+        if (params.containsKey("towStatus")) {
+            queryWrapper.in("status",PerformanceConstant.WAIT_SUBMIT_EXCELLENT,PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
+        }
         return queryWrapper;
-
-
     }
 
-    /**
-     * 修改总结-部门领导审核结果
-     *
-     * @param entryCasReviewDetail 履职总结
-     * @return 审核结果
-     */
+
     @Override
     public boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
         String mark = request.getParameter("mark");
@@ -335,12 +332,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         return result > 0;
     }
 
-    /**
-     * 工作计划完成情况提交审核
-     *
-     * @param reviewDetailIds
-     * @return
-     */
+
     @Override
     public boolean submitAudit(List<String> reviewDetailIds) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(reviewDetailIds);
@@ -407,12 +399,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         return true;
     }
 
-    /**
-     * 修改更新科长、事物类审核评价
-     *
-     * @param entryCasReviewDetail 总结履职
-     * @return
-     */
+
     @Override
     public boolean sectionWorkAudit(EntryCasReviewDetail entryCasReviewDetail) {
         // 事务类评价等级与最终非事务类评价等级值相等
@@ -784,9 +771,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             }
             EntryCasReviewDetail entryCasReviewDetail = keyByReviewDetailMap.get(reviewId);
             entryCasReviewDetail.setMinisterReview(ministerReview);
-            // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核”，其他取值设置为“完结”
+            // “status”取值为：当“ministerReview”为“优”，设置为“待经营管理部审核->待提交评优材料”，其他取值设置为“完结”
             if (ministerReview.equals(PerformanceConstant.EXCELLENT)) {
-                entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
+                entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_EXCELLENT);
                 entryCasReviewDetail.setIsExcellent(PerformanceConstant.YES);
             } else {
                 entryCasReviewDetail.setFinalNontransactionEvaluateLevel(ministerReview);
