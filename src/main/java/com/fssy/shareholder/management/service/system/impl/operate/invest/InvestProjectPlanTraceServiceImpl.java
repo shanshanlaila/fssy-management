@@ -64,7 +64,6 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
     public List<Map<String, Object>> findInvestProjectPlanTracejectDataByParams(Map<String, Object> params) {
         QueryWrapper<InvestProjectPlanTrace> queryWrapper = getQueryWrapper(params);
         return investProjectPlanTraceMapper.selectMaps(queryWrapper);
-
     }
 
     /**
@@ -151,28 +150,40 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
         queryWrapper.eq("month",month).eq("year",year).eq("companyName",companyName).eq("projectName",projectName).eq("projectListId",projectListId);
         investProjectPlanTraceMapper.delete(queryWrapper);
 
-        //每次导入更新前，删除前面导入旧数据
-        QueryWrapper<InvestProjectPlanTraceDetail> detailQueryWrapper = new QueryWrapper<>();
-        detailQueryWrapper.eq("month",month).eq("year",year).eq("companyName",companyName).eq("projectName",projectName);
-        investProjectPlanTraceDetailMapper.delete(detailQueryWrapper);
-
-        //导入信息
-        InvestProjectPlanTraceDetail investProjectPlanTraceDetail = new InvestProjectPlanTraceDetail();
-        investProjectPlanTraceDetail.setAbstracte(String.valueOf(abstracte));
-        investProjectPlanTraceDetail.setEvaluate(String.valueOf(evaluates));
-        investProjectPlanTraceDetail.setMonth(Integer.valueOf(month));
-        investProjectPlanTraceDetail.setYear(Integer.valueOf(year));
-        investProjectPlanTraceDetail.setCompanyName(companyName);
-        investProjectPlanTraceDetail.setProjectName(projectName);
-        investProjectPlanTraceDetail.setProjectListId(Integer.valueOf(projectListId));
-
-        List<InvestProjectPlanTraceDetail> investProjectPlanTraceDetails = new ArrayList<>();
-        investProjectPlanTraceDetails.add(investProjectPlanTraceDetail);
-        investProjectPlanTraceDetailMapper.insertBatchSomeColumn(investProjectPlanTraceDetails);
-
-
 
         List<InvestProjectPlanTrace> investProjectPlanTraces = new ArrayList<>();
+//        InvestProjectPlanTrace investProjectPlanTraceOne = new InvestProjectPlanTrace();
+//        investProjectPlanTraceOne.setAbstracte(String.valueOf(abstracte));
+//        investProjectPlanTraceOne.setEvaluateSum(String.valueOf(evaluates));
+//        investProjectPlanTraceOne.setMonth(Integer.valueOf(month));
+//        investProjectPlanTraceOne.setYear(Integer.valueOf(year));
+//        investProjectPlanTraceOne.setCompanyName(companyName);
+//        investProjectPlanTraceOne.setProjectName(projectName);
+//        investProjectPlanTraceOne.setProjectListId(Integer.valueOf(projectListId));
+//        investProjectPlanTraces.add(investProjectPlanTraceOne);
+
+        //每次导入更新前，删除前面导入旧数据
+//        QueryWrapper<InvestProjectPlanTraceDetail> detailQueryWrapper = new QueryWrapper<>();
+//        detailQueryWrapper.eq("month",month).eq("year",year).eq("companyName",companyName).eq("projectName",projectName).eq("projectListId",projectListId);
+//        investProjectPlanTraceDetailMapper.delete(detailQueryWrapper);
+
+        //导入信息
+//        InvestProjectPlanTraceDetail investProjectPlanTraceDetail = new InvestProjectPlanTraceDetail();
+//        investProjectPlanTraceDetail.setAbstracte(String.valueOf(abstracte));
+//        investProjectPlanTraceDetail.setEvaluate(String.valueOf(evaluates));
+//        investProjectPlanTraceDetail.setMonth(Integer.valueOf(month));
+//        investProjectPlanTraceDetail.setYear(Integer.valueOf(year));
+//        investProjectPlanTraceDetail.setCompanyName(companyName);
+//        investProjectPlanTraceDetail.setProjectName(projectName);
+//        investProjectPlanTraceDetail.setProjectListId(Integer.valueOf(projectListId));
+//
+//        List<InvestProjectPlanTraceDetail> investProjectPlanTraceDetails = new ArrayList<>();
+//        investProjectPlanTraceDetails.add(investProjectPlanTraceDetail);
+//        investProjectPlanTraceDetailMapper.insertBatchSomeColumn(investProjectPlanTraceDetails);
+
+
+
+
         //InvestProjectPlanTrace investProjectPlanTrace = new InvestProjectPlanTrace();
 
 
@@ -220,6 +231,7 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
             String inspectionResult = cells.get(SheetService.columnToIndex("L"));
             String evaluate = cells.get(SheetService.columnToIndex("M"));
             String note = cells.get(SheetService.columnToIndex("N"));
+            String serialId = cells.get(SheetService.columnToIndex("O"));
 
 
             QueryWrapper<InvestProjectList> investProjectListQueryWrapper = new QueryWrapper<>();
@@ -266,6 +278,9 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
             investProjectPlanTrace.setCompanyName(companyName);
             investProjectPlanTrace.setProjectName(projectName);
             investProjectPlanTrace.setProjectListId(Integer.valueOf(projectListId));
+            investProjectPlanTrace.setSerialId(Integer.valueOf(serialId));
+            investProjectPlanTrace.setAbstracte(String.valueOf(abstracte));
+            investProjectPlanTrace.setEvaluateSum(String.valueOf(evaluates));
 
 //             // 根据id进行判断，存在则更新，不存在则新增
 //            saveOrUpdate(investProjectPlanTrace);
@@ -456,7 +471,19 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
             queryWrapper.eq("year", params.get("year"));
         }
         if (params.containsKey("projectContent")) {
-            queryWrapper.eq("projectContent", params.get("projectContent"));
+            queryWrapper.like("projectContent", params.get("projectContent"));
+        }
+        if (params.containsKey("note")) {
+            queryWrapper.like("note", params.get("note"));
+        }
+        if (params.containsKey("serialId")) {
+            queryWrapper.like("serialId", params.get("serialId"));
+        }
+        if (params.containsKey("abstracte")) {
+            queryWrapper.like("abstracte", params.get("abstracte"));
+        }
+        if (params.containsKey("evaluateSum")) {
+            queryWrapper.like("evaluateSum", params.get("evaluateSum"));
         }
         return queryWrapper;
     }

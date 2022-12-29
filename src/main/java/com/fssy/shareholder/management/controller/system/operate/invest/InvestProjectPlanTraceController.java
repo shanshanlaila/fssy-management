@@ -1,4 +1,4 @@
-package com.fssy.shareholder.management.controller.system.operat.invest;
+package com.fssy.shareholder.management.controller.system.operate.invest;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Controller;
  * </p>
  *
  * @author Solomon
- * @since 2022-12-13
+ * @since 2022-12-09
  */
 @Controller
-@RequestMapping("/fssy.shareholder.management/invest-project-plan-trace-detail")
-public class InvestProjectPlanTraceDetailController {
+@RequestMapping("/fssy.shareholder.management/invest-project-plan-trace")
+public class InvestProjectPlanTraceController {
 
 }

@@ -1,4 +1,4 @@
-package com.fssy.shareholder.management.controller.system.operat.invest;
+package com.fssy.shareholder.management.controller.system.operate.invest;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;
