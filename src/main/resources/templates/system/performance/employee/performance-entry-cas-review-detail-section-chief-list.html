@@ -123,6 +123,11 @@
                                         lay-submit="" lay-filter="confirm">一键审核
                                 </button>
                             </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <button class="layui-btn layui-btn-sm layui-btn-danger"
+                                        lay-submit="" lay-filter="retreat">一键撤销审核
+                                </button>
+                            </div>
                         </form>
                     </script>
                 </div>
@@ -505,6 +510,45 @@
                         }
                     }
                 });
+            });
+            return false;
+        });
+
+        // 一键撤销审核
+        form.on('submit(retreat)', function (data) {
+            var checkStatus = table.checkStatus(dataTableRight.config.id);
+            data = checkStatus.data;
+            if (data.length <= 0) {
+                layer.alert("请至少选择一行数据");
+                return false;
+            }
+            var reviewDetailIds = [];
+            data.forEach(function (item) {
+                reviewDetailIds.push(item.id);
+            });
+            layer.confirm('确定一键撤销审核吗？', {icon: 3, title: '提示'}, function (index) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/system/entry-cas-review-detail/retreat?identification=retreatAuditByChief',
+                    data: {
+                        "reviewDetailIds": reviewDetailIds,
+                    },
+                    success: function (result) {
+                        layer.msg(result.msg);
+                        if (result.status === 200) {
+                            table.reload('dataTableRight');
+                            table.reload('dataTableLeft');
+                            laydate.render(
+                                {
+                                    elem: this,
+                                    //更换触发方式
+                                    trigger: 'click',
+                                    type: 'date',
+                                    value: new Date()
+                                });
+                        }
+                    }
+                })
             });
             return false;
         });

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
      * @param entryCasReviewDetail 总结
      * @return 结果
      */
-    boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail);
+    boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request);
 
     /**
      * 工作计划完成情况提交审核
@@ -44,10 +45,10 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     /**
      * 工作计划完成情况撤销审核
      *
-     * @param reviewDetailIds
-     * @return
+     * @param reviewDetailIds 总结dis
+     * @return 结果
      */
-    boolean retreat(List<String> reviewDetailIds);
+    boolean retreat(List<String> reviewDetailIds, String identification);
 
     /**
      * 工作计划完成情况审核评价 （科长，事务类）
@@ -76,12 +77,12 @@ public interface EntryCasReviewDetailService extends IService<EntryCasReviewDeta
     boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview,List<String> auditNotes);
 
     /**
-     * 批量审核-计划工作完成评价（科长）
+     * 履职总结-科长审核
      *
      * @param entryReviewDetailIds           履职总结的Ids
      * @param chargeTransactionEvaluateLevel 事务类评价等级
      * @param chargeTransactionBelowType     事务类评价不同类型
-     * @return
+     * @return 审核结果
      */
     boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType,List<String> auditNotes);
 

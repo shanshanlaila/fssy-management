@@ -458,7 +458,7 @@
                 }
                 layer.open({
                     type: 2,
-                    title: '序号为' + data.id + '的履职回顾内容修改',
+                    title: '序号为' + data.id + '的履职总结内容修改',
                     area:
                         [
                             $(window).width() * 0.9 + 'px',
@@ -479,20 +479,14 @@
                 layer.alert("请至少选择一行数据");
                 return false;
             }
-            let flag = false;
-            let msg = "";
             var reviewDetailIds = [];
             data.forEach(function (item) {
-                if (item.status === 5) {
-                    msg = msg ? msg + ',' + item.noticeNo : item.noticeNo;
-                    flag = true;
-                }
                 reviewDetailIds.push(item.id);
             });
-            layer.confirm('确定撤销审核吗？', {icon: 3, title: '提示'}, function (index) {
+            layer.confirm('确定撤销提交吗？', {icon: 3, title: '提示'}, function (index) {
                 $.ajax({
                     type: 'POST',
-                    url: '/system/entry-cas-review-detail/retreat',
+                    url: '/system/entry-cas-review-detail/retreat?identification=',
                     data: {
                         "reviewDetailIds": reviewDetailIds,
                     },
