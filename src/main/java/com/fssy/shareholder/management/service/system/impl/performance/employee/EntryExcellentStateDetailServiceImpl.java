@@ -9,9 +9,13 @@ import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
+import com.fssy.shareholder.management.mapper.system.config.AttachmentMapper;
+import com.fssy.shareholder.management.mapper.system.config.StateRelationAttachmentMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.*;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.config.StateRelationAttachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.*;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
@@ -69,6 +73,12 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 
     @Autowired
     private EntryCasReviewDetailMapper entryCasReviewDetailMapper;
+
+    @Autowired
+    private AttachmentMapper attachmentMapper;
+
+    @Autowired
+    private StateRelationAttachmentMapper stateRelationAttachmentMapper;
 
     /**
      * 根据分页查询数据
@@ -415,9 +425,12 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 
     @Override
     @Transactional
-    public boolean save(EntryExcellentStateDetail entryExcellentStateDetail, String mainIdsStr, String nextIdsStr) {
-        if (ObjectUtils.isEmpty(mainIdsStr)) {
-            throw new ServiceException("提交失败，请选择主担");
+    public boolean save(EntryExcellentStateDetail entryExcellentStateDetail, Map<String, Object> param) {
+        if (param.containsKey("mainIds")) {
+            String mainIdsStr = (String) param.get("mainIds");
+            if (ObjectUtils.isEmpty(mainIdsStr)) {
+                throw new ServiceException("提交失败，请选择主担");
+            }
         }
         // 查询当前登录用户对应的部门和角色信息
         User user = (User) SecurityUtils.getSubject().getPrincipal();
@@ -430,6 +443,8 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
 
         // 主/次担任人名称处理
+        String mainIdsStr = (String) param.get("mainIds");
+        String nextIdsStr = (String) param.get("nextIds");
         StringBuilder mainSb = new StringBuilder();
         StringBuilder nextSb = new StringBuilder();
         int countMain = 0, countNext = 0;
@@ -446,7 +461,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 mainSb.append(",");
             }
         }
-        int result ;
+        int result;
         if (!ObjectUtils.isEmpty(nextIdsStr)) {
             for (String nextId : nextIds) {
                 User nextUser = userMapper.selectById(nextId);
@@ -495,6 +510,29 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         entryExcellentStateDetail.setMergeNo(entryExcellentStateMerge.getMergeNo());
         result = entryExcellentStateDetailMapper.insert(entryExcellentStateDetail);// 保存
 
+        // 维护bs_performance_state_relation_attachment（员工月度评价情况关联附件表）
+        StateRelationAttachment stateRelationAttachment = new StateRelationAttachment();
+        if (param.containsKey("attachmentId")) {
+            String attachmentIds = (String) param.get("attachmentId");
+            List<String> attachmentIdList = Arrays.asList(attachmentIds.split(","));
+            if (!ObjectUtils.isEmpty(attachmentIdList)) {
+                for (String attachmentId : attachmentIdList) {
+                    Attachment attachment = attachmentMapper.selectById(attachmentId);
+                    stateRelationAttachment.setImportDate(attachment.getImportDate());
+                    // 保存附件表
+                    stateRelationAttachment.setFilename(attachment.getFilename());
+                    // 默认就是正在导入
+                    stateRelationAttachment.setMd5Path(attachment.getMd5Path());
+                    stateRelationAttachment.setPath(attachment.getPath());
+                    stateRelationAttachment.setAttachmentId(attachment.getId());
+                    stateRelationAttachment.setNote(entryExcellentStateDetail.getNote());
+                    stateRelationAttachment.setStateId(entryExcellentStateDetail.getId());
+                    stateRelationAttachment.setConclusion(attachment.getConclusion());
+                    // 默认就是上载成功
+                    stateRelationAttachmentMapper.insert(stateRelationAttachment);
+                }
+            }
+        }
         // 根据选择的主担，创建表“bs_performance_state_relation_main_user”
         for (String mainId : mainIds) {
             User mainUser = userMapper.selectById(mainId);
@@ -582,7 +620,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             }
             EntryExcellentStateDetail entryExcellentStateDetail = keyByExcellentMap.get(excellentId);
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
-                throw new ServiceException(String.format("不能审核状态为【%s】的评优材料",entryExcellentStateDetail.getStatus()));
+                throw new ServiceException(String.format("不能审核状态为【%s】的评优材料", entryExcellentStateDetail.getStatus()));
             }
             entryExcellentStateDetail.setClassReview(classReview);
             entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF);

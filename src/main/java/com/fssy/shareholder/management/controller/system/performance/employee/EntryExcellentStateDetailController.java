@@ -7,6 +7,8 @@ import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.Module;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.user.User;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.config.StateRelationAttachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
@@ -15,11 +17,15 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EventLis
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
+import com.fssy.shareholder.management.service.system.config.AttachmentService;
+import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
+import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -31,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -67,6 +74,12 @@ public class EntryExcellentStateDetailController {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private AttachmentService attachmentService;
+
+    @Autowired
+    private ImportModuleService importModuleService;
 
     @GetMapping("index")
     @RequiresPermissions("system:performance:entryExcellentStateDetail:index")
@@ -468,7 +481,7 @@ public class EntryExcellentStateDetailController {
     /**
      * 展示评优材料上传页面
      *
-     * @param id 履职明细id
+     * @param id 评优材料id
      * @return 修改页面
      */
     @GetMapping("createAndUpload/{id}")
@@ -480,7 +493,7 @@ public class EntryExcellentStateDetailController {
         // 查询事件清单
         if (!(entryCasReviewDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT))) {
             if (ObjectUtils.isEmpty(eventList)) {
-                throw new ServiceException("不存在对应的事件,请联系管理员");
+                throw new ServiceException("不存在对应的基础事件,请联系管理员");
             }
         } else {
             if (ObjectUtils.isEmpty(eventList)) {
@@ -502,6 +515,20 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         model.addAttribute("userNameList", userNameList);
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        String importDateStart = sdf.format(date);
+        model.addAttribute("importDateStart", importDateStart);
+        // 查询导入场景
+        params.put("noteEq", "评优材料上传");
+        List<ImportModule> importModules = importModuleService
+                .findImportModuleDataListByParams(params);
+        if (org.springframework.util.ObjectUtils.isEmpty(importModules)) {
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "项目月度进展表"));
+        }
+        model.addAttribute("module", importModules.get(0).getId());
         return "system/performance/employee/entry-excellent-state-detail-createAndUpload";
     }
 
@@ -538,10 +565,17 @@ public class EntryExcellentStateDetailController {
     @PostMapping("uploadFile")
     @RequiredLog("评优说明材料多附件上传")
     @ResponseBody
-    public SysResult uploadFile(@RequestParam("file") MultipartFile file, StateRelationAttachment attachment) {
+    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
+                                HttpServletRequest request) {
         // 保存附件
-        StateRelationAttachment result = fileAttachmentTool.storeStateRelationFileToModule(file, Module.EXCELLENT_MULTIPART_UPLOAD, attachment);
-        // 返回结果
+        Calendar calendar = Calendar.getInstance();
+        attachment.setImportDate(calendar.getTime());// 设置时间
+        // 查询导入场景对象
+        ImportModule module = importModuleService.findById(InstandTool.integerToLong(attachment.getModule()));
+        if (ObjectUtils.isEmpty(module)) {
+            throw new ServiceException(String.format("序号为【%s】的导入场景未维护，不允许导入", attachment.getModule()));
+        }
+        Attachment result = fileAttachmentTool.storeFileToModule(file, module, attachment);
         return SysResult.ok(result.getId());
     }
 
@@ -558,9 +592,14 @@ public class EntryExcellentStateDetailController {
         if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.WAIT_SUBMIT_EXCELLENT))) {
             return SysResult.build(500, String.format("只能提交【%s】状态的总结评优材料", entryExcellentStateDetail.getStatus()));
         }
+        Map<String, Object> param = new HashMap<>();
+        String attachmentId = request.getParameter("attachmentId");
         String mainIds = request.getParameter("mainIds");
         String nextIds = request.getParameter("nextIds");
-        boolean result = entryExcellentStateDetailService.save(entryExcellentStateDetail, mainIds, nextIds);
+        param.put("attachmentId", attachmentId);
+        param.put("mainIds", mainIds);
+        param.put("nextIds", nextIds);
+        boolean result = entryExcellentStateDetailService.save(entryExcellentStateDetail, param);
         if (result) {
             return SysResult.ok();
         }

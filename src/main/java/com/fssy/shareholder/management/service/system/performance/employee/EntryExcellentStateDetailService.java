@@ -77,11 +77,10 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
      * 创建履职评价说明明细
      *
      * @param entryExcellentStateDetail 履职评价说明明细
-     * @param mainIds                   主担人ids
-     * @param nextIds                   次担人ids
+     * @param param 参数map
      * @return 创建结果
      */
-    boolean save(EntryExcellentStateDetail entryExcellentStateDetail, String mainIds, String nextIds);
+    boolean save(EntryExcellentStateDetail entryExcellentStateDetail, Map<String, Object> param);
 
     /**
      * 绩效科评优材料批量审核

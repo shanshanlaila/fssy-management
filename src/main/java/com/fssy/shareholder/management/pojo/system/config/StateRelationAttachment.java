@@ -30,7 +30,7 @@ public class StateRelationAttachment extends BaseModel {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 备注
@@ -42,13 +42,13 @@ public class StateRelationAttachment extends BaseModel {
      * 附件表主键
      */
     @TableField("attachmentId")
-    private Integer attachmentId;
+    private Long attachmentId;
 
     /**
      * 员工月度履职评价表明细主键
      */
     @TableField("stateId")
-    private Integer stateId;
+    private Long stateId;
 
     /**
      * md5加密，作为查询条件
@@ -80,7 +80,7 @@ public class StateRelationAttachment extends BaseModel {
     @TableField("importDate")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
-    private LocalDate importDate;
+    private Date importDate;
 
 
 }
