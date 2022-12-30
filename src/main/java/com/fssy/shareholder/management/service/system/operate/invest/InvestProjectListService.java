@@ -1,9 +1,9 @@
 package com.fssy.shareholder.management.service.system.operate.invest;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 import java.util.Map;
@@ -58,13 +58,17 @@ public interface InvestProjectListService extends IService<InvestProjectList> {
      */
     boolean updateInvestProjectListData(InvestProjectList investProjectList);
 
-
     /**
      * 读取附件数据到数据库
      * @param attachment
      * @return
      */
-    Map<String,Object> reaadInvestProjectListDataSource(Attachment attachment, String year, String companyName);
+    Map<String,Object> readInvestProjectListDataSource(Attachment attachment);
 
+    /**
+     * 新增年度投资项目
+     * @param investProjectList 年度投资项目清单实体
+     */
+    boolean insertInvestProjectList(InvestProjectList investProjectList);
 
 }
