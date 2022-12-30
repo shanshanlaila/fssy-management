@@ -1,3 +1,8 @@
+/**
+ * ------------------------修改日志---------------------------------
+ * 修改人			修改日期			修改内容
+ * 兰宇铧			2022-12-30 		修改问题，先查询merge是否有数据，有直接用，没有则重新创建;修改问题，查询条件添加月份和部门并修改编号规则
+ */
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -5,9 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
-import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.config.AttachmentMapper;
 import com.fssy.shareholder.management.mapper.system.config.StateRelationAttachmentMapper;
@@ -25,6 +28,7 @@ import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
@@ -46,12 +50,6 @@ import java.util.*;
 public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcellentStateDetailMapper, EntryExcellentStateDetail> implements EntryExcellentStateDetailService {
     @Autowired
     private EntryExcellentStateDetailMapper entryExcellentStateDetailMapper;
-
-    @Autowired
-    private DepartmentMapper departmentMapper;
-
-    @Autowired
-    private RoleMapper roleMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -94,7 +92,8 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     }
 
     //传入参数
-    private QueryWrapper<EntryExcellentStateDetail> getQueryWrapper(Map<String, Object> params) {
+    @SuppressWarnings("unchecked")
+	private QueryWrapper<EntryExcellentStateDetail> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EntryExcellentStateDetail> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("select")) {
             queryWrapper.select((String) params.get("select"));
@@ -475,9 +474,41 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 }
             }
         }
+        
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+     	// 按照申报年份、月份加申报部门创建表“bs_performance_entry_excellent_state_merge”，
+		// 2022-12-30 修改问题，先查询merge是否有数据，有直接用，没有则重新创建
+		QueryWrapper<EntryExcellentStateMerge> mergeQueryWrapper = new QueryWrapper<>();
+		mergeQueryWrapper.eq("year", year).eq("month", month).eq("departmentId",
+				viewDepartmentRoleUser.getDepartmentId());
+		List<EntryExcellentStateMerge> mergeList = entryExcellentStateMergeMapper
+				.selectList(mergeQueryWrapper);
+		EntryExcellentStateMerge entryExcellentStateMerge;
+		if (ObjectUtils.isEmpty(mergeList))
+		{
+			entryExcellentStateMerge = new EntryExcellentStateMerge();
+			entryExcellentStateMerge.setCreateDate(LocalDate.now());
+			entryExcellentStateMerge.setCreatedAt(LocalDateTime.now());
+			entryExcellentStateMerge.setCreateId(user.getId());
+			entryExcellentStateMerge.setCreateName(user.getName());
+			entryExcellentStateMerge.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
+			entryExcellentStateMerge.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
+			entryExcellentStateMerge.setAuditName(null);
+			entryExcellentStateMerge.setAuditId(null);
+			entryExcellentStateMerge.setAuditDate(null);
+			entryExcellentStateMerge.setApplyDate(LocalDate.now());
+			entryExcellentStateMerge = storeNoticeMerge(LocalDate.now(),
+					new HashMap<String, Object>(), entryExcellentStateMerge);// 保存
+		}
+		else
+		{
+			entryExcellentStateMerge = mergeList.get(0);
+		}
+        
         // 创建评价说明材料明细
-        entryExcellentStateDetail.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
-        entryExcellentStateDetail.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
+        entryExcellentStateDetail.setDepartmentId(entryExcellentStateMerge.getDepartmentId());
+        entryExcellentStateDetail.setDepartmentName(entryExcellentStateMerge.getDepartmentName());
         entryExcellentStateDetail.setCreatedAt(LocalDateTime.now());
         entryExcellentStateDetail.setCreatedId(user.getId());
         entryExcellentStateDetail.setCreatedName(user.getName());
@@ -488,24 +519,8 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         entryExcellentStateDetail.setCreateId(user.getId());
         entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
         entryExcellentStateDetail.setApplyDate(LocalDate.now());
-        int year = LocalDate.now().getYear();
         entryExcellentStateDetail.setYear(year);
-        int month = LocalDate.now().getMonthValue();
         entryExcellentStateDetail.setMonth(month);
-
-        // 按照申报年份、月份加申报部门创建表“bs_performance_entry_excellent_state_merge”，
-        EntryExcellentStateMerge entryExcellentStateMerge = new EntryExcellentStateMerge();
-        entryExcellentStateMerge.setCreateDate(LocalDate.now());
-        entryExcellentStateMerge.setCreatedAt(LocalDateTime.now());
-        entryExcellentStateMerge.setCreateId(user.getId());
-        entryExcellentStateMerge.setCreateName(user.getName());
-        entryExcellentStateMerge.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
-        entryExcellentStateMerge.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
-        entryExcellentStateMerge.setAuditName(null);
-        entryExcellentStateMerge.setAuditId(null);
-        entryExcellentStateMerge.setAuditDate(null);
-        entryExcellentStateMerge.setApplyDate(entryExcellentStateDetail.getApplyDate());
-        entryExcellentStateMerge = storeNoticeMerge(LocalDate.now(), new HashMap<String, Object>(), entryExcellentStateMerge);// 保存
         entryExcellentStateDetail.setMergeId(entryExcellentStateMerge.getId());
         entryExcellentStateDetail.setMergeNo(entryExcellentStateMerge.getMergeNo());
         result = entryExcellentStateDetailMapper.insert(entryExcellentStateDetail);// 保存
@@ -574,28 +589,38 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         return result > 0;
     }
 
-
-    public synchronized EntryExcellentStateMerge storeNoticeMerge(LocalDate createDate,
-                                                                  Map<String, Object> otherParams, EntryExcellentStateMerge entryExcellentStateMerge) {
-        // region 创建通知单数据
-        Calendar calendar = Calendar.getInstance(Locale.CHINA);
-
-        // 生成通知单明细合并序列号
+	/**
+	 * 评优材料表编号生成并保存(线程不安全，需要加锁)
+	 * 
+	 * @param createDate               创建日期
+	 * @param otherParams              其他参数
+	 * @param entryExcellentStateMerge 评优材料表对象
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public synchronized EntryExcellentStateMerge storeNoticeMerge(LocalDate createDate,
+			Map<String, Object> otherParams, EntryExcellentStateMerge entryExcellentStateMerge)
+	{
+        // region 创建评优材料表数据
+        // 生成评优材料表序列号
         int noticeMergeSerial;
         int year = createDate.getYear();
         int month = createDate.getMonthValue();
-        QueryWrapper<EntryCasMerge> queryNoticeMergeSerialQueryWrapper = new QueryWrapper<>();
-        queryNoticeMergeSerialQueryWrapper.eq("year", year)
-                .select("max(serial) as serial");
+		QueryWrapper<EntryCasMerge> queryNoticeMergeSerialQueryWrapper = new QueryWrapper<>();
+		// 2022-12-30 修改问题，查询条件添加月份和部门并修改编号规则
+		queryNoticeMergeSerialQueryWrapper.eq("year", year)
+				.eq("month", entryExcellentStateMerge.getMonth())
+				.eq("departmentId", entryExcellentStateMerge.getDepartmentId())
+				.select("max(serial) as serial");
         EntryCasMerge noticeMergeLastSerialData = entryCasMergeMapper
                 .selectOne(queryNoticeMergeSerialQueryWrapper);
         noticeMergeSerial = !ObjectUtils.isEmpty(noticeMergeLastSerialData)
                 && !ObjectUtils.isEmpty(noticeMergeLastSerialData.getSerial())
                 ? noticeMergeLastSerialData.getSerial().intValue() + 1
                 : 1;
-        entryExcellentStateMerge.setMergeNo(
-                String.format("PJ%s%s", year,
-                        new DecimalFormat("000").format(noticeMergeSerial)));
+		entryExcellentStateMerge
+				.setMergeNo(String.format("PY%s%s%s", year, new DecimalFormat("00").format(month),
+						new DecimalFormat("000").format(noticeMergeSerial)));
         entryExcellentStateMerge.setSerial(noticeMergeSerial);
         entryExcellentStateMerge.setYear(year);
         entryExcellentStateMerge.setMonth(month);

@@ -1,6 +1,7 @@
 /**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
+ * 兰宇铧			2022-12-30 		修改问题，查询条件添加月份和部门并修改编号规则
  */
 package com.fssy.shareholder.management.service.system.impl.performance.employee;
 
@@ -10,7 +11,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
-import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
@@ -33,6 +33,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
@@ -66,9 +67,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
     @Autowired
     private DepartmentMapper departmentMapper;
-
-    @Autowired
-    private RoleMapper roleMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -323,7 +321,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     }
 
 
-    private QueryWrapper<EntryCasPlanDetail> getQueryWrapper(Map<String, Object> params) {
+    @SuppressWarnings("unchecked")
+	private QueryWrapper<EntryCasPlanDetail> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EntryCasPlanDetail> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("select")) {
             queryWrapper.select((String) params.get("select"));
@@ -481,17 +480,27 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         return queryWrapper;
     }
 
+	/**
+	 * 履职表编号生成并保存(线程不安全，需要加锁)
+	 * 
+	 * @param createDate    创建日期
+	 * @param otherParams   其他参数
+	 * @param entryCasMerge 履职表对象
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
     public synchronized EntryCasMerge storeNoticeMerge(LocalDate createDate,
                                                        Map<String, Object> otherParams, EntryCasMerge entryCasMerge) {
-        // region 创建通知单数据
-        Calendar calendar = Calendar.getInstance(Locale.CHINA);
-
-        // 生成通知单明细合并序列号
+        // region 创建履职表数据
+        // 生成履职表序列号
         int noticeMergeSerial;
         int year = createDate.getYear();
         int month = createDate.getMonthValue();
         QueryWrapper<EntryCasMerge> queryNoticeMergeSerialQueryWrapper = new QueryWrapper<>();
-        queryNoticeMergeSerialQueryWrapper.eq("year", year)
+        // 2022-12-30 修改问题，查询条件添加月份和部门并修改编号规则
+		queryNoticeMergeSerialQueryWrapper.eq("year", year)
+				.eq("month", entryCasMerge.getMonth())
+				.eq("departmentId", entryCasMerge.getDepartmentId())
                 .select("max(serial) as serial");
         EntryCasMerge noticeMergeLastSerialData = entryCasMergeMapper
                 .selectOne(queryNoticeMergeSerialQueryWrapper);
@@ -500,7 +509,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 ? noticeMergeLastSerialData.getSerial() + 1
                 : 1;
         entryCasMerge.setMergeNo(
-                String.format("JH%s%s", year,
+                String.format("JH%s%s%s", year, new DecimalFormat("00").format(month),
                         new DecimalFormat("000").format(noticeMergeSerial)));
         entryCasMerge.setSerial(noticeMergeSerial);
         entryCasMerge.setYear(year);

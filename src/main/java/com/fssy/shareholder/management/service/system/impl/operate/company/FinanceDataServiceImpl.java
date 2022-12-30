@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.operate.company.FinanceDataMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.company.FinanceData;
-import com.fssy.shareholder.management.pojo.system.operate.invest.ProjectList;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.company.FinanceDataService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
@@ -139,7 +138,6 @@ public class FinanceDataServiceImpl extends ServiceImpl<FinanceDataMapper, Finan
 
 
             //构建实体类
-            ProjectList projectList = new ProjectList();
             FinanceData financeData = new FinanceData();
             financeData.setId(InstandTool.stringToInteger(id));
             financeData.setCompanyName(companyName);
