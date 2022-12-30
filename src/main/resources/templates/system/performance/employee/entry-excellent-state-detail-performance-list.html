@@ -291,6 +291,26 @@
                         rowspan: 2
                     },
                     {
+	                      field: 'attachmentList',
+	                      title: '材料附件',
+	                      width: 100,
+	                      rowspan: 2,
+	                      templet : function(d) {
+		                      	if (!d.attachmentList || d.attachmentList.length === 0) {
+		          									return '';
+		          							} else {
+																var element = '';            								
+																for (var i = 0; i < d.attachmentList.length; i++) {
+																	var attachment = d.attachmentList[i];
+																	element = element + '<a href="/system/config/attachment/downloadFile?id=' + attachment.attachmentId + '&md5Path='
+		        											+ attachment.md5Path + '" target="_blank" title="' + attachment.filename
+		        											+ '"><i class="fa fa-file-text-o" aria-hidden="true"></i></a>';
+																}
+																return element;
+		          							}
+	        							}
+	                	},
+                    {
                         fixed: 'right',
                         title: '操作',
                         width: 100,

@@ -22,6 +22,7 @@ import com.fssy.shareholder.management.pojo.system.config.StateRelationAttachmen
 import com.fssy.shareholder.management.pojo.system.performance.employee.*;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
+import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.common.IteratorTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -86,7 +87,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
      */
     @Override
     public Page<EntryExcellentStateDetail> findDataListByParams(Map<String, Object> params) {
-        QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params).orderByDesc("id");//全局根据id倒序
+        QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);
         Page<EntryExcellentStateDetail> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
         return entryExcellentStateDetailMapper.selectPage(myPage, queryWrapper);
     }
@@ -234,7 +235,22 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         if (params.containsKey("roleIdList")) {
             queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
         }
-
+		if (params.containsKey("idAsc"))
+		{
+			queryWrapper.orderByAsc("id");
+		}
+		else
+		{
+			queryWrapper.orderByDesc("id");
+		}
+		if (params.containsKey("select"))
+		{
+			queryWrapper.select(InstandTool.objectToString(params.get("select")));
+		}
+		if (params.containsKey("groupBy"))
+		{
+			queryWrapper.groupBy(InstandTool.objectToString(params.get("groupBy")));
+		}
         return queryWrapper;
     }
 
@@ -717,4 +733,37 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         }
         return true;
     }
+
+	@Override
+	public Page<Map<String, Object>> findDataMapPageListByParams(Map<String, Object> params)
+	{
+		QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);
+		Page<Map<String, Object>> myPage = new Page<>((int) params.get("page"),
+				(int) params.get("limit"));
+		myPage = entryExcellentStateDetailMapper.selectMapsPage(myPage, queryWrapper);
+		// 2022-12-30 添加评优材料附件查询
+		myPage.getRecords().stream().forEach(item -> {
+			QueryWrapper<StateRelationAttachment> attachmentQueryWrapper = new QueryWrapper<>();
+			attachmentQueryWrapper.eq("stateId", item.get("id"))
+					.select("stateId,attachmentId,md5Path,fileName");
+			List<StateRelationAttachment> attachments = stateRelationAttachmentMapper
+					.selectList(attachmentQueryWrapper);
+			item.put("attachmentList", attachments);
+		});
+		return myPage;
+	}
+
+	@Override
+	public List<EntryExcellentStateDetail> findListByParams(Map<String, Object> params)
+	{
+		QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);// 全局根据id倒序
+		return entryExcellentStateDetailMapper.selectList(queryWrapper);
+	}
+
+	@Override
+	public List<Map<String, Object>> findDataMapListByParams(Map<String, Object> params)
+	{
+		QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);// 全局根据id倒序
+		return entryExcellentStateDetailMapper.selectMaps(queryWrapper);
+	}
 }

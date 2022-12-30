@@ -1,15 +1,12 @@
 package com.fssy.shareholder.management.controller.system.performance.employee;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.pojo.common.Module;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
-import com.fssy.shareholder.management.pojo.system.config.StateRelationAttachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryExcellentStateDetail;
@@ -17,7 +14,6 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EventLis
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
-import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
@@ -25,7 +21,6 @@ import com.fssy.shareholder.management.service.system.performance.employee.Entry
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
-import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -76,9 +71,6 @@ public class EntryExcellentStateDetailController {
     private RoleService roleService;
 
     @Autowired
-    private AttachmentService attachmentService;
-
-    @Autowired
     private ImportModuleService importModuleService;
 
     @GetMapping("index")
@@ -101,16 +93,20 @@ public class EntryExcellentStateDetailController {
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
 
-        Page<EntryExcellentStateDetail> entryExcellentStateDetailPage = entryExcellentStateDetailService.findDataListByParams(params);
-        if (entryExcellentStateDetailPage.getTotal() == 0) {
-            result.put("code", 404);
-            result.put("msg", "未查出数据");
-        } else {
-            result.put("code", 0);
-            result.put("count", entryExcellentStateDetailPage.getTotal());
-            result.put("data", entryExcellentStateDetailPage.getRecords());
-        }
-        return result;
+		Page<Map<String, Object>> entryExcellentStateDetailPage = entryExcellentStateDetailService
+				.findDataMapPageListByParams(params);
+		if (entryExcellentStateDetailPage.getTotal() == 0)
+		{
+			result.put("code", 404);
+			result.put("msg", "未查出数据");
+		}
+		else
+		{
+			result.put("code", 0);
+			result.put("count", entryExcellentStateDetailPage.getTotal());
+			result.put("data", entryExcellentStateDetailPage.getRecords());
+		}
+		return result;
     }
 
     private Map<String, Object> getParams(HttpServletRequest request) {
@@ -257,6 +253,18 @@ public class EntryExcellentStateDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("roleId"))) {
             params.put("roleId", request.getParameter("roleId"));
         }
+		if (!ObjectUtils.isEmpty(request.getParameter("idAsc")))
+		{
+			params.put("idAsc", request.getParameter("idAsc"));
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("select")))
+		{
+			params.put("select", request.getParameter("select"));
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("groupBy")))
+		{
+			params.put("groupBy", request.getParameter("groupBy"));
+		}
         return params;
     }
 

@@ -102,4 +102,27 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
     boolean MinisterBatchAudit(List<String> excellentStateDetailIds, String ministerReview, List<String> auditNotes);
 
 
+    /**
+     * 根据参数分页查询数据(map)
+     *
+     * @param params 查询参数
+     * @return 数据分页
+     */
+    Page<Map<String, Object>> findDataMapPageListByParams(Map<String, Object> params);
+
+    /**
+     * 根据参数查询数据
+     *
+     * @param params 查询参数
+     * @return 数据列表
+     */
+    List<EntryExcellentStateDetail> findListByParams(Map<String, Object> params);
+    
+    /**
+     * 根据参数查询数据(map)
+     *
+     * @param params 查询参数
+     * @return 数据列表
+     */
+    List<Map<String, Object>> findDataMapListByParams(Map<String, Object> params);
 }

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>履职回顾评优提交审核</title>
+    <title>履职评优提交审核</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -112,7 +112,6 @@
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
-            console.log(data.field)
             // 重新加载表格
             table.reload('dataTable', {
                 where: data.field,
@@ -232,6 +231,26 @@
                         align: 'center',
                         rowspan: 2
                     },
+                    {
+                        field: 'attachmentList',
+                        title: '材料附件',
+                        width: 100,
+                        rowspan: 2,
+                        templet : function(d) {
+	            							if (!d.attachmentList || d.attachmentList.length === 0) {
+	            									return '';
+	            							} else {
+																var element = '';            								
+																for (var i = 0; i < d.attachmentList.length; i++) {
+																	var attachment = d.attachmentList[i];
+																	element = element + '<a href="/system/config/attachment/downloadFile?id=' + attachment.attachmentId + '&md5Path='
+		        											+ attachment.md5Path + '" target="_blank" title="' + attachment.filename
+		        											+ '"><i class="fa fa-file-text-o" aria-hidden="true"></i></a>';
+																}
+																return element;
+	            							}
+            						}
+                    }
                 ],
                 [
                     {
