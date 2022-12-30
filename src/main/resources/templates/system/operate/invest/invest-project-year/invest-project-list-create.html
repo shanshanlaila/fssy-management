@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增单条年度投资项目</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="6" style="background: #f7f7f7; color: black;">填写内容</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp年度:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="year" id="year"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;月份:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="month" id="month"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;企业名称:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="companyName" id="companyName"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;项目名称:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="projectName" id="projectName"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;项目来源:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="projectSource" id="projectSource"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;项目类别:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="projectType" id="projectType"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;项目投资类型:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="projectClass" id="projectClass"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='font-weight: bold'></span>&nbsp;项目简介:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="projectAbstract" id="projectAbstract"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;计划投资额:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="investmentVolumePlan" id="investmentVolumePlan"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;分管经理人:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="respManager" id="respManager"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style=' font-weight: bold'></span>&nbsp;项目联络人:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="projectContact" id="projectContact"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;所属产业单元:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="businessUnit" id="businessUnit"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;计划开始时间:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="planStartDate" id="planStartDate"
+                                   lay-verify="required" autocomplete="off"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;计划完成时间:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="planEndDate" id="planEndDate"
+                                   lay-verify="required" autocomplete="off"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">备注</td>
+                    <td colspan="6">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <textarea name="note" rowspan="3" class="layui-textarea" style="width: 100%"></textarea>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+</div>
+
+<!--laui-->
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render({
+                elem: this,
+                //更换触发方式
+                trigger: 'click',
+                type: 'date',
+                value: new Date()
+            });
+        });
+
+
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/operate/invest/invest-project-year/store',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status == 200) {
+                        layer.msg(result.msg, {icon: 6, time: 2000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</body>
+</html>

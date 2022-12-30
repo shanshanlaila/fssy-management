@@ -4,16 +4,12 @@ package com.fssy.shareholder.management.controller.system.operate.invest;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
-import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
-import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTraceDetail;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.InverstProjectPlanTraceOutputService;
-import com.fssy.shareholder.management.service.common.override.ManagerKpiCoefficientSheetOutputService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectListService;
@@ -25,10 +21,9 @@ import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,8 +67,8 @@ public class InvestProjectListController {
      * @param model
      * @return
      */
-    @GetMapping("index1")
-    @RequiresPermissions("system:operate:invest:invest-project-year:index1")
+    @GetMapping("indexYear")
+    @RequiresPermissions("system:operate:invest:invest-project-year:indexYear")
     @RequiredLog("年度投资项目清单管理")
     public String investProjectListIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
@@ -167,21 +162,6 @@ public class InvestProjectListController {
         params.put("projectName",projectName);
         params.put("projectListId",projectListId);
         List<Map<String, Object>> investProjectPlanTracejectDataByParams = investProjectPlanTraceService.findInvestProjectPlanTracejectDataByParams(params);
-        //List<InvestProjectPlanTraceDetail> investProjectPlanTraceDetailDataByParams = investProjectPlanTraceDetailService.findInvestProjectPlanTraceDetailDataByParams(params);
-//        String abstracte = null;
-//        String evaluate = null;
-//        if (investProjectPlanTraceDetailDataByParams.size()==0){
-//             abstracte = null;
-//             evaluate = null;
-//        }else {
-//             abstracte = investProjectPlanTraceDetailDataByParams.get(0).getAbstracte();
-//             evaluate = investProjectPlanTraceDetailDataByParams.get(0).getEvaluate();
-//        }
-//
-//        for (Map<String, Object> investProjectPlanTracejectDataByParam : investProjectPlanTracejectDataByParams) {
-//            investProjectPlanTracejectDataByParam.put("abstracte",abstracte);
-//            investProjectPlanTracejectDataByParam.put("evaluates",evaluate);
-//        }
         if (investProjectPlanTracejectDataByParams.size() == 0)
         {
             result.put("code", 404);
@@ -204,7 +184,7 @@ public class InvestProjectListController {
      */
     @RequiredLog("附件上传")
     @GetMapping("index")
-    @RequiresPermissions("system:operate:invest:invest-project-year:index1")
+    @RequiresPermissions("system:operate:invest:invest-project-year:indexYear")
     public String materialDataAttachmentIndex(Model model,HttpServletRequest request) {
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
@@ -338,10 +318,6 @@ public class InvestProjectListController {
         fieldMap.put("evaluate", "评价");
         fieldMap.put("note", "备注");
 
-//        for (Map<String, Object> investProjectPlanTracejectDataByParam : investProjectPlanTracejectDataByParams) {
-//            investProjectPlanTracejectDataByParam.put("evaluates",investProjectDataByParams.get(0).get("evaluate"));
-//            investProjectPlanTracejectDataByParam.put("abstracte",investProjectDataByParams.get(0).get("abstracte"));
-//        }
 
         for (Map<String, Object> investProjectPlanTracejectDataByParam : investProjectPlanTracejectDataByParams) {
             investProjectPlanTracejectDataByParam.put("abstracte",investProjectPlanTracejectDataByParams.get(0).get("abstracte"));
@@ -353,18 +329,8 @@ public class InvestProjectListController {
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(investProjectPlanTracejectDataByParams)) {
             throw new ServiceException("未查出数据");
         }
-//        if (org.apache.commons.lang3.ObjectUtils.isEmpty(investProjectDataByParams)) {
-//            throw new ServiceException("未查出数据");
-//        }
         sheetOutputService.exportNum("项目进度计划跟踪表", investProjectPlanTracejectDataByParams, fieldMap, response, strList, null);
     }
-
-
-
-
-
-
-
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("projectName"))) {
@@ -496,5 +462,61 @@ public class InvestProjectListController {
         }
 
         return params;
+    }
+    /**
+     * 展示修改页面
+     *
+     * @param id    年度投资项目清单id
+     * @param model 数据模型
+     * @return 修改页面
+     */
+    @GetMapping("edit/{id}")
+    public String showEditPage(@PathVariable String id, Model model) {
+        InvestProjectList investProjectList = investProjectListService.getById(id);
+//        if (projectList.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
+//            throw new ServiceException("不能修改取消状态下的事件请单");
+//        }
+        model.addAttribute("investProjectList", investProjectList);//investProjectList传到前端
+        return "system/operate/invest/invest-project-year/invest-project-list-edit";
+    }
+
+    /**
+     * 更新年度投资项目清单
+     *
+     * @param investProjectList 年度投资项目清单
+     * @return 结果
+     */
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(InvestProjectList investProjectList) {
+        boolean result = investProjectListService.updateInvestProjectListData(investProjectList);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "年度投资项目更新失败");
+    }
+    /**
+     * 返回新增单条基础事件页面
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("create")
+    public String createInvestProjectList(HttpServletRequest request, Model model) {
+        return "system/operate/invest/invest-project-year/invest-project-list-create";
+    }
+
+    /**
+     * 保存InvestProjectList表
+     *
+     * @param investProjectList
+     * @return
+     */
+    @PostMapping("store")
+    @RequiredLog("保存新增单条基础事件")
+    @ResponseBody
+    public SysResult Store(InvestProjectList investProjectList, HttpServletRequest request) {
+        investProjectListService.insertInvestProjectList(investProjectList);
+        return SysResult.ok();
     }
 }

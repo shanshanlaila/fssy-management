@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>企业财务基础数据管理</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<!-- 引入jquery -->
+<div th:replace="~{common/jquery :: jquery}"></div>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<!-- 引入zTree -->
+<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">非权益性投资</a> <a href="">企业财务基础数据管理</a><a>
+				<cite>企业财务基础数据管理</cite>
+		</a>
+		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+                   onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+                                                                style="line-height: 30px"></i></a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body ">
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="id" placeholder="序号查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="year" name="year" placeholder="年度查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                            <a class="layui-btn" lay-submit th:href="@{/export/finance-data.xlsx}">
+                                <i class="layui-icon">&#xe601</i>下载填写企业财务基础数据模板
+                            </a>
+                            <button shiro:hasPermission="system:operate:company:FinanceDataAttachment:import"
+                                    lay-submit lay-filter="import" class="layui-btn">导入企业财务基础数据
+                            </button>
+                            <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:importProjectList"
+                                    lay-submit lay-filter="importProjectList" class="layui-btn"
+                                    title="导出">导出企业财务基础数据
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body ">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条企业财务基础数据</button>
+                        </div>
+                    </script>
+                    <script type="text/html" id="tool">
+
+                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+
+                        <a lay-event="delete" title="删除"><i class="layui-icon">&#xe640;</i></a>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    layui
+        .use(
+            [
+                'laydate', 'layer', 'table', 'form'
+            ],
+            function () {
+                var $ = layui.$, laydate = layui.laydate, table = layui.table, layer = layui.layer, form = layui.form;
+
+                // 每个标签加一个class，名为laydate
+                $(".laydate").each(function () {
+                    laydate.render(
+                        {
+                            elem: this,
+                            //更换触发方式
+                            trigger: 'click',
+                            type: 'date'
+                        });
+                });
+                // 实例表格
+                table
+                    .render(
+                        {
+                            elem: '#dataTable',
+                            id: 'dataTable',
+                            url: "/system/operate/company/FinanceData/getObjects",
+                            page: true,
+                            height: 'full-100' // 设置高度，使数据置于滚动条控制下
+                            ,
+                            limit: 50,
+                            limits:
+                                [
+                                    50, 100, 200, 500
+                                ],
+                            toolbar: '#toolbar',
+                            size: 'sm',
+                            where: {
+                                // 向controller传入额外参数
+                                // statusCancel: true,//不显示状态为取消的基础事件
+                                // departmentName: [[${departmentName}]]//初始化只显示当前登录人用户的所在部门的基础事件
+                            },
+                            cols:
+                                [
+                                    [
+                                        {
+                                            field: 'id',
+                                            title: '序号',
+                                            width: 50,
+                                            fixed: 'left'
+                                        },
+                                        {
+                                            field: 'year',
+                                            title: '年度',
+                                            width: 130,
+                                        },
+                                        {
+                                            field: 'status',
+                                            title: '项目状态',
+                                            width: 130,
+                                        },
+                                        {
+                                            field: 'companyName',
+                                            title: '企业名称',
+                                            width: 130,
+                                        },
+                                        {
+                                            field: 'companyShortName',
+                                            title: '企业简称',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'competeCompanyName',
+                                            title: '企业主要竞争对手',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'month',
+                                            title: '月份',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'operatingProfit',
+                                            title: '经营性利润',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'netValueOfFixedAssets',
+                                            title: '上年末固定资产净值',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'researchDevelopmentCosts',
+                                            title: '研发费用',
+                                            width: 80,
+                                        }, {
+                                            field: 'mainBusinessIncome',
+                                            title: '主营业务收入',
+                                            width: 80,
+                                        },
+                                        {
+                                            fixed: 'right',
+                                            title: '操作',
+                                            width: 100,
+                                            align: 'center',
+                                            toolbar: '#tool'
+                                        }
+                                    ]
+                                ]
+                        });
+
+                //年选择器
+                laydate.render({
+                    elem: '#year'
+                    , type: 'year'
+                });
+                // 监听搜索按钮
+                form.on('submit(search)', function (data) {
+                    // 重新加载表格
+                    table.reload('dataTable',
+                        {
+                            where: data.field,
+                            page:
+                                {
+                                    curr: 1
+                                }
+                        });
+                    return false;
+                });
+
+                // 导入按钮
+                form.on('submit(import)', function (data) {
+                    var createLayer = layer.open({
+                        type: 2,
+                        title: "上传企业财务基础数据附件",
+                        area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                        content: '/system/operate/company/FinanceDataAttachment/import',
+                        scrollbar: true,
+                        maxmin: true,
+                    });
+                    return false;
+                });
+
+
+                // 监听导出按钮
+                form.on('submit(importProjectList)', function (data) {
+                    var field = data.field;
+                    var year = data.field.year;
+                    if (!year) {
+                        layer.msg("年度为必须项，请选择年度", {icon: 5, time: 4000});
+                        return false;
+                    }
+                    field.url = "/system/operate/invest/ProjectList/downloadProjectList";
+                    var url = createUrl(field);
+                    layer.msg("正在导出项目列表，请稍候");
+                    window.open(url, true);
+                    return false;
+                });
+
+
+                // 监听头工具栏事件
+                table.on('toolbar(dataTable)', function (obj) {
+                    if (obj.event === 'create') {
+
+                        // 弹出添加页面
+                        layer.open(
+                            {
+                                type: 2,
+                                title: '新增单条企业财务基础数据',
+                                area:
+                                    [
+                                        $(window).width() * 0.9 + 'px',
+                                        $(window).height() - 50 + 'px'
+                                    ],
+                                content: '/system/operate/company/FinanceData/create',
+                                scrollbar: true,
+                                maxmin: true
+                            });
+                    }
+                });
+
+                // 监听行工具事件
+                table.on('tool(dataTable)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event === 'edit') { // 修改
+                        if (data.status == '取消') {
+                            layer.msg('不能修改取消状态的年度投资项目清单');
+                            return false;
+                        }
+
+                        layer.open(
+                            {
+                                type: 2,
+                                title: data.id + ':年度投资项目信息修改',
+                                area:
+                                    [
+                                        $(window).width() * 0.9 + 'px',
+                                        $(window).height() - 50 + 'px'
+                                    ],
+                                content: '/system/operate/company/FinanceData/edit/' + data.id,
+                                maxmin: true
+                            });
+                    } else if (obj.event === 'delete') { // 删除/取消
+                        layer.confirm('真的删除：' + data.id + '吗？', function () {
+                            $.ajax(
+                                {
+                                    type: 'DELETE',
+                                    url: '/system/operate/company/FinanceData/cancel/' + data.id,
+                                    success: function (result) {
+                                        layer.msg(result.msg);
+                                        if (result.status === 200) {
+                                            table.reload('dataTable');
+                                        }
+                                    }
+                                })
+                        });
+                    }
+                });
+            });
+</script>
+</body>
+</html>

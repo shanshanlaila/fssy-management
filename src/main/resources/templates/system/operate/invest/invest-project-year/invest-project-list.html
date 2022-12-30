@@ -13,11 +13,12 @@
 <!-- 引入xadmin -->
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">年度投资项目清单</a> <a href="">年度投资项目清单管理</a>
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">非权益性投资</a> <a href="">年度投资项目</a><a>
+				<cite>年度投资项目清单管理</cite>
+		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                              style="line-height: 30px"></i>
-</a>
+                                                                style="line-height: 30px"></i></a>
 </div>
 <!-- 引入xadmin -->
 
@@ -36,23 +37,21 @@
                             <input type="text" name="year" placeholder="查询年份" id="year"
                                    autocomplete="off" class="layui-input laydate">
                         </div>
-
-
                         <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn" lay-submit lay-filter="search">
+                            <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                        </div>
-
-                        <div class="layui-inline layui-show-xs-block">
-                            <button
-                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
-                                    title="导入工艺基础能力台账附件">导入年度投资项目清单附件
+                            <a class="layui-btn" lay-submit th:href="@{/export/project-list.xlsx}">
+                                <i class="layui-icon">&#xe601</i>下载填写年度投资项目清单模板
+                            </a>
+                            <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:import"
+                                    lay-submit lay-filter="import" class="layui-btn">导入年度投资项目清单
                             </button>
-
+                            <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:importProjectList"
+                                    lay-submit lay-filter="importProjectList" class="layui-btn"
+                                    title="导出">导出年度投资项目清单
+                            </button>
                         </div>
-
-
                     </div>
                 </form>
                 <div class="layui-card-body ">
@@ -63,9 +62,9 @@
                         <a lay-event="delete" title="删除年度投资项目清单数据信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
-<!--                        <div class="layui-btn-container">-->
-<!--                            <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>-->
-<!--                        </div>-->
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条年度投资项目</button>
+                        </div>
                     </script>
                 </div>
             </div>
@@ -303,13 +302,50 @@
         form.on('submit(import)', function (data) {
             var createLayer = layer.open({
                 type: 2,
-                title: "上传工艺基础能力台账附件",
+                title: "上传事件清单附件",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/operate/invest/view-operate-process-ability/index',
+                content: '/system/operate/invest/ProjectAttachmentList/import',
                 scrollbar: true,
                 maxmin: true,
             });
             return false;
+        });
+
+
+        // 监听导出按钮
+        form.on('submit(importProjectList)', function (data) {
+            var field = data.field;
+            var year = data.field.year;
+            if (!year) {
+                layer.msg("年度为必须项，请选择年度", {icon: 5, time: 4000});
+                return false;
+            }
+            field.url = "/system/operate/invest/ProjectList/downloadProjectList";
+            var url = createUrl(field);
+            layer.msg("正在导出项目列表，请稍候");
+            window.open(url, true);
+            return false;
+        });
+
+        // 监听头工具栏事件
+        table.on('toolbar(dataTable)', function (obj) {
+            if (obj.event === 'create') {
+
+                // 弹出添加页面
+                layer.open(
+                    {
+                        type: 2,
+                        title: '新增单条年度投资项目',
+                        area:
+                            [
+                                $(window).width() * 0.9 + 'px',
+                                $(window).height() - 50 + 'px'
+                            ],
+                        content: '/system/operate/invest/invest-project-year/create',
+                        scrollbar: true,
+                        maxmin: true
+                    });
+            }
         });
 
         // 监听行工具事件
@@ -320,9 +356,10 @@
                     type: 2,
                     title:data.year + '年的企业经理人定性绩效信息修改',
                     area: [
-                        $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
+                        $(window).width() * 0.9 + 'px',
+                        $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/performance/manager/manager-performance-eval-std/edit?id=' + data.id,
+                    content: '/system/operate/invest/invest-project-year/edit/' + data.id,
                     maxmin: true
                 });
             } else if (obj.event === 'delete') { // 删除
