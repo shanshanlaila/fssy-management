@@ -45,6 +45,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -417,7 +418,7 @@ public class FileAttachmentTool
 
 	/**
 	 * 员工月度评价情况关联附件保存
-	 *
+	 * 2022.12.30停用
 	 * @param file   员工月度评价情况关联附件
 	 * @param module 导入场景
 	 * @return 员工月度评价情况关联附件对象
@@ -453,7 +454,7 @@ public class FileAttachmentTool
 			// 保存文件（存在同名文件则覆盖）
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 			//Calendar calendar = Calendar.getInstance();
-			attachment.setImportDate(LocalDate.now());
+			attachment.setImportDate(new Date());
 			// 保存附件表
 			attachment.setFilename(fileName);
 			// 默认就是正在导入

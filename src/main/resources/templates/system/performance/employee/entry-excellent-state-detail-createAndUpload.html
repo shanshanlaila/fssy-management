@@ -288,6 +288,7 @@
             }
             , before: function (obj) {
                 this.data.importDate = $('input[name=importDate]').val();
+                this.data.module = [[${module}]];
             }
             , done: function (res, index, upload) {
                 if (res.status === 200) { //上传成功
