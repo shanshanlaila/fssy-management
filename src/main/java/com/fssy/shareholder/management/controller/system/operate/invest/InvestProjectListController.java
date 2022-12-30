@@ -64,6 +64,7 @@ public class InvestProjectListController {
 
     /**
      * 年度投资项目清单管理页面
+     *
      * @param model
      * @return
      */
@@ -77,7 +78,8 @@ public class InvestProjectListController {
 
 
     /**
-     *查询年度投资项目清单数据
+     * 查询年度投资项目清单数据
+     *
      * @param request
      * @return
      */
@@ -105,12 +107,13 @@ public class InvestProjectListController {
 
     /**
      * 以主键删除分数信息
+     *
      * @param id
      * @return true/false
      */
     @DeleteMapping("{id}")
     @ResponseBody
-    public SysResult delete(@PathVariable(value = "id") Integer id,Map<String, Object> params) {
+    public SysResult delete(@PathVariable(value = "id") Integer id, Map<String, Object> params) {
         boolean result = investProjectListService.deleteInvestProjectListDataById(id);
         if (result) {
             return SysResult.ok();
@@ -121,13 +124,13 @@ public class InvestProjectListController {
 
     /**
      * 返回查看项目跟踪计划表数据页面
+     *
      * @param request
      * @param model
      * @return
      */
     @GetMapping("search-detail")
-    public String searchByAssignFromBtn(HttpServletRequest request, Model model)
-    {
+    public String searchByAssignFromBtn(HttpServletRequest request, Model model) {
         String projectListId = request.getParameter("id");
         String companyName = request.getParameter("companyName");
         String year = request.getParameter("year");
@@ -141,7 +144,8 @@ public class InvestProjectListController {
         return "system/operate/invest/invest-project-year/invest-project-list-detail";
     }
 
-    /**项目跟踪计划表数据
+    /**
+     * 项目跟踪计划表数据
      *
      * @param request
      * @return
@@ -156,19 +160,16 @@ public class InvestProjectListController {
         String month = request.getParameter("month");
         String projectName = request.getParameter("projectName");
         String projectListId = request.getParameter("projectListId");
-        params.put("companyName",companyName);
-        params.put("year",year);
-        params.put("month",month);
-        params.put("projectName",projectName);
-        params.put("projectListId",projectListId);
+        params.put("companyName", companyName);
+        params.put("year", year);
+        params.put("month", month);
+        params.put("projectName", projectName);
+        params.put("projectListId", projectListId);
         List<Map<String, Object>> investProjectPlanTracejectDataByParams = investProjectPlanTraceService.findInvestProjectPlanTracejectDataByParams(params);
-        if (investProjectPlanTracejectDataByParams.size() == 0)
-        {
+        if (investProjectPlanTracejectDataByParams.size() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");
-        }
-        else
-        {
+        } else {
             result.put("code", 0);
             result.put("count", investProjectPlanTracejectDataByParams.size());
             result.put("data", investProjectPlanTracejectDataByParams);
@@ -185,7 +186,7 @@ public class InvestProjectListController {
     @RequiredLog("附件上传")
     @GetMapping("index")
     @RequiresPermissions("system:operate:invest:invest-project-year:indexYear")
-    public String materialDataAttachmentIndex(Model model,HttpServletRequest request) {
+    public String materialDataAttachmentIndex(Model model, HttpServletRequest request) {
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
@@ -205,15 +206,16 @@ public class InvestProjectListController {
         String month = request.getParameter("month");
         String projectName = request.getParameter("projectName");
         String projectListId = request.getParameter("projectListId");
-        model.addAttribute("month",month);
-        model.addAttribute("projectName",projectName);
-        model.addAttribute("projectListId",projectListId);
+        model.addAttribute("month", month);
+        model.addAttribute("projectName", projectName);
+        model.addAttribute("projectListId", projectListId);
         return "system/operate/invest/invest-project-year/invest-project-year-attachment-list";
     }
 
     /**
      * 附件上传
      * 上传跟踪清单
+     *
      * @param file
      * @param attachment
      * @return
@@ -278,14 +280,15 @@ public class InvestProjectListController {
 
     /**
      * excel 导出
-     * @param request 请求
+     *
+     * @param request  请求
      * @param response 响应
      */
     @RequiredLog("数据导出")
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
-        Map<String,Object> params = getParams(request);
-        Map<String,Object> paramsTwo = getParams(request);
+        Map<String, Object> params = getParams(request);
+        Map<String, Object> paramsTwo = getParams(request);
         String year = (String) params.get("year");
         String companyName = (String) params.get("companyName");
         String month = (String) params.get("month");
@@ -293,14 +296,14 @@ public class InvestProjectListController {
         String projectListId = (String) params.get("projectListId");
 
         //Sql语句
-        params.put("select","projectListId,companyName,year,month,projectName,serial,projectPhase,projectContent,projectIndicators,projectTarget,feasibilityDate," +
+        params.put("select", "projectListId,companyName,year,month,projectName,serial,projectPhase,projectContent,projectIndicators,projectTarget,feasibilityDate," +
                 "contractDate,actualEndDate,inspectionDate,responsePerson,Inspectedby,inspectionResult,evaluate,note,abstracte,evaluateSum");
-        paramsTwo.put("select","companyName,year,month,projectName,evaluate,abstracte");
+        paramsTwo.put("select", "companyName,year,month,projectName,evaluate,abstracte");
         //查询
         List<Map<String, Object>> investProjectPlanTracejectDataByParams = investProjectPlanTraceService.findInvestProjectPlanTracejectDataByParams(params);
         List<Map<String, Object>> investProjectDataByParams = investProjectPlanTraceDetailService.findInvestProjectDataByParams(paramsTwo);
 
-        LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();
+        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
 
         //需要改变背景的格子
         fieldMap.put("serial", "序号");
@@ -320,8 +323,8 @@ public class InvestProjectListController {
 
 
         for (Map<String, Object> investProjectPlanTracejectDataByParam : investProjectPlanTracejectDataByParams) {
-            investProjectPlanTracejectDataByParam.put("abstracte",investProjectPlanTracejectDataByParams.get(0).get("abstracte"));
-            investProjectPlanTracejectDataByParam.put("evaluateSum",investProjectPlanTracejectDataByParams.get(0).get("evaluateSum"));
+            investProjectPlanTracejectDataByParam.put("abstracte", investProjectPlanTracejectDataByParams.get(0).get("abstracte"));
+            investProjectPlanTracejectDataByParam.put("evaluateSum", investProjectPlanTracejectDataByParams.get(0).get("evaluateSum"));
         }
         //标识字符串的列
         List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
@@ -331,6 +334,7 @@ public class InvestProjectListController {
         }
         sheetOutputService.exportNum("项目进度计划跟踪表", investProjectPlanTracejectDataByParams, fieldMap, response, strList, null);
     }
+
     private Map<String, Object> getParams(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(request.getParameter("projectName"))) {
@@ -463,6 +467,7 @@ public class InvestProjectListController {
 
         return params;
     }
+
     /**
      * 展示修改页面
      *
@@ -495,6 +500,7 @@ public class InvestProjectListController {
         }
         return SysResult.build(500, "年度投资项目更新失败");
     }
+
     /**
      * 返回新增单条基础事件页面
      *
@@ -518,5 +524,17 @@ public class InvestProjectListController {
     public SysResult Store(InvestProjectList investProjectList, HttpServletRequest request) {
         investProjectListService.insertInvestProjectList(investProjectList);
         return SysResult.ok();
+    }
+
+    @GetMapping("upload/{id}")
+    @RequiredLog("年度投资项目附件上传")
+    public String showUploadPage(@PathVariable String id, Model model) {
+        InvestProjectList project = investProjectListService.getById(id);
+        /*if (ObjectUtils.isEmpty(project)) {
+            model.addAttribute("project", new InvestProjectList());
+        } else {*/
+            model.addAttribute("project", project);
+        //}
+        return "system/operate/invest/invest-project-year/invest-project-upload";
     }
 }

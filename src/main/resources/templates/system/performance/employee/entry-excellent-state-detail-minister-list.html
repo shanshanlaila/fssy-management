@@ -208,6 +208,18 @@
                         align: "center",
                         fixed: 'left',
                         rowspan: 2,
+                        templet: function (d) {
+                            switch (d.classReview) {
+                                case '优':
+                                    return '<span class="layui-badge layui-bg layui-bg-green">优</span>';
+                                case '良':
+                                    return '<span class="layui-badge layui-bg layui-bg-green">良</span>';
+                                case '中':
+                                    return '<span class="layui-badge layui-bg layui-bg-green">中</span>';
+                                case '不合格':
+                                    return '<span class="layui-badge layui-bg">不合格</span>';
+                            }
+                        },
                     },
                     {
                         field: 'departmentName',
@@ -305,7 +317,7 @@
 		                      	if (!d.attachmentList || d.attachmentList.length === 0) {
 		          									return '';
 		          							} else {
-																var element = '';            								
+																var element = '';
 																for (var i = 0; i < d.attachmentList.length; i++) {
 																	var attachment = d.attachmentList[i];
 																	element = element + '<a href="/system/config/attachment/downloadFile?id=' + attachment.attachmentId + '&md5Path='

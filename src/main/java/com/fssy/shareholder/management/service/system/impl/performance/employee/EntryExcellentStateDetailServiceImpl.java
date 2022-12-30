@@ -318,20 +318,8 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_PERFORMANCE);
                 entryExcellentStateDetail.setClassReview("");
                 entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
-
-//                QueryWrapper<EntryCasReviewDetail> entryCasReviewDetailQueryWrapper = new QueryWrapper<>();
-//                entryCasReviewDetailQueryWrapper.eq("id", entryExcellentStateDetail.getCasReviewId());
-//                List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectList(entryCasReviewDetailQueryWrapper);
-//                if (ObjectUtils.isEmpty(entryCasReviewDetails)) {
-//                    throw new ServiceException(String.format("评优说明材料id【%s】不存在对应的履职总结", entryExcellentStateDetail.getId()));
-//                }
-//                EntryCasReviewDetail reviewDetail = entryCasReviewDetails.get(0);
-//                reviewDetail.setFinalNontransactionEvaluateLevel(PerformanceConstant.REVIEW_DETAIL_MINISTER_REVIEW_EXCELLENT);
-//                entryCasReviewDetailMapper.updateById(reviewDetail);
             }
-
         }
-
         return true;
     }
 
@@ -490,7 +478,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 }
             }
         }
-        
+
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
      	// 按照申报年份、月份加申报部门创建表“bs_performance_entry_excellent_state_merge”，
@@ -521,7 +509,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 		{
 			entryExcellentStateMerge = mergeList.get(0);
 		}
-        
+
         // 创建评价说明材料明细
         entryExcellentStateDetail.setDepartmentId(entryExcellentStateMerge.getDepartmentId());
         entryExcellentStateDetail.setDepartmentName(entryExcellentStateMerge.getDepartmentName());
@@ -607,7 +595,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 
 	/**
 	 * 评优材料表编号生成并保存(线程不安全，需要加锁)
-	 * 
+	 *
 	 * @param createDate               创建日期
 	 * @param otherParams              其他参数
 	 * @param entryExcellentStateMerge 评优材料表对象
