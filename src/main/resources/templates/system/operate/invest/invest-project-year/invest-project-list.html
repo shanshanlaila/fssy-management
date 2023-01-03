@@ -60,6 +60,7 @@
                         <a lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>
                         <a lay-event="edit" title="修改年度投资项目清单数据信息"><i class="layui-icon">&#xe642;</i></a>
                         <a lay-event="delete" title="删除年度投资项目清单数据信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a lay-event="upload" title="年度投资项目附件上传"><i class="layui-icon">&#xe681;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
@@ -369,7 +370,7 @@
                         url: '/system/operate/invest/invest-project-year/' + data.id,
                         success: function (result) {
                             layer.msg(result.msg);
-                            if (result.status == 200) {
+                            if (result.status === 200) {
                                 table.reload('dataTable');
                             }
                         }
@@ -385,6 +386,16 @@
                     ],
                     //①获取需要查看的此条记录的指定数据
                     content : '/system/operate/invest/invest-project-year/search-detail?id=' + data.id  + '&companyName='+ data.companyName+ '&year='+ data.year+ '&projectName='+ data.projectName+ '&month='+ data.month,
+                    maxmin : true
+                });
+            }else if (obj.event === 'upload'){
+                layer.open({
+                    type : 2,
+                    title : '项目名称为'+data.projectName+'的附件上传',
+                    area : [
+                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                    ],
+                    content : '/system/operate/invest/invest-project-year/upload/id='+data.id,
                     maxmin : true
                 });
             }
