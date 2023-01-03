@@ -71,7 +71,7 @@
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;项目投资类型:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <select name="projectType" lay-verify="required" lay-reqText="项目投资类型为必填项">
+                            <select name="projectClass" lay-verify="required" lay-reqText="项目投资类型为必填项">
                                 <option value="" selected>请选择项目投资类型</option>
                                 <option value="重点项目">重点项目</option>
                                 <option value="一般项目">一般项目</option>
@@ -198,7 +198,7 @@
             });
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
-        // 部门选择获得器
+        // 公司选择获得器
         var companySelect = xmSelect.render({
             el: '#companySelect',
             language: 'zn',

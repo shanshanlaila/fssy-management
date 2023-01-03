@@ -110,7 +110,7 @@ public class InvestProjectListController {
     }
 
     /**
-     * 以主键删除分数信息
+     * 以主键删除分数信息，后期开放
      *
      * @param id
      * @return true/false
@@ -118,11 +118,12 @@ public class InvestProjectListController {
     @DeleteMapping("{id}")
     @ResponseBody
     public SysResult delete(@PathVariable(value = "id") Integer id, Map<String, Object> params) {
-        boolean result = investProjectListService.deleteInvestProjectListDataById(id);
-        if (result) {
-            return SysResult.ok();
-        }
-        return SysResult.build(500, "删除数据失败");
+//        boolean result = investProjectListService.deleteInvestProjectListDataById(id);
+//        if (result) {
+//            return SysResult.ok();
+//        }
+//        return SysResult.build(500, "删除数据失败");
+        return SysResult.build(500, "删除功能暂不开放");
     }
 
 
@@ -305,7 +306,7 @@ public class InvestProjectListController {
         paramsTwo.put("select", "companyName,year,month,projectName,evaluate,abstracte");
         //查询
         List<Map<String, Object>> investProjectPlanTracejectDataByParams = investProjectPlanTraceService.findInvestProjectPlanTracejectDataByParams(params);
-        List<Map<String, Object>> investProjectDataByParams = investProjectPlanTraceDetailService.findInvestProjectDataByParams(paramsTwo);
+        //List<Map<String, Object>> investProjectDataByParams = investProjectPlanTraceDetailService.findInvestProjectDataByParams(paramsTwo);
 
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
 
@@ -486,7 +487,14 @@ public class InvestProjectListController {
 //            throw new ServiceException("不能修改取消状态下的事件请单");
 //        }
         model.addAttribute("investProjectList", investProjectList);//investProjectList传到前端
+        //1、查询公司列表，用于companyName xm-select插件
+        Map<String, Object> companyParams = new HashMap<>();
+        List<String> selectedList = new ArrayList<>();
+        selectedList.add(investProjectList.getCompanyId().toString());//xm-select默认选择控件
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, selectedList);
+        model.addAttribute("companyNameList", companyNameList);
         return "system/operate/invest/invest-project-year/invest-project-list-edit";
+
     }
 
     /**
@@ -498,13 +506,13 @@ public class InvestProjectListController {
     @PostMapping("update")
     @ResponseBody
     public SysResult update(InvestProjectList investProjectList) {
-        boolean result = investProjectListService.updateInvestProjectListData(investProjectList);
+        Map<String,Object> params=new HashMap<>();
+        boolean result = investProjectListService.updateInvestProjectListData(investProjectList,params);
         if (result) {
             return SysResult.ok();
         }
         return SysResult.build(500, "年度投资项目更新失败");
     }
-
     /**
      * 返回新增单条基础事件页面
      *

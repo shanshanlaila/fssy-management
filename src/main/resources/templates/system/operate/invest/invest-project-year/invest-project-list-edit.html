@@ -11,8 +11,6 @@
 <div th:replace="~{common/layui :: layui}"></div>
 <!-- 引入layui -->
 <div th:replace="~{common/layui :: layui}"></div>
-<!-- 引入zTree -->
-<div th:replace="~{common/zTree :: zTree}"></div>
 <style type="text/css">
     #head .layui-form-label {
         width: 120px;
@@ -54,29 +52,39 @@
                 </thead>
                 <tbody>
                 <tr>
-
                     <td style="text-align: right"><span
-                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;企业名称:
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;年度:
                     </td>
                     <td>
-                        <input type="hidden" name="id" id="id" th:value="${investProjectList['id']}">
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyName" id="companyName"
-                                   placeholder="企业名称" autocomplete="off"
-                                   lay-verify="required" lay-reqText="企业名称为必填项"
-                                   th:value="${investProjectList['companyName']}"/>
-
+                            <input type="hidden" name="id" id="id" th:value="${investProjectList['id']}">
+                            <input type="text" class="layui-input" name="year" id="year"
+                                   placeholder="年度" autocomplete="off"
+                                   lay-verify="required" lay-reqText="年度为必填项"
+                                   th:value="${investProjectList['year']}"/>
                         </div>
                     </td>
                     <td style="text-align: right"><span
-                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;企业简称:
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;月份:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyShortName" id="companyShortName"
-                                   placeholder="企业简称" autocomplete="off"
-                                   lay-verify="required" lay-reqText="企业简称为必填项"
-                                   th:value="${investProjectList['companyShortName']}"/>
+                            <input type="text" class="layui-input" name="month" id="month"
+                                   placeholder="月份" autocomplete="off"
+                                   lay-verify="required" lay-reqText="月份为必填项"
+                                   th:value="${investProjectList['month']}"/>
+                        </div>
+                    </td>
+
+                    <td>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;企业名称:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <div id="companySelect"></div>
                         </div>
                     </td>
                     <td style="text-align: right"><span
@@ -90,10 +98,6 @@
 
                         </div>
                     </td>
-                </tr>
-
-                <tr>
-
                     <td style="text-align: right"><span
                             style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;项目来源:
                     </td>
@@ -104,14 +108,23 @@
                                    th:value="${investProjectList['projectSource']}">
                         </div>
                     </td>
+                </tr>
+
+                <tr>
                     <td style="text-align: right"><span
                             style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;项目类别:
                     </td>
                     <td>
+
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="projectType" id="projectType"
-                                   lay-verify="required" lay-reqText="项目类别为必填项"
-                                   th:value="${investProjectList['projectType']}"/>
+                            <select name="projectType" lay-verify="required" lay-reqText="项目类别为必填项">
+                                <option value="" selected>请选择项目类别型</option>
+                                <option value="自动化" th:selected="${investProjectList.projectType} eq '自动化'">自动化</option>
+                                <option value="质量提升" th:selected="${investProjectList.projectType} eq '质量提升'">质量提升</option>
+                                <option value="基建" th:selected="${investProjectList.projectType} eq '基建'">基建</option>
+                                <option value="产能提升" th:selected="${investProjectList.projectType} eq '产能提升'">产能提升</option>
+                                <option value="其他" th:selected="${investProjectList.projectType} eq '其他'">其他</option>
+                            </select>
                         </div>
                     </td>
                     <td style="text-align: right"><span
@@ -119,16 +132,18 @@
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="projectClass" id="projectClass"
-                                   lay-verify="required" lay-reqText="项目投资类型"
-                                   th:value="${investProjectList['projectClass']}"/>
+                            <select name="projectClass" lay-verify="required" lay-reqText="项目投资类型为必填项">
+                                <option value="" selected>请选择项目投资类型</option>
+                                <option value="重点项目" th:selected="${investProjectList.projectClass} eq '重点项目'">重点项目</option>
+                                <option value="一般项目" th:selected="${investProjectList.projectClass} eq '一般项目'">一般项目</option>
+                            </select>
                         </div>
                     </td>
                 </tr>
 
                 <tr>
                     <td style="text-align: right"><span
-                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;项目简介:
+                            style=' width:200px;height:20px'></span>&nbsp;项目简介:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
@@ -136,13 +151,51 @@
                                    th:value="${investProjectList['projectAbstract']}"/>
                         </div>
                     </td>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;涉及生产线名称:
+
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;计划投资额:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="productLineName" id="productLineName"
-                                   th:value="${investProjectList['productLineName']}"/>
+                            <input type="text" class="layui-input" name="investmentVolumePlan" id="investmentVolumePlan"
+                                   lay-verify="required" lay-reqText="计划投资额为必填项"
+                                   th:value="${investProjectList['investmentVolumePlan']}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;企业分管经理人:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="respManager" id="respManager"
+                                   lay-verify="required" lay-reqText="企业分管经理人为必填项"
+                                   th:value="${investProjectList['respManager']}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span
+                            style=' width:200px;height:20px'></span>&nbsp;项目联络人:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="projectContact" id="projectContact"
+                                   th:value="${investProjectList['projectContact']}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;计划开始时间:</td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="planStartDate" id="planStartDate"
+                                   lay-verify="required" autocomplete="off"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;计划完成时间:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="planEndDate" id="planEndDate"
+                                   lay-verify="required" autocomplete="off"/>
                         </div>
                     </td>
                 </tr>
@@ -166,6 +219,16 @@
             , layer = layui.layer
             , laydate = layui.laydate
             , form = layui.form;
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render({
+                elem: this,
+                //更换触发方式
+                trigger: 'click',
+                type: 'date',
+                value: new Date()
+            });
+        });
 
         form.on('submit(baseForm)', function (data) {
             var elem = data.elem;
@@ -191,6 +254,24 @@
                 }
             });
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        // 公司选择获得器
+        var companySelect = xmSelect.render({
+            el: '#companySelect',
+            language: 'zn',
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyId',// 传到后端选择的companyId集合字符串
         });
     });
 </script>

@@ -1,5 +1,6 @@
 package com.fssy.shareholder.management.service.system.impl.operate.invest;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,6 +18,7 @@ import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectP
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectListService;
 import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -200,6 +202,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
                 cells.add(res);// 将单元格的值写入行
             }
 
+
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("AD"));//报错信息上传到excel AD列
             String year = cells.get(SheetService.columnToIndex("A"));
@@ -278,6 +281,22 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             investProjectList.setInvestmentVolumePlan(InstandTool.stringToDouble(investmentVolumePlan));
             investProjectList.setRespManager(respManager);
             investProjectList.setProjectContact(projectContact);
+
+
+
+            LambdaQueryWrapper<Company> companyLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            companyLambdaQueryWrapper.eq(Company::getName,companyName);
+            List<Company> companyList1 = companyMapper.selectList(companyLambdaQueryWrapper);
+            if (ObjectUtils.isEmpty(companyList1)) {
+                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的公司名称在系统中未查找到，不能导入", j + 1, companyName));
+                cell.setCellValue(String.format("行数为【%s】的公司名称未查到，不能导入", j + 1));
+                continue;
+            }
+            Company company = companyList1.get(0);
+            investProjectList.setCompanyId(InstandTool.integerToLong(company.getId()));
+            investProjectList.setCompanyShortName(company.getShortName());
+
+
             //非空校验
             if (ObjectUtils.isEmpty(projectSrartDatePlan)) {
                 investProjectList.setProjectSrartDatePlan(null);
@@ -442,5 +461,25 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             }
         }
         return result > 0;
+    }
+    @Override
+    public boolean updateInvestProjectListData(InvestProjectList investProjectList, Map<String, Object> params) {
+        Long companyId = null;
+        if (params.containsKey("companyId")) {
+            companyId = (Long) params.get("companyId");
+        }
+        if (ObjectUtils.isEmpty(companyId)) {
+            throw new ServiceException("未选择公司");
+        }
+
+        Company company = companyMapper.selectById(companyId);
+        investProjectList.setCompanyName(company.getName());
+        investProjectList.setCompanyId(InstandTool.integerToLong(company.getId()));
+        investProjectList.setCompanyShortName(company.getShortName());
+        int result = investProjectListMapper.updateById(investProjectList);
+        if (result > 0) {
+            return true;
+        }
+        return false;
     }
 }
