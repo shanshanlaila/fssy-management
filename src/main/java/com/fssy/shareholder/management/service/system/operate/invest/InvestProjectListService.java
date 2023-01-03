@@ -32,7 +32,8 @@ public interface InvestProjectListService extends IService<InvestProjectList> {
      * @param params
      * @return
      */
-    Page<InvestProjectList> findInvestProjectListDataListPerPageByParams(Map<String, Object> params);
+    Page<Map<String, Object>> findInvestProjectListDataListPerPageByParams(Map<String, Object> params);
+
 
 
     /**

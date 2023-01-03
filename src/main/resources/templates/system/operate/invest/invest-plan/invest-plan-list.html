@@ -58,10 +58,6 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
                         <a lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>
-                        <a lay-event="edit" title="修改年度投资项目清单数据信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除年度投资项目清单数据信息"><i class="layui-icon">&#xe640;</i></a>
-                        <a lay-event="upload" title="年度投资项目附件上传"><i class="layui-icon">&#xe681;</i></a>
-                        <a lay-event="editToProject" title="修改年度投资项目清单数据状态"><i class="layui-icon">&#xe642;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
@@ -103,11 +99,10 @@
 
 
         // 实例表格
-        const title = '年度投资项目清单';
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/operate/invest/invest-project-year/getObjects",
+            url: "/system/operate/invest/plan/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -124,181 +119,64 @@
                         fixed: 'left',
                         type: 'numbers',
                         align: 'center',
-                        width: 80
+                        width: 50
                     },
                     {
-                        field: 'projectName',
-                        title: '项目名称',
+                        field: 'firstType',
+                        title: '类别一',
+                        width: 60
+                    },
+                    {
+                        field: 'secondType',
+                        title: '类别二',
+                        width: 60
+                    },
+                    {
+                        field: 'thirdType',
+                        title: '类别三',
                         fixed: 'left',
                         width: 60
                     },
                     {
-                        field: 'year',
-                        title: '年份',
+                        field: 'unit',
+                        title: '单位',
                         fixed: 'left',
-                        width: 60
+                        width: 50
                     },
                     {
-                        field: 'month',
-                        title: '月份',
-                        fixed: 'left',
-                        width: 60
-                    },
-                    {
-                        field: 'companyName',
-                        title: '企业名称',
-                        fixed: 'left',
-                        width: 150
-                    },
-                    {
-                        field: 'companyId',
-                        title: '企业ID',
+                        field: 'budget',
+                        title: '预算金额',
                         width: 120
                     },
                     {
-                        field: 'companyShortName',
-                        title: '企业名称简称',
+                        field: 'incrementArtificial',
+                        title: '人工涨幅',
                         width: 120
                     },
 
                     {
-                        field: 'projectSource',
-                        title: '项目来源:年度计划,临时新增',
-                        width: 120
+                        field: 'evaluate',
+                        title: '评价',
+                        width: 80
                     },
                     {
-                        field: 'projectType',
-                        title: '项目类别：自动化、质量改善',
-                        width: 120
+                        field: 'companyName',
+                        title: '公司',
+                        width: 90
                     },
                     {
-                        field: 'projectClass',
-                        title: '项目投资类型:重点项目、一般项目',
-                        width: 120
+                        field: 'year',
+                        title: '年份',
+                        width: 50
                     },
                     {
-                        field: 'projectAbstract',
-                        title: '项目简介',
-                        width: 120
-                    },
-                    {
-                        field: 'investmentVolumePlan',
-                        title: '计划投资额',
-                        width: 120
-                    },
-                    {
-                        field: 'investmentVolumeActual',
-                        title: '实际投资额',
-                        width: 120
-                    },
-                    {
-                        field: 'respManager',
-                        title: '企业分管经理人',
-                        width: 120
-                    },
-                    {
-                        field: 'projectContact',
-                        title: '项目联络人',
-                        width: 120
-                    },
-                    {
-                        field: 'attachmentList',
-                        title: '材料附件',
-                        width: 100,
-                        rowspan: 2,
-                        templet : function(d) {
-                            if (!d.attachmentList || d.attachmentList.length === 0) {
-                                return '';
-                            } else {
-                                var element = '';
-                                for (var i = 0; i < d.attachmentList.length; i++) {
-                                    var attachment = d.attachmentList[i];
-                                    element = element + '<a href="/system/config/attachment/downloadFile?id=' + attachment.attachmentId + '&md5Path='
-                                        + attachment.md5Path + '" target="_blank" title="' + attachment.filename
-                                        + '"><i class="fa fa-file-text-o" aria-hidden="true"></i></a>';
-                                }
-                                return element;
-                            }
-                        }
-                    },
-                    {
-                        field: 'projectSrartDatePlan',
-                        title: '项目开始时间计划',
-                        width: 120
-                    },
-                    {
-                        field: 'projectSrartDateActual',
-                        title: '项目开始时间实际',
-                        width: 120
-                    },
-                    {
-                        field: 'projectEndDatePlan',
-                        title: '项目结束时间计划',
-                        width: 120
-                    },
-                    {
-                        field: 'projectEndDateActual',
-                        title: '项目结束时间实际',
-                        width: 120
-                    },
-                    {
-                        field: 'currentProjectStatus',
-                        title: '项目当前所处阶段',
-                        width: 120
-                    },
-                    {
-                        field: 'projectFeasibilityStudyReport',
-                        title: '可研报告状态',
-                        width: 120
-                    },
-                    {
-                        field: 'committeeAuditStatus',
-                        title: '经委会审批状态',
-                        width: 120
-                    },
-                    {
-                        field: 'boardAuditStatus',
-                        title: '董事会审批状态',
-                        width: 120
-                    },
-                    {
-                        field: 'projectFinishStatus',
-                        title: '项目完成状态',
-                        width: 120
-                    },
-                    {
-                        field: 'projectRiskStatus',
-                        title: '项目风险状态',
-                        width: 120
-                    },
-                    {
-                        field: 'projectEvalStatus',
-                        title: '项目评价状态',
-                        width: 120
-                    },
-                    {
-                        field: 'projectSelfEvalStatus',
-                        title: '项目自评状态',
-                        width: 120
-                    },
-                    {
-                        field: 'businessUnit',
-                        title: '所属产业单元',
-                        width: 120
-                    },
-                    {
-                        field: 'productLineName',
-                        title: '涉及生产线名称',
-                        width: 120
-                    },
-                    {
-                        field: 'productLineId',
-                        title: '涉及生产线Id',
-                        width: 120
+                        field: 'month',
+                        title: '月份',
+                        width: 50
                     },
                     {
                         field: 'id',
-                        title: '项目Id',
+                        title: 'Id',
                         width: 50,
                         hide:true
                     },
@@ -382,7 +260,7 @@
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title:data.year + '年的项目清单信息修改',
+                    title:data.year + '年的企业经理人定性绩效信息修改',
                     area: [
                         $(window).width() * 0.9 + 'px',
                         $(window).height() - 50 + 'px'

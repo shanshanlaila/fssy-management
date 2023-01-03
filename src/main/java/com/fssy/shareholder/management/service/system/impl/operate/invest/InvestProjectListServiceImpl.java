@@ -26,6 +26,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,13 +84,24 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
      * @return
      */
     @Override
-    public Page<InvestProjectList> findInvestProjectListDataListPerPageByParams(Map<String, Object> params) {
+    public Page<Map<String, Object>> findInvestProjectListDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<InvestProjectList> queryWrapper = getQueryWrapper(params);
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
-        Page<InvestProjectList> myPage = new Page<>(page, limit);
-        return investProjectListMapper.selectPage(myPage, queryWrapper);
-
+        Page<Map<String, Object>> myPage = new Page<>(page, limit);
+        myPage = investProjectListMapper.selectMapsPage(myPage, queryWrapper);
+        // 2023-1-03 添加评优材料附件查询
+        myPage.getRecords().forEach(item -> {
+            LambdaQueryWrapper<ProjectRelationAttachment> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(ProjectRelationAttachment::getProjectListId,item.get("id"))
+                    .select(ProjectRelationAttachment::getProjectListId,
+                            ProjectRelationAttachment::getAttachmentId,
+                            ProjectRelationAttachment::getMd5Path,
+                            ProjectRelationAttachment::getFilename);
+            List<ProjectRelationAttachment> attachments = projectRelationAttachmentMapper.selectList(wrapper);
+            item.put("attachmentList", attachments);
+        });
+        return myPage;
     }
 
     /**
@@ -431,15 +443,17 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
     }
 
     @Override
+    @Transactional
     public boolean submitUploadFile(InvestProjectList investProjectList,Map<String, Object> param) {
         int result = 0;
-        // bs_operate_invest_project_relation_attachment（投资项目清单附件关联表）
-        ProjectRelationAttachment projectRelationAttachment = new ProjectRelationAttachment();
-        if (param.containsKey("attachmentId")) {
-            String attachmentIds = (String) param.get("attachmentId");
+        // 维护bs_operate_invest_project_relation_attachment（投资项目清单附件关联表）
+        ProjectRelationAttachment projectRelationAttachment;
+        if (param.containsKey("attachmentIds")) {
+            String attachmentIds = (String) param.get("attachmentIds");
             List<String> attachmentIdList = Arrays.asList(attachmentIds.split(","));
             if (!ObjectUtils.isEmpty(attachmentIdList)) {
                 for (String attachmentId : attachmentIdList) {
+                    projectRelationAttachment = new ProjectRelationAttachment();
                     Attachment attachment = attachmentMapper.selectById(attachmentId);
                     projectRelationAttachment.setImportDate(attachment.getImportDate());
                     // 保存附件表
@@ -449,7 +463,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
                     projectRelationAttachment.setPath(attachment.getPath());
                     projectRelationAttachment.setAttachmentId(attachment.getId());
                     projectRelationAttachment.setNote(attachment.getNote());
-                    projectRelationAttachment.setProjectListId(attachment.getId());
+                    projectRelationAttachment.setProjectListId(investProjectList.getId());
                     projectRelationAttachment.setConclusion(attachment.getConclusion());
                     projectRelationAttachment.setProjectName(investProjectList.getProjectName());
                     projectRelationAttachment.setYear(investProjectList.getYear());
@@ -462,6 +476,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         }
         return result > 0;
     }
+
     @Override
     public boolean updateInvestProjectListData(InvestProjectList investProjectList, Map<String, Object> params) {
         Long companyId = null;
