@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
 import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * <p>
@@ -29,7 +31,7 @@ public class InvestProjectList extends BaseModel {
      * 序号
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 项目状态锁定
@@ -65,7 +67,7 @@ public class InvestProjectList extends BaseModel {
      * 企业ID
      */
     @TableField("companyId")
-    private Integer companyId;
+    private Long companyId;
 
     /**
      * 企业名称简称
@@ -131,18 +133,24 @@ public class InvestProjectList extends BaseModel {
      * 项目开始时间实际
      */
     @TableField("projectSrartDateActual")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     private LocalDate projectSrartDateActual;
 
     /**
      * 项目结束时间计划
      */
     @TableField("projectEndDatePlan")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     private LocalDate projectEndDatePlan;
 
     /**
      * 项目结束时间实际
      */
     @TableField("projectEndDateActual")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     private LocalDate projectEndDateActual;
 
     /**
@@ -155,6 +163,8 @@ public class InvestProjectList extends BaseModel {
      * 项目汇报日期
      */
     @TableField("projectReportDate")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     private LocalDate projectReportDate;
 
     /**
@@ -215,7 +225,7 @@ public class InvestProjectList extends BaseModel {
      * 涉及生产线Id
      */
     @TableField("productLineId")
-    private Integer productLineId;
+    private Long productLineId;
 
 
 

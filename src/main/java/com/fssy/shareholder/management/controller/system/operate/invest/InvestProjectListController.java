@@ -580,14 +580,105 @@ public class InvestProjectListController {
     }
 
     @GetMapping("upload/{id}")
-    @RequiredLog("年度投资项目附件上传")
+    @RequiredLog("年度投资项目附件上传页面")
     public String showUploadPage(@PathVariable String id, Model model) {
         InvestProjectList project = investProjectListService.getById(id);
-        /*if (ObjectUtils.isEmpty(project)) {
-            model.addAttribute("project", new InvestProjectList());
-        } else {*/
+        if (ObjectUtils.isEmpty(project)) {
+            throw new ServiceException("不存在对应的项目，无法上传附件");
+        } else {
             model.addAttribute("project", project);
-        //}
+        }
+        // 查询导入场景
+        Map<String, Object> params = new HashMap<>();
+        params.put("noteEq", "年度投资项目附件上传");
+        List<ImportModule> importModules = importModuleService
+                .findImportModuleDataListByParams(params);
+        if (org.springframework.util.ObjectUtils.isEmpty(importModules)) {
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "项目月度进展表"));
+        }
+        model.addAttribute("module", importModules.get(0).getId());
+
         return "system/operate/invest/invest-project-year/invest-project-upload";
+    }
+
+    /**
+     * 多附件上传
+     *
+     * @param file       前台传来的附件数据
+     * @param attachment 附件表实体类
+     * @return 附件ID
+     */
+    @PostMapping("uploadFiles")
+    @RequiredLog("年度投资项目附件上传")
+    @ResponseBody
+    public SysResult uploadFiles(@RequestParam("file") MultipartFile file, Attachment attachment,
+                                 HttpServletRequest request) {
+        // 保存附件
+        Calendar calendar = Calendar.getInstance();
+        attachment.setImportDate(calendar.getTime());// 设置时间
+        // 查询导入场景对象
+        ImportModule module = importModuleService.findById(InstandTool.integerToLong(attachment.getModule()));
+        if (ObjectUtils.isEmpty(module)) {
+            throw new ServiceException(String.format("序号为【%s】的导入场景未维护，不允许导入", attachment.getModule()));
+        }
+        Attachment result = fileAttachmentTool.storeFileToModule(file, module, attachment);
+        return SysResult.ok(result.getId());
+    }
+
+    /**
+     * 提交年度投资项目附件上传
+     *
+     * @return 结果
+     */
+    @PostMapping("submitUploadFile")
+    @ResponseBody
+    @RequiredLog("提交年度投资项目附件上传")
+    public SysResult submitUploadFile(InvestProjectList investProjectList,HttpServletRequest request) {
+        Map<String, Object> param = new HashMap<>();
+        String attachmentId = request.getParameter("attachmentId");
+        param.put("attachmentId", attachmentId);
+        boolean result = investProjectListService.submitUploadFile(investProjectList,param);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "提交失败");
+    }
+
+    /**
+     * 修改年度投资项目清单
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("editToProject")
+    public String editToProject(HttpServletRequest request, Model model) {
+        String id = request.getParameter("id");
+//        String companyName = request.getParameter("companyName");
+//        String month = request.getParameter("month");
+//        String projectName = request.getParameter("projectName");
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+//        params.put("companyName", companyName);
+//        params.put("month", month);
+//        params.put("projectName", projectName);
+        InvestProjectList investProjectList = investProjectListService.findInvestProjectListDataByParams(params).get(0);
+        model.addAttribute("investProjectList", investProjectList);
+        return "system/operate/invest/invest-project-year/invest-project-list-project-edit";
+    }
+
+    /**
+     * 修改年度投资项目清单项目
+     * @param investProjectList
+     * @return
+     */
+    @PostMapping("updateToProject")
+    @ResponseBody
+    public SysResult updateToProject(InvestProjectList investProjectList){
+        Map<String, Object> params = new HashMap<>();
+        boolean result = investProjectListService.updateInvestProjectListData(investProjectList);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "年度投资项目更新失败");
     }
 }

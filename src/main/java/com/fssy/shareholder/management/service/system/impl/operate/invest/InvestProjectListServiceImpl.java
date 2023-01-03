@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
+import com.fssy.shareholder.management.mapper.system.config.AttachmentMapper;
+import com.fssy.shareholder.management.mapper.system.config.ProjectRelationAttachmentMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectListMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceDetailMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
 import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.config.ProjectRelationAttachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
 import com.fssy.shareholder.management.service.common.SheetService;
@@ -51,6 +54,12 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
 
     @Autowired
     private CompanyMapper companyMapper;
+
+    @Autowired
+    private AttachmentMapper attachmentMapper;
+
+    @Autowired
+    private ProjectRelationAttachmentMapper projectRelationAttachmentMapper;
 
     /**
      * 查询年度投资项目清单
@@ -298,7 +307,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         }
         Company company = companyMapper.selectById(companyId);
         investProjectList.setCompanyName(company.getName());
-        investProjectList.setCompanyId(company.getId());
+        investProjectList.setCompanyId(companyId);
         investProjectList.setCompanyShortName(company.getShortName());
         investProjectListMapper.insert(investProjectList);//写入数据库
         return true;
@@ -400,5 +409,38 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             queryWrapper.eq("productLineId", params.get("productLineId"));
         }
         return queryWrapper;
+    }
+
+    @Override
+    public boolean submitUploadFile(InvestProjectList investProjectList,Map<String, Object> param) {
+        int result = 0;
+        // bs_operate_invest_project_relation_attachment（投资项目清单附件关联表）
+        ProjectRelationAttachment projectRelationAttachment = new ProjectRelationAttachment();
+        if (param.containsKey("attachmentId")) {
+            String attachmentIds = (String) param.get("attachmentId");
+            List<String> attachmentIdList = Arrays.asList(attachmentIds.split(","));
+            if (!ObjectUtils.isEmpty(attachmentIdList)) {
+                for (String attachmentId : attachmentIdList) {
+                    Attachment attachment = attachmentMapper.selectById(attachmentId);
+                    projectRelationAttachment.setImportDate(attachment.getImportDate());
+                    // 保存附件表
+                    projectRelationAttachment.setFilename(attachment.getFilename());
+                    // 默认就是正在导入
+                    projectRelationAttachment.setMd5Path(attachment.getMd5Path());
+                    projectRelationAttachment.setPath(attachment.getPath());
+                    projectRelationAttachment.setAttachmentId(attachment.getId());
+                    projectRelationAttachment.setNote(attachment.getNote());
+                    projectRelationAttachment.setProjectListId(attachment.getId());
+                    projectRelationAttachment.setConclusion(attachment.getConclusion());
+                    projectRelationAttachment.setProjectName(investProjectList.getProjectName());
+                    projectRelationAttachment.setYear(investProjectList.getYear());
+                    projectRelationAttachment.setCompanyName(investProjectList.getCompanyName());
+                    projectRelationAttachment.setCompanyId(investProjectList.getCompanyId());
+                    // 默认就是上载成功
+                    result = projectRelationAttachmentMapper.insert(projectRelationAttachment);
+                }
+            }
+        }
+        return result > 0;
     }
 }

@@ -533,7 +533,7 @@ public class EntryExcellentStateDetailController {
         params.put("noteEq", "评优材料上传");
         List<ImportModule> importModules = importModuleService
                 .findImportModuleDataListByParams(params);
-        if (org.springframework.util.ObjectUtils.isEmpty(importModules)) {
+        if (ObjectUtils.isEmpty(importModules)) {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "项目月度进展表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
@@ -611,7 +611,7 @@ public class EntryExcellentStateDetailController {
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "上传失败");
+        return SysResult.build(500, "提交失败");
     }
 
     /**

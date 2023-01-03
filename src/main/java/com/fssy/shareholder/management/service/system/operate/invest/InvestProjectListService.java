@@ -72,4 +72,12 @@ public interface InvestProjectListService extends IService<InvestProjectList> {
      */
     boolean insertInvestProjectList(InvestProjectList investProjectList, HttpServletRequest request);
 
+    /**
+     * 提交年度投资项目附件上传
+     *
+     * @param param 参数map
+     * @return 结果
+     */
+    boolean submitUploadFile(InvestProjectList investProjectList,Map<String, Object> param);
+
 }
