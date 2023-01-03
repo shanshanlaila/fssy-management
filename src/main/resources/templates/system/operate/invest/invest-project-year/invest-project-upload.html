@@ -18,9 +18,19 @@
                     <td colspan="8">
                         <div class="layui-form-item">
                             <div class="layui-upload">
+                                <input type="hidden" name="attachmentId" id="attachmentId">
                                 <input type="hidden" id="projectListId" name="projectListId" th:value="${project.id}">
-                                <button type="button" class="layui-btn" id="testList" name="testList">附件上传(多附件)
+                                <input type="hidden" id="projectName" name="projectName" th:value="${project.projectName}">
+                                <input type="hidden" id="year" name="year" th:value="${project.year}">
+                                <input type="hidden" id="companyName" name="companyName" th:value="${project.companyName}">
+                                <input type="hidden" id="companyId" name="companyId" th:value="${project.companyId}">
+                                <button type="button" class="layui-btn" id="testList" name="testList" style="float: left;margin-bottom: 5px">附件上传(多附件)
                                 </button>
+                                <div style="text-align: right;float: left;margin-left: 10px;margin-bottom: 5px">导入日期</div>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="importDate" placeholder="导入日期" autocomplete="off"
+                                           class="layui-input laydate" style="float: left;margin-left: 10px;margin-bottom: 5px">
+                                </div>
                                 <div class="layui-upload-list">
                                     <table class="layui-table">
                                         <thead>
@@ -71,13 +81,13 @@
             });
         });
 
-        // 评优页面的提交
+        // 年度投资项目附件上传页面提交按钮
         form.on('submit(baseForm)', function (data) {
             var elem = data.elem;
             $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
             $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
             $.ajax({
-                url: '/system/entry-excellent-state-detail/save',
+                url: '/system/operate/invest/invest-project-year/submitUploadFile',
                 type: 'POST',
                 data: data.field,
                 success: function (result) {
@@ -105,12 +115,12 @@
         var $ = layui.jquery
             , upload = layui.upload;
 
-        //多文件列表示例
+        // 多文件列表示例
         var demoListView = $('#demoList')
             , uploadListIns = upload.render({
             elem: '#testList'
-            //改成您自己的上传接口
-            , url: "/system/entry-excellent-state-detail/uploadFile"
+            // 改成您自己的上传接口
+            , url: "/system/operate/invest/invest-project-year/uploadFiles"
             , data: {'_token': "{{csrf_token()}}"}
             , accept: 'file'
             , multiple: true
@@ -145,8 +155,8 @@
                 });
             }
             , before: function (obj) {
-                this.data.importDate = $('input[name=importDate]').val();
-                this.data.module = [[${module}]];
+                this.data.importDate = $('input[name=importDate]').val();// 导入日期
+                this.data.module = [[${module}]];// 导入场景
             }
             , done: function (res, index, upload) {
                 if (res.status === 200) { //上传成功
