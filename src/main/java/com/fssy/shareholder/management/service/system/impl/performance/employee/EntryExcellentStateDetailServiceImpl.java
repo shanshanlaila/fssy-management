@@ -530,12 +530,13 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         result = entryExcellentStateDetailMapper.insert(entryExcellentStateDetail);// 保存
 
         // 维护bs_performance_state_relation_attachment（员工月度评价情况关联附件表）
-        StateRelationAttachment stateRelationAttachment = new StateRelationAttachment();
+        StateRelationAttachment stateRelationAttachment;
         if (param.containsKey("attachmentId")) {
             String attachmentIds = (String) param.get("attachmentId");
             List<String> attachmentIdList = Arrays.asList(attachmentIds.split(","));
             if (!ObjectUtils.isEmpty(attachmentIdList)) {
                 for (String attachmentId : attachmentIdList) {
+                    stateRelationAttachment = new StateRelationAttachment();
                     Attachment attachment = attachmentMapper.selectById(attachmentId);
                     stateRelationAttachment.setImportDate(attachment.getImportDate());
                     // 保存附件表

@@ -97,7 +97,7 @@ public class InvestProjectListController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
-        Page<InvestProjectList> investProjectListDataListPerPageByParams = investProjectListService.findInvestProjectListDataListPerPageByParams(params);
+        Page<Map<String, Object>> investProjectListDataListPerPageByParams = investProjectListService.findInvestProjectListDataListPerPageByParams(params);
         if (investProjectListDataListPerPageByParams.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");
@@ -108,6 +108,7 @@ public class InvestProjectListController {
         }
         return result;
     }
+
 
     /**
      * 以主键删除分数信息，后期开放
@@ -643,8 +644,8 @@ public class InvestProjectListController {
     @RequiredLog("提交年度投资项目附件上传")
     public SysResult submitUploadFile(InvestProjectList investProjectList,HttpServletRequest request) {
         Map<String, Object> param = new HashMap<>();
-        String attachmentId = request.getParameter("attachmentId");
-        param.put("attachmentId", attachmentId);
+        String attachmentIds = request.getParameter("attachmentId");
+        param.put("attachmentIds", attachmentIds);
         boolean result = investProjectListService.submitUploadFile(investProjectList,param);
         if (result) {
             return SysResult.ok();
