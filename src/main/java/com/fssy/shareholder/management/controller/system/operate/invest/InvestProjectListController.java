@@ -10,6 +10,7 @@ import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.common.override.InverstProjectPlanTraceOutputService;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectListService;
@@ -60,6 +61,9 @@ public class InvestProjectListController {
 
     @Autowired
     private InvestProjectPlanTraceDetailService investProjectPlanTraceDetailService;
+
+    @Autowired
+    private CompanyService companyService;
 
 
     /**
@@ -509,6 +513,10 @@ public class InvestProjectListController {
      */
     @GetMapping("create")
     public String createInvestProjectList(HttpServletRequest request, Model model) {
+        //1、查询部门列表，用于customerName xm-select插件
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
         return "system/operate/invest/invest-project-year/invest-project-list-create";
     }
 
@@ -522,8 +530,53 @@ public class InvestProjectListController {
     @RequiredLog("保存新增单条基础事件")
     @ResponseBody
     public SysResult Store(InvestProjectList investProjectList, HttpServletRequest request) {
-        investProjectListService.insertInvestProjectList(investProjectList);
-        return SysResult.ok();
+        boolean result = investProjectListService.insertInvestProjectList(investProjectList,request);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "新增失败");
+    }
+
+    /**
+     * 导出年度投资项目清单
+     *
+     * @param request  请求
+     * @param response 响应
+     */
+    @RequiredLog("导出年度投资项目清单")
+    @RequiresPermissions("system:operate:invest:ProjectAttachmentList:importProjectList")
+    @GetMapping("downloadInvestProjectList")
+    public void downloadInvestProjectList(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> params = getParams(request);
+        params.put("select",
+                "id," +
+                        "year," +
+                        "companyName," +
+                        "companyShortName," +
+                        "projectName," +
+                        "projectSource,projectType," +
+                        "projectClass,investmentVolumePlan,projectContact,projectSrartDatePlan");
+        List<Map<String, Object>> investProjectLists = investProjectListService.findInvestProjectDataByParams(params);
+        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+        // 需要改背景色的格子
+        fieldMap.put("id", "年度投资项目清单序号");// A
+        fieldMap.put("year", "年度");// B
+        fieldMap.put("companyName", "企业名称");// C
+        fieldMap.put("companyShortName", "企业简称");// D
+        fieldMap.put("projectName", "项目名称");// E
+        fieldMap.put("projectSource", "项目来源");//  F
+        fieldMap.put("projectType", "项目类别");//  G
+        fieldMap.put("projectClass", "项目投资类型");// H
+        fieldMap.put("investmentVolumePlan", "计划投资金额"); // I
+        fieldMap.put("projectContact", "项目联络人");// J
+        fieldMap.put("projectSrartDatePlan", "计划项目开始时间");// K
+        // 标识字符串的列
+        List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
+        SheetOutputService sheetOutputService = new SheetOutputService();
+        if (org.springframework.util.ObjectUtils.isEmpty(investProjectLists)) {
+            throw new ServiceException("未查出数据");
+        }
+        sheetOutputService.exportNum("投资分析表", investProjectLists, fieldMap, response, strList, null);
     }
 
     @GetMapping("upload/{id}")
