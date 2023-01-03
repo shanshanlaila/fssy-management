@@ -2,19 +2,16 @@ package com.fssy.shareholder.management.service.system.impl.operate.invest;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectListMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceDetailMapper;
-import com.fssy.shareholder.management.pojo.manage.company.Company;
+import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
-import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
-import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTraceDetail;
 import com.fssy.shareholder.management.pojo.system.operate.invest.TechCapacityEvaluate;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectPlanTraceService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -26,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -231,7 +227,7 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
             String inspectionResult = cells.get(SheetService.columnToIndex("L"));
             String evaluate = cells.get(SheetService.columnToIndex("M"));
             String note = cells.get(SheetService.columnToIndex("N"));
-            String serialId = cells.get(SheetService.columnToIndex("O"));
+            //String serialId = cells.get(SheetService.columnToIndex("O"));
 
 
             QueryWrapper<InvestProjectList> investProjectListQueryWrapper = new QueryWrapper<>();
@@ -278,7 +274,7 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
             investProjectPlanTrace.setCompanyName(companyName);
             investProjectPlanTrace.setProjectName(projectName);
             investProjectPlanTrace.setProjectListId(Integer.valueOf(projectListId));
-            investProjectPlanTrace.setSerialId(Integer.valueOf(serialId));
+            //investProjectPlanTrace.setSerialId(Integer.valueOf(serialId));
             investProjectPlanTrace.setAbstracte(String.valueOf(abstracte));
             investProjectPlanTrace.setEvaluateSum(String.valueOf(evaluates));
 

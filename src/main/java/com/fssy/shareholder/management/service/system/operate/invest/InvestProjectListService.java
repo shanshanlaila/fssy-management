@@ -52,7 +52,7 @@ public interface InvestProjectListService extends IService<InvestProjectList> {
 
 
     /**
-     * 修改企业研发工艺能力评价信息
+     * 修改年度项目清单状态
      * @param
      * @param
      * @return
@@ -79,5 +79,12 @@ public interface InvestProjectListService extends IService<InvestProjectList> {
      * @return 结果
      */
     boolean submitUploadFile(InvestProjectList investProjectList,Map<String, Object> param);
+    /**
+     * 修改年度项目清单信息
+     * @param
+     * @param
+     * @return
+     */
+    boolean updateInvestProjectListData(InvestProjectList investProjectList,Map<String, Object> params);
 
 }
