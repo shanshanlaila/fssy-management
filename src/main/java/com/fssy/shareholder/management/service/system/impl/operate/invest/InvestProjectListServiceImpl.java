@@ -3,9 +3,11 @@ package com.fssy.shareholder.management.service.system.impl.operate.invest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectListMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceDetailMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -46,8 +49,12 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
     @Autowired
     private InvestProjectPlanTraceDetailMapper investProjectPlanTraceDetailMapper;
 
+    @Autowired
+    private CompanyMapper companyMapper;
+
     /**
      * 查询年度投资项目清单
+     *
      * @param params
      * @return
      */
@@ -60,6 +67,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
 
     /**
      * 分页查询年度投资项目清单
+     *
      * @param params
      * @return
      */
@@ -72,6 +80,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         return investProjectListMapper.selectPage(myPage, queryWrapper);
 
     }
+
     /**
      * 设置失败的内容
      *
@@ -90,6 +99,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
 
     /**
      * 条件查询年度投资项目清单
+     *
      * @param params
      * @return
      */
@@ -105,7 +115,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
 
         QueryWrapper<InvestProjectPlanTrace> queryWrapper = new QueryWrapper<>();
         String projectListId = String.valueOf(id);
-        queryWrapper.eq("projectListId",projectListId);
+        queryWrapper.eq("projectListId", projectListId);
         investProjectPlanTraceMapper.delete(queryWrapper);
 //
 //        QueryWrapper<InvestProjectPlanTraceDetail> queryWrapperTwo = new QueryWrapper<>();
@@ -260,15 +270,15 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             investProjectList.setRespManager(respManager);
             investProjectList.setProjectContact(projectContact);
             //非空校验
-            if (ObjectUtils.isEmpty(projectSrartDatePlan)){
+            if (ObjectUtils.isEmpty(projectSrartDatePlan)) {
                 investProjectList.setProjectSrartDatePlan(null);
-            }else {
+            } else {
                 investProjectList.setProjectSrartDatePlan(LocalDate.parse(projectSrartDatePlan));
             }
-            if (ObjectUtils.isEmpty(projectEndDatePlan)){
+            if (ObjectUtils.isEmpty(projectEndDatePlan)) {
                 investProjectList.setProjectEndDatePlan(null);
 
-            }else {
+            } else {
                 investProjectList.setProjectEndDatePlan(LocalDate.parse(projectEndDatePlan));
             }
 
@@ -281,13 +291,20 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
     }
 
     @Override
-    public boolean insertInvestProjectList(InvestProjectList investProjectList) {
+    public boolean insertInvestProjectList(InvestProjectList investProjectList, HttpServletRequest request) {
+        Long companyId = Long.valueOf(request.getParameter("companyId"));
+        if (ObjectUtils.isEmpty(companyId)) {
+            throw new ServiceException("未选择公司");
+        }
+        Company company = companyMapper.selectById(companyId);
+        investProjectList.setCompanyName(company.getName());
+        investProjectList.setCompanyId(company.getId());
+        investProjectList.setCompanyShortName(company.getShortName());
         investProjectListMapper.insert(investProjectList);//写入数据库
-        investProjectListMapper.updateById(investProjectList);//更新页面
         return true;
     }
 
-    private QueryWrapper<InvestProjectList> getQueryWrapper(Map<String,Object> params){
+    private QueryWrapper<InvestProjectList> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<InvestProjectList> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("select")) {
             queryWrapper.select((String) params.get("select"));
@@ -304,9 +321,11 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
         }
-
         if (params.containsKey("companyId")) {
             queryWrapper.eq("companyId", params.get("companyId"));
+        }
+        if (params.containsKey("companyIdList")) {
+            queryWrapper.in("companyId", (List<String>) params.get("companyIdList"));
         }
         if (params.containsKey("companyShortName")) {
             queryWrapper.like("companyShortName", params.get("companyShortName"));

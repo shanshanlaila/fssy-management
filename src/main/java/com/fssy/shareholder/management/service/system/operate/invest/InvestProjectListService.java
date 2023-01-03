@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +70,6 @@ public interface InvestProjectListService extends IService<InvestProjectList> {
      * 新增年度投资项目
      * @param investProjectList 年度投资项目清单实体
      */
-    boolean insertInvestProjectList(InvestProjectList investProjectList);
+    boolean insertInvestProjectList(InvestProjectList investProjectList, HttpServletRequest request);
 
 }
