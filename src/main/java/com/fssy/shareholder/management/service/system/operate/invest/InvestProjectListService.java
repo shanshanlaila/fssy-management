@@ -86,6 +86,21 @@ public interface InvestProjectListService extends IService<InvestProjectList> {
      * @param
      * @return
      */
-    boolean updateInvestProjectListData(InvestProjectList investProjectList,Map<String, Object> params);
+    boolean updateInvestProjectListData(InvestProjectList investProjectList, HttpServletRequest request);
 
+    /**
+     * 通过查询条件，查询数据(map)
+     * @param params
+     * @return
+     */
+    List<Map<String, Object>> findInvestProjectMapListDataByParams(Map<String, Object> params);
+
+
+
+    /**
+     * 通过查询条件 分页 查询列表(map)
+     * @param params
+     * @return
+     */
+    Page<Map<String, Object>> findInvestProjectListDataMapListPerPageByParams(Map<String, Object> params);
 }

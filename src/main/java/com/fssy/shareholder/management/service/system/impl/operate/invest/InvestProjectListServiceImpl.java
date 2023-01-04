@@ -478,23 +478,73 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
     }
 
     @Override
-    public boolean updateInvestProjectListData(InvestProjectList investProjectList, Map<String, Object> params) {
-        Long companyId = null;
-        if (params.containsKey("companyId")) {
-            companyId = (Long) params.get("companyId");
-        }
+    public boolean updateInvestProjectListData(InvestProjectList investProjectList, HttpServletRequest request) {
+        Long companyId = Long.valueOf(request.getParameter("companyId"));
         if (ObjectUtils.isEmpty(companyId)) {
             throw new ServiceException("未选择公司");
         }
-
         Company company = companyMapper.selectById(companyId);
         investProjectList.setCompanyName(company.getName());
         investProjectList.setCompanyId(InstandTool.integerToLong(company.getId()));
         investProjectList.setCompanyShortName(company.getShortName());
+
         int result = investProjectListMapper.updateById(investProjectList);
+
+        //同步修改项目跟踪表信息
+        Integer id = Math.toIntExact(investProjectList.getId());
+        String companyName = investProjectList.getCompanyName();
+        Integer year = investProjectList.getYear();
+        Integer month = investProjectList.getMonth();
+        String projectName = investProjectList.getProjectName();
+        QueryWrapper<InvestProjectPlanTrace> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("projectListId",id);
+        List<InvestProjectPlanTrace> investProjectPlanTraces = investProjectPlanTraceMapper.selectList(queryWrapper);
+        for (InvestProjectPlanTrace projectPlanTrace : investProjectPlanTraces) {
+            projectPlanTrace.setProjectName(projectName);
+            projectPlanTrace.setYear(year);
+            projectPlanTrace.setMonth(month);
+            projectPlanTrace.setCompanyName(companyName);
+            investProjectPlanTraceMapper.updateById(projectPlanTrace);
+        }
+
         if (result > 0) {
             return true;
         }
         return false;
+    }
+
+
+    @Override
+    public List<Map<String, Object>> findInvestProjectMapListDataByParams(Map<String, Object> params) {
+        QueryWrapper<InvestProjectList> queryWrapper = getQueryWrapper(params);
+        return investProjectListMapper.selectMaps(queryWrapper);
+    }
+
+    @Override
+    public Page<Map<String, Object>> findInvestProjectListDataMapListPerPageByParams(Map<String, Object> params) {
+        QueryWrapper<InvestProjectList> queryWrapper = getQueryWrapper(params);
+        int limit = (int) params.get("limit");
+        int page = (int) params.get("page");
+        Page<Map<String, Object>> myPage = new Page<>(page, limit);
+        myPage = investProjectListMapper.selectMapsPage(myPage, queryWrapper);
+        List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(queryWrapper);
+        myPage.getRecords().stream().forEach(item -> {
+            Integer year = (Integer) item.get("year");
+            Integer month = (Integer) item.get("month");
+            String companyName = InstandTool.objectToString(item.get("companyName"));
+            String projectName = InstandTool.objectToString(item.get("projectName"));
+            QueryWrapper<InvestProjectPlanTrace> traceQueryWrapper = new QueryWrapper<>();
+            traceQueryWrapper.eq("year", year).eq("companyName", companyName).eq("month", month).eq("projectName", projectName);
+            traceQueryWrapper.orderByDesc("id");
+            traceQueryWrapper.isNotNull("projectIndicators");
+            List<InvestProjectPlanTrace> investProjectPlanTraces = investProjectPlanTraceMapper.selectList(traceQueryWrapper);
+            if (!ObjectUtils.isEmpty(investProjectPlanTraces)){
+                item.put("currentProjectStatus",investProjectPlanTraces.get(0).getProjectIndicators());
+            }else {
+                item.put("currentProjectStatus","项目暂未开始");
+            }
+
+        });
+        return myPage;
     }
 }

@@ -97,7 +97,7 @@ public class InvestProjectListController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
-        Page<Map<String, Object>> investProjectListDataListPerPageByParams = investProjectListService.findInvestProjectListDataListPerPageByParams(params);
+        Page<Map<String, Object>> investProjectListDataListPerPageByParams = investProjectListService.findInvestProjectListDataMapListPerPageByParams(params);
         if (investProjectListDataListPerPageByParams.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");
@@ -506,9 +506,9 @@ public class InvestProjectListController {
      */
     @PostMapping("update")
     @ResponseBody
-    public SysResult update(InvestProjectList investProjectList) {
+    public SysResult update(InvestProjectList investProjectList, HttpServletRequest request) {
         Map<String,Object> params=new HashMap<>();
-        boolean result = investProjectListService.updateInvestProjectListData(investProjectList,params);
+        boolean result = investProjectListService.updateInvestProjectListData(investProjectList,request);
         if (result) {
             return SysResult.ok();
         }
