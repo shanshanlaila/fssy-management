@@ -13,43 +13,49 @@
 <!-- 引入xadmin -->
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">非权益性投资</a> <a href="">年度投资项目</a><a>
-				<cite>年度投资项目清单管理</cite>
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">非权益性投资管理</a><a>
+				<cite>项目评审投资评价导入</cite>
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                                style="line-height: 30px"></i></a>
+                                                              style="line-height: 30px"></i></a>
 </div>
 <!-- 引入xadmin -->
-
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
-                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
-                            <input type="text" name="companyName" placeholder="企业名称" autocomplete="off"
-                                   class="layui-input">
+                        <div class="layui-inline layui-show-xs-block">
+                            <div id="companySelect"></div>
                         </div>
-
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="查询年份" id="year"
+                            <input type="text" name="year" placeholder="年份查询" id="year"
                                    autocomplete="off" class="layui-input laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="month" placeholder="年月查询" id="month"
+                                   autocomplete="off" class="layui-input laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="firstType" placeholder="类别一查询" id="firstType"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="secondType" placeholder="类别二查询" id="secondType"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="thirdType" placeholder="类别三查询" id="thirdType"
+                                   autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <a class="layui-btn" lay-submit th:href="@{/export/project-list.xlsx}">
-                                <i class="layui-icon">&#xe601</i>下载填写年度投资项目清单模板
-                            </a>
-                            <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:import"
-                                    lay-submit lay-filter="import" class="layui-btn">导入年度投资项目清单
-                            </button>
-                            <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:importProjectList"
-                                    lay-submit lay-filter="importProjectList" class="layui-btn"
-                                    title="导出">导出年度投资项目清单
+                            <button shiro:hasPermission="system:operate:invest:plan:import"
+                                    lay-submit lay-filter="import" class="layui-btn">导入投资计划
                             </button>
                         </div>
                     </div>
@@ -61,7 +67,7 @@
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
-                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条年度投资项目</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条投资计划</button>
                         </div>
                     </script>
                 </div>
@@ -77,10 +83,17 @@
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
         // 重新重置日期控件
         laydate.render({
-            elem : '#year',
-            trigger : 'click',
-            type : 'year',
-            value : moment().format("YYYY")
+            elem: '#year',
+            trigger: 'click',
+            type: 'year',
+            value: moment().format("YYYY")
+        });
+
+        // 日期年月选择器
+        laydate.render({
+            elem: '#month',
+            trigger: 'click',
+            type: 'month'
         });
 
         // 监听搜索按钮
@@ -95,7 +108,6 @@
             });
             return false
         });
-
 
 
         // 实例表格
@@ -124,66 +136,80 @@
                     {
                         field: 'firstType',
                         title: '类别一',
-                        width: 60
+                        width: 100
                     },
                     {
                         field: 'secondType',
                         title: '类别二',
-                        width: 60
+                        width: 150
                     },
                     {
                         field: 'thirdType',
                         title: '类别三',
-                        fixed: 'left',
-                        width: 60
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'unit',
                         title: '单位',
-                        fixed: 'left',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'budget',
                         title: '预算金额',
-                        width: 120
+                        width: 90,
+                        align: "center",
                     },
                     {
                         field: 'incrementArtificial',
-                        title: '人工涨幅',
-                        width: 120
+                        title: '涨幅',
+                        width: 70,
+                        align: "center",
+                        templet: function (d) {
+                            if (d.incrementArtificial === null) {
+                                return "/"
+                            } else {
+                                let formatBudget;
+                                formatBudget = d.incrementArtificial * 100 + '%'
+                                return formatBudget
+                            }
+                        }
                     },
 
                     {
                         field: 'evaluate',
                         title: '评价',
-                        width: 80
+                        width: 80,
+                        align: "center"
                     },
                     {
                         field: 'companyName',
                         title: '公司',
-                        width: 90
+                        width: 200
                     },
                     {
                         field: 'year',
                         title: '年份',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'month',
                         title: '月份',
-                        width: 50
+                        width: 50,
+                        align: "center"
                     },
                     {
                         field: 'id',
                         title: 'Id',
                         width: 50,
-                        hide:true
+                        hide: true
                     },
                     {
                         fixed: 'right',
                         title: '操作',
-                        width: 150,
+                        width: 100,
                         align: 'center',
                         toolbar: '#tool'
                     }
@@ -208,40 +234,23 @@
         form.on('submit(import)', function (data) {
             var createLayer = layer.open({
                 type: 2,
-                title: "上传事件清单附件",
+                title: "导入项目评审投资计划",
                 area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/operate/invest/ProjectAttachmentList/import',
+                content: '/system/operate/invest/plan/import',
                 scrollbar: true,
                 maxmin: true,
             });
             return false;
         });
 
-
-        // 监听导出按钮
-        form.on('submit(importProjectList)', function (data) {
-            var field = data.field;
-            var year = data.field.year;
-            if (!year) {
-                layer.msg("年度为必须项，请选择年度", {icon: 5, time: 4000});
-                return false;
-            }
-            field.url = "/system/operate/invest/ProjectList/downloadProjectList";
-            var url = createUrl(field);
-            layer.msg("正在导出项目列表，请稍候");
-            window.open(url, true);
-            return false;
-        });
-
         // 监听头工具栏事件
         table.on('toolbar(dataTable)', function (obj) {
             if (obj.event === 'create') {
-
                 // 弹出添加页面
                 layer.open(
                     {
                         type: 2,
-                        title: '新增单条年度投资项目',
+                        title: '新增单条投资计划',
                         area:
                             [
                                 $(window).width() * 0.9 + 'px',
@@ -260,7 +269,7 @@
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title:data.year + '年的企业经理人定性绩效信息修改',
+                    title: data.year + '年的企业经理人定性绩效信息修改',
                     area: [
                         $(window).width() * 0.9 + 'px',
                         $(window).height() - 50 + 'px'
@@ -268,53 +277,26 @@
                     content: '/system/operate/invest/invest-project-year/edit/' + data.id,
                     maxmin: true
                 });
-            } else if (obj.event === 'delete') { // 删除
-                layer.confirm('确认删除年份为：' + data.year + '的项目进度计划跟踪表信息吗？', function () {
-                    $.ajax({
-                        type: 'DELETE',
-                        url: '/system/operate/invest/invest-project-year/' + data.id,
-                        success: function (result) {
-                            layer.msg(result.msg);
-                            if (result.status === 200) {
-                                table.reload('dataTable');
-                            }
-                        }
-                    })
-                });
-            }else if (obj.event === 'detail') {//分数下钻，查看经理人的分数组成
-                // console.log("list" + data.month)
-                layer.open({
-                    type : 2,
-                    title : data.year + '年' + '--的各项分数信息如下:',
-                    area : [
-                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
-                    ],
-                    //①获取需要查看的此条记录的指定数据
-                    content : '/system/operate/invest/invest-project-year/search-detail?id=' + data.id  + '&companyName='+ data.companyName+ '&year='+ data.year+ '&projectName='+ data.projectName+ '&month='+ data.month,
-                    maxmin : true
-                });
-            }else if (obj.event === 'upload'){
-                layer.open({
-                    type : 2,
-                    title : '项目名称为【'+data.projectName+'】附件上传',
-                    area : [
-                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
-                    ],
-                    content : '/system/operate/invest/invest-project-year/upload/'+data.id,
-                    maxmin : true
-                });
-            }else if (obj.event === 'editToProject') { // 修改
-                layer.open({
-                    type: 2,
-                    title:data.year + '年的项目信息修改',
-                    area: [
-                        $(window).width() * 0.9 + 'px',
-                        $(window).height() - 50 + 'px'
-                    ],
-                    content: '/system/operate/invest/invest-project-year/editToProject?id=' + data.id,
-                    maxmin: true
-                });
             }
+        });
+
+        // 公司查询下拉列表
+        xmSelect.render({
+            el: '#companySelect',
+            language: 'zn',
+            data: [[${companyNameList}]],
+            filterable: true,
+            // radio: true,
+            tips: '公司查询',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyIds',// 传到后端选择的departmentId集合字符串
         });
     });
 </script>

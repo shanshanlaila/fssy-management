@@ -1,11 +1,30 @@
 package com.fssy.shareholder.management.controller.system.operate.invest;
 
 
-import com.fssy.shareholder.management.service.system.operate.invest.PlanService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.config.ImportModule;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
+import com.fssy.shareholder.management.service.system.config.AttachmentService;
+import com.fssy.shareholder.management.service.system.config.ImportModuleService;
+import com.fssy.shareholder.management.service.system.operate.invest.InvestPlanService;
+import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
+import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
+import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * <p>
@@ -16,12 +35,176 @@ import org.springframework.stereotype.Controller;
  * @since 2023-01-03
  */
 @Controller
-@RequestMapping("/system/operate/invest/plan")
+@RequestMapping("/system/operate/invest/plan/")
 public class PlanController {
 
     @Autowired
-    private PlanService planService;
+    private InvestPlanService investPlanService;
 
+    @Autowired
+    private CompanyService companyService;
+
+    @Autowired
+    private ImportModuleService importModuleService;
+
+    @Autowired
+    private AttachmentService attachmentService;
+
+    @Autowired
+    private FileAttachmentTool fileAttachmentTool;
+
+    /**
+     * 访问首页
+     *
+     * @return 首页路径
+     */
+    @GetMapping("index")
+    @RequiresPermissions("system:operate:invest:plan:index")
+    public String index(Model model) {
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
+        return "system/operate/invest/invest-plan/invest-plan-list";
+    }
+
+    /**
+     * 首页数据显示
+     *
+     * @param request 请求
+     * @return map
+     */
+    @GetMapping("getObjects")
+    @ResponseBody
+    public Map<String, Object> getObjects(HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> params = getParams(request);
+        params.put("limit", Integer.parseInt(request.getParameter("limit")));
+        params.put("page", Integer.parseInt(request.getParameter("page")));
+        Page<Map<String, Object>> page = investPlanService.findPlanDataByPageMap(params);
+        if (page.getTotal() == 0) {
+            result.put("code", 404);
+            result.put("msg", "未查出数据");
+        } else {
+            result.put("code", 0);
+            result.put("count", page.getTotal());
+            result.put("data", page.getRecords());
+        }
+        return result;
+    }
+
+    /**
+     * 封装请求参数map
+     *
+     * @param request 请求
+     * @return 参数map
+     */
+    private Map<String, Object> getParams(HttpServletRequest request) {
+        Map<String, Object> params = new HashMap<>();
+        if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
+            params.put("id", request.getParameter("id"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
+            params.put("companyName", request.getParameter("companyName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
+            params.put("year", request.getParameter("year"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("month"))) {
+            params.put("month", request.getParameter("month"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("firstType"))) {
+            params.put("firstType", request.getParameter("firstType"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("secondType"))) {
+            params.put("secondType", request.getParameter("secondType"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("thirdType"))) {
+            params.put("thirdType", request.getParameter("thirdType"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("thirdType"))) {
+            params.put("thirdType", request.getParameter("thirdType"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            String companyIds = request.getParameter("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            params.put("companyIds", strings);
+        }
+        return params;
+    }
+
+    /**
+     * 导入页面
+     *
+     * @param model 模型
+     * @return 路径
+     */
+    @GetMapping("import")
+    public String imports(Model model) {
+        // 查询导入场景
+        Map<String, Object> params = new HashMap<>();
+        String desc = "投资计划";
+        params.put("noteEq", desc);
+        List<ImportModule> importModules = importModuleService
+                .findImportModuleDataListByParams(params);
+        if (ObjectUtils.isEmpty(importModules))
+        {
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", desc));
+        }
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
+        model.addAttribute("module", importModules.get(0).getId());
+        model.addAttribute("importDateStart", new Date());
+        return "system/operate/invest/invest-plan/plan-attachment-list";
+    }
+
+    /**
+     * 附件上传
+     *
+     * @return 上传结果
+     */
+    @PostMapping("uploadFile")
+    @RequiredLog("投资计划附件上传")
+    @ResponseBody
+    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
+                                HttpServletRequest request) {
+        // 保存附件
+        Calendar calendar = Calendar.getInstance();
+        attachment.setImportDate(calendar.getTime());// 设置时间
+        // 查询导入场景对象
+        ImportModule module = importModuleService.findById(InstandTool.integerToLong(attachment.getModule()));
+        if (ObjectUtils.isEmpty(module)) {
+            throw new ServiceException(
+                    String.format("序号为【%s】的导入场景未维护，不允许导入", attachment.getModule()));
+        }
+        Attachment result = fileAttachmentTool.storeFileToModule(file, module, attachment);
+
+        try {
+            // 读取附件并保存数据
+            Map<String, Object> resultMap = investPlanService.readInvestPlanDataSource(result,request);
+            if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
+                attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
+                        result.getId().toString(), String.valueOf(resultMap.get("content")));
+                return SysResult.build(200, "部分数据导入成功，未导入成功的数据请看附件导入列表页面！请重新导入失败的数据");
+            } else {
+                // 修改附件为导入成功
+                attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
+                        result.getId().toString(), "导入成功");// 表格备注中的内容
+                return SysResult.ok();
+            }
+        } catch (ServiceException e) {
+            // 修改附件的导入状态为失败
+            attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
+                    result.getId().toString(), e.getMessage());
+            throw new ServiceException("计划导入失败，失败原因请查看附件列表备注描述，更改后请重新导入数据");
+        } catch (Exception e) {
+            // 修改附件导入状态为失败
+            attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
+                    result.getId().toString());
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
 
 }
