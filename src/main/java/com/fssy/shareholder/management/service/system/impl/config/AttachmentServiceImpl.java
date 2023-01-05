@@ -29,7 +29,7 @@ import java.util.Map;
 
 /**
  * 附件管理业务实体类
- * 
+ *
  * @author Solomon
  */
 @Service
@@ -164,6 +164,12 @@ public class AttachmentServiceImpl implements AttachmentService
 		if (params.containsKey("moduleList")) {
 			List<String> moduleList = Arrays.asList(params.get("moduleList").toString().split("_"));
 			queryWrapper.in("module", moduleList);
+		}
+		if (params.containsKey("moduleName")) {
+			queryWrapper.in("moduleName", params.get("moduleName"));
+		}
+		if (params.containsKey("importDateByNow")) {
+			queryWrapper.in("importDate", params.get("importDateByNow"));
 		}
 		return queryWrapper;
 	}

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.fssy.shareholder.management.controller.system.config;
 
@@ -30,7 +30,7 @@ import java.util.Map;
 
 /**
  * 附件管理控制器
- * 
+ *
  * @author Solomon
  */
 @Controller
@@ -48,7 +48,7 @@ public class AttachmentController
 
 	/**
 	 * 根据条件返回附件列表页面数据
-	 * 
+	 *
 	 * @param request 请求实体
 	 * @return
 	 */
@@ -84,7 +84,7 @@ public class AttachmentController
 
 	/**
 	 * 下载附件
-	 * 
+	 *
 	 * @param request 请求实体
 	 * @return
 	 */
@@ -269,6 +269,15 @@ public class AttachmentController
 		if(!ObjectUtils.isEmpty(request.getParameter("moduleList")))
 		{
 			params.put("moduleList",request.getParameter("moduleList"));
+		}
+		if(!ObjectUtils.isEmpty(request.getParameter("moduleName")))
+		{
+			params.put("moduleName",request.getParameter("moduleName"));
+		}
+		if(!ObjectUtils.isEmpty(request.getParameter("importDateByNow")))
+		{
+			System.out.println(request.getParameter("importDateByNow"));
+			params.put("importDateByNow",request.getParameter("importDateByNow"));
 		}
 		return params;
 	}
