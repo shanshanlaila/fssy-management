@@ -326,7 +326,7 @@
                         layer.open(
                             {
                                 type: 2,
-                                title: data.id + ':无标准事件信息修改',
+                                title: 'id为' + data.id + '基础事件信息修改',
                                 area:
                                     [
                                         $(window).width() * 0.9 + 'px',
@@ -336,7 +336,7 @@
                                 maxmin: true
                             });
                     } else if (obj.event === 'delete') { // 删除/取消
-                        layer.confirm('真的取消：' + data.id + '吗？', function () {
+                        layer.confirm('真的删除：' + data.id + '吗？', function () {
                             $.ajax(
                                 {
                                     type: 'DELETE',

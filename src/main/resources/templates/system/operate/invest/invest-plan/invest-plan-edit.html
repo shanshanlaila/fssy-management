@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>投资计划修改</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+                <tbody>
+                <tr>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;类别一:
+                    </td>
+                    <td>
+                        <input type="hidden" id="id" th:value="${investPlan.id}" name="id">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="firstType" id="firstType"
+                                   placeholder="类别一" autocomplete="off"
+                                   lay-verify="required" lay-reqText="类别一为必填项"
+                                   th:value="${investPlan.firstType}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;类别二:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="secondType" id="secondType"
+                                   placeholder="类别二" autocomplete="off"
+                                   lay-verify="required" lay-reqText="类别二为必填项"
+                                   th:value="${investPlan.secondType}"/>
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td style="text-align: right">&nbsp;&nbsp;类别三:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="thirdType" id="thirdType"
+                                   placeholder="类别三" autocomplete="off"
+                                   th:value="${investPlan.thirdType}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;单位:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="unit" id="unit"
+                                   placeholder="单位" autocomplete="off"
+                                   lay-verify="required" lay-reqText="单位为必填项"
+                                   th:value="${investPlan.unit}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;预算金额:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="budget" id="budget"
+                                   placeholder="预算金额" autocomplete="off"
+                                   lay-verify="required" lay-reqText="预算金额为必填项"
+                                   th:value="${investPlan.budget}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;涨幅:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="incrementArtificial" id="incrementArtificial"
+                                   placeholder="涨幅" autocomplete="off"
+                                   lay-verify="required" lay-reqText="涨幅为必填项"
+                                   th:value="${investPlan.incrementArtificial}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;评价:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="evaluate" id="evaluate"
+                                   placeholder="评价" autocomplete="off"
+                                   lay-verify="required" lay-reqText="评价为必填项"
+                                   th:value="${investPlan.evaluate}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;公司:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <div id="companySelect"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;年份:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="year" id="year"
+                                   placeholder="年份" autocomplete="off"
+                                   lay-verify="required" lay-reqText="年份为必填项"
+                                   style="cursor: pointer"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span
+                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;月份:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <select name="month" id="month" lay-verify="required" lay-reqText="月份为必填项">
+                                <option value=1 th:selected="${investPlan.month} eq '1'">一月</option>
+                                <option value=2 th:selected="${investPlan.month} eq '2'">二月</option>
+                                <option value=3 th:selected="${investPlan.month} eq '3'">三月</option>
+                                <option value=4 th:selected="${investPlan.month} eq '4'">四月</option>
+                                <option value=5 th:selected="${investPlan.month} eq '5'">五月</option>
+                                <option value=6 th:selected="${investPlan.month} eq '6'">六月</option>
+                                <option value=7 th:selected="${investPlan.month} eq '7'">七月</option>
+                                <option value=8 th:selected="${investPlan.month} eq '8'">八月</option>
+                                <option value=9 th:selected="${investPlan.month} eq '9'">九月</option>
+                                <option value=10 th:selected="${investPlan.month} eq '10'">十月</option>
+                                <option value=11 th:selected="${investPlan.month} eq '11'">十一月</option>
+                                <option value=12 th:selected="${investPlan.month} eq '12'">十二月</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        // 年选择器
+        laydate.render({
+                elem: '#year',
+                type: 'year',
+                value: [[${investPlan.year}]]
+            });
+
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/performance/employee/eventsList/update',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status === 200) {
+                        layer.msg(result.msg, {icon: 6, time: 1000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+    // 公司查询下拉列表
+    let companySelect = xmSelect.render({
+        el: '#companySelect',
+        language: 'zn',
+        initValue: [[${companyIds}]],// 设置初始值，取值为data中的value值数组
+        data: [[${companyNameList}]],
+        filterable: true,
+        radio: true,
+        tips: '公司查询',
+        toolbar: {
+            show: true
+        },
+        paging: true, // 分页
+        pageSize: 20,
+        style: {
+            width: '160px', 'min-height': '28px', 'line-height': '28px',
+        },
+        name: 'companyIds',// 传到后端选择的departmentId集合字符串
+    });
+</script>
+</body>
+</html>

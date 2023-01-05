@@ -1,5 +1,6 @@
 package com.fssy.shareholder.management.service.system.impl.operate.invest;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
@@ -78,7 +79,7 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
     @Override
     @Transactional
     public Map<String, Object> readInvestPlanDataSource(Attachment attachment, HttpServletRequest request) {
-        // 导入月度履职计划
+        // 导入投资计划
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -92,7 +93,24 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
         if (ObjectUtils.isEmpty(sheet)) {
             throw new ServiceException("表单【N+3计划 (投资计划)】不存在，无法读取数据，请检查");
         }
-
+        // 实体集合，用于批量写入数据库
+        List<InvestPlan> investPlanList=new ArrayList<>();
+        String companyId = request.getParameter("companyId");// 公司id
+        String yearMonth = request.getParameter("month");// 年月
+        String importDate = request.getParameter("importDate");// 导入日期
+        if (ObjectUtils.isEmpty(companyId)||companyId.equals("undefined")) {
+            throw new ServiceException("未选择公司，导入失败");
+        }
+        if (ObjectUtils.isEmpty(yearMonth)) {
+            throw new ServiceException("未选择年月，导入失败");
+        }
+        if (ObjectUtils.isEmpty(importDate)) {
+            throw new ServiceException("导入日期为空，导入失败");
+        }
+        // 年月
+        List<String> strings = Arrays.asList(yearMonth.split("-"));
+        String year = strings.get(0);
+        String month = strings.get(1);
         // 获取单价列表数据
         Row row;
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
@@ -124,8 +142,6 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("L"));// 每一行的结果信息上传到S列
             // 获取数据
-            Long companyId = Long.valueOf(request.getParameter("companyId"));
-            String importDate = request.getParameter("importDate");
             String firstType = cells.get(SheetService.columnToIndex("A"));// 类别一
             String secondType = cells.get(SheetService.columnToIndex("B"));// 类别二
             String thirdType = cells.get(SheetService.columnToIndex("C"));// 类别三（可空）
@@ -169,12 +185,7 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
             }
             // endregion
             // 数据校验
-            if (ObjectUtils.isEmpty(companyId)) {
-                throw new ServiceException("公司id为空，导入失败");
-            }
-            if (ObjectUtils.isEmpty(importDate)) {
-                throw new ServiceException("导入日期为空，导入失败");
-            }
+
             // 构建实体类
             InvestPlan investPlan = new InvestPlan();
             investPlan.setFirstType(firstType);
@@ -184,25 +195,32 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
             }
             investPlan.setUnit(unit);
             if (!incrementArtificial.equals("/")) {
-                investPlan.setIncrementArtificial(new BigDecimal(incrementArtificial).setScale(4,RoundingMode.HALF_UP));
+                investPlan.setIncrementArtificial(new BigDecimal(incrementArtificial).setScale(4, RoundingMode.HALF_UP));
             }
             investPlan.setBudget(new BigDecimal(budget));
             investPlan.setEvaluate(evaluate);
             // 数据库不能为null的字段设置值
             Company company = companyMapper.selectById(companyId);
-            investPlan.setCompanyId(companyId);
+            investPlan.setCompanyId(Long.parseLong(companyId));
             investPlan.setCompanyName(company.getName());
-            List<String> strings = Arrays.asList(importDate.split("-"));
-            investPlan.setYear(Integer.valueOf(strings.get(0)));
-            investPlan.setMonth(Integer.valueOf(strings.get(1)));
+            investPlan.setYear(Integer.valueOf(year));
+            investPlan.setMonth(Integer.valueOf(month));
             User user = GetTool.getUser();
             investPlan.setCreatedAt(LocalDateTime.now());
             investPlan.setCreatedId(user.getId());
             investPlan.setCreatedName(user.getName());
-            // 写入
-            investPlanMapper.insert(investPlan);
+            // 存入集合
+            investPlanList.add(investPlan);
             cell.setCellValue("导入成功");// 写在upload目录下的excel表格
         }
+        // 根据companyId,year,month删除数据
+        LambdaQueryWrapper<InvestPlan> investPlanWrapper = new LambdaQueryWrapper<>();
+        investPlanWrapper.eq(InvestPlan::getCompanyId, companyId)
+                .eq(InvestPlan::getYear, Integer.valueOf(year))
+                .eq(InvestPlan::getMonth, Integer.valueOf(month));
+        investPlanMapper.delete(investPlanWrapper);
+        // 批量写入
+        investPlanMapper.insertBatchSomeColumn(investPlanList);
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
         return result;
     }
@@ -228,7 +246,9 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
             queryWrapper.like("secondType", params.get("secondType"));
         }
         if (params.containsKey("companyIds")) {
-            queryWrapper.in("companyId", params.get("companyIds"));
+            String companyIds = (String) params.get("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            queryWrapper.in("companyId",strings);
         }
         return queryWrapper;
     }

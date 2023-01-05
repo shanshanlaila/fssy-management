@@ -1,11 +1,14 @@
 package com.fssy.shareholder.management.controller.system.operate.invest;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
+import com.fssy.shareholder.management.pojo.system.operate.invest.InvestPlan;
 import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -125,9 +129,7 @@ public class PlanController {
             params.put("thirdType", request.getParameter("thirdType"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
-            String companyIds = request.getParameter("companyIds");
-            List<String> strings = Arrays.asList(companyIds.split(","));
-            params.put("companyIds", strings);
+            params.put("companyIds", request.getParameter("companyIds"));
         }
         return params;
     }
@@ -146,15 +148,16 @@ public class PlanController {
         params.put("noteEq", desc);
         List<ImportModule> importModules = importModuleService
                 .findImportModuleDataListByParams(params);
-        if (ObjectUtils.isEmpty(importModules))
-        {
+        if (ObjectUtils.isEmpty(importModules)) {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", desc));
         }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Map<String, Object> companyParams = new HashMap<>();
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
         model.addAttribute("companyNameList", companyNameList);
         model.addAttribute("module", importModules.get(0).getId());
-        model.addAttribute("importDateStart", new Date());
+        model.addAttribute("importDateStart", simpleDateFormat.format(new Date()));
+        model.addAttribute("moduleName", importModules.get(0).getName());
         return "system/operate/invest/invest-plan/plan-attachment-list";
     }
 
@@ -181,7 +184,7 @@ public class PlanController {
 
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = investPlanService.readInvestPlanDataSource(result,request);
+            Map<String, Object> resultMap = investPlanService.readInvestPlanDataSource(result, request);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -204,6 +207,20 @@ public class PlanController {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    @GetMapping("edit/{id}")
+    public String edit(@PathVariable String id, Model model) {
+        InvestPlan investPlan = investPlanService.getById(id);
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
+        List<String> companyIds = new ArrayList<>();
+        Long companyId = investPlan.getCompanyId();
+        companyIds.add(String.valueOf(companyId));
+        model.addAttribute("companyIds", companyIds);
+        model.addAttribute("investPlan", investPlan);
+        return "/system/operate/invest/invest-plan/invest-plan-edit";
     }
 
 

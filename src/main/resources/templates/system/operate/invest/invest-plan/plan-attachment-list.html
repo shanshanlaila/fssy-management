@@ -57,20 +57,20 @@
                         {{# } }}
                     </script>
                     <script type="text/html" id="toolbar">
-                        <form class="layui-form layui-col-space5">
+                        <form class="layui-form layui-col-space5" id="form">
                             <div class="layui-inline layui-show-xs-block">
                                 导入日期：
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <input type="text" name="importDate" id="importDate" placeholder="导入日期"
                                        autocomplete="off"
-                                       class="layui-input laydate">
+                                       class="layui-input laydate" style="width: 100px">
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <div id="companySelect"></div>
                             </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" class="layui-input" name="month" id="month" placeholder="选择年月">
+                                <input type="text" class="layui-input" name="month" id="month" placeholder="选择年月" style="cursor: pointer">
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button type="button" class="layui-btn layui-btn-sm" id="chooseFile">选择文件</button>
@@ -99,6 +99,21 @@
 
         // 接收选择公司id
         let companyId;
+        // 重新重置日期控件方法
+        function reloadDate() {
+            laydate.render({
+                    elem: '#importDate',
+                    trigger: 'click',
+                    type: 'date',
+                    value: moment().format('YYYY-MM-DD')
+                });
+
+            laydate.render({
+                    elem: '#month',
+                    trigger: 'click',
+                    type: 'month'
+                });
+        }
 
         // 实例表格
         table.render({
@@ -111,6 +126,10 @@
             limit: 10,
             limits: [10, 20, 30, 50],
             toolbar: '#toolbar',
+            where:{
+                importDateStart: [[${importDateStart}]],
+                moduleName:[[${moduleName}]]
+            },
             cols: [
                 [
                     {
@@ -199,22 +218,8 @@
                 trigger: 'click',
                 type: 'date'
             });
-
         // 重新重置日期控件
-        laydate.render(
-            {
-                elem: '#importDate',
-                trigger: 'click',
-                type: 'date',
-                value: moment().format('yyyy-MM-dd')
-            });
-
-        laydate.render(
-            {
-                elem: '#month',
-                trigger: 'click',
-                type: 'month'
-            });
+        reloadDate();
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
@@ -228,20 +233,11 @@
                         }
                 });
             // 重新重置日期控件
-            laydate.render(
-                {
-                    elem: '#importDate',
-                    trigger: 'click',
-                    type: 'date',
-                    value: moment().format('yyyy-MM-dd')
-                });
-
-            laydate.render(
-                {
-                    elem: '#month',
-                    trigger: 'click',
-                    type: 'month'
-                });
+            reloadDate();
+            // 重新加载xm-select控件
+            initSelector()
+            // 重新加载导入选择校验事件
+            initChoose()
 
             // 导入
             upload.render({
@@ -256,10 +252,10 @@
                 },
                 before: function (obj) {
                     layer.load();
-                    this.data.importDate = $('input[name=  ]').val();
-                    this.data.module = [[${module}]];
-                    this.data.companyId = companyId
-                    this.date.month=$('input[name=month]').val()
+                    this.data.importDate = $('input[name=importDate]').val();// 导入日期
+                    this.data.module = [[${module}]];// 导入场景
+                    this.data.companyId = companyId;// 公司id
+                    this.data.month=months.value;// 年月
                 },
                 done: function (result) {
                     setTimeout(function () {
@@ -276,19 +272,7 @@
                             var index = parent.layer.getFrameIndex(window.name);
                             parent.layer.close(index);
                             // 重新重置日期控件
-                            laydate.render(
-                                {
-                                    elem: '#importDate',
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: moment().format('yyyy-MM-dd')
-                                });
-                            laydate.render(
-                                {
-                                    elem: '#month',
-                                    trigger: 'click',
-                                    type: 'month'
-                                });
+                            reloadDate();
                         }, 2000)
                     } else {
                         layer.msg(result.msg, {
@@ -302,6 +286,8 @@
             return false;
         });
 
+        // 在点击导入按钮之前，需要选择公司和年月
+        initChoose()
         // 重新重置日期控件
         upload.render({
             elem: '#chooseFile',
@@ -316,9 +302,11 @@
             },
             before: function (obj) {
                 layer.load();
-                this.data.importDate = $('input[name=importDate]').val();
-                this.data.module = [[${module}]];
-                this.data.companyId = companyId;
+                this.data.importDate = $('input[name=importDate]').val();// 导入日期
+                this.data.module = [[${module}]];// 导入场景
+                this.data.companyId = companyId;// 公司id
+                let months = document.querySelector('#month');
+                this.data.month=months.value;// 年月
             },
             done: function (result) {
                 setTimeout(function () {
@@ -336,19 +324,7 @@
                         var index = parent.layer.getFrameIndex(window.name);
                         parent.layer.close(index);
                         // 重新重置日期控件
-                        laydate.render(
-                            {
-                                elem: '#importDate',
-                                trigger: 'click',
-                                type: 'date',
-                                value: moment().format('yyyy-MM-dd')
-                            });
-                        laydate.render(
-                            {
-                                elem: '#month',
-                                trigger: 'click',
-                                type: 'month'
-                            });
+                        reloadDate();
                     }, 2000)
                 } else {
                     layer.msg(result.msg, {
@@ -400,19 +376,7 @@
                                         setTimeout(function () {
                                             table.reload('dataTable');
                                             // 重新重置日期控件
-                                            laydate.render(
-                                                {
-                                                    elem: '#importDate',
-                                                    trigger: 'click',
-                                                    type: 'date',
-                                                    value: moment().format('yyyy-MM-dd')
-                                                });
-                                            laydate.render(
-                                                {
-                                                    elem: '#month',
-                                                    trigger: 'click',
-                                                    type: 'month'
-                                                });
+                                            reloadDate();
                                         }, 2000)
                                     }
                                 }
@@ -423,29 +387,50 @@
                 window.location.href = '/system/config/attachment/downloadFile?id=' + data.id + '&md5Path=' + data.md5Path;
             }
         });
+        initSelector()
 
         // 部门查询下拉列表
-        let companySelect = xmSelect.render({
-            el: '#companySelect',
-            language: 'zn',
-            data: [[${companyNameList}]],
-            filterable: true,
-            radio: true,
-            tips: '选择公司',
-            toolbar: {
-                show: true
-            },
-            paging: true, // 分页
-            pageSize: 20,
-            style: {
-                width: '160px', 'min-height': '28px', 'line-height': '28px',
-            },
-            name: 'companyId',// 传到后端选择的departmentId集合字符串
-            on: function (data) {
-                companyId = data.arr[0].id
-            }
-        });
-
+        function initSelector() {
+            let companySelect = xmSelect.render({
+                el: '#companySelect',
+                language: 'zn',
+                data: [[${companyNameList}]],
+                filterable: true,
+                radio: true,
+                tips: '选择公司',
+                toolbar: {
+                    show: true
+                },
+                paging: true, // 分页
+                pageSize: 20,
+                style: {
+                    width: '160px', 'min-height': '28px', 'line-height': '28px',
+                },
+                name: 'companyId',// 传到后端选择的departmentId集合字符串
+                on: function (data) {
+                    companyId = data.arr[0].id
+                }
+            });
+        }
+        // 点击导入按钮之前选择校验
+        function initChoose() {
+            let importBtn = document.querySelector('#importAccountStatement');
+            importBtn.addEventListener('click',function () {
+                // 公司和年月是必选的
+                let months = document.querySelector('#month');
+                if(companyId===null||companyId===undefined||companyId===''){
+                    layer.msg('请选择公司',{
+                        icon:5,
+                        time:2000
+                    })
+                }else if (months.value===null||months.value===undefined||months.value===''){
+                    layer.msg('请选择年月',{
+                        icon:5,
+                        time:2000
+                    })
+                }
+            })
+        }
     });
 
 </script>

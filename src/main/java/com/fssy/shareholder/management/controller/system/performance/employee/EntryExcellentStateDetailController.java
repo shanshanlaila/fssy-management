@@ -385,7 +385,7 @@ public class EntryExcellentStateDetailController {
     @RequiredLog("修改评优材料")
     public SysResult update(EntryExcellentStateDetail entryExcellentStateDetail, HttpServletRequest request) {
         if (!(entryExcellentStateDetail.getStatus().trim().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT))) {
-            return SysResult.build(500, String.format("只能修改【%s】状态的总结评优材料", entryExcellentStateDetail.getStatus()));
+            return SysResult.build(500, String.format("不能修改【%s】状态的总结评优材料", entryExcellentStateDetail.getStatus()));
         }
         String mainIds = request.getParameter("mainIds");
         String nextIds = request.getParameter("nextIds");

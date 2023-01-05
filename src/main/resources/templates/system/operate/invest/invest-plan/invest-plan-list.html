@@ -63,7 +63,7 @@
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-                        <a lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>
+                        <a lay-event="edit" title="投资计划修改"><i class="layui-icon">&#xe642;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
@@ -170,9 +170,7 @@
                             if (d.incrementArtificial === null) {
                                 return "/"
                             } else {
-                                let formatBudget;
-                                formatBudget = d.incrementArtificial * 100 + '%'
-                                return formatBudget
+                                return parseFloat(d.incrementArtificial * 100).toFixed(2) + '%'
                             }
                         }
                     },
@@ -269,12 +267,12 @@
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title: data.year + '年的企业经理人定性绩效信息修改',
+                    title: '编号为【' + data.index + '】投资计划信息修改',
                     area: [
                         $(window).width() * 0.9 + 'px',
                         $(window).height() - 50 + 'px'
                     ],
-                    content: '/system/operate/invest/invest-project-year/edit/' + data.id,
+                    content: '/system/operate/invest/plan/edit/' + data.id,
                     maxmin: true
                 });
             }
