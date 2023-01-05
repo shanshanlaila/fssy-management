@@ -1,6 +1,6 @@
 package com.fssy.shareholder.management.mapper.system.operate.invest;
 
-import com.fssy.shareholder.management.pojo.system.operate.invest.Plan;
+import com.fssy.shareholder.management.pojo.system.operate.invest.InvestPlan;
 import com.fssy.shareholder.management.mapper.manage.common.MyBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2023-01-03
  */
 @Mapper
-public interface PlanMapper extends MyBaseMapper<Plan> {
+public interface InvestPlanMapper extends MyBaseMapper<InvestPlan> {
 
 }
