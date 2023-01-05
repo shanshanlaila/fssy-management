@@ -76,7 +76,11 @@ public class InvestProjectListController {
     @RequiresPermissions("system:operate:invest:invest-project-year:indexYear")
     @RequiredLog("年度投资项目清单管理")
     public String investProjectListIndex(Model model) {
-        Map<String, Object> params = new HashMap<>();
+        //1、查询公司列表，用于companyName xm-select插件
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
+
         return "system/operate/invest/invest-project-year/invest-project-list";
     }
 
@@ -136,6 +140,7 @@ public class InvestProjectListController {
      * @return
      */
     @GetMapping("search-detail")
+    @RequiresPermissions("system:operate:invest:invest-project-year:indexYear")
     public String searchByAssignFromBtn(HttpServletRequest request, Model model) {
         String projectListId = request.getParameter("id");
         String companyName = request.getParameter("companyName");
@@ -373,9 +378,21 @@ public class InvestProjectListController {
         if (!ObjectUtils.isEmpty(request.getParameter("projectAbstract"))) {
             params.put("projectAbstract", request.getParameter("projectAbstract"));
         }
-        if (!ObjectUtils.isEmpty(request.getParameter("investmentVolumePlan"))) {
+
+        /*if (!ObjectUtils.isEmpty(request.getParameter("investmentVolumePlan"))) {
             params.put("investmentVolumePlan", request.getParameter("investmentVolumePlan"));
+        }*/
+        //计划投资金额管理
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("investmentVolumePlanStart")))
+        {
+            params.put("investmentVolumePlanStart", request.getParameter("investmentVolumePlanStart"));
         }
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("investmentVolumePlanEnd")))
+        {
+            params.put("investmentVolumePlanEnd", request.getParameter("investmentVolumePlanEnd"));
+        }
+
+
         if (!ObjectUtils.isEmpty(request.getParameter("investmentVolumeActual"))) {
             params.put("investmentVolumeActual", request.getParameter("investmentVolumeActual"));
         }
@@ -388,10 +405,28 @@ public class InvestProjectListController {
         if (!ObjectUtils.isEmpty(request.getParameter("projectSrartDatePlan"))) {
             params.put("projectSrartDatePlan", request.getParameter("projectSrartDatePlan"));
         }
-
-        if (!ObjectUtils.isEmpty(request.getParameter("projectSrartDateActual"))) {
-            params.put("projectSrartDateActual", request.getParameter("projectSrartDateActual"));
+        //项目开始实际时间
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("projectEndDateActualStart")))
+        {
+            params.put("projectEndDateActualStart", request.getParameter("projectEndDateActualStart"));
         }
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("projectEndDateActualEnd")))
+        {
+            params.put("projectEndDateActualEnd", request.getParameter("projectEndDateActualEnd"));
+        }
+
+        //项目结束实际时间
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("projectSrartDateActualStart")))
+        {
+            params.put("projectSrartDateActualStart", request.getParameter("projectSrartDateActualStart"));
+        }
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("projectSrartDateActualEnd")))
+        {
+            params.put("projectSrartDateActualEnd", request.getParameter("projectSrartDateActualEnd"));
+        }
+
+
+
         if (!ObjectUtils.isEmpty(request.getParameter("projectEndDatePlan"))) {
             params.put("projectEndDatePlan", request.getParameter("projectEndDatePlan"));
         }
@@ -471,6 +506,21 @@ public class InvestProjectListController {
             params.put("month", request.getParameter("month"));
         }
 
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("idDesc")))
+        {
+            params.put("idDesc", request.getParameter("idDesc"));
+        }
+
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("select")))
+        {
+            params.put("select", request.getParameter("select"));
+        }
+
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("groupBy")))
+        {
+            params.put("groupBy", request.getParameter("groupBy"));
+        }
+
         return params;
     }
 
@@ -484,20 +534,20 @@ public class InvestProjectListController {
     @GetMapping("edit/{id}")
     public String showEditPage(@PathVariable String id, Model model) {
         InvestProjectList investProjectList = investProjectListService.getById(id);
-//        if (projectList.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
-//            throw new ServiceException("不能修改取消状态下的事件请单");
-//        }
         model.addAttribute("investProjectList", investProjectList);//investProjectList传到前端
         //1、查询公司列表，用于companyName xm-select插件
         Map<String, Object> companyParams = new HashMap<>();
         List<String> selectedList = new ArrayList<>();
+        //业务判断，用于修改功能
+        if (ObjectUtils.isEmpty(investProjectList.getCompanyId())){
+            throw new ServiceException("企业ID为空");
+        }
         selectedList.add(investProjectList.getCompanyId().toString());//xm-select默认选择控件
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, selectedList);
         model.addAttribute("companyNameList", companyNameList);
         return "system/operate/invest/invest-project-year/invest-project-list-edit";
 
     }
-
     /**
      * 更新年度投资项目清单
      *
@@ -524,6 +574,14 @@ public class InvestProjectListController {
     public String createInvestProjectList(HttpServletRequest request, Model model) {
         //1、查询部门列表，用于customerName xm-select插件
         Map<String, Object> companyParams = new HashMap<>();
+        String year = request.getParameter("year");
+        String companyId = request.getParameter("companyId");
+        String month = request.getParameter("month");
+        String projectName = request.getParameter("projectName");
+        model.addAttribute("year", year);
+        model.addAttribute("companyId", companyId);
+        model.addAttribute("month", month);
+        model.addAttribute("projectName", projectName);
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
         model.addAttribute("companyNameList", companyNameList);
         return "system/operate/invest/invest-project-year/invest-project-list-create";
@@ -546,6 +604,7 @@ public class InvestProjectListController {
         return SysResult.build(500, "新增失败");
     }
 
+
     /**
      * 导出年度投资项目清单
      *
@@ -553,34 +612,39 @@ public class InvestProjectListController {
      * @param response 响应
      */
     @RequiredLog("导出年度投资项目清单")
-    @RequiresPermissions("system:operate:invest:ProjectAttachmentList:importProjectList")
+    @RequiresPermissions("system:operate:invest:invest-project-year:downloadInvestProjectList")
     @GetMapping("downloadInvestProjectList")
     public void downloadInvestProjectList(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = getParams(request);
         params.put("select",
                 "id," +
                         "year," +
+                        "month,"+
                         "companyName," +
-                        "companyShortName," +
                         "projectName," +
                         "projectSource,projectType," +
-                        "projectClass,investmentVolumePlan,projectContact,projectSrartDatePlan");
+                        "projectClass,projectAbstract,investmentVolumePlan,respManager," +
+                        "projectContact,projectSrartDatePlan,projectEndDatePlan,businessUnit");
         List<Map<String, Object>> investProjectLists = investProjectListService.findInvestProjectDataByParams(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
         // 需要改背景色的格子
-        fieldMap.put("id", "年度投资项目清单序号");// A
+//        fieldMap.put("id", "年度投资项目清单序号");// A
         fieldMap.put("year", "年度");// B
+        fieldMap.put("month", "月份");// C
         fieldMap.put("companyName", "企业名称");// C
-        fieldMap.put("companyShortName", "企业简称");// D
-        fieldMap.put("projectName", "项目名称");// E
-        fieldMap.put("projectSource", "项目来源");//  F
-        fieldMap.put("projectType", "项目类别");//  G
-        fieldMap.put("projectClass", "项目投资类型");// H
+        fieldMap.put("projectName", "项目名称");// D
+        fieldMap.put("projectSource", "项目来源");// E
+        fieldMap.put("projectType", "项目类别");//  F
+        fieldMap.put("projectClass", "项目投资类型");//  G
+        fieldMap.put("projectAbstract","项目简介");// H
         fieldMap.put("investmentVolumePlan", "计划投资金额"); // I
-        fieldMap.put("projectContact", "项目联络人");// J
-        fieldMap.put("projectSrartDatePlan", "计划项目开始时间");// K
+        fieldMap.put("respManager", "分管经理人"); // J
+        fieldMap.put("projectContact", "项目联络人");// K
+        fieldMap.put("projectSrartDatePlan", "计划项目开始时间");// L
+        fieldMap.put("projectEndDatePlan", "计划项目结束时间");//M
+        fieldMap.put("businessUnit", "投资所属实业部");//N
         // 标识字符串的列
-        List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
+        List<Integer> strList = Arrays.asList(0,1, 2, 3, 4, 5,6, 7,8,9,10,11,12,13,14);
         SheetOutputService sheetOutputService = new SheetOutputService();
         if (org.springframework.util.ObjectUtils.isEmpty(investProjectLists)) {
             throw new ServiceException("未查出数据");
@@ -589,6 +653,7 @@ public class InvestProjectListController {
     }
 
     @GetMapping("upload/{id}")
+    @RequiresPermissions("system:operate:invest:invest-project-year:indexYear")
     @RequiredLog("年度投资项目附件上传页面")
     public String showUploadPage(@PathVariable String id, Model model) {
         InvestProjectList project = investProjectListService.getById(id);
@@ -660,6 +725,7 @@ public class InvestProjectListController {
      * @return
      */
     @GetMapping("editToProject")
+    @RequiresPermissions("system:operate:invest:invest-project-year:indexYear")
     public String editToProject(HttpServletRequest request, Model model) {
         String id = request.getParameter("id");
 //        String companyName = request.getParameter("companyName");
@@ -690,4 +756,9 @@ public class InvestProjectListController {
         }
         return SysResult.build(500, "年度投资项目更新失败");
     }
+
+
+
+
+
 }

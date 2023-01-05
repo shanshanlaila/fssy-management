@@ -11,12 +11,14 @@ import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjec
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceDetailMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
 import com.fssy.shareholder.management.pojo.manage.company.Company;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ProjectRelationAttachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectListService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -31,6 +33,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -77,32 +80,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
 
     }
 
-    /**
-     * 分页查询年度投资项目清单
-     *
-     * @param params
-     * @return
-     */
-    @Override
-    public Page<Map<String, Object>> findInvestProjectListDataListPerPageByParams(Map<String, Object> params) {
-        QueryWrapper<InvestProjectList> queryWrapper = getQueryWrapper(params);
-        int limit = (int) params.get("limit");
-        int page = (int) params.get("page");
-        Page<Map<String, Object>> myPage = new Page<>(page, limit);
-        myPage = investProjectListMapper.selectMapsPage(myPage, queryWrapper);
-        // 2023-1-03 添加评优材料附件查询
-        myPage.getRecords().forEach(item -> {
-            LambdaQueryWrapper<ProjectRelationAttachment> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(ProjectRelationAttachment::getProjectListId,item.get("id"))
-                    .select(ProjectRelationAttachment::getProjectListId,
-                            ProjectRelationAttachment::getAttachmentId,
-                            ProjectRelationAttachment::getMd5Path,
-                            ProjectRelationAttachment::getFilename);
-            List<ProjectRelationAttachment> attachments = projectRelationAttachmentMapper.selectList(wrapper);
-            item.put("attachmentList", attachments);
-        });
-        return myPage;
-    }
+
 
     /**
      * 设置失败的内容
@@ -218,6 +196,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("AD"));//报错信息上传到excel AD列
             String year = cells.get(SheetService.columnToIndex("A"));
+            System.out.println(year);
             //检查必填项
             if (ObjectUtils.isEmpty(year)) {
                 setFailedContent(result, String.format("第%s行的年度是空的", j + 1));
@@ -293,22 +272,22 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             investProjectList.setInvestmentVolumePlan(InstandTool.stringToDouble(investmentVolumePlan));
             investProjectList.setRespManager(respManager);
             investProjectList.setProjectContact(projectContact);
-
-
-
+            //根据公司名称查找公司表，在从公司表获取想要的
             LambdaQueryWrapper<Company> companyLambdaQueryWrapper = new LambdaQueryWrapper<>();
             companyLambdaQueryWrapper.eq(Company::getName,companyName);
             List<Company> companyList1 = companyMapper.selectList(companyLambdaQueryWrapper);
             if (ObjectUtils.isEmpty(companyList1)) {
-                StringTool.setMsg(sb, String.format("第【%s】行的【%s】的公司名称在系统中未查找到，不能导入", j + 1, companyName));
+                setFailedContent(result,String.format("第【%s】行的【%s】的公司名称在系统中未查找到，不能导入", j + 1, companyName));
                 cell.setCellValue(String.format("行数为【%s】的公司名称未查到，不能导入", j + 1));
                 continue;
             }
             Company company = companyList1.get(0);
             investProjectList.setCompanyId(InstandTool.integerToLong(company.getId()));
             investProjectList.setCompanyShortName(company.getShortName());
-
-
+            User user = GetTool.getUser();
+            investProjectList.setCreatedAt(LocalDateTime.now());
+            investProjectList.setCreatedId(user.getId());
+            investProjectList.setCreatedName(user.getName());
             //非空校验
             if (ObjectUtils.isEmpty(projectSrartDatePlan)) {
                 investProjectList.setProjectSrartDatePlan(null);
@@ -330,19 +309,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         return result;
     }
 
-    @Override
-    public boolean insertInvestProjectList(InvestProjectList investProjectList, HttpServletRequest request) {
-        Long companyId = Long.valueOf(request.getParameter("companyId"));
-        if (ObjectUtils.isEmpty(companyId)) {
-            throw new ServiceException("未选择公司");
-        }
-        Company company = companyMapper.selectById(companyId);
-        investProjectList.setCompanyName(company.getName());
-        investProjectList.setCompanyId(companyId);
-        investProjectList.setCompanyShortName(company.getShortName());
-        investProjectListMapper.insert(investProjectList);//写入数据库
-        return true;
-    }
+
 
     private QueryWrapper<InvestProjectList> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<InvestProjectList> queryWrapper = new QueryWrapper<>();
@@ -357,6 +324,9 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         }
         if (params.containsKey("year")) {
             queryWrapper.eq("year", params.get("year"));
+        }
+        if (params.containsKey("month")) {
+            queryWrapper.eq("month", params.get("month"));
         }
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
@@ -382,9 +352,18 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         if (params.containsKey("projectAbstract")) {
             queryWrapper.like("projectAbstract", params.get("projectAbstract"));
         }
-        if (params.containsKey("investmentVolumePlan")) {
-            queryWrapper.like("investmentVolumePlan", params.get("investmentVolumePlan"));
+
+
+        // 计划投资金额查询
+        if (params.containsKey("investmentVolumePlanStart")) {
+            queryWrapper.ge("investmentVolumePlan", params.get("investmentVolumePlanStart"));
         }
+        if (params.containsKey("investmentVolumePlanEnd")) {
+            queryWrapper.le("investmentVolumePlan", params.get("investmentVolumePlanEnd"));
+        }
+
+
+
         if (params.containsKey("investmentVolumeActual")) {
             queryWrapper.like("investmentVolumeActual", params.get("investmentVolumeActual"));
         }
@@ -397,9 +376,23 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         if (params.containsKey("projectSrartDatePlan")) {
             queryWrapper.like("projectSrartDatePlan", params.get("projectSrartDatePlan"));
         }
-        if (params.containsKey("projectSrartDateActual")) {
-            queryWrapper.like("projectSrartDateActual", params.get("projectSrartDateActual"));
+
+        // 项目实际开始时间查询
+        if (params.containsKey("projectSrartDateActualStart")) {
+            queryWrapper.ge("projectSrartDateActual", params.get("projectSrartDateActualStart"));
         }
+        if (params.containsKey("projectSrartDateActualEnd")) {
+            queryWrapper.le("projectSrartDateActual", params.get("projectSrartDateActualEnd"));
+        }
+
+        // 项目实际结束时间查询
+        if (params.containsKey("projectEndDateActualStart")) {
+            queryWrapper.ge("projectEndDateActual", params.get("projectEndDateActualStart"));
+        }
+        if (params.containsKey("projectEndDateActualEnd")) {
+            queryWrapper.le("projectEndDateActual", params.get("projectEndDateActualEnd"));
+        }
+
         if (params.containsKey("projectEndDatePlan")) {
             queryWrapper.like("projectEndDatePlan", params.get("projectEndDatePlan"));
         }
@@ -439,6 +432,22 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         if (params.containsKey("productLineId")) {
             queryWrapper.eq("productLineId", params.get("productLineId"));
         }
+        if (params.containsKey("idAsc"))
+        {
+            queryWrapper.orderByAsc("id");
+        }
+        else
+        {
+            queryWrapper.orderByDesc("id");
+        }
+        if (params.containsKey("select"))
+        {
+            queryWrapper.select(InstandTool.objectToString(params.get("select")));
+        }
+        if (params.containsKey("groupBy"))
+        {
+            queryWrapper.groupBy(InstandTool.objectToString(params.get("groupBy")));
+        }
         return queryWrapper;
     }
 
@@ -476,6 +485,36 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         }
         return result > 0;
     }
+    @Override
+    public boolean insertInvestProjectList(InvestProjectList investProjectList, HttpServletRequest request) {
+        Long companyId = Long.valueOf(request.getParameter("companyId"));
+        if (ObjectUtils.isEmpty(companyId)) {
+            throw new ServiceException("未选择公司");
+        }
+        String year = request.getParameter("year");
+        String month = request.getParameter("month");
+        String projectName = request.getParameter("projectName");
+
+        Company company = companyMapper.selectById(companyId);
+        investProjectList.setCompanyName(company.getName());
+        investProjectList.setCompanyId(companyId);
+        investProjectList.setCompanyShortName(company.getShortName());
+        User user = GetTool.getUser();
+        investProjectList.setCreatedAt(LocalDateTime.now());
+        investProjectList.setCreatedId(user.getId());
+        investProjectList.setCreatedName(user.getName());
+        //校验年份、公司名称、月份、项目名称，如果四个有相同则不允许新增
+        QueryWrapper<InvestProjectList> investProjectListQueryWrapper = new QueryWrapper<>();
+        System.out.println(companyId);
+        investProjectListQueryWrapper.eq("companyId",companyId).eq("year",year).eq("month", month).eq("projectName",projectName);
+        List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(investProjectListQueryWrapper);
+        //查询到相同项目 不允许添加
+        if (investProjectLists.size()>0){
+            throw new ServiceException("已存在相同的项目，不允许重复添加");
+        }
+        investProjectListMapper.insert(investProjectList);//写入数据库
+        return true;
+    }
 
     @Override
     public boolean updateInvestProjectListData(InvestProjectList investProjectList, HttpServletRequest request) {
@@ -487,15 +526,30 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         investProjectList.setCompanyName(company.getName());
         investProjectList.setCompanyId(InstandTool.integerToLong(company.getId()));
         investProjectList.setCompanyShortName(company.getShortName());
+        User user = GetTool.getUser();
+        investProjectList.setUpdatedAt(LocalDateTime.now());
+        investProjectList.setUpdatedId(user.getId());
+        investProjectList.setUpdatedName(user.getName());
+
+        Integer year = investProjectList.getYear();
+        Integer month = investProjectList.getMonth();
+        String projectName = investProjectList.getProjectName();
+        //校验年份、公司名称、月份、项目名称，如果四个有相同则不允许新增
+        QueryWrapper<InvestProjectList> investProjectListQueryWrapper = new QueryWrapper<>();
+        System.out.println(companyId);
+        investProjectListQueryWrapper.eq("companyId",companyId).eq("year",year).eq("month", month).eq("projectName",projectName);
+        List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(investProjectListQueryWrapper);
+        //查询到相同项目 不允许添加
+        if (investProjectLists.size()>0){
+            throw new ServiceException("已存在相同的项目，不允许重复添加");
+        }
+
 
         int result = investProjectListMapper.updateById(investProjectList);
 
         //同步修改项目跟踪表信息
         Integer id = Math.toIntExact(investProjectList.getId());
         String companyName = investProjectList.getCompanyName();
-        Integer year = investProjectList.getYear();
-        Integer month = investProjectList.getMonth();
-        String projectName = investProjectList.getProjectName();
         QueryWrapper<InvestProjectPlanTrace> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("projectListId",id);
         List<InvestProjectPlanTrace> investProjectPlanTraces = investProjectPlanTraceMapper.selectList(queryWrapper);
@@ -527,6 +581,17 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         int page = (int) params.get("page");
         Page<Map<String, Object>> myPage = new Page<>(page, limit);
         myPage = investProjectListMapper.selectMapsPage(myPage, queryWrapper);
+        // 2023-1-03 添加评优材料附件查询
+        myPage.getRecords().forEach(item -> {
+            LambdaQueryWrapper<ProjectRelationAttachment> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(ProjectRelationAttachment::getProjectListId,item.get("id"))
+                    .select(ProjectRelationAttachment::getProjectListId,
+                            ProjectRelationAttachment::getAttachmentId,
+                            ProjectRelationAttachment::getMd5Path,
+                            ProjectRelationAttachment::getFilename);
+            List<ProjectRelationAttachment> attachments = projectRelationAttachmentMapper.selectList(wrapper);
+            item.put("attachmentList", attachments);
+        });
         List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(queryWrapper);
         myPage.getRecords().stream().forEach(item -> {
             Integer year = (Integer) item.get("year");
@@ -544,6 +609,33 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
                 item.put("currentProjectStatus","项目暂未开始");
             }
 
+        });
+        return myPage;
+    }
+
+    /**
+     * 分页查询年度投资项目清单
+     *
+     * @param params
+     * @return
+     */
+    @Override
+    public Page<Map<String, Object>> findInvestProjectListDataListPerPageByParams(Map<String, Object> params) {
+        QueryWrapper<InvestProjectList> queryWrapper = getQueryWrapper(params);
+        int limit = (int) params.get("limit");
+        int page = (int) params.get("page");
+        Page<Map<String, Object>> myPage = new Page<>(page, limit);
+        myPage = investProjectListMapper.selectMapsPage(myPage, queryWrapper);
+        // 2023-1-03 添加评优材料附件查询
+        myPage.getRecords().forEach(item -> {
+            LambdaQueryWrapper<ProjectRelationAttachment> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(ProjectRelationAttachment::getProjectListId,item.get("id"))
+                    .select(ProjectRelationAttachment::getProjectListId,
+                            ProjectRelationAttachment::getAttachmentId,
+                            ProjectRelationAttachment::getMd5Path,
+                            ProjectRelationAttachment::getFilename);
+            List<ProjectRelationAttachment> attachments = projectRelationAttachmentMapper.selectList(wrapper);
+            item.put("attachmentList", attachments);
         });
         return myPage;
     }

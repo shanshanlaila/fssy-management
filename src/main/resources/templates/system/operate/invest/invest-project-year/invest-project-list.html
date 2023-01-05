@@ -28,14 +28,99 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
-                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                        <!--<div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="companyName" placeholder="企业名称" autocomplete="off"
                                    class="layui-input">
+                        </div>-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="companySelect"></div>
                         </div>
 
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="year" placeholder="查询年份" id="year"
                                    autocomplete="off" class="layui-input laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="month" placeholder="月份" id="month"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="respManager" placeholder="企业分管经理人" id="respManager"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="projectType" placeholder="项目类别" id="projectType"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <!--<div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="projectClass" placeholder="项目投资类型" id="projectClass"
+                                   autocomplete="off" class="layui-input">
+                        </div>-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 140px">
+                            <select name="projectClass" id="projectClass">
+                                <option value="" selected>请选择项目投资类型类型</option>
+                                <option value="一般项目">一般项目</option>
+                                <option value="重点项目">重点项目</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="projectSrartDateActualStart" placeholder="项目实际开始时间起" id="projectSrartDateActualStart"
+                                   autocomplete="off" class="layui-input laydate">
+                        </div>
+
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="projectSrartDateActualEnd" placeholder="项目实际开始时间止" id="projectSrartDateActualEnd"
+                                   autocomplete="off" class="layui-input laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input
+                                    type="text" name="projectEndDateActualStart" placeholder="项目结束实际时间起" id="projectEndDateActualStart"
+                                    autocomplete="off" class="layui-input laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="projectEndDateActualEnd" placeholder="项目结束实际时间止" id="projectEndDateActualEnd"
+                                   autocomplete="off" class="layui-input laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="projectFeasibilityStudyReport" placeholder="可研报告状态" id="projectFeasibilityStudyReport"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="committeeAuditStatus" placeholder="经委会审批状态" id="committeeAuditStatus"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="projectFinishStatus" placeholder="项目完成状态" id="projectFinishStatus"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="boardAuditStatus" placeholder="董事会审批状态" id="boardAuditStatus"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="projectRiskStatus" placeholder="项目风险状态" id="projectRiskStatus"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="projectEvalStatus" placeholder="项目自评状态" id="projectEvalStatus"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input
+                                    type="text" name="investmentVolumePlanStart" placeholder="项目计划投资起" id="investmentVolumePlanStart"
+                                    autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="investmentVolumePlanEnd" placeholder="项目计划投资止" id="investmentVolumePlanEnd"
+                                   autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
@@ -47,7 +132,7 @@
                             <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:import"
                                     lay-submit lay-filter="import" class="layui-btn">导入年度投资项目清单
                             </button>
-                            <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:importProjectList"
+                            <button shiro:hasPermission="system:operate:invest:invest-project-year:downloadInvestProjectList"
                                     lay-submit lay-filter="importProjectList" class="layui-btn"
                                     title="导出">导出年度投资项目清单
                             </button>
@@ -57,11 +142,14 @@
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
-                        <a lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>
-                        <a lay-event="edit" title="修改年度投资项目清单数据信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除年度投资项目清单数据信息"><i class="layui-icon">&#xe640;</i></a>
-                        <a lay-event="upload" title="年度投资项目附件上传"><i class="layui-icon">&#xe681;</i></a>
-                        <a lay-event="editToProject" title="修改年度投资项目清单数据状态"><i class="layui-icon">&#xe642;</i></a>
+                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:edit" lay-event="edit" title="修改年度投资项目清单数据信息"><i class="layui-icon">&#xe642;</i></a>
+                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:delete" lay-event="delete" title="删除年度投资项目清单数据信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:upload" lay-event="upload" title="年度投资项目附件上传"><i class="layui-icon">&#xe681;</i></a>
+                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:editToProject" lay-event="editToProject" title="修改年度投资项目清单数据状态"><i class="fa fa-file fa-lg"></i></a>
+
+                    </script>
+                    <script type="text/html" id="tool1">
+                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:check" lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
@@ -85,6 +173,17 @@
             trigger : 'click',
             type : 'year',
             value : moment().format("YYYY")
+        });
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render(
+                {
+                    elem: this,
+                    //更换触发方式
+                    trigger: 'click',
+                    type: 'date'
+                });
         });
 
         // 监听搜索按钮
@@ -115,6 +214,9 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
+            where : {
+              idDesc : true
+            },
             cols: [
                 [
 
@@ -127,10 +229,46 @@
                         width: 80
                     },
                     {
+                        field: 'projectType',
+                        title: '项目类别：自动化、质量改善',
+                        fixed: 'left',
+                        width: 150
+                    },
+                    {
+                        field: 'companyName',
+                        title: '企业名称',
+                        fixed: 'left',
+                        width: 150
+                    },
+                    {
                         field: 'projectName',
                         title: '项目名称',
                         fixed: 'left',
-                        width: 60
+                        width: 120
+                    },
+                    {
+                        field: 'investmentVolumePlan',
+                        title: '计划投资额',
+                        fixed: 'left',
+                        width: 120
+                    },
+                    {
+                        field: 'investmentVolumeActual',
+                        title: '实际投资额',
+                        fixed: 'left',
+                        width: 120
+                    },
+                    {
+                        field: 'respManager',
+                        title: '企业分管经理人',
+                        fixed: 'left',
+                        width: 120
+                    },
+                    {
+                        field: 'projectContact',
+                        title: '项目联络人',
+                        fixed: 'left',
+                        width: 120
                     },
                     {
                         field: 'year',
@@ -145,10 +283,9 @@
                         width: 60
                     },
                     {
-                        field: 'companyName',
-                        title: '企业名称',
-                        fixed: 'left',
-                        width: 150
+                        field: 'companyShortName',
+                        title: '企业名称简称',
+                        width: 120
                     },
                     {
                         field: 'companyId',
@@ -156,21 +293,11 @@
                         width: 120
                     },
                     {
-                        field: 'companyShortName',
-                        title: '企业名称简称',
-                        width: 120
-                    },
-
-                    {
                         field: 'projectSource',
                         title: '项目来源:年度计划,临时新增',
                         width: 120
                     },
-                    {
-                        field: 'projectType',
-                        title: '项目类别：自动化、质量改善',
-                        width: 120
-                    },
+
                     {
                         field: 'projectClass',
                         title: '项目投资类型:重点项目、一般项目',
@@ -181,24 +308,10 @@
                         title: '项目简介',
                         width: 120
                     },
+
                     {
-                        field: 'investmentVolumePlan',
-                        title: '计划投资额',
-                        width: 120
-                    },
-                    {
-                        field: 'investmentVolumeActual',
-                        title: '实际投资额',
-                        width: 120
-                    },
-                    {
-                        field: 'respManager',
-                        title: '企业分管经理人',
-                        width: 120
-                    },
-                    {
-                        field: 'projectContact',
-                        title: '项目联络人',
+                        field: 'currentProjectStatus',
+                        title: '追踪情况',
                         width: 120
                     },
                     {
@@ -220,6 +333,12 @@
                                 return element;
                             }
                         }
+                    },
+                    {
+                        field: 'id',
+                        title: '项目Id',
+                        width: 50,
+
                     },
                     {
                         field: 'projectSrartDatePlan',
@@ -296,22 +415,18 @@
                         title: '涉及生产线Id',
                         width: 120
                     },
+
                     {
-                        field: 'id',
-                        title: '项目Id',
-                        width: 50,
-                        hide:true
+                        title: '监控表',
+                        width: 110,
+                        align: 'center',
+                        toolbar: '#tool1'
                     },
                     {
-                        field: 'currentProjectStatus',
-                        title: '追踪情况',
-                        width: 120
-                    },
-                    {
-                        fixed: 'right',
                         title: '操作',
                         width: 150,
                         align: 'center',
+                        fixed: "right",
                         toolbar: '#tool'
                     }
                 ]
@@ -344,6 +459,24 @@
             return false;
         });
 
+        xmSelect.render({
+            el: '#companySelect',
+            language: 'zn',
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyId',// 传到后端选择的companyId集合字符串
+        });
+
 
         // 监听导出按钮
         form.on('submit(importProjectList)', function (data) {
@@ -353,7 +486,7 @@
                 layer.msg("年度为必须项，请选择年度", {icon: 5, time: 4000});
                 return false;
             }
-            field.url = "/system/operate/invest/ProjectList/downloadProjectList";
+            field.url = "/system/operate/invest/invest-project-year/downloadInvestProjectList";
             var url = createUrl(field);
             layer.msg("正在导出项目列表，请稍候");
             window.open(url, true);
