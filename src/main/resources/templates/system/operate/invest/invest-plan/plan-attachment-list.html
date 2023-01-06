@@ -70,7 +70,8 @@
                                 <div id="companySelect"></div>
                             </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" class="layui-input" name="month" id="month" placeholder="选择年月" style="cursor: pointer">
+                                <input type="text" class="layui-input" name="month" id="month" placeholder="选择年月"
+                                       style="cursor: pointer">
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button type="button" class="layui-btn layui-btn-sm" id="chooseFile">选择文件</button>
@@ -99,20 +100,21 @@
 
         // 接收选择公司id
         let companyId;
+
         // 重新重置日期控件方法
         function reloadDate() {
             laydate.render({
-                    elem: '#importDate',
-                    trigger: 'click',
-                    type: 'date',
-                    value: moment().format('YYYY-MM-DD')
-                });
+                elem: '#importDate',
+                trigger: 'click',
+                type: 'date',
+                value: moment().format('YYYY-MM-DD')
+            });
 
             laydate.render({
-                    elem: '#month',
-                    trigger: 'click',
-                    type: 'month'
-                });
+                elem: '#month',
+                trigger: 'click',
+                type: 'month'
+            });
         }
 
         // 实例表格
@@ -126,9 +128,9 @@
             limit: 10,
             limits: [10, 20, 30, 50],
             toolbar: '#toolbar',
-            where:{
+            where: {
                 importDateStart: [[${importDateStart}]],
-                moduleName:[[${moduleName}]]
+                moduleName: [[${moduleName}]]
             },
             cols: [
                 [
@@ -236,8 +238,10 @@
             reloadDate();
             // 重新加载xm-select控件
             initSelector()
+            // 清空公司id的值
+            companyId = undefined;
             // 重新加载导入选择校验事件
-            initChoose()
+            initChoose();
 
             // 导入
             upload.render({
@@ -255,7 +259,7 @@
                     this.data.importDate = $('input[name=importDate]').val();// 导入日期
                     this.data.module = [[${module}]];// 导入场景
                     this.data.companyId = companyId;// 公司id
-                    this.data.month=months.value;// 年月
+                    this.data.month = months.value;// 年月
                 },
                 done: function (result) {
                     setTimeout(function () {
@@ -306,7 +310,7 @@
                 this.data.module = [[${module}]];// 导入场景
                 this.data.companyId = companyId;// 公司id
                 let months = document.querySelector('#month');
-                this.data.month=months.value;// 年月
+                this.data.month = months.value;// 年月
             },
             done: function (result) {
                 setTimeout(function () {
@@ -412,21 +416,22 @@
                 }
             });
         }
+
         // 点击导入按钮之前选择校验
         function initChoose() {
             let importBtn = document.querySelector('#importAccountStatement');
-            importBtn.addEventListener('click',function () {
+            importBtn.addEventListener('click', function () {
                 // 公司和年月是必选的
                 let months = document.querySelector('#month');
-                if(companyId===null||companyId===undefined||companyId===''){
-                    layer.msg('请选择公司',{
-                        icon:5,
-                        time:2000
+                if (companyId === null || companyId === undefined || companyId === '') {
+                    layer.msg('请选择公司', {
+                        icon: 5,
+                        time: 2000
                     })
-                }else if (months.value===null||months.value===undefined||months.value===''){
-                    layer.msg('请选择年月',{
-                        icon:5,
-                        time:2000
+                } else if (months.value === null || months.value === undefined || months.value === '') {
+                    layer.msg('请选择年月', {
+                        icon: 5,
+                        time: 2000
                     })
                 }
             })

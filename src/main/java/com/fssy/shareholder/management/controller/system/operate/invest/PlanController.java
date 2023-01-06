@@ -209,7 +209,15 @@ public class PlanController {
         }
     }
 
+    /**
+     * 转发到修改表单页面
+     *
+     * @param id    投资计划id
+     * @param model 模型
+     * @return 路径
+     */
     @GetMapping("edit/{id}")
+    @RequiredLog("转发到修改表单页面")
     public String edit(@PathVariable String id, Model model) {
         InvestPlan investPlan = investPlanService.getById(id);
         Map<String, Object> companyParams = new HashMap<>();
@@ -221,6 +229,22 @@ public class PlanController {
         model.addAttribute("companyIds", companyIds);
         model.addAttribute("investPlan", investPlan);
         return "/system/operate/invest/invest-plan/invest-plan-edit";
+    }
+
+    /**
+     * 更新投资计划
+     *
+     * @return 更新结果
+     */
+    @PostMapping("update")
+    @ResponseBody
+    @RequiredLog("修改投资计划")
+    public SysResult update(InvestPlan investPlan, HttpServletRequest request) {
+        boolean result = investPlanService.update(investPlan, request);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "更新失败");
     }
 
 

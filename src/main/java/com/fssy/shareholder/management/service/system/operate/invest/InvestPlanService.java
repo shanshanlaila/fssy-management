@@ -33,4 +33,13 @@ public interface InvestPlanService extends IService<InvestPlan> {
      * @return 导入结果
      */
     Map<String, Object> readInvestPlanDataSource(Attachment result, HttpServletRequest request);
+
+    /**
+     * 修改投资计划
+     *
+     * @param investPlan 投资计划
+     * @param request    请求
+     * @return 结果
+     */
+    boolean update(InvestPlan investPlan, HttpServletRequest request);
 }
