@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>年度投资项目执行情况管理页面</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+</head>
+<body>
+<!-- 引入jquery -->
+<div th:replace="~{common/jquery :: jquery}"></div>
+<!-- 引入xadmin -->
+<div th:replace="~{common/xadmin :: xadmin}"></div>
+<!-- 引入zTree -->
+<div class="x-nav">
+		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">非权益性投资</a> <a href="">年度投资项目</a><a>
+				<cite>年度投资项目执行情况管理</cite>
+		</a>
+		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+                   onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+                                                                style="line-height: 30px"></i></a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <form class="layui-form layui-col-space5">
+                    <div class="layui-card-body ">
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="companySelect"></div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" id="lineNumber" name="lineNumber" placeholder="序号查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="year" name="year" placeholder="年度查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
+                                <i class="layui-icon">&#xe615;</i>
+                            </button>
+                            <a class="layui-btn" lay-submit th:href="@{/export/invest-condition.xlsx}">
+                                <i class="layui-icon">&#xe601</i>下载填写年度投资项目执行情况模板
+                            </a>
+                            <button shiro:hasPermission="system:operate:invest:Condition:import"
+                                    lay-submit lay-filter="import" class="layui-btn">导入年度投资项目执行情况
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="layui-card-body ">
+                    <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+<!--                    <script type="text/html" id="toolbar">-->
+<!--                        <div class="layui-btn-container">-->
+<!--                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条年度投资项目</button>-->
+<!--                        </div>-->
+<!--                    </script>-->
+                    <script type="text/html" id="tool">
+
+                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+
+                        <a lay-event="delete" title="取消"><i class="layui-icon">&#x1007;</i></a>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    layui
+        .use(
+            [
+                'laydate', 'layer', 'table', 'form'
+            ],
+            function () {
+                var $ = layui.$, laydate = layui.laydate, table = layui.table, layer = layui.layer, form = layui.form;
+
+                // 每个标签加一个class，名为laydate
+                $(".laydate").each(function () {
+                    laydate.render(
+                        {
+                            elem: this,
+                            //更换触发方式
+                            trigger: 'click',
+                            type: 'date'
+                        });
+                });
+                // 实例表格
+                table
+                    .render(
+                        {
+                            elem: '#dataTable',
+                            id: 'dataTable',
+                            url: "/system/operate/invest/Condition/getObjects",
+                            page: true,
+                            height: 'full-100' // 设置高度，使数据置于滚动条控制下
+                            ,
+                            limit: 50,
+                            limits:
+                                [
+                                    50, 100, 200, 500
+                                ],
+                            toolbar: '#toolbar',
+                            size: 'sm',
+                            where: {
+                                // 向controller传入额外参数
+                                // statusCancel: true,//不显示状态为取消的基础事件
+                                // departmentName: [[${departmentName}]]//初始化只显示当前登录人用户的所在部门的基础事件
+                            },
+                            cols:
+                                [
+                                    [
+                                        {
+                                            field: 'id',
+                                            title: 'ID',
+                                            width: 50,
+                                            fixed: 'left'
+                                        },
+                                        {
+                                            field: 'lineNumber',
+                                            title: '序号',
+                                            width: 50,
+                                            fixed: 'left'
+                                        },
+                                        {
+                                            field: 'year',
+                                            title: '年份',
+                                            width: 130,
+                                        },
+                                        {
+                                            field: 'firstType',
+                                            title: '一级类别',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'item',
+                                            title: '指标',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'describe`',
+                                            title: '定义',
+                                            width: 80,
+                                        },
+
+                                        {
+                                            field: 'unit',
+                                            title: '单位',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'budget',
+                                            title: '预算金额',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'accumulation',
+                                            title: '全年实绩',
+                                            width: 80,
+                                        },
+                                        {
+                                            field: 'proportion',
+                                            title: '预算完成比例',
+                                            width: 120,
+                                        },
+                                        {
+                                            field: 'evaluate',
+                                            title: '评价',
+                                            width: 80,
+                                        },
+                                        {
+                                            fixed: 'right',
+                                            title: '操作',
+                                            width: 100,
+                                            align: 'center',
+                                            toolbar: '#tool'
+                                        }
+                                    ]
+                                ]
+                        });
+
+                //年选择器
+                laydate.render({
+                    elem: '#year'
+                    , type: 'year'
+                });
+                // 监听搜索按钮
+                form.on('submit(search)', function (data) {
+                    // 重新加载表格
+                    table.reload('dataTable',
+                        {
+                            where: data.field,
+                            page:
+                                {
+                                    curr: 1
+                                }
+                        });
+                    return false;
+                });
+
+                // 导入按钮
+                form.on('submit(import)', function (data) {
+                    var createLayer = layer.open({
+                        type: 2,
+                        title: "上传附件",
+                        area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                        content: '/system/operate/invest/Condition/import',
+                        scrollbar: true,
+                        maxmin: true,
+                    });
+                    return false;
+                });
+
+
+                // 监听导出按钮
+                form.on('submit(importProjectList)', function (data) {
+                    var field = data.field;
+                    var year = data.field.year;
+                    if (!year) {
+                        layer.msg("年度为必须项，请选择年度", {icon: 5, time: 4000});
+                        return false;
+                    }
+                    field.url = "/system/operate/invest/ProjectList/downloadProjectList";
+                    var url = createUrl(field);
+                    layer.msg("正在导出项目列表，请稍候");
+                    window.open(url, true);
+                    return false;
+                });
+
+
+                // 监听头工具栏事件
+                table.on('toolbar(dataTable)', function (obj) {
+                    if (obj.event === 'create') {
+
+                        // 弹出添加页面
+                        layer.open(
+                            {
+                                type: 2,
+                                title: '新增单条年度投资项目',
+                                area:
+                                    [
+                                        $(window).width() * 0.9 + 'px',
+                                        $(window).height() - 50 + 'px'
+                                    ],
+                                content: '/system/operate/invest/ProjectList/create',
+                                scrollbar: true,
+                                maxmin: true
+                            });
+                    }
+                });
+
+                // 监听行工具事件
+                table.on('tool(dataTable)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event === 'edit') { // 修改
+                        // if (data.status == '取消') {
+                        //     layer.msg('不能修改取消状态的年度投资项目清单');
+                        //     return false;
+                        // }
+
+                        layer.open(
+                            {
+                                type: 2,
+                                title: data.id + ':非权益投资情况信息修改',
+                                area:
+                                    [
+                                        $(window).width() * 0.9 + 'px',
+                                        $(window).height() - 50 + 'px'
+                                    ],
+                                content: '/system/operate/invest/Condition/edit/' + data.id,
+                                maxmin: true
+                            });
+                    } else if (obj.event === 'delete') { // 删除/取消
+                        layer.confirm('真的删除：' + data.id + '吗？', function () {
+                            $.ajax(
+                                {
+                                    type: 'DELETE',
+                                    url: '/system/operate/invest/Condition/' + data.id,
+                                    success: function (result) {
+                                        layer.msg(result.msg);
+                                        if (result.status === 200) {
+                                            table.reload('dataTable');
+                                        }
+                                    }
+                                })
+                        });
+                    }
+                });
+                initCompanySelect();
+                // 公司选择获得器\
+                function initCompanySelect() {
+                        xmSelect.render({
+                        el: '#companySelect',
+                        language: 'zn',
+                        data: [[${companyNameList}]],
+                        filterable: true,
+                        radio: true,
+                        tips: '请选择公司',
+                        toolbar: {
+                            show: true
+                        },
+                        paging: true, // 分页
+                        pageSize: 20,
+                        style: {
+                            width: '160px', 'min-height': '28px', 'line-height': '28px',
+                        },
+                        name: 'companyId',// 传到后端选择的companyId集合字符串
+                        on: function (data) {
+                            companyId = data.arr[0].id
+                        }
+                    });
+                }
+            });
+</script>
+</body>
+</html>

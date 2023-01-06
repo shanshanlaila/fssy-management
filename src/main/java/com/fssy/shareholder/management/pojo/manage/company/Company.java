@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-import org.openxmlformats.schemas.officeDocument.x2006.docPropsVTypes.I4Document;
 
 /**
  * 公司实体类</br>
@@ -28,19 +27,23 @@ public class Company extends BaseModel
 
 	private String shortName;
 
+	private String code;
+
 	@Override
 	public String toString() {
 		return "company{" +
 				"id=" + id +
 				", name='" + name + '\'' +
 				", shortName='" + shortName + '\'' +
+				", code='" + code + '\'' +
 				'}';
 	}
 
-	public Company(Integer id, String name, String shortName) {
+	public Company(Integer id, String name, String shortName,String code) {
 		this.id = id;
 		this.name = name;
 		this.shortName = shortName;
+		this.code = code;
 	}
 
 	public Integer getId() {
@@ -66,4 +69,9 @@ public class Company extends BaseModel
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
+
+	public String getCode() {
+		return code;
+	}
+
 }
