@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增单条年度投资项目</title>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+                <div style="margin-left: 40%;height: 30px;font-size: 20px">
+                    工艺能力评价信息
+                </div>
+
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>年份:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="year" id="year"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>公司名称:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="companyName" id="companyName"
+                                   lay-verify="required" />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width: 10%;text-align: right">主要竞争对手:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 50%">
+                            <input type="text" class="layui-input" name="competeCompanyName" id="competeCompanyName">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">产品类别名称:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 50%">
+                            <input type="text" class="layui-input" name="productLineTypeName" id="productLineTypeName">
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width: 10%;text-align: right">行业标杆企业:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 50%">
+                            <input type="text" class="layui-input" name="benchmarkCompanyName" id="benchmarkCompanyName">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">工艺能力状态:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 50%">
+                            <input type="text" class="layui-input" name="processAbilityStatus" id="processAbilityStatus">
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width: 10%;text-align: right">产品名称:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 50%">
+                            <input type="text" class="layui-input" name="productName" id="productName">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">报告完成日期:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 50%">
+                            <input type="text" class="layui-input laydate" name="reportDate" id="reportDate">
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+</div>
+
+<!--laui-->
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render({
+                elem: this,
+                //更换触发方式
+                trigger: 'click',
+                type: 'date',
+                value: new Date()
+            });
+        });
+
+
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/operate/invest/operate-process-ability-list/store',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status == 200) {
+                        layer.msg(result.msg, {icon: 6, time: 2000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+</script>
+</body>
+</html>

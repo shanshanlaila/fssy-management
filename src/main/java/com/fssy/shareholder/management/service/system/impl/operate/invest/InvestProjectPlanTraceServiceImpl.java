@@ -2,16 +2,19 @@ package com.fssy.shareholder.management.service.system.impl.operate.invest;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectListMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceDetailMapper;
-import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
+import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
+import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTraceDetail;
 import com.fssy.shareholder.management.pojo.system.operate.invest.TechCapacityEvaluate;
+import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectPlanTraceService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -229,7 +233,9 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
             String note = cells.get(SheetService.columnToIndex("N"));
             //String serialId = cells.get(SheetService.columnToIndex("O"));
 
+            //格式判断和必填性判断
 
+            //业务判断
             QueryWrapper<InvestProjectList> investProjectListQueryWrapper = new QueryWrapper<>();
             investProjectListQueryWrapper.eq("companyName",companyName).eq("year",year).eq("month",month).eq("projectName",projectName);
             List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(investProjectListQueryWrapper);
@@ -281,6 +287,12 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
 //             // 根据id进行判断，存在则更新，不存在则新增
 //            saveOrUpdate(investProjectPlanTrace);
             investProjectPlanTraces.add(investProjectPlanTrace);
+
+            //获取对应跟踪情况修改projectList表的对应字段
+            //可研性报告状态字段
+            //需要关联可研性报告等字段的改变 需要把节点固化成一张配置表 目前不行 采用方案为由操作人员对projectList表数据单独维护
+
+
             //saveOrUpdate(investProjectPlanTrace);
             cell.setCellValue("导入成功");
         }
@@ -480,6 +492,12 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
         }
         if (params.containsKey("evaluateSum")) {
             queryWrapper.like("evaluateSum", params.get("evaluateSum"));
+        }
+        if (params.containsKey("projectFeasibilityStudyReportDate")) {
+            queryWrapper.eq("projectFeasibilityStudyReportDate", params.get("projectFeasibilityStudyReportDate"));
+        }
+        if (params.containsKey("projectFeasibilityStudyReportDateStatus")) {
+            queryWrapper.like("projectFeasibilityStudyReportDateStatus", params.get("projectFeasibilityStudyReportDateStatus"));
         }
         return queryWrapper;
     }

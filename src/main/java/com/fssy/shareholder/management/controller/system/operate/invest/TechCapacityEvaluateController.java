@@ -180,16 +180,25 @@ public class TechCapacityEvaluateController {
         List<TechCapacityEvaluateRes> techCapacityEvaluateRes = techCapacityEvaluateResService.findTechCapacityEvaluateResDataByParams(params);
         TechCapacityEvaluateRes capacityEvaluateRes;
 
-        if (!(ObjectUtils.isEmpty(techCapacityEvaluateRes) && ObjectUtils.isEmpty(techCapacityEvaluateServices))) {
-            model.addAttribute("techCapacityEvaluateServices", techCapacityEvaluateServices);
+        if (!ObjectUtils.isEmpty(techCapacityEvaluateRes)) {
             capacityEvaluateRes = techCapacityEvaluateRes.get(0);
-            model.addAttribute("techCapacityEvaluateRes", capacityEvaluateRes);
+            model.addAttribute("techCapacityEvaluateRes", capacityEvaluateRes);// 总结
+            if (!ObjectUtils.isEmpty(techCapacityEvaluateServices)) {
+                model.addAttribute("techCapacityEvaluateServices", techCapacityEvaluateServices);
+            }else{
+                List<Map<String, Object>> emptyTechCapacityEvaluateServices = new ArrayList<>();
+                model.addAttribute("techCapacityEvaluateServices", emptyTechCapacityEvaluateServices);
+            }
         } else {
+            if (!ObjectUtils.isEmpty(techCapacityEvaluateServices)) {
+                model.addAttribute("techCapacityEvaluateServices", techCapacityEvaluateServices);
+            }else{
+                List<Map<String, Object>> emptyTechCapacityEvaluateServices = new ArrayList<>();
+                model.addAttribute("techCapacityEvaluateServices", emptyTechCapacityEvaluateServices);
+            }
             TechCapacityEvaluateRes emptyTechCapacityEvaluateRes = new TechCapacityEvaluateRes();
             emptyTechCapacityEvaluateRes.setEvalRes("");
             model.addAttribute("techCapacityEvaluateRes", emptyTechCapacityEvaluateRes);
-            List<Map<String, Object>> emptyTechCapacityEvaluateServices = new ArrayList<>();
-            model.addAttribute("techCapacityEvaluateServices", emptyTechCapacityEvaluateServices);
         }
         return "system/operate/invest/operate-tech-capacity-evaluate/operate-tech-capacity-evaluate-detail";
     }
@@ -323,9 +332,9 @@ public class TechCapacityEvaluateController {
 
         //sql语句
         params.put("select", "companyName,year,kpiDesc,kpiFormula,pastOneYearActual,pastTwoYearsActual," +
-               "pastThreeYearsActual,issue,responsible,endDate,improveActionSelf,projectName,manageMethod");
+                "pastThreeYearsActual,issue,responsible,endDate,improveActionSelf,projectName,manageMethod");
 
-        params1.put("select", "evalRes");
+        params1.put("select", "companyName,year,evalRes");
 
 
         //查询
@@ -367,7 +376,7 @@ public class TechCapacityEvaluateController {
 
 
         for (Map<String, Object> operateDataByParam : operateDataByParams) {
-            operateDataByParam.put("evalRes",techCapacityEvaluateRes.get(1).get("evalRes"));
+            operateDataByParam.put("evalRes", techCapacityEvaluateRes.get(0).get("evalRes"));
         }
 
 
@@ -376,32 +385,34 @@ public class TechCapacityEvaluateController {
     }
 
 
-//    /**
-//     * 添加企业研发工艺能力评价数据
-//     * @param model
-//     * @return
-//     */
-//    @GetMapping("create")
-//    public String create(Model model){
-//        return "system/operate/invest/operate-tech-capacity-evaluate/operate-tech-capacity-evaluate-create";
-//    }
-//
-//    /**
-//     *  添加企业研发工艺能力评价数据信息
-//     * @param operateTechCapacityEvaluate
-//     * @param request
-//     * @return
-//     */
-//    @RequestMapping("store")
-//    @ResponseBody
-//    public SysResult storeoperateTechCapacityEvaluate(OperateTechCapacityEvaluate operateTechCapacityEvaluate, HttpServletRequest request){
-//        boolean result = operateTechCapacityEvaluateService.insertOperateTechCapacityEvaluate(operateTechCapacityEvaluate);
-//        if (result) {
-//            return SysResult.ok();
-//        }
-//        return SysResult.build(500, "定量、定性评价占比要为100%，请检查后重试");
-//
-//    }
+    /**
+     * 添加企业研发工艺能力评价数据
+     *
+     * @param model
+     * @return
+     */
+    @GetMapping("create")
+    public String create(Model model) {
+        return "system/operate/invest/operate-tech-capacity-evaluate/operate-tech-capacity-evaluate-create";
+    }
+
+    /**
+     * 添加企业研发工艺能力评价数据信息
+     *
+     * @param
+     * @param request
+     * @return
+     */
+    @PostMapping("store")
+    @ResponseBody
+    public SysResult storeoperateTechCapacityEvaluate(TechCapacityEvaluate TechCapacityEvaluate, HttpServletRequest request) {
+        boolean result = operateTechCapacityEvaluateService.insertOperateTechCapacityEvaluate(TechCapacityEvaluate);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "定量、定性评价占比要为100%，请检查后重试");
+
+    }
 
 
     private Map<String, Object> getParams(HttpServletRequest request) {

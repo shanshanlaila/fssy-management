@@ -392,10 +392,17 @@ public class InvestProjectListController {
             params.put("investmentVolumePlanEnd", request.getParameter("investmentVolumePlanEnd"));
         }
 
-
-        if (!ObjectUtils.isEmpty(request.getParameter("investmentVolumeActual"))) {
-            params.put("investmentVolumeActual", request.getParameter("investmentVolumeActual"));
+        //实际投资金额管理
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("investmentVolumeActualStart")))
+        {
+            params.put("investmentVolumeActualStart", request.getParameter("investmentVolumeActualStart"));
         }
+        if (!org.springframework.util.ObjectUtils.isEmpty(request.getParameter("investmentVolumeActualEnd")))
+        {
+            params.put("investmentVolumeActualEnd", request.getParameter("investmentVolumeActualEnd"));
+        }
+
+
         if (!ObjectUtils.isEmpty(request.getParameter("projectContact"))) {
             params.put("projectContact", request.getParameter("projectContact"));
         }
@@ -485,6 +492,12 @@ public class InvestProjectListController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("projectEvalStatus"))) {
             params.put("projectEvalStatus", request.getParameter("projectEvalStatus"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("projectFeasibilityStudyReportDate"))) {
+            params.put("projectFeasibilityStudyReportDate", request.getParameter("projectFeasibilityStudyReportDate"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("projectFeasibilityStudyReportPlan"))) {
+            params.put("projectFeasibilityStudyReportPlan", request.getParameter("projectFeasibilityStudyReportPlan"));
         }
 
         if (!ObjectUtils.isEmpty(request.getParameter("projectSelfEvalStatus"))) {

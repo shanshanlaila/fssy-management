@@ -44,13 +44,12 @@
                             </button>
                         </div>
 
-                        <div class="layui-inline layui-show-xs-block">
-                            <button
-                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
-                                    title="导入工艺基础能力台账附件">导入工艺基础能力台账附件
-                            </button>
-
-                        </div>
+<!--                        <div class="layui-inline layui-show-xs-block">-->
+<!--                            <button-->
+<!--                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"-->
+<!--                                    title="导入工艺基础能力台账附件">导入工艺基础能力台账附件-->
+<!--                            </button>-->
+<!--                        </div>-->
 
 
                     </div>
@@ -58,14 +57,16 @@
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
+                        <a lay-event="createAndUpload" title="上传工艺能力附件材料"><i class="layui-icon">&#xe62f;</i></a>
+<!--                        <a lay-event="importUpload" title="上传工艺能力附件材料"><i class="layui-icon">&#xe62f;</i></a>-->
                         <a lay-event="edit" title="修改经理人绩效定性评分各项目占比信息"><i class="layui-icon">&#xe642;</i></a>
                         <a lay-event="delete" title="删除经理人绩效定性评分各项目占比信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
-<!--                    <script type="text/html" id="toolbar">-->
-<!--                        <div class="layui-btn-container">-->
-<!--                            <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>-->
-<!--                        </div>-->
-<!--                    </script>-->
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>
+                        </div>
+                    </script>
                 </div>
             </div>
         </div>
@@ -112,7 +113,7 @@
                     area: [
                         $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
                     ],
-                    content: '/system/performance/manager/manager-performance-eval-std/create',
+                    content: '/system/operate/invest/operate-process-ability-list/create',
                     scrollbar: true,
                     // 设置点击遮盖关闭
                     // shadeClose: true,
@@ -200,7 +201,26 @@
                         title: '报告完成日期',
                         width: 120
                     },
-
+                    {
+                        field: 'attachmentList',
+                        title: '材料附件',
+                        width: 100,
+                        rowspan: 2,
+                        templet : function(d) {
+                            if (!d.attachmentList || d.attachmentList.length === 0) {
+                                return '';
+                            } else {
+                                var element = '';
+                                for (var i = 0; i < d.attachmentList.length; i++) {
+                                    var attachment = d.attachmentList[i];
+                                    element = element + '<a href="/system/config/attachment/downloadFile?id=' + attachment.attachmentId + '&md5Path='
+                                        + attachment.md5Path + '" target="_blank" title="' + attachment.filename
+                                        + '"><i class="fa fa-file-text-o" aria-hidden="true"></i></a>';
+                                }
+                                return element;
+                            }
+                        }
+                    },
                     {
                         fixed: 'right',
                         title: '操作',
@@ -240,6 +260,25 @@
         });
 
         // 监听行工具事件
+        // table.on('tool(dataTable)', function (obj) {
+        //     var data = obj.data;
+        //     if (obj.event === 'createAndUpload') { // 上传评优说明材料
+        //         layer.open({
+        //             type: 2,
+        //             title: '序号为' + data.id + '的履职总结评优材料上传',
+        //             area:
+        //                 [
+        //                     $(window).width() * 0.9 + 'px',
+        //                     $(window).height() - 50 + 'px'
+        //                 ],
+        //             content: '/system/operate/invest/operate-process-ability-list/createAndUpload/' + data.id,
+        //             maxmin: true,
+        //             scrollbar: true
+        //         });
+        //     }
+        // });
+
+        // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
             if (obj.event === 'edit') { // 修改
@@ -264,6 +303,32 @@
                             }
                         }
                     })
+                });
+            }else if (obj.event === 'createAndUpload') { // 上传评优说明材料
+                layer.open({
+                    type: 2,
+                    title: '序号为' + data.id + '的履职总结评优材料上传',
+                    area:
+                        [
+                            $(window).width() * 0.9 + 'px',
+                            $(window).height() - 50 + 'px'
+                        ],
+                    content: '/system/operate/invest/operate-process-ability-list/createAndUpload/' + data.id,
+                    maxmin: true,
+                    scrollbar: true
+                });
+            }else if (obj.event === 'importUpload') { // 上传评优说明材料
+                layer.open({
+                    type: 2,
+                    title: '序号为' + data.id + '的履职总结评优材料上传',
+                    area:
+                        [
+                            $(window).width() * 0.9 + 'px',
+                            $(window).height() - 50 + 'px'
+                        ],
+                    content: '/system/operate/invest/operate-process-ability-list/index/' + data.id,
+                    maxmin: true,
+                    scrollbar: true
                 });
             }
         });

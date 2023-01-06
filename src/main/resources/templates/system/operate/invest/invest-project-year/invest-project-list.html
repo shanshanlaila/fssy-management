@@ -113,6 +113,10 @@
                             <input type="text" name="projectEvalStatus" placeholder="项目自评状态" id="projectEvalStatus"
                                    autocomplete="off" class="layui-input">
                         </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 90px; line-height: 1.1; padding: 9px 10px 9px 0px;">项目计划投资</label>
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input
                                     type="text" name="investmentVolumePlanStart" placeholder="项目计划投资起" id="investmentVolumePlanStart"
@@ -120,6 +124,19 @@
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <input type="text" name="investmentVolumePlanEnd" placeholder="项目计划投资止" id="investmentVolumePlanEnd"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 90px; line-height: 1.1; padding: 9px 10px 9px 0px;">项目实际投资</label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input
+                                    type="text" name="investmentVolumeActualStart" placeholder="项目实际投资起" id="investmentVolumeActualStart"
+                                    autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <input type="text" name="investmentVolumeActualEnd" placeholder="项目实际投资止" id="investmentVolumeActualEnd"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -149,7 +166,9 @@
 
                     </script>
                     <script type="text/html" id="tool1">
-                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:check" lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>
+<!--                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:check" lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>-->
+                        <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:check"
+                                class="layui-btn layui-btn-sm" lay-event="detail">项目跟踪详细信息</button>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
@@ -271,15 +290,28 @@
                         width: 120
                     },
                     {
+                        field: 'projectFeasibilityStudyReportDate',
+                        title: '可研报告预计汇报时间',
+                        width: 120
+                    },
+                    {
+                        field: 'projectFeasibilityStudyReportPlan',
+                        title: '可研报告预计汇报计划',
+                        width: 130
+                    },
+                    {
+                        field: 'currentProjectStatus',
+                        title: '追踪情况',
+                        width: 120
+                    },
+                    {
                         field: 'year',
                         title: '年份',
-                        fixed: 'left',
                         width: 60
                     },
                     {
                         field: 'month',
                         title: '月份',
-                        fixed: 'left',
                         width: 60
                     },
                     {
@@ -309,11 +341,7 @@
                         width: 120
                     },
 
-                    {
-                        field: 'currentProjectStatus',
-                        title: '追踪情况',
-                        width: 120
-                    },
+
                     {
                         field: 'attachmentList',
                         title: '材料附件',
@@ -416,12 +444,6 @@
                         width: 120
                     },
 
-                    {
-                        title: '监控表',
-                        width: 110,
-                        align: 'center',
-                        toolbar: '#tool1'
-                    },
                     {
                         title: '操作',
                         width: 150,
@@ -545,7 +567,7 @@
                 // console.log("list" + data.month)
                 layer.open({
                     type : 2,
-                    title : data.year + '年' + '--的各项分数信息如下:',
+                    title : data.year + '年' + '--的项目跟踪情况如下:',
                     area : [
                         $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
                     ],

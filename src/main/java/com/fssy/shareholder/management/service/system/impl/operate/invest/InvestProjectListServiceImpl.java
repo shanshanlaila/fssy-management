@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -196,7 +198,6 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("AD"));//报错信息上传到excel AD列
             String year = cells.get(SheetService.columnToIndex("A"));
-            System.out.println(year);
             //检查必填项
             if (ObjectUtils.isEmpty(year)) {
                 setFailedContent(result, String.format("第%s行的年度是空的", j + 1));
@@ -253,6 +254,17 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
                 cell.setCellValue("分管经理人是空的");
                 continue;
             }
+
+            //判断导入信息是否已经录入
+            QueryWrapper<InvestProjectList> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("companyName",companyName).eq("year",year).eq("projectName",projectName).eq("month",month);
+            List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(queryWrapper);
+            if (investProjectLists.size()>0){
+                setFailedContent(result, String.format("第%s行的项目已经存在", j + 1));
+                cell.setCellValue("项目已经存在");
+                continue;
+            }
+
             String projectContact = cells.get(SheetService.columnToIndex("K"));
             String projectSrartDatePlan = cells.get(SheetService.columnToIndex("L"));
             String projectEndDatePlan = cells.get(SheetService.columnToIndex("M"));
@@ -362,11 +374,15 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             queryWrapper.le("investmentVolumePlan", params.get("investmentVolumePlanEnd"));
         }
 
-
-
-        if (params.containsKey("investmentVolumeActual")) {
-            queryWrapper.like("investmentVolumeActual", params.get("investmentVolumeActual"));
+        // 实际投资金额查询
+        if (params.containsKey("investmentVolumeActualStart")) {
+            queryWrapper.ge("investmentVolumeActual", params.get("investmentVolumeActualStart"));
         }
+        if (params.containsKey("investmentVolumeActualEnd")) {
+            queryWrapper.le("investmentVolumeActual", params.get("investmentVolumeActualEnd"));
+        }
+
+
         if (params.containsKey("respManager")) {
             queryWrapper.like("respManager", params.get("respManager"));
         }
@@ -404,6 +420,9 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         }
         if (params.containsKey("projectFeasibilityStudyReport")) {
             queryWrapper.like("projectFeasibilityStudyReport", params.get("projectFeasibilityStudyReport"));
+        }
+        if (params.containsKey("projectFeasibilityStudyReportPlan")) {
+            queryWrapper.like("projectFeasibilityStudyReportPlan", params.get("projectFeasibilityStudyReportPlan"));
         }
         if (params.containsKey("committeeAuditStatus")) {
             queryWrapper.like("committeeAuditStatus", params.get("committeeAuditStatus"));
@@ -540,9 +559,10 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         investProjectListQueryWrapper.eq("companyId",companyId).eq("year",year).eq("month", month).eq("projectName",projectName);
         List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(investProjectListQueryWrapper);
         //查询到相同项目 不允许添加
-        if (investProjectLists.size()>0){
+        if (investProjectLists.size()>1){
             throw new ServiceException("已存在相同的项目，不允许重复添加");
         }
+
 
 
         int result = investProjectListMapper.updateById(investProjectList);

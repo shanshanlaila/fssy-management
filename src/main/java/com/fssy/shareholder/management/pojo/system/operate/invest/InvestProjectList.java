@@ -236,6 +236,19 @@ public class InvestProjectList extends BaseModel {
     private Integer month;
 
 
+    /**
+     * 可研报告预计汇报日期
+     */
+    @TableField("projectFeasibilityStudyReportDate")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
+    private LocalDate projectFeasibilityStudyReportDate;
 
+
+    /**
+     * 可研报告预计汇报日期,没有日期启动这个字段
+     */
+    @TableField("projectFeasibilityStudyReportPlan")
+    private String projectFeasibilityStudyReportPlan;
 
 }
