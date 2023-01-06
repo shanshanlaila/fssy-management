@@ -131,6 +131,9 @@ public class PlanController {
         if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
             params.put("companyIds", request.getParameter("companyIds"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("yearMonth"))) {
+            params.put("yearMonth", request.getParameter("yearMonth"));
+        }
         return params;
     }
 

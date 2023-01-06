@@ -483,8 +483,9 @@
                 return false;
             }
             layer.confirm('确定审核吗？', {icon: 3, title: '提示'}, function (index) {
-                // 履职回顾id列表
+                // 履职回顾数组
                 var entryReviewDetailIds = [];
+                // 审核意见数组
                 var auditNotes = [];
 
                 data.forEach(function (item) {

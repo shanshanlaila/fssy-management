@@ -289,7 +289,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 筛选两种状态：待经营管理部审核、待提交评优材料
         if (params.containsKey("towStatus")) {
-            queryWrapper.in("status",PerformanceConstant.WAIT_SUBMIT_EXCELLENT,PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
+            queryWrapper.in("status", PerformanceConstant.WAIT_SUBMIT_EXCELLENT, PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
         }
         return queryWrapper;
     }
@@ -882,24 +882,14 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     @Override
     @Transactional
     public Boolean storeReviewNotPlan(EntryCasReviewDetail entryCasReviewDetail) {
-        // 根据部门查部门id
-        LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        departmentLambdaQueryWrapper.eq(Department::getDepartmentName, entryCasReviewDetail.getDepartmentName());
-        List<Department> departments = departmentMapper.selectList(departmentLambdaQueryWrapper);
-        if (ObjectUtils.isEmpty(departments)) {
-            throw new ServiceException(String.format("部门名称为【%s】的部门不存在", entryCasReviewDetail.getDepartmentName()));
-        }
-        Department department = departments.get(0);
-        // 根据角色查角色id
-        LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        roleLambdaQueryWrapper.eq(Role::getName, entryCasReviewDetail.getRoleName());
-        List<Role> roles = roleMapper.selectList(roleLambdaQueryWrapper);
-        if (ObjectUtils.isEmpty(roles)) {
-            throw new ServiceException(String.format("部门名称为【%s】的部门不存在", entryCasReviewDetail.getDepartmentName()));
-        }
-        Role role = roles.get(0);
+        // 查询department
+        Department department = departmentMapper.selectById(entryCasReviewDetail.getDepartmentId());
+        // 查询role
+        Role role = roleMapper.selectById(entryCasReviewDetail.getRoleId());
         // 查询user
-        User user = GetTool.getUser();
+        User user = userMapper.selectById(entryCasReviewDetail.getUserId());
+        // 查询relationRole
+        EventsRelationRole relationRole = eventsRelationRoleMapper.selectById(entryCasReviewDetail.getEventsRoleId());
         // 申报年份
         String year = Arrays.asList(entryCasReviewDetail.getApplyDate().toString().split("-")).get(0);
         String month = Arrays.asList(entryCasReviewDetail.getApplyDate().toString().split("-")).get(1);
@@ -916,6 +906,26 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasPlanDetail.setMonth(Integer.valueOf(month));
         entryCasPlanDetail.setPlanStartDate(entryCasReviewDetail.getPlanStartDate());
         entryCasPlanDetail.setPlanEndDate(entryCasReviewDetail.getPlanEndDate());
+        entryCasPlanDetail.setStatus(PerformanceConstant.FINAL);
+        entryCasPlanDetail.setEventsFirstType(entryCasReviewDetail.getEventsFirstType());
+        // 工作职责
+        entryCasPlanDetail.setJobName(relationRole.getJobName());
+        // 流程
+        entryCasPlanDetail.setWorkEvents(relationRole.getWorkEvents());
+        // 事件标准价值
+        entryCasPlanDetail.setStandardValue(relationRole.getStandardValue());
+        // 主次担
+        entryCasPlanDetail.setMainOrNext(relationRole.getIsMainOrNext());
+        // 计划内容
+        entryCasPlanDetail.setPlanningWork(entryCasReviewDetail.getPlanningWork());
+        // 频次
+        entryCasPlanDetail.setTimes(entryCasReviewDetail.getTimes());
+        // 表单输出内容
+        entryCasPlanDetail.setPlanOutput(entryCasReviewDetail.getPlanOutput());
+        // 编制日期
+        entryCasPlanDetail.setCreateDate(LocalDate.now());
+        // 编制人
+        entryCasPlanDetail.setCreateName(GetTool.getUser().getName());
         // 添加cas-merge
         LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
         entryCasMergeLambdaQueryWrapper
@@ -937,7 +947,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             entryCasMerge.setCreateId(user.getId());
             entryCasMerge.setCreateName(user.getName());
             entryCasMerge.setDepartmentName(department.getDepartmentName());
-            entryCasMerge.setDepartmentId(departments.get(0).getDepartmentId());
+            entryCasMerge.setDepartmentId(department.getDepartmentId());
             entryCasMerge.setAuditName(null);
             entryCasMerge.setAuditId(null);
             entryCasMerge.setAuditDate(null);
@@ -971,8 +981,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasReviewDetail.setCreateDate(LocalDate.now());
         entryCasReviewDetail.setCreateName(user.getName());
         entryCasReviewDetail.setCreateId(user.getId());
-        entryCasReviewDetailMapper.insert(entryCasReviewDetail);
-        return true;
+        int result = entryCasReviewDetailMapper.insert(entryCasReviewDetail);
+        return result > 0;
     }
 
     @Override
