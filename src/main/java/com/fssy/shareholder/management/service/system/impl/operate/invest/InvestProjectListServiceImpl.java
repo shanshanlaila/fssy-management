@@ -464,6 +464,9 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
                 for (String attachmentId : attachmentIdList) {
                     projectRelationAttachment = new ProjectRelationAttachment();
                     Attachment attachment = attachmentMapper.selectById(attachmentId);
+                    if (ObjectUtils.isEmpty(attachment)){
+                        throw new ServiceException("未选择附件，提交失败");
+                    }
                     projectRelationAttachment.setImportDate(attachment.getImportDate());
                     // 保存附件表
                     projectRelationAttachment.setFilename(attachment.getFilename());

@@ -225,7 +225,7 @@ public class InvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, InvestP
     @Override
     public boolean update(InvestPlan investPlan, HttpServletRequest request) {
         String companyId = request.getParameter("companyId");
-        if (ObjectUtils.isEmpty(companyId)){
+        if (ObjectUtils.isEmpty(companyId)) {
             throw new ServiceException("所选公司未维护，修改失败");
         }
         Company company = companyMapper.selectById(companyId);
@@ -243,7 +243,8 @@ public class InvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, InvestP
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
         }
-        if (params.containsKey("year")) {
+        // 只有选择了年份，没有选择月份的时候年份筛选才会生效
+        if (params.containsKey("year")&&!params.containsKey("yearMonth")) {
             queryWrapper.eq("year", params.get("year"));
         }
         if (params.containsKey("month")) {
@@ -259,6 +260,12 @@ public class InvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, InvestP
             String companyIds = (String) params.get("companyIds");
             List<String> strings = Arrays.asList(companyIds.split(","));
             queryWrapper.in("companyId", strings);
+        }
+        // 年月筛选
+        if (params.containsKey("yearMonth")) {
+            String yearMonth = (String) params.get("yearMonth");
+            List<String> strings = Arrays.asList(yearMonth.split("-"));
+            queryWrapper.eq("year", strings.get(0)).eq("month", strings.get(1));
         }
         return queryWrapper;
     }

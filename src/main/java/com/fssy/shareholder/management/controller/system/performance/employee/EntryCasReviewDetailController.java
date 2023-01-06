@@ -303,8 +303,8 @@ public class EntryCasReviewDetailController {
     @PostMapping("update")
     @ResponseBody
     @RequiredLog("更新总结")
-    public SysResult update(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request) {
-        boolean result = entryCasReviewDetailService.updateEntryCasReviewDetail(entryCasReviewDetail,request);
+    public SysResult update(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
+        boolean result = entryCasReviewDetailService.updateEntryCasReviewDetail(entryCasReviewDetail, request);
         if (result) {
             return SysResult.ok();
         }
@@ -437,9 +437,9 @@ public class EntryCasReviewDetailController {
     @RequiredLog("履职总结撤销操作")
     @PostMapping("retreat")
     @ResponseBody
-    public SysResult retreat(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds,HttpServletRequest request) {
+    public SysResult retreat(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds, HttpServletRequest request) {
         String identification = request.getParameter("identification");
-        boolean result = entryCasReviewDetailService.retreat(reviewDetailIds,identification);
+        boolean result = entryCasReviewDetailService.retreat(reviewDetailIds, identification);
         if (result) {
             return SysResult.ok();
         }
@@ -556,12 +556,17 @@ public class EntryCasReviewDetailController {
         // 用户下拉框数据
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams,selectedUserIds);
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
         return "system/performance/employee/event-relation-role-choose-list";
     }
 
-
+    /**
+     * 跳转创建单条履职回顾-不根据计划
+     *
+     * @param entryCasReviewDetail 总结
+     * @return 操作结果
+     */
     @PostMapping("createReviewNotPlan")
     @ResponseBody
     @RequiredLog("跳转创建单条履职回顾-不根据计划")

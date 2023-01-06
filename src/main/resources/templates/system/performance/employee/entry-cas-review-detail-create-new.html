@@ -21,6 +21,9 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="hidden" name="eventsId" id="eventsId">
+                            <input type="hidden" name="departmentId" id="departmentId">
+                            <input type="hidden" name="roleId" id="roleId">
+                            <input type="hidden" name="userId" id="userId">
                             <input type="text" class="layui-input" name="eventsRoleId" id="eventsRoleId"
                                    lay-verify="required" autocomplete="off" placeholder="点击选择基础事件" style="cursor: pointer"/>
                         </div>
@@ -89,7 +92,7 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="mainOrNext" id="mainOrNext"
-                                   lay-verify="required"/>
+                                   lay-verify="required" readonly/>
                         </div>
                     </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;申报日期:</td>
