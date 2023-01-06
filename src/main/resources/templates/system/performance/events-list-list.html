@@ -110,11 +110,8 @@
                         });
                 });
                 // 添加动画效果
-                for (const btn of document.querySelectorAll('button')) {
-                    btn.addEventListener('click', function () {
-                        btn.setAttribute('class', 'layui-btn layui-anim layui-anim-scale');
-                    })
-                }
+                animation()
+
                 //年选择器
                 laydate.render({
                     elem: '#year'
@@ -268,12 +265,7 @@
                                 }
                         });
                     // 添加动画效果
-                    for (const btn of document.querySelectorAll('button')) {
-                        btn.addEventListener('click', function () {
-                            btn.setAttribute('class', 'layui-btn layui-anim layui-anim-scale');
-                        })
-                        console.log(btn)
-                    }
+                    animation();
                     return false;
                 });
 
@@ -346,12 +338,7 @@
                                         if (result.status === 200) {
                                             table.reload('dataTable');
                                             // 添加动画效果
-                                            for (const btn of document.querySelectorAll('button')) {
-                                                btn.addEventListener('click', function () {
-                                                    btn.setAttribute('class', 'layui-btn layui-anim layui-anim-scale');
-                                                })
-                                                console.log(btn)
-                                            }
+                                            animation();
                                         }
                                     }
                                 })
@@ -400,6 +387,15 @@
                     }
                 });
             });
+    // 添加动画效果
+    function animation() {
+        for (const btn of document.querySelectorAll('button')) {
+            btn.addEventListener('click', function () {
+                btn.setAttribute('class', 'layui-btn layui-anim layui-anim-scale');
+            })
+            btn.setAttribute('class', 'layui-btn');
+        }
+    }
 </script>
 </body>
 </html>

@@ -5,12 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.pojo.manage.company.Company;
-import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestPlan;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestPlanMapper;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestPlanService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,7 +18,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +39,7 @@ import java.util.*;
  * @since 2023-01-03
  */
 @Service
-public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, InvestPlan> implements InvestPlanService {
+public class InvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, InvestPlan> implements InvestPlanService {
 
     @Autowired
     private InvestPlanMapper investPlanMapper;
@@ -94,11 +91,11 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
             throw new ServiceException("表单【N+3计划 (投资计划)】不存在，无法读取数据，请检查");
         }
         // 实体集合，用于批量写入数据库
-        List<InvestPlan> investPlanList=new ArrayList<>();
+        List<InvestPlan> investPlanList = new ArrayList<>();
         String companyId = request.getParameter("companyId");// 公司id
         String yearMonth = request.getParameter("month");// 年月
         String importDate = request.getParameter("importDate");// 导入日期
-        if (ObjectUtils.isEmpty(companyId)||companyId.equals("undefined")) {
+        if (ObjectUtils.isEmpty(companyId) || companyId.equals("undefined")) {
             throw new ServiceException("未选择公司，导入失败");
         }
         if (ObjectUtils.isEmpty(yearMonth)) {
@@ -225,6 +222,19 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
         return result;
     }
 
+    @Override
+    public boolean update(InvestPlan investPlan, HttpServletRequest request) {
+        String companyId = request.getParameter("companyId");
+        if (ObjectUtils.isEmpty(companyId)){
+            throw new ServiceException("所选公司未维护，修改失败");
+        }
+        Company company = companyMapper.selectById(companyId);
+        investPlan.setCompanyId(Long.valueOf(companyId));
+        investPlan.setCompanyName(company.getName());
+        int result = investPlanMapper.updateById(investPlan);
+        return result > 0;
+    }
+
     private QueryWrapper<InvestPlan> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<InvestPlan> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("id")) {
@@ -248,7 +258,7 @@ public class InvestInvestPlanServiceImpl extends ServiceImpl<InvestPlanMapper, I
         if (params.containsKey("companyIds")) {
             String companyIds = (String) params.get("companyIds");
             List<String> strings = Arrays.asList(companyIds.split(","));
-            queryWrapper.in("companyId",strings);
+            queryWrapper.in("companyId", strings);
         }
         return queryWrapper;
     }

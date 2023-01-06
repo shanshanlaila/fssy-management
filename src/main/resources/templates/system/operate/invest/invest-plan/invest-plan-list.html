@@ -14,7 +14,7 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">非权益性投资管理</a><a>
-				<cite>项目评审投资评价导入</cite>
+				<cite>投资计划导入</cite>
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
@@ -141,7 +141,7 @@
                     {
                         field: 'secondType',
                         title: '类别二',
-                        width: 150
+                        width: 200
                     },
                     {
                         field: 'thirdType',
@@ -254,7 +254,7 @@
                                 $(window).width() * 0.9 + 'px',
                                 $(window).height() - 50 + 'px'
                             ],
-                        content: '/system/operate/invest/invest-project-year/create',
+                        content: '/system/operate/invest/plan/create',
                         scrollbar: true,
                         maxmin: true
                     });
@@ -267,7 +267,7 @@
             if (obj.event === 'edit') { // 修改
                 layer.open({
                     type: 2,
-                    title: '编号为【' + data.index + '】投资计划信息修改',
+                    title: 'ID为【' + data.id + '】投资计划信息修改',
                     area: [
                         $(window).width() * 0.9 + 'px',
                         $(window).height() - 50 + 'px'
