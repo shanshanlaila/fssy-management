@@ -52,11 +52,11 @@
                         <a lay-event="edit" title="修改企业研发工艺能力评价数据信息"><i class="layui-icon">&#xe642;</i></a>
                         <a lay-event="delete" title="删除企业研发工艺能力评价数据信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
-<!--                    <script type="text/html" id="toolbar">-->
-<!--                        <div class="layui-btn-container">-->
-<!--                            <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>-->
-<!--                        </div>-->
-<!--                    </script>-->
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>
+                        </div>
+                    </script>
                 </div>
             </div>
         </div>
@@ -89,28 +89,28 @@
             return false
         });
 
-        // // 监听头工具栏事件
-        // table.on('toolbar(dataTable)', function (obj) {
-        //
-        //     /**
-        //      * 弹出添加页面
-        //      */
-        //     var date = obj.date;
-        //     if (obj.event === 'create') {
-        //         layer.open({
-        //             type: 2,
-        //             title: '添加经理人绩效评分定性、定量分数占比信息',
-        //             area: [
-        //                 $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
-        //             ],
-        //             content: '/system/operate/invest/operate-tech-capacity-evaluate/create',
-        //             scrollbar: true,
-        //             // 设置点击遮盖关闭
-        //             // shadeClose: true,
-        //             maxmin: true
-        //         });
-        //     }
-        // });
+        // 监听头工具栏事件
+        table.on('toolbar(dataTable)', function (obj) {
+
+            /**
+             * 弹出添加页面
+             */
+            var date = obj.date;
+            if (obj.event === 'create') {
+                layer.open({
+                    type: 2,
+                    title: '添加经理人绩效评分定性、定量分数占比信息',
+                    area: [
+                        $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
+                    ],
+                    content: '/system/operate/invest/operate-tech-capacity-evaluate/create',
+                    scrollbar: true,
+                    // 设置点击遮盖关闭
+                    // shadeClose: true,
+                    maxmin: true
+                });
+            }
+        });
 
         // 实例表格
         const title = '企业研发工艺能力评价数据';

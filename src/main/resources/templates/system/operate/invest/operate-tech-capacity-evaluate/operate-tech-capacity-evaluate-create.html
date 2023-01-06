@@ -10,91 +10,125 @@
 <div class="layui-fluid">
     <div class="layui-card-body">
         <form class="layui-form" style="margin-top: 10px;" id="head">
-            <input type="hidden" name="attachmentId" id="attachmentId">
             <table class="layui-table layui-form" lay-size="sm">
                 <div style="margin-left: 40%;height: 30px;font-size: 20px">
                     企业研发工艺能力评价数据信息
                 </div>
 
-                <tr>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>年份:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 50%" >
-                            <input type="text" class="layui-input" name="year" id="year"
-                                   lay-verify="required"/>
-                        </div>
-                    </td>
-                </tr>
-
                 <!--第一行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;管理方法:
-                    </td>
-                    <td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>项目名称:</td>
+                    <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="manageMethod" id="manageMethod"
-                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['manageMethod']}"/>
+                            <input type="text" class="layui-input" name="projectName" id="projectName">
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;关键指标:
-                    </td>
-                    <td>
+                    <td style="width: 10%;text-align: right">关键指标:</td>
+                    <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="kpiDesc" id="kpiDesc"
-                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['kpiDesc']}"/>
+                            <input type="text" class="layui-input" name="kpiDesc" id="kpiDesc">
                         </div>
                     </td>
                 </tr>
                 <!--第二行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;标杆企业名称:
-                    </td>
-                    <td>
+                    <td style="width: 10%;text-align: right">管理方法:</td>
+                    <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="benchmarkCompany" id="benchmarkCompany"
-                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['benchmarkCompany']}"/>
+                            <input type="text" class="layui-input" name="manageMethod" id="manageMethod">
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;标杆值:
-                    </td>
-                    <td>
+                    <td style="width: 10%;text-align: right">指标计算公式:</td>
+                    <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="benchmark" id="benchmark"
-                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['benchmark']}"/>
+                            <input type="text" class="layui-input" name="kpiFormula" id="kpiFormula">
                         </div>
                     </td>
                 </tr>
                 <!--第三行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;过去第一年值:
-                    </td>
-                    <td>
+                    <td style="width: 10%;text-align: right">指标创建年份:</td>
+                    <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="pastOneYearActual" id="pastOneYearActual"
-                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['pastOneYearActual']}"/>
+                            <input type="text" class="layui-input" name="year" id="year">
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;过去第二年值:
-                    </td>
-                    <td>
+                    <td style="width: 10%;text-align: right">企业名称:</td>
+                    <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="pastTwoYearsActual" id="pastTwoYearsActual"
-                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['pastTwoYearsActual']}"/>
+                            <input type="text" class="layui-input" name="companyName" id="companyName">
                         </div>
                     </td>
                 </tr>
-                <!--第四行-->
-                <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;过去第三年值:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="pastThreeYearsActual" id="pastThreeYearsActual"
-                                   lay-verify="required" th:value="${operateTechCapacityEvaluate['pastThreeYearsActual']}"/>
-                        </div>
-                    </td>
 
+                <tr>
+                    <td style="width: 10%;text-align: right">存在问题:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="issue" id="issue">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">企业自提对策:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="improveActionSelf" id="improveActionSelf">
+                        </div>
+                    </td>
                 </tr>
+
+                <tr>
+                    <td style="width: 10%;text-align: right">责任人:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="responsible" id="responsible">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">计划完成日期:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="endDate" id="endDate">
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width: 10%;text-align: right">过去第一年值:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="pastOneYearActual" id="pastOneYearActual">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">过去第二年值:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="pastTwoYearsActual" id="pastTwoYearsActual">
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width: 10%;text-align: right">过去第三年值:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="pastThreeYearsActual" id="pastThreeYearsActual">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">标杆企业名称:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="benchmarkCompany" id="benchmarkCompany">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;text-align: right">标杆值:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="benchmark" id="benchmark">
+                        </div>
+                    </td>
+                </tr>
+
 
 
 

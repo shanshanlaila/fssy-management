@@ -1,9 +1,13 @@
 package com.fssy.shareholder.management.service.system.impl.operate.invest;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
+import com.fssy.shareholder.management.mapper.system.config.AttachmentMapper;
+import com.fssy.shareholder.management.mapper.system.config.ProjectRelationAttachmentMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.config.ProjectRelationAttachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.ProcessAbilityList;
 import com.fssy.shareholder.management.mapper.system.operate.invest.ProcessAbilityListMapper;
 import com.fssy.shareholder.management.pojo.system.operate.invest.TechCapacityEvaluate;
@@ -22,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -47,18 +48,36 @@ public class ProcessAbilityListServiceImpl extends ServiceImpl<ProcessAbilityLis
     @Autowired
     private ProcessAbilityListMapper processAbilityListMapper;
 
+    @Autowired
+    private AttachmentMapper attachmentMapper;
+
+    @Autowired
+    private ProjectRelationAttachmentMapper projectRelationAttachmentMapper;
+
     /**
      * 分页查询经 工艺基础能力台账信息
      * @param params
      * @return
      */
     @Override
-    public Page<ProcessAbilityList> findProcessAbilityListDataListPerPageByParams(Map<String, Object> params) {
+    public Page<Map<String, Object>> findProcessAbilityListDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ProcessAbilityList> queryWrapper = getQueryWrapper(params);
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
-        Page<ProcessAbilityList> myPage = new Page<>(page, limit);
-        return processAbilityListMapper.selectPage(myPage, queryWrapper);
+        Page<Map<String, Object>> myPage = new Page<>(page, limit);
+        myPage = processAbilityListMapper.selectMapsPage(myPage,queryWrapper);
+        //添加工艺能力评价附件查询
+        myPage.getRecords().forEach(item ->{
+            LambdaQueryWrapper<ProjectRelationAttachment> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(ProjectRelationAttachment::getProjectListId,item.get("id"))
+                    .select(ProjectRelationAttachment::getProjectListId,
+                            ProjectRelationAttachment::getAttachmentId,
+                            ProjectRelationAttachment::getMd5Path,
+                            ProjectRelationAttachment::getFilename);
+            List<ProjectRelationAttachment> attachments = projectRelationAttachmentMapper.selectList(wrapper);
+            item.put("attachmentList", attachments);
+        });
+        return myPage;
 
     }
 
@@ -234,7 +253,44 @@ public class ProcessAbilityListServiceImpl extends ServiceImpl<ProcessAbilityLis
 
     @Override
     public boolean insertProcessAbilityListStd(ProcessAbilityList processAbilityList) {
+        System.out.println(processAbilityList);
+        int result = processAbilityListMapper.insert(processAbilityList);
+        if (result > 0) {
+            return true;
+        }
         return false;
+    }
+
+    @Override
+    public boolean submitUploadFile(ProcessAbilityList processAbilityList, Map<String, Object> param) {
+        int result = 0;
+        ProjectRelationAttachment projectRelationAttachment;
+        if (param.containsKey("attachmentId")) {
+            String attachmentIds = (String) param.get("attachmentId");
+            List<String> attachmentIdList = Arrays.asList(attachmentIds.split(","));
+            if (!ObjectUtils.isEmpty(attachmentIdList)) {
+                for (String attachmentId : attachmentIdList) {
+                    projectRelationAttachment = new ProjectRelationAttachment();
+                    Attachment attachment = attachmentMapper.selectById(attachmentId);
+                    projectRelationAttachment.setImportDate(attachment.getImportDate());
+                    projectRelationAttachment.setFilename(attachment.getFilename());
+                    //保存附件表
+                    projectRelationAttachment.setMd5Path(attachment.getMd5Path());
+                    projectRelationAttachment.setPath(attachment.getPath());
+                    projectRelationAttachment.setAttachmentId(attachment.getId());
+                    projectRelationAttachment.setNote(attachment.getNote());
+                    projectRelationAttachment.setYear(processAbilityList.getYear());
+                    projectRelationAttachment.setProjectListId(Long.valueOf(processAbilityList.getId()));
+                    projectRelationAttachment.setConclusion(attachment.getConclusion());
+
+                    projectRelationAttachment.setCompanyName(processAbilityList.getCompanyName());
+                    projectRelationAttachment.setCompanyId(Long.valueOf(processAbilityList.getCompanyId()));
+
+                    result = projectRelationAttachmentMapper.insert(projectRelationAttachment);
+                }
+            }
+        }
+        return result>0;
     }
 
     private QueryWrapper<ProcessAbilityList> getQueryWrapper(Map<String,Object> params) {

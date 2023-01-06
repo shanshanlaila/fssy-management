@@ -258,12 +258,15 @@ public class TechCapacityEvaluateServiceImpl extends ServiceImpl<TechCapacityEva
 
     /**
      * 添加企业研发工艺能力评价信息
-     * @param operateTechCapacityEvaluate
+     * @param
      * @return
      */
     @Override
-    public boolean insertOperateTechCapacityEvaluate(TechCapacityEvaluate operateTechCapacityEvaluate) {
-        int result = operateTechCapacityEvaluateMapper.insert(operateTechCapacityEvaluate);
+    public boolean insertOperateTechCapacityEvaluate(TechCapacityEvaluate techCapacityEvaluate) {
+//        Integer year = techCapacityEvaluate.getYear();
+//        String companyName = techCapacityEvaluate.getCompanyName();
+
+        int result = operateTechCapacityEvaluateMapper.insert(techCapacityEvaluate);
         if (result > 0) {
             return true;
         }

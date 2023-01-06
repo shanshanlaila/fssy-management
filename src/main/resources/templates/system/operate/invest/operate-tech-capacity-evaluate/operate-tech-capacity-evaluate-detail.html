@@ -31,33 +31,33 @@
 
 
 					<div class="layui-inline layui-show-xs-block" style="width: 120px;">
-							<input type="text" name="year" placeholder="查询年份" id="year"
-								   autocomplete="off" class="`layui-input` laydate">
+						<input type="text" name="year" placeholder="查询年份" id="year"
+							   autocomplete="off" class="layui-input laydate">
 					</div>
 
 
-					<div class="layui-inline layui-show-xs-block"style="left: 70px">
+					<div class="layui-inline layui-show-xs-block">
 							<button class="layui-btn" lay-submit lay-filter="search">
 								<i class="layui-icon">&#xe615;</i>
 							</button>
 					</div>
 				</form>
 
-					<div class="layui-inline layui-show-xs-block"style="left: 180px">
+					<div class="layui-inline layui-show-xs-block">
 						<form th:action="@{/system/operate/invest/operate-tech-capacity-evaluate/downloadForCharge}" th:method="get" >
 							<div class="grid-demo">
-								<button  class="layui-btn layui-btn-sm" style="margin-left: -110px;" lay-submit
+								<button  class="layui-btn layui-btn-sm"  lay-submit
 									lay-filter="downloadForCharge" title="导出数据">导出
 								</button>
 							</div>
 						</form>
 					</div>
 
-					<div class="layui-inline layui-show-xs-block" style="left: 330px">
+					<div class="layui-inline layui-show-xs-block">
 						<form th:action="@{/system/operate/invest/operate-tech-capacity-evaluate/index}" th:method="get" >
 							<div class="grid-demo grid-demo-bg1">
 								<button
-										class="layui-btn layui-btn-sm" style="margin-left: -210px;" lay-submit="" lay-filter="import"
+										class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"
 										title="导入填写分析后的附件">导入企业研发工艺能力评价表附件
 								</button>
 

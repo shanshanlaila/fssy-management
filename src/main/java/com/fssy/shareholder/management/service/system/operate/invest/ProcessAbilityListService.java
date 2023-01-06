@@ -25,7 +25,7 @@ public interface ProcessAbilityListService extends IService<ProcessAbilityList> 
      * @param params
      * @return
      */
-    Page<ProcessAbilityList> findProcessAbilityListDataListPerPageByParams(Map<String, Object> params);
+    Page<Map<String, Object>> findProcessAbilityListDataListPerPageByParams(Map<String, Object> params);
 
 
     /**
@@ -75,5 +75,14 @@ public interface ProcessAbilityListService extends IService<ProcessAbilityList> 
      * @return
      */
     boolean insertProcessAbilityListStd(ProcessAbilityList processAbilityList);
+
+    /**
+     * 提交工艺能力台账多附件上传
+     * @param processAbilityList
+     * @param param
+     * @return
+     */
+    boolean submitUploadFile(ProcessAbilityList processAbilityList,Map<String,Object> param);
+
 
 }

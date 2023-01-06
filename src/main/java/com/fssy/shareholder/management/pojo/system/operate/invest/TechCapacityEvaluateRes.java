@@ -18,7 +18,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("bs_operat_tech_capacity_evaluate_res")
+@TableName("bs_operate_tech_capacity_evaluate_res")
 public class TechCapacityEvaluateRes extends BaseModel {
 
     private static final long serialVersionUID = 1L;

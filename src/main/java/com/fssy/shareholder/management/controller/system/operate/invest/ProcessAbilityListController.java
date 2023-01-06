@@ -7,16 +7,19 @@ import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
+import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.ProcessAbilityList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.TechCapacityEvaluate;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
+import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectListService;
 import com.fssy.shareholder.management.service.system.operate.invest.ProcessAbilityListService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +55,9 @@ public class ProcessAbilityListController {
     @Autowired
     private ProcessAbilityListService processAbilityListService;
 
+    @Autowired
+    private InvestProjectListService investProjectListService;
+
 
     /**
      * 工艺基础能力台账管理页面
@@ -84,6 +90,21 @@ public class ProcessAbilityListController {
         return SysResult.build(500, "删除数据失败");
     }
 
+    /**
+     * 返回修改页面
+     * @param
+     * @return
+     */
+    @GetMapping("edit")
+    public String edit (HttpServletRequest request,Model model){
+        String id = request.getParameter("id");
+        Map<String,Object> param = new HashMap<>();
+        param.put("id",id);
+        ProcessAbilityList processAbilityList = processAbilityListService.findProcessAbilityListDataByParams(param).get(0);
+        model.addAttribute("processAbilityList",processAbilityList);
+        return "system/operate/invest/operate-process-ability-list/operate-process-ability-edit";
+    }
+
 
     /**
      * 更新工艺基础能力台账管理信息
@@ -101,9 +122,34 @@ public class ProcessAbilityListController {
         return SysResult.build(500, "企业研发工艺能力评价数据信息更新，请检查数据后重新尝试");
     }
 
+    /**
+     * 新增记录
+     * @param
+     * @param model
+     * @return
+     */
+    @GetMapping("create")
+    public String createProject(Model model){
+        return "system/operate/invest/operate-process-ability-list/operate-process-ability-create";
+    }
 
 
+    /**
+     * 新增工艺能力评价信息
+     * @param processAbilityList
+     * @return
+     */
+    @PostMapping("store")
+    @ResponseBody
+    public SysResult store(ProcessAbilityList processAbilityList){
 
+        boolean result = processAbilityListService.insertProcessAbilityListStd(processAbilityList);
+        System.out.println(result);
+        if (result){
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "添加失败，请检查后重试");
+    }
 
 
 
@@ -123,7 +169,7 @@ public class ProcessAbilityListController {
         int page = Integer.parseInt(request.getParameter("page"));
         params.put("limit", limit);
         params.put("page", page);
-        Page<ProcessAbilityList> processAbilityListDataListPerPageByParams = processAbilityListService.findProcessAbilityListDataListPerPageByParams(params);
+        Page<Map<String, Object>> processAbilityListDataListPerPageByParams = processAbilityListService.findProcessAbilityListDataListPerPageByParams(params);
         if (processAbilityListDataListPerPageByParams.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");
@@ -142,14 +188,17 @@ public class ProcessAbilityListController {
      * @return
      */
     @RequiredLog("附件上传")
-    @GetMapping("index")
-    public String materialDataAttachmentIndex(Model model) {
+    @GetMapping("index/{id}")
+    public String materialDataAttachmentIndex(@PathVariable String id, Model model) {
+        //ProcessAbilityList processAbilityList = new ProcessAbilityList();
+        ProcessAbilityList processAbilityList = processAbilityListService.getById(id);
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
         String importDateStart = sdf.format(date);
         model.addAttribute("importDateStart", importDateStart);
+        model.addAttribute("processAbilityList",processAbilityList);
         // 查询导入场景
         Map<String, Object> params = new HashMap<>();
         params.put("noteEq", "工艺基础能力表达台账表");
@@ -169,10 +218,10 @@ public class ProcessAbilityListController {
      * @param attachment
      * @return
      */
-    @PostMapping("uploadFile")
+    @PostMapping("uploadFileTest")
     @RequiredLog("企业研发工艺能力评价表附件上传")
     @ResponseBody
-    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request) {
+    public SysResult uploadFileTest(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request) {
         //判断是否选择对应的时间
         Map<String, Object> params = getParams(request);
         String year = (String) params.get("year");
@@ -223,6 +272,81 @@ public class ProcessAbilityListController {
 //        }
         return SysResult.ok();
     }
+
+    /**
+     * 展示工艺能力评价上传页面
+     * @param id
+     * @param model
+     * @return
+     */
+    @GetMapping("createAndUpload/{id}")
+    @RequiredLog("展示工艺能力台账上传页面")
+    public String showExellentPage(@PathVariable String id,Model model){
+        ProcessAbilityList processAbilityList = processAbilityListService.getById(id);
+        if (ObjectUtils.isEmpty(processAbilityList)){
+            throw new ServiceException("不存在对应项目，无法上传附件");
+        }else {
+            model.addAttribute("processAbilityList",processAbilityList);
+        }
+        // 查询导入场景
+        Map<String, Object> params = new HashMap<>();
+        params.put("noteEq", "工艺基础能力表达台账表");
+        List<ImportModule> importModules = importModuleService
+                .findImportModuleDataListByParams(params);
+        if (org.springframework.util.ObjectUtils.isEmpty(importModules)) {
+            throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "项目月度进展表"));
+        }
+        model.addAttribute("module", importModules.get(0).getId());
+        return "system/operate/invest/operate-process-ability-list/operate-process-ability-detail-createAndUpload";
+
+    }
+
+    /**
+     * 工艺能力多附件上传
+     * @param file
+     * @param attachment
+     * @param request
+     * @return
+     */
+    @PostMapping("uploadFile")
+    @RequiredLog("工艺能力台账多附件上传")
+    @ResponseBody
+    public SysResult uploadFile(@RequestParam("file") MultipartFile file,Attachment attachment,
+                                HttpServletRequest request){
+        //保存附件
+        Calendar calendar = Calendar.getInstance();
+        attachment.setImportDate(calendar.getTime());
+        //查询导入场景对象
+        ImportModule module = importModuleService.findById(InstandTool.integerToLong(attachment.getModule()));
+        if (ObjectUtils.isEmpty(module)){
+            throw new ServiceException(String.format("序号为【%s】的导入场景未维护，不允许导入",attachment.getModule()));
+        }
+        Attachment result = fileAttachmentTool.storeFileToModule(file, module, attachment);
+        return SysResult.ok(result.getId());
+    }
+
+    /**
+     * 创建工艺台账明细
+     * @param processAbilityList
+     * @param request
+     * @return
+     */
+    @PostMapping("save")
+    @ResponseBody
+    @RequiredLog("提交工艺能力台账附件上传")
+    public SysResult  create(ProcessAbilityList processAbilityList,HttpServletRequest request){
+        Map<String, Object> param = new HashMap<>();
+        String attachmentId = request.getParameter("attachmentId");
+        param.put("attachmentId", attachmentId);
+        boolean result = processAbilityListService.submitUploadFile(processAbilityList,param);
+        if (result){
+            return SysResult.ok();
+        }
+        return SysResult.build(500,"提交失败");
+    }
+
+
+
 
 
 
