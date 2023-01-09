@@ -29,6 +29,18 @@ public interface ConditionService extends IService<Condition> {
      * @return 附件
      */
     Map<String, Object> readConditionDataSource(Attachment attachment,HttpServletRequest request);
-
+    /**
+     * 修改非权益投资情况
+     * @param condition
+     * @return ture/false
+     */
     boolean updateInvestConditionData(Condition condition, HttpServletRequest request);
+
+    /**
+     * 新增非权益投资情况
+     * @param condition 执行情况表
+     * @param request 前端发送过来的数据
+     * @return ture/false
+     */
+    boolean insertInvestCondition(Condition condition, HttpServletRequest request);
 }

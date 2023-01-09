@@ -26,6 +26,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -195,9 +196,15 @@ public class ConditionServiceImpl extends ServiceImpl<ConditionMapper, Condition
                 condition.setDescribe(describe);
             }
             condition.setUnit(unit);
+            BigDecimal budgetBigDecimal = new BigDecimal(budget);
+//            budgetBigDecimal.setScale(2,RoundingMode.HALF_UP);
+            condition.setBudget(budgetBigDecimal.setScale(2,RoundingMode.HALF_UP));
             condition.setBudget(new BigDecimal(budget));
-            condition.setAccumulation(new BigDecimal(accumulation));
-            condition.setProportion(new BigDecimal(proportion));
+            BigDecimal accumulationBigDecimal = new BigDecimal(accumulation);
+            condition.setAccumulation( accumulationBigDecimal.setScale(2,RoundingMode.HALF_UP));//2位小数点，四舍五入取值方式
+            BigDecimal proportionBigDecimal = new BigDecimal(proportion);
+//            proportionBigDecimal.setScale(4, RoundingMode.HALF_UP);//4位小数点，四舍五入取值方式
+            condition.setProportion(proportionBigDecimal.setScale(4, RoundingMode.HALF_UP));
             condition.setEvaluate(evaluate);
             condition.setMonth(Integer.valueOf(month));//从前端月份选择下拉框过来的，代码在80行进行了处理编写
             condition.setYear(Integer.valueOf(year));
@@ -236,6 +243,25 @@ public class ConditionServiceImpl extends ServiceImpl<ConditionMapper, Condition
                 return true;
             }
         return false;
+    }
+
+    @Override
+    public boolean insertInvestCondition(Condition condition, HttpServletRequest request) {
+        Long companyId = Long.valueOf(request.getParameter("companyId"));
+        if (ObjectUtils.isEmpty(companyId)) {
+            throw new ServiceException("未选择公司");
+        }
+        Company company = companyMapper.selectById(companyId);
+        condition.setCompanyName(company.getName());
+        condition.setCompanyId(companyId);
+        condition.setCompanyShortName(company.getShortName());
+        condition.setCompanyCode(company.getCode());
+        User user = GetTool.getUser();
+        condition.setCreatedAt(LocalDateTime.now());
+        condition.setCreatedId(user.getId());
+        condition.setCreatedName(user.getName());
+        conditionMapper.insert(condition);
+        return true;
     }
 
 
@@ -303,7 +329,7 @@ public class ConditionServiceImpl extends ServiceImpl<ConditionMapper, Condition
             queryWrapper.eq("accumulation", params.get("accumulation"));
         }
         if (params.containsKey("unit")) {
-            queryWrapper.like("unit", params.get("unit"));
+            queryWrapper.eq("unit", params.get("unit"));
         }
         if (params.containsKey("describe")) {
             queryWrapper.like("describe", params.get("describe"));

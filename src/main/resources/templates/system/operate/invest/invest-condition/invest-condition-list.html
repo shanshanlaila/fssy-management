@@ -31,12 +31,24 @@
                             <div id="companySelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" id="lineNumber" name="lineNumber" placeholder="序号查询"
+                            <input type="text" id="lineNumber" name="lineNumber" placeholder="导入行号查询"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="year" name="year" placeholder="年度查询" autocomplete="off"
                                    class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" id="firstType" name="firstType" placeholder="一级类别查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" id="item" name="item" placeholder="指标查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" id="unit" name="unit" placeholder="单位查询"
+                                   autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
@@ -53,11 +65,11 @@
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
-<!--                    <script type="text/html" id="toolbar">-->
-<!--                        <div class="layui-btn-container">-->
-<!--                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条年度投资项目</button>-->
-<!--                        </div>-->
-<!--                    </script>-->
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条年度投资项目</button>
+                        </div>
+                    </script>
                     <script type="text/html" id="tool">
 
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
@@ -86,6 +98,18 @@
                             //更换触发方式
                             trigger: 'click',
                             type: 'date'
+                        });
+                    laydate.render(
+                        {
+                            elem: '#month',
+                            trigger: 'click',
+                            type: 'month'
+                        });
+                    laydate.render(
+                        {
+                            elem: '#year',
+                            trigger: 'click',
+                            type: 'year'
                         });
                 });
                 // 实例表格
@@ -121,9 +145,8 @@
                                         },
                                         {
                                             field: 'lineNumber',
-                                            title: '序号',
+                                            title: '导入行号',
                                             width: 50,
-                                            fixed: 'left'
                                         },
                                         {
                                             field: 'year',
@@ -239,13 +262,13 @@
                         layer.open(
                             {
                                 type: 2,
-                                title: '新增单条年度投资项目',
+                                title: '新增单条非权益投资情况数据',
                                 area:
                                     [
                                         $(window).width() * 0.9 + 'px',
                                         $(window).height() - 50 + 'px'
                                     ],
-                                content: '/system/operate/invest/ProjectList/create',
+                                content: '/system/operate/invest/Condition/create',
                                 scrollbar: true,
                                 maxmin: true
                             });

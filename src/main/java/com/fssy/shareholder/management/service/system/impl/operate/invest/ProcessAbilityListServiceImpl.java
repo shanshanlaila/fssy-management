@@ -3,19 +3,17 @@ package com.fssy.shareholder.management.service.system.impl.operate.invest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.config.AttachmentMapper;
 import com.fssy.shareholder.management.mapper.system.config.ProjectRelationAttachmentMapper;
+import com.fssy.shareholder.management.mapper.system.operate.invest.ProcessAbilityListMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ProjectRelationAttachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.ProcessAbilityList;
-import com.fssy.shareholder.management.mapper.system.operate.invest.ProcessAbilityListMapper;
 import com.fssy.shareholder.management.pojo.system.operate.invest.TechCapacityEvaluate;
-import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
-import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.invest.ProcessAbilityListService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -127,7 +125,7 @@ public class ProcessAbilityListServiceImpl extends ServiceImpl<ProcessAbilityLis
     }
 
     @Override
-    public Map<String, Object> reaadProcessAbilityListDataSource(Attachment attachment, String year, String companyName) {
+    public Map<String, Object> readProcessAbilityListDataSource(Attachment attachment, String year, String companyName) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");

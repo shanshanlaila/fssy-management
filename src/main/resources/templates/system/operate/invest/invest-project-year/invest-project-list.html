@@ -166,9 +166,9 @@
 
                     </script>
                     <script type="text/html" id="tool1">
-<!--                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:check" lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>-->
+                        <!--                        <a shiro:hasPermission="system:operate:invest:ProjectAttachmentList:check" lay-event="detail" title="年度投资项目清单数据明细"><i class="layui-icon">&#xe63c;</i></a>-->
                         <button shiro:hasPermission="system:operate:invest:ProjectAttachmentList:check"
-                                class="layui-btn layui-btn-sm" lay-event="detail">项目跟踪详细信息</button>
+                                class="layui-btn layui-btn-xs" lay-event="detail">项目跟踪详细信息</button>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
@@ -234,7 +234,7 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where : {
-              idDesc : true
+                idDesc : true
             },
             cols: [
                 [
@@ -250,43 +250,36 @@
                     {
                         field: 'projectType',
                         title: '项目类别：自动化、质量改善',
-                        fixed: 'left',
                         width: 150
                     },
                     {
                         field: 'companyName',
                         title: '企业名称',
-                        fixed: 'left',
                         width: 150
                     },
                     {
                         field: 'projectName',
                         title: '项目名称',
-                        fixed: 'left',
                         width: 120
                     },
                     {
                         field: 'investmentVolumePlan',
                         title: '计划投资额',
-                        fixed: 'left',
                         width: 120
                     },
                     {
                         field: 'investmentVolumeActual',
                         title: '实际投资额',
-                        fixed: 'left',
                         width: 120
                     },
                     {
                         field: 'respManager',
                         title: '企业分管经理人',
-                        fixed: 'left',
                         width: 120
                     },
                     {
                         field: 'projectContact',
                         title: '项目联络人',
-                        fixed: 'left',
                         width: 120
                     },
                     {
@@ -303,6 +296,12 @@
                         field: 'currentProjectStatus',
                         title: '追踪情况',
                         width: 120
+                    },
+                    {
+                        title: '项目跟踪情况',
+                        width: 150,
+                        align: 'center',
+                        toolbar: '#tool1'
                     },
                     {
                         field: 'year',
