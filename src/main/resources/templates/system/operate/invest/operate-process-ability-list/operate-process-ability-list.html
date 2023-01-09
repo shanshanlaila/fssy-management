@@ -43,15 +43,6 @@
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                         </div>
-
-<!--                        <div class="layui-inline layui-show-xs-block">-->
-<!--                            <button-->
-<!--                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import"-->
-<!--                                    title="导入工艺基础能力台账附件">导入工艺基础能力台账附件-->
-<!--                            </button>-->
-<!--                        </div>-->
-
-
                     </div>
                 </form>
                 <div class="layui-card-body ">
@@ -304,10 +295,10 @@
                         }
                     })
                 });
-            }else if (obj.event === 'createAndUpload') { // 上传评优说明材料
+            }else if (obj.event === 'createAndUpload') { // 上传
                 layer.open({
                     type: 2,
-                    title: '序号为' + data.id + '的履职总结评优材料上传',
+                    title: '序号为' + data.id + '的企业工艺能力台账上传',
                     area:
                         [
                             $(window).width() * 0.9 + 'px',
@@ -317,10 +308,11 @@
                     maxmin: true,
                     scrollbar: true
                 });
-            }else if (obj.event === 'importUpload') { // 上传评优说明材料
+            }
+      /*      else if (obj.event === 'importUpload') { // 上传
                 layer.open({
                     type: 2,
-                    title: '序号为' + data.id + '的履职总结评优材料上传',
+                    title: '序号为' + data.id + '的企业工艺能力台账上传',
                     area:
                         [
                             $(window).width() * 0.9 + 'px',
@@ -330,7 +322,7 @@
                     maxmin: true,
                     scrollbar: true
                 });
-            }
+            }*/
         });
     });
 </script>

@@ -140,7 +140,7 @@ public class InvestProjectListController {
      * @return
      */
     @GetMapping("search-detail")
-    @RequiresPermissions("system:operate:invest:invest-project-year:indexYear")
+    @RequiresPermissions("system:operate:invest:ProjectAttachmentList:check")
     public String searchByAssignFromBtn(HttpServletRequest request, Model model) {
         String projectListId = request.getParameter("id");
         String companyName = request.getParameter("companyName");

@@ -1,12 +1,10 @@
 package com.fssy.shareholder.management.service.system.operate.invest;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.ProcessAbilityList;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 
-import java.lang.management.OperatingSystemMXBean;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +63,7 @@ public interface ProcessAbilityListService extends IService<ProcessAbilityList> 
      * @param attachment
      * @return
      */
-    Map<String,Object> reaadProcessAbilityListDataSource(Attachment attachment, String year, String companyName);
+    Map<String,Object> readProcessAbilityListDataSource(Attachment attachment, String year, String companyName);
 
 
 

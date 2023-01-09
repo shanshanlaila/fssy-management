@@ -256,6 +256,7 @@ public class ConditionController {
      * @return 修改页面
      */
     @GetMapping("edit/{id}")
+    @RequiresPermissions("system:operate:invest:Condition:edit")
     public String showEditPage(@PathVariable String id, Model model) {
         Condition condition = conditionService.getById(id);
         model.addAttribute("condition",condition);//把condition传到前端
@@ -306,4 +307,44 @@ public class ConditionController {
 //        return SysResult.build(500, "删除数据失败");
         return SysResult.build(500, "删除功能暂不开放");
     }
+    /**
+     * 返回新增单条基础事件页面
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("create")
+    @RequiresPermissions("system:operate:invest:Condition:create")
+    public String createInvestCondition(HttpServletRequest request, Model model) {
+        //1、查询部门列表，用于customerName xm-select插件
+        Map<String, Object> companyParams = new HashMap<>();
+//        String year = request.getParameter("year");
+//        String companyId = request.getParameter("companyId");
+//        String month = request.getParameter("month");
+//        String projectName = request.getParameter("projectName");
+//        model.addAttribute("year", year);
+//        model.addAttribute("companyId", companyId);
+//        model.addAttribute("month", month);
+//        model.addAttribute("projectName", projectName);
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
+        return "system/operate/invest/invest-condition/invest-condition-create";
+    }
+    /**
+     * 保存非权益投资情况表
+     *
+     * @param condition
+     * @return
+     */
+    @PostMapping("store")
+    @RequiredLog("保存新增单条非权益投资情况")
+    @ResponseBody
+    public SysResult Store(Condition condition, HttpServletRequest request) {
+        boolean result = conditionService.insertInvestCondition(condition,request);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "新增失败");
+    }
+
 }
