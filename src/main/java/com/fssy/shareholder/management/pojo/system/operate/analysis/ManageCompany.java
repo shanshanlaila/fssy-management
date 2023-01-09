@@ -79,4 +79,15 @@ public class ManageCompany extends BaseModel
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
 	private LocalDate inactiveDate;
 
+	/**
+	 * 基础公司表主键
+	 */
+	@TableField("basicCompanyId")
+	private Long basicCompanyId;
+	
+	/**
+	 * 公司简称
+	 */
+	@TableField("shortName")
+	private String shortName;
 }

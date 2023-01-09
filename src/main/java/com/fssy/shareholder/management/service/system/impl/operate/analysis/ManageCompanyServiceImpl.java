@@ -126,6 +126,14 @@ public class ManageCompanyServiceImpl extends ServiceImpl<ManageCompanyMapper, M
 		{
 			queryWrapper.eq("code", params.get("codeEq"));
 		}
+		if (params.containsKey("basicCompanyId"))
+		{
+			queryWrapper.eq("basicCompanyId", params.get("basicCompanyId"));
+		}
+		if (params.containsKey("basicCompanyIds"))
+		{
+			queryWrapper.in("basicCompanyId", (List<String>) params.get("basicCompanyIds"));
+		}
 		if (params.containsKey("code"))
 		{
 			queryWrapper.like("code", params.get("code"));
@@ -133,6 +141,10 @@ public class ManageCompanyServiceImpl extends ServiceImpl<ManageCompanyMapper, M
 		if (params.containsKey("name"))
 		{
 			queryWrapper.like("name", params.get("name"));
+		}
+		if (params.containsKey("shortName"))
+		{
+			queryWrapper.like("shortName", params.get("shortName"));
 		}
 		if (params.containsKey("select"))
 		{

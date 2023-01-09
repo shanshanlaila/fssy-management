@@ -28,6 +28,9 @@
 								<input type="text" name="name" placeholder="名称查询" autocomplete="off" class="layui-input">
 							</div>
 							<div class="layui-inline layui-show-xs-block">
+								<input type="text" name="shortName" placeholder="简称查询" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline layui-show-xs-block">
 								<input type="text" name="codeEq" placeholder="编码查询" autocomplete="off" class="layui-input">
 							</div>
 							<div class="layui-inline layui-show-xs-block" style="width: 140px;">
@@ -89,17 +92,27 @@
 				cols : [
 					[
 						{
+							field : 'code',
+							title : '公司编码',
+							fixed : 'left',
+							width : 90
+						}, {
+							field : 'shortName',
+							title : '公司简称',
+							fixed : 'left',
+							width : 100
+						}, {
 							field : 'id',
 							title : '序号',
 							width : 90
 						}, {
 							field : 'name',
 							title : '公司名称',
-							width : 120
+							width : 170
 						}, {
-							field : 'code',
-							title : '公司编码',
-							width : 110
+							field : 'basicCompanyId',
+							title : '基础公司序号',
+							width : 130
 						}, {
 							field : 'note',
 							title : '备注',

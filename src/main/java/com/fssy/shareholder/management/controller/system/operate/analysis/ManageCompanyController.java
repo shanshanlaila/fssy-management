@@ -122,6 +122,20 @@ public class ManageCompanyController
 		{
 			params.put("idDesc", request.getParameter("idDesc"));
 		}
+		if (!ObjectUtils.isEmpty(request.getParameter("shortName")))
+		{
+			params.put("shortName", request.getParameter("shortName"));
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("basicCompanyId")))
+		{
+			params.put("basicCompanyId", request.getParameter("basicCompanyId"));
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("basicCompanyIds")))
+		{
+			String basicCompanyIdsStr = request.getParameter("basicCompanyIds");
+			List<String> basicCompanyIds = Arrays.asList(basicCompanyIdsStr.split(","));
+			params.put("basicCompanyIds", basicCompanyIds);
+		}
 		// endregion
 		return params;
 	}
