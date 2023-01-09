@@ -86,7 +86,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					januaryValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -116,7 +116,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					februaryValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -146,7 +146,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					marchValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -176,7 +176,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					aprilValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -206,7 +206,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					mayValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -236,7 +236,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					juneValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -266,7 +266,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					julyValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -296,7 +296,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					augustValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -326,7 +326,7 @@ public class BalanceSheetInitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 					septemberValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -356,7 +356,7 @@ public class BalanceSheetInitJob implements Job
 //		{
 //			scheduleAuditLog = new ScheduleAuditLog();
 //			scheduleAuditLog.setName("系统定时任务");
-//			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+//			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 //					octoborValue, e.getMessage()));
 //			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 //			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -386,7 +386,7 @@ public class BalanceSheetInitJob implements Job
 //		{
 //			scheduleAuditLog = new ScheduleAuditLog();
 //			scheduleAuditLog.setName("系统定时任务");
-//			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+//			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 //					novemberValue, e.getMessage()));
 //			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 //			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -416,7 +416,7 @@ public class BalanceSheetInitJob implements Job
 //		{
 //			scheduleAuditLog = new ScheduleAuditLog();
 //			scheduleAuditLog.setName("系统定时任务");
-//			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", year2022,
+//			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【资产负债表】对接系统错误，错误原因：【%s】", year2022,
 //					decemberValue, e.getMessage()));
 //			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 //			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);

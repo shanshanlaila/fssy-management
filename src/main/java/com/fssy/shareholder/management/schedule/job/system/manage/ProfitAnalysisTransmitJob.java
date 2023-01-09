@@ -91,7 +91,7 @@ public class ProfitAnalysisTransmitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", twoAgoYear,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【变动分析表】对接系统错误，错误原因：【%s】", twoAgoYear,
 					twoAgoMonth, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -121,7 +121,7 @@ public class ProfitAnalysisTransmitJob implements Job
 		{
 			scheduleAuditLog = new ScheduleAuditLog();
 			scheduleAuditLog.setName("系统定时任务");
-			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", lastMonthYear,
+			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【变动分析表】对接系统错误，错误原因：【%s】", lastMonthYear,
 					lastMonthValue, e.getMessage()));
 			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
@@ -153,7 +153,7 @@ public class ProfitAnalysisTransmitJob implements Job
 //			TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savePoint3);
 //			scheduleAuditLog = new ScheduleAuditLog();
 //			scheduleAuditLog.setName("系统定时任务");
-//			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月对接系统错误，错误原因：【%s】", theMonthYear,
+//			scheduleAuditLog.setNote(String.format("【%s】年，【%s】月【变动分析表】对接系统错误，错误原因：【%s】", theMonthYear,
 //					theMonthValue, e.getMessage()));
 //			scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
 //			scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);

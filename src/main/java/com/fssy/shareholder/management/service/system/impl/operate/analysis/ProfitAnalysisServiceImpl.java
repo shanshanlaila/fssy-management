@@ -1,6 +1,7 @@
 /**   
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
+ * 兰宇铧			2023-01-09		对接数据，公司基础数据随时会变化，需要做判断空
  */
 package com.fssy.shareholder.management.service.system.impl.operate.analysis;
 
@@ -294,7 +295,6 @@ public class ProfitAnalysisServiceImpl extends ServiceImpl<ProfitAnalysisMapper,
 						totalDataCount++;
 						// region 整理对接数据
 						String companyCode = InstandTool.objectToString(transmitData.get("公司代码"));
-						ManageCompany tempCompany = manageCompanyKeyBy.get(companyCode);
 						Integer year = InstandTool
 								.stringToInteger(InstandTool.objectToString(transmitData.get("年")));
 						Integer month = InstandTool
@@ -333,6 +333,18 @@ public class ProfitAnalysisServiceImpl extends ServiceImpl<ProfitAnalysisMapper,
 						String createName = StringTool
 								.rightTrim(InstandTool.objectToString(transmitData.get("录入")));
 						String createDateStr = InstandTool.objectToString(transmitData.get("录入日期"));
+						// 2023-01-09 对接数据，公司基础数据随时会变化，需要做判断空
+						if (!manageCompanyKeyBy.containsKey(companyCode))
+						{
+							flag = false;
+							StringTool.setMsg(sb,
+									String.format(
+											"公司编号【%s】,公司名称【%s】系统未维护，不能对接项目名称【%s】数据，请及时同步公司基础数据",
+											companyCode, transmitData.get("公司名称"), project));
+							continue;
+						}
+						ManageCompany tempCompany = manageCompanyKeyBy.get(companyCode);
+						
 						LocalDateTime createDate = null;
 						try
 						{
