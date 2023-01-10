@@ -1,10 +1,9 @@
 package com.fssy.shareholder.management.service.system.operate.invest;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
-import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ public interface InvestProjectPlanTraceService extends IService<InvestProjectPla
      * @param attachment
      * @return
      */
-    Map<String,Object> reaadInvestProjectPlanTraceDataSource(Attachment attachment, String year, String companyName, String month, String projectName,String projectListId);
+    Map<String,Object> readInvestProjectPlanTraceDataSource(Attachment attachment, String year, String companyName, String month, String projectName,String projectListId);
 
 
 }
