@@ -2,19 +2,16 @@ package com.fssy.shareholder.management.service.system.impl.operate.invest;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectListMapper;
 import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceDetailMapper;
-import com.fssy.shareholder.management.pojo.manage.company.Company;
+import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTrace;
-import com.fssy.shareholder.management.mapper.system.operate.invest.InvestProjectPlanTraceMapper;
-import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectPlanTraceDetail;
 import com.fssy.shareholder.management.pojo.system.operate.invest.TechCapacityEvaluate;
-import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiYear;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectPlanTraceService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -26,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,7 +109,7 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
 
         Cell companyNames = sheet.getRow(0).getCell(SheetService.columnToIndex("C"));
         String companyNameValue = String.valueOf(companyNames);
-
+        companyNameValue = companyNameValue.trim();
         Cell projectNames = sheet.getRow(0).getCell(SheetService.columnToIndex("G"));
         String projectNameValue = String.valueOf(projectNames);
 
@@ -128,7 +124,7 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
 
         //效验年份、公司名称
         if (!companyNameValue.equals(companyName)) {
-            throw new ServiceException("导入的公司名称与excel中的公司名称不一致，导入失败");
+            throw new ServiceException("导入的公司名称与excel中的公司名称不一致，导入失败,表格里面的公司名称为"+companyNameValue+"表格外面的公司名称为"+companyName);
         }
         if (!yearValues.equals(year)) {
             throw new ServiceException("导入的公司年份与excel中的公司年份不一致，导入失败");

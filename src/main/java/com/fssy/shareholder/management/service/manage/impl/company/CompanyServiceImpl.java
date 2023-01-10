@@ -5,13 +5,13 @@
 package com.fssy.shareholder.management.service.manage.impl.company;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,6 +58,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
             resultList.add(result);
         }
         return resultList;
+    }
+
+    @Override
+    public Page<Company> findDataListByParams(Map<String, Object> params) {
+        QueryWrapper<Company> queryWrapper = getQueryWrapper(params).orderByDesc("id");
+        Page<Company> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
+        return companyMapper.selectPage(myPage, queryWrapper);
     }
 
     private QueryWrapper<Company> getQueryWrapper(Map<String, Object> params) {

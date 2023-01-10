@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>新增单条年度投资项目</title>
+    <title>新增单条非权益投资情况</title>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
 </head>
 <body>
@@ -16,18 +16,18 @@
                     <td colspan="6" style="background: #f7f7f7; color: black;">填写内容</td>
                 </tr>
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp年度:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;年度:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="year" id="year"
-                                   lay-verify="required" />
+                                   lay-verify="required" lay-reqText="年度为必填项" />
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;月份:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;月份:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="month" id="month"
-                                   lay-verify="required" />
+                                   lay-verify="required" lay-reqText="月份为必填项" />
                         </div>
                     </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;企业名称:</td>
@@ -39,99 +39,73 @@
 
                 </tr>
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;项目名称:</td>
+                    <td style="text-align: right"><span></span>&nbsp;序号:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="projectName" id="projectName"
-                                   lay-verify="required" />
+                            <input type="text" class="layui-input" name="lineNumber" id="lineNumber"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;项目来源:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;一级类别:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="projectSource" id="projectSource"
-                                   lay-verify="required" />
+                            <input type="text" class="layui-input" name="firstType" id="firstType"
+                                   lay-verify="required" lay-reqText="一级类别为必填项" />
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;项目类别:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;指标:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <select name="projectType" lay-verify="required" lay-reqText="项目类别为必填项">
-                                <option value="" selected>请选择项目类别型</option>
-                                <option value="自动化">自动化</option>
-                                <option value="质量提升">质量提升</option>
-                                <option value="基建">基建</option>
-                                <option value="产能提升">产能提升</option>
-                                <option value="其他">其他</option>
-                            </select>
+                            <input type="text" class="layui-input" name="item" id="item"
+                                   lay-verify="required" lay-reqText="指标为必填项" />
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;项目投资类型:</td>
+                    </td> <td style="text-align: right"><span></span>&nbsp;定义:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <select name="projectClass" lay-verify="required" lay-reqText="项目投资类型为必填项">
-                                <option value="" selected>请选择项目投资类型</option>
-                                <option value="重点项目">重点项目</option>
-                                <option value="一般项目">一般项目</option>
-                            </select>
+                            <input type="text" class="layui-input" name="describe" id="describe"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='font-weight: bold'></span>&nbsp;项目简介:</td>
+                    <td style="text-align: right"><span style='font-weight: bold'></span>&nbsp;单位:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="projectAbstract" id="projectAbstract"/>
+                            <input type="text" class="layui-input" name="unit" id="unit"
+                                   lay-verify="required" lay-reqText="单位为必填项" />
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;计划投资额:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;评价:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="investmentVolumePlan" id="investmentVolumePlan"
-                                   lay-verify="required" />
+                            <input type="text" class="layui-input" name="evaluate" id="evaluate"
+                                   lay-verify="required" lay-reqText="评价为必填项"/>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;分管经理人:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;全年预算金额:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="respManager" id="respManager"
-                                   lay-verify="required" />
+                            <input type="text" class="layui-input" name="budget" id="budget"
+                                   lay-verify="required" lay-reqText="全年预算金额为必填项"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style=' font-weight: bold'></span>&nbsp;项目联络人:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;全年实绩:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="projectContact" id="projectContact"/>
+                            <input type="text" class="layui-input" name="accumulation" id="accumulation"
+                                   lay-verify="required" lay-reqText="全年实绩为必填项"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;所属产业单元:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;预算完成比例:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="businessUnit" id="businessUnit"
-                                   lay-verify="required" />
+                            <input type="text" class="layui-input" name="proportion" id="proportion"
+                                   lay-verify="required" lay-reqText="预算完成比例为必填项"/>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;项目计划开始时间:</td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input laydate" name="projectSrartDatePlan" id="projectSrartDatePlan"
-                                   lay-verify="required" autocomplete="off"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;项目计划完成时间:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input laydate" name="projectEndDatePlan" id="projectEndDatePlan"
-                                   lay-verify="required" autocomplete="off"/>
-                        </div>
-                    </td>
-                </tr>
                 <tr>
                     <td style="text-align: right">备注</td>
                     <td colspan="6">
@@ -178,7 +152,7 @@
             $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
             $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
             $.ajax({
-                url: '/system/operate/invest/invest-project-year/store',
+                url: '/system/operate/invest/Condition/store',
                 type: 'POST',
                 data: data.field,
                 success: function (result) {
@@ -199,7 +173,7 @@
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
         // 公司选择获得器
-        var companySelect = xmSelect.render({
+            xmSelect.render({
             el: '#companySelect',
             language: 'zn',
             data: [[${companyNameList}]],
