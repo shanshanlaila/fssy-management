@@ -4,6 +4,9 @@
  */
 package com.fssy.shareholder.management.service.manage.company;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,4 +26,5 @@ public interface CompanyService {
      */
     List<Map<String, Object>> findCompanySelectedDataListByParams(Map<String, Object> params, List<String> selectedIds);
 
+    Page<Company> findDataListByParams(Map<String, Object> params);
 }

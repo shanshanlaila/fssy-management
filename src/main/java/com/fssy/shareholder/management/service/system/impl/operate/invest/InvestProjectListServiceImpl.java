@@ -20,7 +20,6 @@ import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.operate.invest.InvestProjectListService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
-import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -32,8 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -260,7 +257,7 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
             queryWrapper.eq("companyName",companyName).eq("year",year).eq("projectName",projectName).eq("month",month);
             List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(queryWrapper);
             if (investProjectLists.size()>0){
-                setFailedContent(result, String.format("第%s行的项目已经存在", j + 1));
+                setFailedContent(result, String.format("第%s行的项目已经存在,第%s行的年份已经存在,第s%的项目名称已经存在,第s%的月份已经存在", j + 1));
                 cell.setCellValue("项目已经存在");
                 continue;
             }
@@ -556,18 +553,6 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
         Integer year = investProjectList.getYear();
         Integer month = investProjectList.getMonth();
         String projectName = investProjectList.getProjectName();
-        //校验年份、公司名称、月份、项目名称，如果四个有相同则不允许新增
-        QueryWrapper<InvestProjectList> investProjectListQueryWrapper = new QueryWrapper<>();
-        System.out.println(companyId);
-        investProjectListQueryWrapper.eq("companyId",companyId).eq("year",year).eq("month", month).eq("projectName",projectName);
-        List<InvestProjectList> investProjectLists = investProjectListMapper.selectList(investProjectListQueryWrapper);
-        //查询到相同项目 不允许添加
-        if (investProjectLists.size()>1){
-            throw new ServiceException("已存在相同的项目，不允许重复添加");
-        }
-
-
-
         int result = investProjectListMapper.updateById(investProjectList);
 
         //同步修改项目跟踪表信息

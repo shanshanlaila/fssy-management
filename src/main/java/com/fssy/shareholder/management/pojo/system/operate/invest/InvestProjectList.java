@@ -6,11 +6,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-import java.io.Serializable;
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -127,6 +127,8 @@ public class InvestProjectList extends BaseModel {
      * 项目开始时间计划
      */
     @TableField("projectSrartDatePlan")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     private LocalDate projectSrartDatePlan;
 
     /**
