@@ -1,11 +1,9 @@
 package com.fssy.shareholder.management.controller.system.operate.invest;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
-import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.operate.invest.InvestPlan;
@@ -40,7 +38,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/system/operate/invest/plan/")
-public class PlanController {
+public class InvestPlanController {
 
     @Autowired
     private InvestPlanService investPlanService;
@@ -231,7 +229,7 @@ public class PlanController {
         companyIds.add(String.valueOf(companyId));
         model.addAttribute("companyIds", companyIds);
         model.addAttribute("investPlan", investPlan);
-        return "/system/operate/invest/invest-plan/invest-plan-edit";
+        return "system/operate/invest/invest-plan/invest-plan-edit";
     }
 
     /**
