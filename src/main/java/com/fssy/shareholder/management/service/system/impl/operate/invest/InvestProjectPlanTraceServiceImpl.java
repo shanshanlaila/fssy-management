@@ -79,7 +79,7 @@ public class InvestProjectPlanTraceServiceImpl extends ServiceImpl<InvestProject
 
     @Override
     @Transactional
-    public Map<String, Object> reaadInvestProjectPlanTraceDataSource(Attachment attachment, String year, String companyName, String month, String projectName,String projectListId) {
+    public Map<String, Object> readInvestProjectPlanTraceDataSource(Attachment attachment, String year, String companyName, String month, String projectName,String projectListId) {
 
         // 返回消息
         Map<String, Object> result = new HashMap<>();

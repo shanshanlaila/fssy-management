@@ -265,7 +265,7 @@ public class InvestProjectListController {
 
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = investProjectPlanTraceService.reaadInvestProjectPlanTraceDataSource(result, year, companyName, month, projectName, projectListId);
+            Map<String, Object> resultMap = investProjectPlanTraceService.readInvestProjectPlanTraceDataSource(result, year, companyName, month, projectName, projectListId);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
