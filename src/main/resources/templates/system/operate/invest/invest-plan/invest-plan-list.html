@@ -65,11 +65,6 @@
                     <script type="text/html" id="tool">
                         <a lay-event="edit" title="投资计划修改"><i class="layui-icon">&#xe642;</i></a>
                     </script>
-                    <script type="text/html" id="toolbar">
-                        <div class="layui-btn-container">
-                            <button class="layui-btn layui-btn-sm" lay-event="create">新增单条投资计划</button>
-                        </div>
-                    </script>
                 </div>
             </div>
         </div>
@@ -241,25 +236,6 @@
             return false;
         });
 
-        // 监听头工具栏事件
-        table.on('toolbar(dataTable)', function (obj) {
-            if (obj.event === 'create') {
-                // 弹出添加页面
-                layer.open(
-                    {
-                        type: 2,
-                        title: '新增单条投资计划',
-                        area:
-                            [
-                                $(window).width() * 0.9 + 'px',
-                                $(window).height() - 50 + 'px'
-                            ],
-                        content: '/system/operate/invest/plan/create',
-                        scrollbar: true,
-                        maxmin: true
-                    });
-            }
-        });
 
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
