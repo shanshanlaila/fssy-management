@@ -30,7 +30,7 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="companySelect"></div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="lineNumber" name="lineNumber" placeholder="导入行号查询"
                                    autocomplete="off" class="layui-input">
                         </div>
@@ -38,15 +38,15 @@
                             <input type="text" id="year" name="year" placeholder="年度查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" id="firstType" name="firstType" placeholder="一级类别查询"
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="firstType" name="firstType" placeholder="类别查询"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="item" name="item" placeholder="指标查询"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" id="unit" name="unit" placeholder="单位查询"
                                    autocomplete="off" class="layui-input">
                         </div>
@@ -54,11 +54,16 @@
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
                             <a class="layui-btn" lay-submit th:href="@{/export/invest-condition.xlsx}">
                                 <i class="layui-icon">&#xe601</i>下载填写年度投资项目执行情况模板
                             </a>
                             <button shiro:hasPermission="system:operate:invest:Condition:import"
                                     lay-submit lay-filter="import" class="layui-btn">导入年度投资项目执行情况
+                            </button>
+                            <button shiro:hasPermission="system:operate:invest:Condition:downloadInvestCondition"
+                                    lay-submit lay-filter="exportInvestCondition" class="layui-btn">导出年度投资项目执行情况
                             </button>
                         </div>
                     </div>
@@ -138,15 +143,9 @@
                                 [
                                     [
                                         {
-                                            field: 'id',
-                                            title: 'ID',
-                                            width: 50,
-                                            fixed: 'left'
-                                        },
-                                        {
                                             field: 'lineNumber',
                                             title: '导入行号',
-                                            width: 50,
+                                            width: 80,
                                         },
                                         {
                                             field: 'year',
@@ -155,7 +154,7 @@
                                         },
                                         {
                                             field: 'firstType',
-                                            title: '一级类别',
+                                            title: '类别',
                                             width: 80,
                                         },
                                         {
@@ -194,6 +193,12 @@
                                             title: '评价',
                                             width: 80,
                                         },
+                                        {
+                                            field: 'id',
+                                            title: 'ID',
+                                            width: 50,
+                                        },
+
                                         {
                                             fixed: 'right',
                                             title: '操作',
@@ -274,7 +279,20 @@
                             });
                     }
                 });
-
+                // 监听导出按钮
+                form.on('submit(exportInvestCondition)', function (data) {
+                    var field = data.field;
+                    var year = data.field.year;
+                    if (!year) {
+                        layer.msg("年度为必须项，请选择年度", {icon: 5, time: 4000});
+                        return false;
+                    }
+                    field.url = "/system/operate/invest/Condition/downloadInvestCondition";
+                    var url = createUrl(field);
+                    layer.msg("正在导出项目列表，请稍候");
+                    window.open(url, true);
+                    return false;
+                });
                 // 监听行工具事件
                 table.on('tool(dataTable)', function (obj) {
                     var data = obj.data;
@@ -320,7 +338,7 @@
                         language: 'zn',
                         data: [[${companyNameList}]],
                         filterable: true,
-                        radio: true,
+                        radio: false,//是否单选
                         tips: '请选择公司',
                         toolbar: {
                             show: true

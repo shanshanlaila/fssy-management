@@ -7,10 +7,11 @@ import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.operate.invest.Condition;
+import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
-import com.fssy.shareholder.management.service.system.operate.invest.ConditionService;
+import com.fssy.shareholder.management.service.system.operate.invest.InvestConditionService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
@@ -24,10 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * <p>
@@ -39,9 +38,9 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/system/operate/invest/Condition/")
-public class ConditionController {
+public class InvestConditionController {
     @Autowired
-    private ConditionService conditionService;
+    private InvestConditionService investConditionService;
     @Autowired
     private AttachmentService attachmentService;
 
@@ -84,7 +83,7 @@ public class ConditionController {
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
 
-        Page<Condition> handlersItemPage = conditionService.findDataListByParams(params);
+        Page<Condition> handlersItemPage = investConditionService.findDataListByParams(params);
         if (handlersItemPage.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");
@@ -225,7 +224,7 @@ public class ConditionController {
         Attachment result= fileAttachmentTool.storeFileToModule(file, module, attachment);
         try {
             //读取附件并保存数据
-            Map<String, Object> resultMap = conditionService.readConditionDataSource(result,request);
+            Map<String, Object> resultMap = investConditionService.readConditionDataSource(result,request);
             //判断是否失败，实现类中的setFailedContent()
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS
@@ -258,7 +257,7 @@ public class ConditionController {
     @GetMapping("edit/{id}")
     @RequiresPermissions("system:operate:invest:Condition:edit")
     public String showEditPage(@PathVariable String id, Model model) {
-        Condition condition = conditionService.getById(id);
+        Condition condition = investConditionService.getById(id);
         model.addAttribute("condition",condition);//把condition传到前端
         //1、查询公司列表，用于companyName xm-select插件
         Map<String, Object> companyParams = new HashMap<>();
@@ -284,7 +283,7 @@ public class ConditionController {
     @ResponseBody
     public SysResult update(Condition Condition, HttpServletRequest request) {
         Map<String,Object> params=new HashMap<>();
-        boolean result = conditionService.updateInvestConditionData(Condition,request);
+        boolean result = investConditionService.updateInvestConditionData(Condition,request);
         if (result) {
             return SysResult.ok();
         }
@@ -340,11 +339,50 @@ public class ConditionController {
     @RequiredLog("保存新增单条非权益投资情况")
     @ResponseBody
     public SysResult Store(Condition condition, HttpServletRequest request) {
-        boolean result = conditionService.insertInvestCondition(condition,request);
+        boolean result = investConditionService.insertInvestCondition(condition,request);
         if (result) {
             return SysResult.ok();
         }
         return SysResult.build(500, "新增失败");
     }
-
+    /**
+     * 导出非权益投资情况
+     *
+     * @param request  请求
+     * @param response 响应
+     */
+    @RequiredLog("导出非权益投资情况")
+    @RequiresPermissions("system:operate:invest:Condition:downloadInvestCondition")
+    @GetMapping("downloadInvestCondition")
+    public void downloadInvestCondition(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> params = getParams(request);
+        params.put("select",
+                "id,lineNumber," +
+                        "year," +
+                        "firstType,"+
+                        "item," +
+                        "`describe`," +
+                        "unit,budget," +
+                        "accumulation,proportion,evaluate");
+        List<Map<String, Object>> InvestConditions = investConditionService.findInvestConditionDataByParams(params);
+        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+        // 需要改背景色的格子
+        fieldMap.put("lineNumber", "序号");// A
+        fieldMap.put("year", "年度");// B
+        fieldMap.put("firstType", "类别");// C
+        fieldMap.put("item", "指标");// D
+        fieldMap.put("describe", "定义");// E
+        fieldMap.put("unit", "单位");// F
+        fieldMap.put("budget", "全年预算");//  F
+        fieldMap.put("accumulation", "全年实绩");//  G
+        fieldMap.put("proportion","完成预算");// H
+        fieldMap.put("evaluate", "评价"); // I
+        // 标识字符串的列
+        List<Integer> strList = Arrays.asList(0,1,2,3,4);
+        SheetOutputService sheetOutputService = new SheetOutputService();
+        if (org.springframework.util.ObjectUtils.isEmpty(InvestConditions)) {
+            throw new ServiceException("未查出数据");
+        }
+        sheetOutputService.exportNum("投资情况表", InvestConditions, fieldMap, response, strList, null);
+    }
 }

@@ -662,7 +662,7 @@ public class InvestProjectListController {
         if (org.springframework.util.ObjectUtils.isEmpty(investProjectLists)) {
             throw new ServiceException("未查出数据");
         }
-        sheetOutputService.exportNum("投资分析表", investProjectLists, fieldMap, response, strList, null);
+        sheetOutputService.exportNum("年度投资项目清单", investProjectLists, fieldMap, response, strList, null);
     }
 
     @GetMapping("upload/{id}")

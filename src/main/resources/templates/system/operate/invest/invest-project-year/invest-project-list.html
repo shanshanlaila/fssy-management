@@ -52,10 +52,6 @@
                             <input type="text" name="projectType" placeholder="项目类别" id="projectType"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <!--<div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="projectClass" placeholder="项目投资类型" id="projectClass"
-                                   autocomplete="off" class="layui-input">
-                        </div>-->
                         <div class="layui-inline layui-show-xs-block" style="width: 140px">
                             <select name="projectClass" id="projectClass">
                                 <option value="" selected>请选择项目投资类型类型</option>
@@ -143,6 +139,8 @@
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
+                        </div>
+                            <div class="layui-inline layui-show-xs-block">
                             <a class="layui-btn" lay-submit th:href="@{/export/project-list.xlsx}">
                                 <i class="layui-icon">&#xe601</i>下载填写年度投资项目清单模板
                             </a>
@@ -485,7 +483,7 @@
             language: 'zn',
             data: [[${companyNameList}]],
             filterable: true,
-            radio: true,
+            radio: false,//是否单选
             tips: '请选择公司',
             toolbar: {
                 show: true
