@@ -6,13 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.config.AttachmentMapper;
-import com.fssy.shareholder.management.mapper.system.operate.invest.ConditionMapper;
+import com.fssy.shareholder.management.mapper.system.operate.invest.InvestConditionMapper;
 import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.Condition;
 import com.fssy.shareholder.management.service.common.SheetService;
-import com.fssy.shareholder.management.service.system.operate.invest.ConditionService;
+import com.fssy.shareholder.management.service.system.operate.invest.InvestConditionService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -39,9 +39,9 @@ import java.util.*;
  * @since 2023-01-03
  */
 @Service
-public class ConditionServiceImpl extends ServiceImpl<ConditionMapper, Condition> implements ConditionService {
+public class InvestInvestConditionServiceImpl extends ServiceImpl<InvestConditionMapper, Condition> implements InvestConditionService {
     @Autowired
-    private ConditionMapper conditionMapper;
+    private InvestConditionMapper investConditionMapper;
     @Autowired
     private SheetService sheetService;
     @Autowired
@@ -53,7 +53,7 @@ public class ConditionServiceImpl extends ServiceImpl<ConditionMapper, Condition
     public Page<Condition> findDataListByParams(Map<String, Object> params) {
         QueryWrapper<Condition> queryWrapper = getQueryWrapper(params).orderByDesc("id");
         Page<Condition> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
-        return conditionMapper.selectPage(myPage, queryWrapper);
+        return investConditionMapper.selectPage(myPage, queryWrapper);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class ConditionServiceImpl extends ServiceImpl<ConditionMapper, Condition
             condition.setCompanyName(company.getName());
             condition.setCompanyId(companyId);
             condition.setCompanyShortName(company.getShortName());
-            conditionMapper.insert(condition);
+            investConditionMapper.insert(condition);
             cell.setCellValue("导入成功");
         }
         sheetService.write(attachment.getPath(), attachment.getFilename());//写入excel表
@@ -238,7 +238,7 @@ public class ConditionServiceImpl extends ServiceImpl<ConditionMapper, Condition
             condition.setUpdatedAt(LocalDateTime.now());
             condition.setUpdatedId(user.getId());
             condition.setUpdatedName(user.getName());
-            int result = conditionMapper.updateById(condition);
+            int result = investConditionMapper.updateById(condition);
             if (result>0){
                 return true;
             }
@@ -260,8 +260,14 @@ public class ConditionServiceImpl extends ServiceImpl<ConditionMapper, Condition
         condition.setCreatedAt(LocalDateTime.now());
         condition.setCreatedId(user.getId());
         condition.setCreatedName(user.getName());
-        conditionMapper.insert(condition);
+        investConditionMapper.insert(condition);
         return true;
+    }
+
+    @Override
+    public List<Map<String, Object>> findInvestConditionDataByParams(Map<String, Object> params) {
+        QueryWrapper<Condition> queryWrapper = getQueryWrapper(params);
+        return investConditionMapper.selectMaps(queryWrapper);
     }
 
 

@@ -6,6 +6,7 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.operate.invest.Condition;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Map;
  * @author 农浩
  * @since 2023-01-03
  */
-public interface ConditionService extends IService<Condition> {
+public interface InvestConditionService extends IService<Condition> {
     /**
      * 根据参数分页查询数据
      * @param params 查询参数
@@ -43,4 +44,11 @@ public interface ConditionService extends IService<Condition> {
      * @return ture/false
      */
     boolean insertInvestCondition(Condition condition, HttpServletRequest request);
+
+    /**
+     * 通过查询条件，查询数据（用于导出）
+     * @param params
+     * @return
+     */
+    List<Map<String, Object>> findInvestConditionDataByParams(Map<String, Object> params);
 }

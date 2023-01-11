@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2023-01-03
  */
 @Mapper
-public interface ConditionMapper extends MyBaseMapper<Condition> {
+public interface InvestConditionMapper extends MyBaseMapper<Condition> {
 
 }

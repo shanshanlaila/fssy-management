@@ -143,6 +143,8 @@
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
+                        </div>
+                            <div class="layui-inline layui-show-xs-block">
                             <a class="layui-btn" lay-submit th:href="@{/export/project-list.xlsx}">
                                 <i class="layui-icon">&#xe601</i>下载填写年度投资项目清单模板
                             </a>
@@ -485,7 +487,7 @@
             language: 'zn',
             data: [[${companyNameList}]],
             filterable: true,
-            radio: true,
+            radio: false,//是否单选
             tips: '请选择公司',
             toolbar: {
                 show: true
