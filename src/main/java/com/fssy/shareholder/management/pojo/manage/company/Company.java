@@ -1,18 +1,21 @@
 package com.fssy.shareholder.management.pojo.manage.company;
 
 
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * 公司实体类</br>
@@ -20,8 +23,10 @@ import java.time.LocalDateTime;
  *
  * @author Shizn
  */
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = false)
 @TableName("basic_company")
 public class Company extends BaseModel
 {
@@ -59,26 +64,6 @@ public class Company extends BaseModel
 	@TableField("status")
 	private String status;
 	/**
-	 *创建人ID
-	 */
-	@TableField("createdId")
-	private Long createdId;
-	/**
-	 *更新人ID
-	 */
-	@TableField("updatedId")
-	private Long updatedId;
-	/**
-	 * 创建人姓名
-	 */
-	@TableField("createdName")
-	private String createdName;
-	/**
-	 * 更新人姓名
-	 */
-	@TableField("updatedName")
-	private String updatedName;
-	/**
 	 * 启用日期
 	 */
 	@TableField("activeDate")
@@ -92,21 +77,4 @@ public class Company extends BaseModel
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	@JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
 	private LocalDate inactiveDate;
-	/**
-	 * 创建时间
-	 */
-	@TableField("createdAt")
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	@JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
-	private LocalDateTime createdAt;
-	/**
-	 * 更新时间
-	 */
-	@TableField("updatedAt")
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	@JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
-	private LocalDateTime updatedAt;
-
-
-
 }

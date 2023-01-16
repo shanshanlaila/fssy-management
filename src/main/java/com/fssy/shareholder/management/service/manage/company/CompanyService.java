@@ -26,5 +26,36 @@ public interface CompanyService {
      */
     List<Map<String, Object>> findCompanySelectedDataListByParams(Map<String, Object> params, List<String> selectedIds);
 
-    Page<Company> findDataListByParams(Map<String, Object> params);
+    Page<Company> findDataPageByParams(Map<String, Object> params);
+    
+    List<Company> findDataListByParams(Map<String, Object> params);
+    
+    Page<Map<String, Object>> findDataMapPageByParams(Map<String, Object> params);
+    
+    List<Map<String, Object>> findDataListMapByParams(Map<String, Object> params);
+    
+	/**
+	 * 添加公司数据
+	 *
+	 * @param company 公司实体
+	 * @return 公司实体
+	 */
+	Company saveCompany(Company company);
+	
+	/**
+	 * 修改公司数据
+	 *
+	 * @param company 公司实体
+	 * @return true/false
+	 */
+	Map<String, Object> updateCompany(Company company);
+
+	/**
+	 * 启用或不启用公司
+	 *
+	 * @param id     公司表主键
+	 * @param active 状态
+	 * @return
+	 */
+	Map<String, Object> activateOrInactivateCompany(int id, String active);
 }
