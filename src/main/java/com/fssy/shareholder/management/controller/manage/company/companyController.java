@@ -170,6 +170,18 @@ public class companyController
 		{
 			params.put("inactiveDateEnd", request.getParameter("inactiveDateEnd"));
 		}
+		if (!ObjectUtils.isEmpty(request.getParameter("idDesc")))
+		{
+			params.put("idDesc", request.getParameter("idDesc"));
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("select")))
+		{
+			params.put("select", request.getParameter("select"));
+		}
+		if (!ObjectUtils.isEmpty(request.getParameter("groupBy")))
+		{
+			params.put("groupBy", request.getParameter("groupBy"));
+		}
 		// endregion
 		return params;
 	}
