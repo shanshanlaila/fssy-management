@@ -351,4 +351,37 @@ public class ManageCompanyServiceImpl extends ServiceImpl<ManageCompanyMapper, M
 		}
 		return resultList;
 	}
+
+	@Override
+	@Transactional
+	public Map<String, Object> update(ManageCompany manageCompany)
+	{
+		// region 业务判断
+		QueryWrapper<ManageCompany> checkQueryWrapper = new QueryWrapper<>();
+		checkQueryWrapper.eq("code", manageCompany.getCode()).ne("id", manageCompany.getId());
+		if (manageCompanyMapper.selectCount(checkQueryWrapper) > 0)
+		{
+			throw new ServiceException(
+					String.format("代码为【%s】的经营公司已经存在，不能修改", manageCompany.getCode()));
+		}
+
+		checkQueryWrapper = new QueryWrapper<>();
+		checkQueryWrapper.eq("name", manageCompany.getName()).ne("id", manageCompany.getId());
+		if (manageCompanyMapper.selectCount(checkQueryWrapper) > 0)
+		{
+			throw new ServiceException(
+					String.format("名称为【%s】的经营公司已经存在，不能修改", manageCompany.getName()));
+		}
+		// endregion
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", true);
+		manageCompanyMapper.updateById(manageCompany);
+		return result;
+	}
+
+	@Override
+	public ManageCompany findDataById(String id)
+	{
+		return manageCompanyMapper.selectById(id);
+	}
 }

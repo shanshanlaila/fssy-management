@@ -59,9 +59,12 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company>
 		for (Company company : companyNameList)
 		{
 			Map<String, Object> result = new HashMap<String, Object>();
-			result.put("name", company.getShortName());
+			result.put("name", company.getCode() + "|" + company.getShortName());
 			result.put("value", company.getId());
 			result.put("id", company.getId());
+			result.put("longName", company.getName());
+			result.put("shortName", company.getShortName());
+			result.put("code", company.getCode());
 			boolean selected = false;
 			for (int i = 0; i < selectedIds.size(); i++)
 			{

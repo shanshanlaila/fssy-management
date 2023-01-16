@@ -2,6 +2,9 @@ package com.fssy.shareholder.management.pojo.system.operate.analysis;
 
 import java.time.LocalDate;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -82,12 +85,15 @@ public class ManageCompany extends BaseModel
 	/**
 	 * 基础公司表主键
 	 */
+	@NotNull(message = "基础公司不能为空")
 	@TableField("basicCompanyId")
 	private Long basicCompanyId;
 	
 	/**
 	 * 公司简称
 	 */
+	@NotNull(message = "公司简称不能为空")
+	@NotBlank(message = "公司简称不能为空")
 	@TableField("shortName")
 	private String shortName;
 }

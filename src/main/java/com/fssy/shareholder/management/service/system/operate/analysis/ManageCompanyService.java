@@ -76,4 +76,20 @@ public interface ManageCompanyService extends IService<ManageCompany>
 	 */
 	List<Map<String, Object>> findManageCompanySelectedDataListByParams(Map<String, Object> params,
 			List<String> selectedIds);
+
+	/**
+	 * 修改经营公司补充信息
+	 * 
+	 * @param manageCompany 经营公司实体
+	 * @return
+	 */
+	Map<String, Object> update(ManageCompany manageCompany);
+
+	/**
+	 * 根据主键查询经营公司
+	 * 
+	 * @param id 经营公司表主键
+	 * @return
+	 */
+	ManageCompany findDataById(String id);
 }

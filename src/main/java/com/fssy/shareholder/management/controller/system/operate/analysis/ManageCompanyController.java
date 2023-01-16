@@ -1,11 +1,13 @@
 package com.fssy.shareholder.management.controller.system.operate.analysis;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +15,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.system.operate.analysis.ManageCompany;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.operate.analysis.ManageCompanyService;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
 
 /**
  * <p>
@@ -39,6 +45,12 @@ public class ManageCompanyController
 	private ManageCompanyService manageCompanyService;
 
 	/**
+	 * 管理公司业务实现类
+	 */
+	@Autowired
+	private CompanyService companyService;
+	
+	/**
 	 * 经营公司管理页面
 	 *
 	 * @return 经营公司管理页面
@@ -57,6 +69,7 @@ public class ManageCompanyController
 	 * @param request 前端请求参数
 	 * @return Map集合
 	 */
+	@RequiresPermissions("operate:analysis:manage:company:getObjects")
 	@RequestMapping("getObjects")
 	@ResponseBody
 	public Map<String, Object> getObjects(HttpServletRequest request)
@@ -154,6 +167,55 @@ public class ManageCompanyController
 	{
 		Map<String, Object> params = getParams(request);
 		manageCompanyService.receiveDataByArtificial(params);
+		return SysResult.ok();
+	}
+	
+	/**
+	 * 返回修改页面
+	 *
+	 * @param request 请求实体
+	 * @param model   视图模型
+	 * @return
+	 */
+	@RequiredLog("修改经营公司")
+	@RequiresPermissions("operate:analysis:manage:company:edit")
+	@GetMapping("edit")
+	public String editView(HttpServletRequest request, Model model)
+	{
+		// 获取公司id
+		String id = request.getParameter("id");
+		// 查询公司信息
+		ManageCompany manageCompany = manageCompanyService.findDataById(id);
+		model.addAttribute("manageCompany", manageCompany);
+
+		// 查询管理公司
+		Map<String, Object> companyParams = new HashMap<>();
+		companyParams.put("status", CommonConstant.COMMON_STATUS_STRING_ACTIVE);
+		List<String> selectedIds = new ArrayList<>();
+		if (!ObjectUtils.isEmpty(manageCompany.getBasicCompanyId()))
+		{
+			selectedIds.add(manageCompany.getBasicCompanyId().toString());
+		}
+		List<Map<String, Object>> companyList = companyService
+				.findCompanySelectedDataListByParams(companyParams, selectedIds);
+		model.addAttribute("companyList", companyList);
+
+		return "system/operate/analysis/basic/manage-company-edit";
+	}
+
+	/**
+	 * 修改经营公司操作
+	 *
+	 * @param company 公司实体
+	 * @return
+	 */
+	@RequiredLog("修改经营公司操作")
+	@RequiresPermissions("operate:analysis:manage:company:update")
+	@PutMapping("update")
+	@ResponseBody
+	public SysResult update(@Valid ManageCompany mangeCompany)
+	{
+		manageCompanyService.update(mangeCompany);
 		return SysResult.ok();
 	}
 }
