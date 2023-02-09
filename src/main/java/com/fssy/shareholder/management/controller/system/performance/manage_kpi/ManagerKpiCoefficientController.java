@@ -220,7 +220,7 @@ public class ManagerKpiCoefficientController {
             // 读取附件并保存数据
             Map<String, Object> resultMap = managerKpiCoefficientService.readManagerKpiCoefficientDataSource(result,companyName,year);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
-                attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
+                attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
                 return SysResult.build(200, "表中有空值，未导入成功的数据请看附件导入列表页面！请重新导入失败的数据");
             } else {

@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @TableName("basic_company")
 public class Company extends BaseModel
 {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8214304078713864755L;
 
 	/**
 	 * 序号

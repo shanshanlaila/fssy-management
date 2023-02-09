@@ -663,7 +663,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany,benchmarkValue," +
                 "monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget,reachTarget," +
                 "dataSource,challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual," +
-                "kpiDefinition,kpiDecomposeMode");
+                "kpiDefinition,kpiDecomposeMode,evaluateMode,managerKpiMark");
         do {
             selectStr1.append(", sum(if(MONTH =" + MONTH + ",monthTarget,null)) AS 'monthTarget" + MONTH + "'"
                     + ", sum(if(MONTH =" + MONTH + ",monthActualValue,null)) AS 'monthActual" + MONTH + "'");

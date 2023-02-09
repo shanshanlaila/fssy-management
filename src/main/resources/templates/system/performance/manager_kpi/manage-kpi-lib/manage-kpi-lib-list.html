@@ -208,7 +208,7 @@
         $(document).ready(function() {
             console.log($("#year").val())
             table.reload('dataTable', {
-                url: "/system/performance/manager_kpi/manage-kpi-lib/getObjects?kpiYear=" + moment().format("YYYY"),
+                url: "/system/performance/manager_kpi/manage-kpi-lib/getObjects?kpiYear=",
                 // where: data.field,
                 page: {
                     curr: 1
