@@ -204,7 +204,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             }
             //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
             QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("shortName", companyName);
+            companyQueryWrapper.eq("name", companyName);
             List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
             if (companyList.size() > 1) {
                 setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
@@ -220,6 +220,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             Company company = companyMapper.selectList(companyQueryWrapper).get(0);
 
             manageKpiYear.setCompanyId(company.getId());      //公司id
+            manageKpiYear.setCompanyNameShort(company.getShortName());  //公司简称
             //前端选择并写入
             manageKpiYear.setYear(Integer.valueOf(year));
             manageKpiYear.setCompanyName(companyName);
@@ -352,7 +353,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
 
             //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
             QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("shortName", companyName);
+            companyQueryWrapper.eq("name", companyName);
             List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
             if (companyList.size() > 1) {
                 setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
@@ -549,7 +550,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 ManageKpiMonthAim manageKpiMonthAim = new ManageKpiMonthAim();
                 //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
                 QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-                companyQueryWrapper.eq("shortName", companyName);
+                companyQueryWrapper.eq("name", companyName);
                 List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
                 if (companyList.size() > 1) {
                     setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
@@ -565,6 +566,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 Company company = companyMapper.selectList(companyQueryWrapper).get(0);
 
                 manageKpiMonthAim.setCompanyId(company.getId());      //公司id
+                manageKpiMonthAim.setCompanyNameShort(company.getShortName());      //公司简称
 
                 //更新id
                 if (monthAimList.size() == 1) {
@@ -670,7 +672,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         //设置月份常量，十二月一共循环十二次，与数据查询的月份无关联
         int MONTH = 12;
         // 达成数量
-        StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany,benchmarkValue," +
+        StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,companyNameShort,projectType,projectDesc,unit,benchmarkCompany,benchmarkValue," +
                 "monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget,reachTarget," +
                 "dataSource,challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual,pastThreeYearsActual," +
                 "kpiDefinition,kpiDecomposeMode,evaluateMode,managerKpiMark");
@@ -683,7 +685,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 "sum(if(MONTH =" + month + ",accumulateTarget,null)) AS 'monthAActual'" +
                 ", sum(if(MONTH =" + month + ",analyzeRes,null)) AS 'analyzeRes' ");
         queryWrapper.select(selectStr1.toString()).eq("year", year)
-                .groupBy("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany," +
+                .groupBy("manageKpiYearId,companyName,companyNameShort,projectType,projectDesc,unit,benchmarkCompany," +
                         "benchmarkValue,monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget," +
                         "reachTarget,dataSource,challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual," +
                         "pastThreeYearsActual,kpiDefinition,kpiDecomposeMode");

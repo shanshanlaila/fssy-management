@@ -35,6 +35,12 @@ public class ViewManageMonthPerformance extends BaseModel {
     private String companyName;
 
     /**
+     * 企业简称
+     */
+    @TableField("companyNameShort")
+    private String companyNameShort;
+
+    /**
      * 企业id
      */
     @TableField("companyId")

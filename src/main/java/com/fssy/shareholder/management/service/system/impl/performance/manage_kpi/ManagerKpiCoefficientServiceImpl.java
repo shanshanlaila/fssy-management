@@ -154,7 +154,7 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
             managerKpiCoefficient.setCompanyName(companyName);
             //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
             QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("shortName",companyName);
+            companyQueryWrapper.eq("name",companyName);
             List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
             if (companyList.size() > 1) {
                 setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
@@ -169,6 +169,7 @@ public class ManagerKpiCoefficientServiceImpl extends ServiceImpl<ManagerKpiCoef
             //公司表中存在数据，获取这个公司名称的id
             Company company = companyMapper.selectList(companyQueryWrapper).get(0);
             managerKpiCoefficient.setCompanyId(company.getId());      //公司id
+
 
             // 根据指标、年份和公司名称找月度报表对应的id，后导入id
             QueryWrapper<ManagerKpiCoefficient> managerKpiCoefficientQueryWrapper = new QueryWrapper<>();

@@ -251,6 +251,9 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
         if (params.containsKey("companyName")) {
             queryWrapper.like("companyName", params.get("companyName"));
         }
+        if (params.containsKey("companyNameShort")) {
+            queryWrapper.like("companyNameShort", params.get("companyNameShort"));
+        }
         if (params.containsKey("generalManager")) {
             queryWrapper.like("generalManager", params.get("generalManager"));
         }
