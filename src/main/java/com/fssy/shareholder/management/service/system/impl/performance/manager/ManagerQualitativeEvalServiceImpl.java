@@ -173,6 +173,7 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
             //公司表中存在数据，获取这个公司名称的id
             Company company = companyMapper.selectList(companyQueryWrapper).get(0);
             Integer companyId = company.getId();
+            String companyNameShort = company.getShortName();
 
             //对数据库中的数据进行验证，检查当年是否导入过定性评价分数，如果存在则更新，不存在则添加
             QueryWrapper<ManagerQualitativeEval> managerQualitativeEvalQueryWrapper = new QueryWrapper<>();
@@ -192,6 +193,7 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
             }
             managerQualitativeEval.setManagerName(managerName);
             managerQualitativeEval.setCompanyName(companyName);
+            managerQualitativeEval.setCompanyNameShort(companyNameShort);
             managerQualitativeEval.setCompanyId(companyId);
             managerQualitativeEval.setPosition(position);
             managerQualitativeEval.setYear(Integer.valueOf(yearExcel));

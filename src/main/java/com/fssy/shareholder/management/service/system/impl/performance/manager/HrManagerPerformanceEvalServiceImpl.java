@@ -204,6 +204,7 @@ public class HrManagerPerformanceEvalServiceImpl extends ServiceImpl<HrManagerPe
             if (!ObjectUtils.isEmpty(kpiScore) && !ObjectUtils.isEmpty(qualitativeScore)) {
                 hrManagerPerformanceEval.setScoreAuto(kpiScore.multiply(kpiScoreR).add(qualitativeScoreAuto));//综合绩效（系统生成）
                 hrManagerPerformanceEval.setScoreAdjust(kpiScore.multiply(kpiScoreR).add(qualitativeScoreAuto));//综合绩效（人工调整（默认））
+                hrManagerPerformanceEval.setNote(" ");
             }
             if (ObjectUtils.isEmpty(kpiScore) && ObjectUtils.isEmpty(qualitativeScore)){
                 hrManagerPerformanceEval.setScoreAuto(null);

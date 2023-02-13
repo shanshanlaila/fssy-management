@@ -441,6 +441,9 @@ public class ViewManageMonthPerformanceController {
         if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
             params.put("companyName", request.getParameter("companyName"));
         }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyNameShort"))) {
+            params.put("companyNameShort", request.getParameter("companyNameShort"));
+        }
         if (!ObjectUtils.isEmpty(request.getParameter("projectType"))) {
             params.put("projectType", request.getParameter("projectType"));
         }

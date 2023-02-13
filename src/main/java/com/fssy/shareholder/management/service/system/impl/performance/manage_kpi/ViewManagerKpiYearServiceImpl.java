@@ -211,7 +211,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
 
             //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
             QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("shortName",companyName);
+            companyQueryWrapper.eq("name",companyName);
             List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
             if (companyList.size() > 1) {
                 setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
