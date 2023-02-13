@@ -1,5 +1,7 @@
-/**
- * 
+/**   
+ * ------------------------修改日志---------------------------------
+ * 修改人			修改日期			修改内容
+ * 兰宇铧			2023-02-13 		修改问题，str为空时，报空指针
  */
 package com.fssy.shareholder.management.tools.common;
 
@@ -76,6 +78,11 @@ public class StringTool
 	{
 		String regex = "(.*\\S+)(\\s+$)";
 		Pattern p = Pattern.compile(regex);
+		// 2023-02-13 修改问题，str为空时，报空指针
+		if (ObjectUtils.isEmpty(str))
+		{
+			return str;
+		}
 		Matcher m = p.matcher(str);
 		if (m.matches())
 		{

@@ -2,6 +2,9 @@
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  * 兰宇铧			2023-01-09		对接数据，公司基础数据随时会变化，需要做判断空
+ * 
+ * 修改人			修改日期			修改内容
+ * 兰宇铧			2023-02-13 		修改问题，project为空时，报空指针
  */
 package com.fssy.shareholder.management.service.system.impl.operate.analysis;
 
@@ -302,6 +305,17 @@ public class ProfitAnalysisServiceImpl extends ServiceImpl<ProfitAnalysisMapper,
 						String projectCode = InstandTool.objectToString(transmitData.get("项目代码"));
 						String project = StringTool
 								.rightTrim(InstandTool.objectToString(transmitData.get("项目")));
+						// 2023-02-13 修改问题，project为空时，报空指针
+						if (ObjectUtils.isEmpty(project))
+						{
+//							flag = false;
+//							StringTool.setMsg(sb,
+//									String.format("公司编号【%s】,公司名称【%s】对接的项目名称为【空】，编号为【%s】不能对接",
+//											companyCode, transmitData.get("公司名称"), project,
+//											projectCode));
+//							continue;
+							project = "";
+						}
 						Double accumulateMoney = InstandTool.stringToDouble(
 								InstandTool.objectToString(transmitData.get("累计实际")));
 						Double accumulateBudget = InstandTool.stringToDouble(
