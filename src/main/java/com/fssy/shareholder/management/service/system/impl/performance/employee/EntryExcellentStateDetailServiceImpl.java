@@ -83,7 +83,6 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
      * 根据分页查询数据
      *
      * @param params 查询参数
-     * @return
      */
     @Override
     public Page<EntryExcellentStateDetail> findDataListByParams(Map<String, Object> params) {
@@ -92,9 +91,9 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         return entryExcellentStateDetailMapper.selectPage(myPage, queryWrapper);
     }
 
-    //传入参数
+
     @SuppressWarnings("unchecked")
-	private QueryWrapper<EntryExcellentStateDetail> getQueryWrapper(Map<String, Object> params) {
+    private QueryWrapper<EntryExcellentStateDetail> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EntryExcellentStateDetail> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("select")) {
             queryWrapper.select((String) params.get("select"));
@@ -235,22 +234,17 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         if (params.containsKey("roleIdList")) {
             queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
         }
-		if (params.containsKey("idAsc"))
-		{
-			queryWrapper.orderByAsc("id");
-		}
-		else
-		{
-			queryWrapper.orderByDesc("id");
-		}
-		if (params.containsKey("select"))
-		{
-			queryWrapper.select(InstandTool.objectToString(params.get("select")));
-		}
-		if (params.containsKey("groupBy"))
-		{
-			queryWrapper.groupBy(InstandTool.objectToString(params.get("groupBy")));
-		}
+        if (params.containsKey("idAsc")) {
+            queryWrapper.orderByAsc("id");
+        } else {
+            queryWrapper.orderByDesc("id");
+        }
+        if (params.containsKey("select")) {
+            queryWrapper.select(InstandTool.objectToString(params.get("select")));
+        }
+        if (params.containsKey("groupBy")) {
+            queryWrapper.groupBy(InstandTool.objectToString(params.get("groupBy")));
+        }
         return queryWrapper;
     }
 
@@ -258,7 +252,6 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
      * 评优材料提交审核
      *
      * @param excellentStateDetailIds 履职总结的Ids
-     * @return
      */
     @Override
     public boolean submitAudit(List<String> excellentStateDetailIds) {
@@ -270,7 +263,9 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
                 entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_PERFORMANCE);
                 entryExcellentStateDetailLambdaUpdateWrapper.eq(EntryExcellentStateDetail::getId, entryExcellentStateDetail.getId());
                 entryExcellentStateDetailMapper.update(entryExcellentStateDetail, entryExcellentStateDetailLambdaUpdateWrapper);
-            } else return false;
+            } else {
+                return false;
+            }
         }
         return true;
     }
@@ -279,7 +274,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
      * 评优材料撤销审核
      *
      * @param excellentStateDetailIds 履职总结的Ids
-     * @return
+     * @return 撤销结果
      */
     @Override
     public boolean retreat(List<String> excellentStateDetailIds) {
@@ -295,7 +290,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
             //校验方法
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT)
                     || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
-                throw new ServiceException("不能撤销待提交审核状态或其他状态的评优材料");
+                throw new ServiceException(String.format("不能撤销状态为【%s】的评优材料", entryExcellentStateDetail.getStatus()));
             }
         }
         return true;
@@ -312,7 +307,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_PERFORMANCE)) {
-                throw new ServiceException("不能撤销待绩效科复核状态材料");
+                throw new ServiceException(String.format("不能撤销状态为【%s】的评优材料", entryExcellentStateDetail.getStatus()));
             }
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
                 entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_AUDIT_PERFORMANCE);
@@ -481,34 +476,31 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
 
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
-     	// 按照申报年份、月份加申报部门创建表“bs_performance_entry_excellent_state_merge”，
-		// 2022-12-30 修改问题，先查询merge是否有数据，有直接用，没有则重新创建
-		QueryWrapper<EntryExcellentStateMerge> mergeQueryWrapper = new QueryWrapper<>();
-		mergeQueryWrapper.eq("year", year).eq("month", month).eq("departmentId",
-				viewDepartmentRoleUser.getDepartmentId());
-		List<EntryExcellentStateMerge> mergeList = entryExcellentStateMergeMapper
-				.selectList(mergeQueryWrapper);
-		EntryExcellentStateMerge entryExcellentStateMerge;
-		if (ObjectUtils.isEmpty(mergeList))
-		{
-			entryExcellentStateMerge = new EntryExcellentStateMerge();
-			entryExcellentStateMerge.setCreateDate(LocalDate.now());
-			entryExcellentStateMerge.setCreatedAt(LocalDateTime.now());
-			entryExcellentStateMerge.setCreateId(user.getId());
-			entryExcellentStateMerge.setCreateName(user.getName());
-			entryExcellentStateMerge.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
-			entryExcellentStateMerge.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
-			entryExcellentStateMerge.setAuditName(null);
-			entryExcellentStateMerge.setAuditId(null);
-			entryExcellentStateMerge.setAuditDate(null);
-			entryExcellentStateMerge.setApplyDate(LocalDate.now());
-			entryExcellentStateMerge = storeNoticeMerge(LocalDate.now(),
-					new HashMap<String, Object>(), entryExcellentStateMerge);// 保存
-		}
-		else
-		{
-			entryExcellentStateMerge = mergeList.get(0);
-		}
+        // 按照申报年份、月份加申报部门创建表“bs_performance_entry_excellent_state_merge”，
+        // 2022-12-30 修改问题，先查询merge是否有数据，有直接用，没有则重新创建
+        QueryWrapper<EntryExcellentStateMerge> mergeQueryWrapper = new QueryWrapper<>();
+        mergeQueryWrapper.eq("year", year).eq("month", month).eq("departmentId",
+                viewDepartmentRoleUser.getDepartmentId());
+        List<EntryExcellentStateMerge> mergeList = entryExcellentStateMergeMapper
+                .selectList(mergeQueryWrapper);
+        EntryExcellentStateMerge entryExcellentStateMerge;
+        if (ObjectUtils.isEmpty(mergeList)) {
+            entryExcellentStateMerge = new EntryExcellentStateMerge();
+            entryExcellentStateMerge.setCreateDate(LocalDate.now());
+            entryExcellentStateMerge.setCreatedAt(LocalDateTime.now());
+            entryExcellentStateMerge.setCreateId(user.getId());
+            entryExcellentStateMerge.setCreateName(user.getName());
+            entryExcellentStateMerge.setDepartmentName(viewDepartmentRoleUser.getDepartmentName());
+            entryExcellentStateMerge.setDepartmentId(viewDepartmentRoleUser.getDepartmentId());
+            entryExcellentStateMerge.setAuditName(null);
+            entryExcellentStateMerge.setAuditId(null);
+            entryExcellentStateMerge.setAuditDate(null);
+            entryExcellentStateMerge.setApplyDate(LocalDate.now());
+            entryExcellentStateMerge = storeNoticeMerge(LocalDate.now(),
+                    new HashMap<String, Object>(), entryExcellentStateMerge);// 保存
+        } else {
+            entryExcellentStateMerge = mergeList.get(0);
+        }
 
         // 创建评价说明材料明细
         entryExcellentStateDetail.setDepartmentId(entryExcellentStateMerge.getDepartmentId());
@@ -533,11 +525,15 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         StateRelationAttachment stateRelationAttachment;
         if (param.containsKey("attachmentId")) {
             String attachmentIds = (String) param.get("attachmentId");
+            System.out.println(attachmentIds);
             List<String> attachmentIdList = Arrays.asList(attachmentIds.split(","));
             if (!ObjectUtils.isEmpty(attachmentIdList)) {
                 for (String attachmentId : attachmentIdList) {
                     stateRelationAttachment = new StateRelationAttachment();
                     Attachment attachment = attachmentMapper.selectById(attachmentId);
+                    if (ObjectUtils.isEmpty(attachment)) {
+                        throw new ServiceException("附件为空,提交失败");
+                    }
                     stateRelationAttachment.setImportDate(attachment.getImportDate());
                     // 保存附件表
                     stateRelationAttachment.setFilename(attachment.getFilename());
@@ -594,38 +590,37 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         return result > 0;
     }
 
-	/**
-	 * 评优材料表编号生成并保存(线程不安全，需要加锁)
-	 *
-	 * @param createDate               创建日期
-	 * @param otherParams              其他参数
-	 * @param entryExcellentStateMerge 评优材料表对象
-	 * @return
-	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public synchronized EntryExcellentStateMerge storeNoticeMerge(LocalDate createDate,
-			Map<String, Object> otherParams, EntryExcellentStateMerge entryExcellentStateMerge)
-	{
+    /**
+     * 评优材料表编号生成并保存(线程不安全，需要加锁)
+     *
+     * @param createDate               创建日期
+     * @param otherParams              其他参数
+     * @param entryExcellentStateMerge 评优材料表对象
+     * @return
+     */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public synchronized EntryExcellentStateMerge storeNoticeMerge(LocalDate createDate,
+                                                                  Map<String, Object> otherParams, EntryExcellentStateMerge entryExcellentStateMerge) {
         // region 创建评优材料表数据
         // 生成评优材料表序列号
         int noticeMergeSerial;
         int year = createDate.getYear();
         int month = createDate.getMonthValue();
-		QueryWrapper<EntryCasMerge> queryNoticeMergeSerialQueryWrapper = new QueryWrapper<>();
-		// 2022-12-30 修改问题，查询条件添加月份和部门并修改编号规则
-		queryNoticeMergeSerialQueryWrapper.eq("year", year)
-				.eq("month", entryExcellentStateMerge.getMonth())
-				.eq("departmentId", entryExcellentStateMerge.getDepartmentId())
-				.select("max(serial) as serial");
+        QueryWrapper<EntryCasMerge> queryNoticeMergeSerialQueryWrapper = new QueryWrapper<>();
+        // 2022-12-30 修改问题，查询条件添加月份和部门并修改编号规则
+        queryNoticeMergeSerialQueryWrapper.eq("year", year)
+                .eq("month", entryExcellentStateMerge.getMonth())
+                .eq("departmentId", entryExcellentStateMerge.getDepartmentId())
+                .select("max(serial) as serial");
         EntryCasMerge noticeMergeLastSerialData = entryCasMergeMapper
                 .selectOne(queryNoticeMergeSerialQueryWrapper);
         noticeMergeSerial = !ObjectUtils.isEmpty(noticeMergeLastSerialData)
                 && !ObjectUtils.isEmpty(noticeMergeLastSerialData.getSerial())
                 ? noticeMergeLastSerialData.getSerial().intValue() + 1
                 : 1;
-		entryExcellentStateMerge
-				.setMergeNo(String.format("PY%s%s%s", year, new DecimalFormat("00").format(month),
-						new DecimalFormat("000").format(noticeMergeSerial)));
+        entryExcellentStateMerge
+                .setMergeNo(String.format("PY%s%s%s", year, new DecimalFormat("00").format(month),
+                        new DecimalFormat("000").format(noticeMergeSerial)));
         entryExcellentStateMerge.setSerial(noticeMergeSerial);
         entryExcellentStateMerge.setYear(year);
         entryExcellentStateMerge.setMonth(month);
@@ -723,36 +718,33 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         return true;
     }
 
-	@Override
-	public Page<Map<String, Object>> findDataMapPageListByParams(Map<String, Object> params)
-	{
-		QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);
-		Page<Map<String, Object>> myPage = new Page<>((int) params.get("page"),
-				(int) params.get("limit"));
-		myPage = entryExcellentStateDetailMapper.selectMapsPage(myPage, queryWrapper);
-		// 2022-12-30 添加评优材料附件查询
-		myPage.getRecords().stream().forEach(item -> {
-			QueryWrapper<StateRelationAttachment> attachmentQueryWrapper = new QueryWrapper<>();
-			attachmentQueryWrapper.eq("stateId", item.get("id"))
-					.select("stateId,attachmentId,md5Path,fileName");
-			List<StateRelationAttachment> attachments = stateRelationAttachmentMapper
-					.selectList(attachmentQueryWrapper);
-			item.put("attachmentList", attachments);
-		});
-		return myPage;
-	}
+    @Override
+    public Page<Map<String, Object>> findDataMapPageListByParams(Map<String, Object> params) {
+        QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);
+        Page<Map<String, Object>> myPage = new Page<>((int) params.get("page"),
+                (int) params.get("limit"));
+        myPage = entryExcellentStateDetailMapper.selectMapsPage(myPage, queryWrapper);
+        // 2022-12-30 添加评优材料附件查询
+        myPage.getRecords().stream().forEach(item -> {
+            QueryWrapper<StateRelationAttachment> attachmentQueryWrapper = new QueryWrapper<>();
+            attachmentQueryWrapper.eq("stateId", item.get("id"))
+                    .select("stateId,attachmentId,md5Path,fileName");
+            List<StateRelationAttachment> attachments = stateRelationAttachmentMapper
+                    .selectList(attachmentQueryWrapper);
+            item.put("attachmentList", attachments);
+        });
+        return myPage;
+    }
 
-	@Override
-	public List<EntryExcellentStateDetail> findListByParams(Map<String, Object> params)
-	{
-		QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);// 全局根据id倒序
-		return entryExcellentStateDetailMapper.selectList(queryWrapper);
-	}
+    @Override
+    public List<EntryExcellentStateDetail> findListByParams(Map<String, Object> params) {
+        QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);// 全局根据id倒序
+        return entryExcellentStateDetailMapper.selectList(queryWrapper);
+    }
 
-	@Override
-	public List<Map<String, Object>> findDataMapListByParams(Map<String, Object> params)
-	{
-		QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);// 全局根据id倒序
-		return entryExcellentStateDetailMapper.selectMaps(queryWrapper);
-	}
+    @Override
+    public List<Map<String, Object>> findDataMapListByParams(Map<String, Object> params) {
+        QueryWrapper<EntryExcellentStateDetail> queryWrapper = getQueryWrapper(params);// 全局根据id倒序
+        return entryExcellentStateDetailMapper.selectMaps(queryWrapper);
+    }
 }

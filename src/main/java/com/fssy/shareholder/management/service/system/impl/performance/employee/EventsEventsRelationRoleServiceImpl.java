@@ -54,8 +54,7 @@ public class EventsEventsRelationRoleServiceImpl
     }
 
     @Override
-    public Page<EventsRelationRole> findPerformanceEventsRelationRoleDataListPerPageByParams(
-            Map<String, Object> params) {
+    public Page<EventsRelationRole> findDataListByParams(Map<String, Object> params) {
         QueryWrapper<EventsRelationRole> queryWrapper = getQueryWrapper(params);
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");

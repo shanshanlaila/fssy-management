@@ -20,14 +20,14 @@ import java.util.Map;
  * @Description: 事件列表业务类接口
  * @date 2022/10/8 10:33
  */
-public interface EventListService {
+public interface EventListService extends BaseService<EventList> {
     /**
      * 根据参数分页查询数据
      *
      * @param params 查询参数
      * @return 数据分页
      */
-    Page<EventList> findDataListByParams(Map<String, Object> params);
+    //Page<EventList> findDataListByParams(Map<String, Object> params);
 
     /**
      * 读取附件数据到数据库表

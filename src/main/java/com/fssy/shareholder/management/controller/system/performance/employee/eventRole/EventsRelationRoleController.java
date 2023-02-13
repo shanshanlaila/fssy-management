@@ -2,7 +2,7 @@
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
-package com.fssy.shareholder.management.controller.system.performance.employee;
+package com.fssy.shareholder.management.controller.system.performance.employee.eventRole;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
@@ -12,6 +12,7 @@ import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
+import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -99,34 +100,15 @@ public class EventsRelationRoleController
 	 * @param request 请求对象
 	 * @return
 	 */
-	@GetMapping("getObjects")
-	@ResponseBody
-	public Map<String, Object> getObjects(HttpServletRequest request)
-	{
-		Map<String, Object> result = new HashMap<>();
-		Map<String, Object> params = getParams(request);
-		int limit = Integer.parseInt(request.getParameter("limit"));
-		int page = Integer.parseInt(request.getParameter("page"));
-		params.put("limit", limit);
-		params.put("page", page);
-
-		Page<EventsRelationRole> performanceEventsRelationRolePage = eventsRelationRoleService
-				.findPerformanceEventsRelationRoleDataListPerPageByParams(params);
-
-		if (performanceEventsRelationRolePage.getTotal() == 0)
-		{
-			result.put("code", 404);
-			result.put("msg", "未查到任何数据");
-		}
-		else
-		{
-			result.put("code", 0);
-			result.put("count", performanceEventsRelationRolePage.getTotal());
-			result.put("data", performanceEventsRelationRolePage.getRecords());
-		}
-
-		return result;
-	}
+    @GetMapping("getObjects")
+    @ResponseBody
+    public Map<String, Object> getObjects(HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>(20);
+        Map<String, Object> params = getParams(request);
+        PerformanceServiceUtils<EventsRelationRole> serviceUtils = new PerformanceServiceUtils<>();
+        serviceUtils.getDataResult(result, params, request, eventsRelationRoleService);
+        return result;
+    }
 
 	private Map<String, Object> getParams(HttpServletRequest request)
 	{

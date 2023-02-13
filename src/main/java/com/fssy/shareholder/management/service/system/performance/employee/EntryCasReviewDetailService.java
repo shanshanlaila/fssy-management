@@ -17,14 +17,7 @@ import java.util.Map;
  * @author 农浩
  * @since 2022-10-20
  */
-public interface EntryCasReviewDetailService extends IService<EntryCasReviewDetail> {
-    /**
-     * 根据参数分页查询数据
-     *
-     * @param params 查询参数
-     * @return 数据分页
-     */
-    Page<EntryCasReviewDetail> findDataListByParams(Map<String, Object> params);
+public interface EntryCasReviewDetailService extends BaseService<EntryCasReviewDetail> {
 
     /**
      * 履职总结-部长审核（单条）

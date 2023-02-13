@@ -15,14 +15,7 @@ import java.util.Map;
  * @author 农浩
  * @since 2022-10-24
  */
-public interface EntryExcellentStateDetailService extends IService<EntryExcellentStateDetail> {
-    /**
-     * 根据参数分页查询数据
-     *
-     * @param params 查询参数
-     * @return 数据分页
-     */
-    Page<EntryExcellentStateDetail> findDataListByParams(Map<String, Object> params);
+public interface EntryExcellentStateDetailService extends BaseService<EntryExcellentStateDetail> {
 
     /**
      * 绩效科撤销审核评优材料
@@ -117,7 +110,7 @@ public interface EntryExcellentStateDetailService extends IService<EntryExcellen
      * @return 数据列表
      */
     List<EntryExcellentStateDetail> findListByParams(Map<String, Object> params);
-    
+
     /**
      * 根据参数查询数据(map)
      *

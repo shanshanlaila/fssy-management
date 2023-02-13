@@ -117,7 +117,6 @@
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
-            console.log(data.field)
             // 重新加载表格
             table.reload('dataTable', {
                 where: data.field,
@@ -218,6 +217,8 @@
                                     return '<span class="layui-badge layui-bg layui-bg-green">中</span>';
                                 case '不合格':
                                     return '<span class="layui-badge layui-bg">不合格</span>';
+                                default:
+                                    return '未评'
                             }
                         },
                     },

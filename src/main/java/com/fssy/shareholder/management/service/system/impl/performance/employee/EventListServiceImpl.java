@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
@@ -23,12 +24,14 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetService;
+import com.fssy.shareholder.management.service.system.performance.employee.BaseService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -39,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -52,7 +56,7 @@ import java.util.*;
  * @date 2022/10/8 10:33
  */
 @Service
-public class EventListServiceImpl implements EventListService {
+public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList> implements EventListService {
 
     @Autowired
     private EventListMapper eventListMapper;
@@ -80,7 +84,7 @@ public class EventListServiceImpl implements EventListService {
     }
 
     @SuppressWarnings("unchecked")
-	private QueryWrapper<EventList> getQueryWrapper(Map<String, Object> params) {
+    private QueryWrapper<EventList> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EventList> queryWrapper = Wrappers.query();
         if (params.containsKey("select")) {
             queryWrapper.select(InstandTool.objectToString(params.get("select")));
@@ -130,12 +134,11 @@ public class EventListServiceImpl implements EventListService {
         if (params.containsKey("activeDate")) {
             queryWrapper.ge("activeDate", params.get("activeDate"));
         }
-		if (params.containsKey("departmentIds"))
-		{
-			String departmentIdsStr = InstandTool.objectToString(params.get("departmentIds"));
-			List<String> departmentIdList = Arrays.asList(departmentIdsStr.split(","));
-			queryWrapper.in("departmentId", departmentIdList);
-		}
+        if (params.containsKey("departmentIds")) {
+            String departmentIdsStr = InstandTool.objectToString(params.get("departmentIds"));
+            List<String> departmentIdList = Arrays.asList(departmentIdsStr.split(","));
+            queryWrapper.in("departmentId", departmentIdList);
+        }
         if (params.containsKey("performanceForm")) {
             queryWrapper.like("performanceForm", params.get("performanceForm"));
         }
