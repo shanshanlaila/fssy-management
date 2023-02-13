@@ -15,6 +15,7 @@ import lombok.Setter;
  * <p>
  * 经营管理月度指标数据表 实体类
  * </p>
+ *
  * @author Shizn
  * @since 2022-10-24
  */
@@ -36,6 +37,11 @@ public class ManageKpiMonthAim extends BaseModel {
      */
     @TableField("status")
     private String status;
+    /**
+     * 月度实绩生成标识
+     */
+    @TableField("monthActualValueMark")
+    private String monthActualValueMark;
 
     /**
      * 修改分数原因
