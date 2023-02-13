@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>事件关联岗位数据管理</title>
+    <title>事件关联岗位查询</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -12,8 +12,8 @@
 <!-- 引入xadmin -->
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <<a href="">首页</a> <a href="">总部员工绩效</a> <a href="">基础事件管理</a>
-			<a> <cite>导入事件清单岗位关系</cite></a>
+		<span class="layui-breadcrumb"> <<a href="">首页</a> <a href="">总部员工绩效</a> <a href="">查询中心</a>
+			<a> <cite>事件关联岗位查询</cite></a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
                                                               style="line-height: 30px"></i>
@@ -25,15 +25,15 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
-                        <!--部门查询-->
+                        <!--部门下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <!--岗位查询-->
+                        <!--角色下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
-                        <!--用户查询-->
+                        <!--用户下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="userSelect"></div>
                         </div>
@@ -79,10 +79,6 @@
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <button shiro:hasPermission="system:performance:employee:event:role:attachment:show"
-                                    class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
-                                    lay-filter="showImport">导入事件岗位关系
-                            </button>
                             <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
                                     lay-filter="downloadForCharge" title="状态‘完结’事件清单，可以导出">导出事件清单填报履职计划
                             </button>
@@ -91,17 +87,6 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
-                    <!--行工具栏-->
-                    <script type="text/html" id="tool">
-                        <a lay-event="createCasPlan" title="单条填写履职计划"><i class="layui-icon">&#xe608;</i></a>
-                    </script>
-                    <script type="text/html" id="toolbar">
-                        <form class="layui-form layui-col-space5">
-                            <div class="layui-inline layui-show-xs-block">
-                                <span style="font-size: xx-small;color: grey">导入数据规范：1.相同基础事件的占比相加必须等于【1】 2.相同基础事件的生效日期必须相同  &nbsp;3.生效日期必须是之前没有导入成功过的日期</span>
-                            </div>
-                        </form>
-                    </script>
                 </div>
             </div>
         </div>
@@ -149,7 +134,6 @@
             limits: [
                 50, 100, 200, 500
             ],
-            toolbar: '#toolbar',
             where: {
                 idDesc: true
             },
@@ -236,13 +220,6 @@
                         width: 80,
                         align: "center"
                     },
-                    {
-                        fixed: 'right',
-                        title: '操作',
-                        width: 100,
-                        align: 'center',
-                        toolbar: '#tool'
-                    },
                 ]
             ]
         });
@@ -256,19 +233,6 @@
                     trigger: 'click',
                     type: 'date'
                 });
-        });
-
-        // 导入按钮
-        form.on('submit(showImport)', function (data) {
-            var createLayer = layer.open({
-                type: 2,
-                title: "事件岗位关系附件管理",
-                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/performance/employee/events-role-attachment/show',
-                scrollbar: true,
-                maxmin: true,
-            });
-            return false;
         });
 
         // 监听导出按钮
@@ -288,31 +252,14 @@
             window.open(url, true);
             return false;
         });
-        table.on('tool(dataTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'createCasPlan') { // 填写履职回顾
-                layer.open({
-                    type: 2,
-                    title: '序号为' + data.id + '的履职计划填写',
-                    area:
-                        [
-                            $(window).width() * 0.9 + 'px',
-                            $(window).height() - 50 + 'px'
-                        ],
-                    content: '/system/performance/employee/events-relation-role/createCasPlan/' + data.id,
-                    maxmin: true,
-                    scrollbar: true
-                });
-            }
-        });
 
         // 部门查询下拉列表
         let departmentSelect = xmSelect.render({
-            el: '#departmentSelect',
+            el: '#departmentSelect', // 绑定
             language: 'zn',
-            data: [[${departmentList}]],
+            data: [[${departmentNameList}]],// model过来的
             filterable: true,
-            // radio: true,
+            // radio: true,// 是否是单选
             tips: '部门查询',
             toolbar: {
                 show: true
@@ -320,36 +267,37 @@
             paging: true, // 分页
             pageSize: 20,
             style: {
-                width: '160px', 'min-height': '28px', 'line-height': '28px'
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
             },
             name: 'departmentIds',// 传到后端选择的departmentId集合字符串
         });
 
         // 岗位查询下拉列表
         let roleSelect = xmSelect.render({
-            el: '#roleSelect',
+            el: '#roleSelect', // 绑定
             language: 'zn',
-            data: [[${roleList}]],
+            data: [[${roleNameList}]],// model过来的
             filterable: true,
-            // radio: true,
+            // radio: true,// 是否是单选
             tips: '岗位查询',
             toolbar: {
                 show: true
             },
             paging: true, // 分页
-            pageSize: 20,
+            pageSize: 30,
             style: {
-                width: '160px', 'min-height': '28px', 'line-height': '28px'
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
             },
-            name: 'roleIds',// 传到后端选择的departmentId集合字符串
+            name: 'roleIds',// 传到后端选择的roleId集合字符串
         });
+
         // 职员名称查询下拉列表
         let userSelect = xmSelect.render({
             el: '#userSelect', // 绑定
             language: 'zn',
             data: [[${userList}]],// model过来的
             filterable: true,
-            // radio: true,// 是否是单选
+            //radio: true,// 是否是单选
             tips: '职员查询',
             toolbar: {
                 show: true

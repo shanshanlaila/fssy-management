@@ -2,10 +2,10 @@
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
-package com.fssy.shareholder.management.controller.system.performance.employee;
+package com.fssy.shareholder.management.controller.system.performance.employee.event;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
@@ -62,7 +62,7 @@ public class EventListController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         return "system/performance/employee/performance-event-list";
     }
 
@@ -78,7 +78,7 @@ public class EventListController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         return "system/performance/employee/performance-event-manage-list";
     }
 
@@ -91,28 +91,15 @@ public class EventListController {
     @RequestMapping("getObjects")
     @ResponseBody
     public Map<String, Object> getObjects(HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(20);
         Map<String, Object> params = getParams(request);
-        params.put("page", Integer.parseInt(request.getParameter("page")));
-        params.put("limit", Integer.parseInt(request.getParameter("limit")));
-
-        Page<EventList> handlersItemPage = eventListService.findDataListByParams(params);
-        if (handlersItemPage.getTotal() == 0) {
-            result.put("code", 404);
-            result.put("msg", "未查出数据");
-        } else {
-            // 查出数据，返回分页数据
-            result.put("code", 0);
-            result.put("count", handlersItemPage.getTotal());
-            result.put("data", handlersItemPage.getRecords());
-        }
-
+        PerformanceServiceUtils<EventList> performanceServiceUtils = new PerformanceServiceUtils<>();
+        performanceServiceUtils.getDataResult(result, params, request, eventListService);
         return result;
     }
 
-
     private Map<String, Object> getParams(HttpServletRequest request) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>(10);
         if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
             params.put("id", request.getParameter("id"));
         }
@@ -248,9 +235,6 @@ public class EventListController {
 
     /**
      * 返回附件上传页面
-     *
-     * @param model
-     * @return 页面
      */
     @RequiredLog("无标准事件管理")
     @GetMapping("withoutStandardIndex")
@@ -267,7 +251,7 @@ public class EventListController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "system/performance/events-list-list";
@@ -275,10 +259,6 @@ public class EventListController {
 
     /**
      * 返回修改页面
-     *
-     * @param request
-     * @param model
-     * @return
      */
     @GetMapping("edit")
     //@RequiresPermissions("performance:employee:event:edit")
@@ -295,52 +275,33 @@ public class EventListController {
         if (!userDepartmentName.equals(eventList.getDepartmentName())) {
             throw new ServiceException("不能操作其他部门的事件");
         }
-        model.addAttribute("eventList", eventList);//发送数据到前端，eventList对应
+        model.addAttribute("eventList", eventList);
         return "system/performance/events-list-edit";
     }
 
     /**
      * 更新保存无标准事件清单
-     *
-     * @param eventList
-     * @return
      */
     @PostMapping("update")
     @ResponseBody
     public SysResult update(EventList eventList) {
         boolean result = eventListService.updateEventList(eventList);
-        if (result)
+        if (result) {
             return SysResult.ok();
+        }
         return SysResult.build(500, "更新失败，请检查数据后重新提交");
     }
 
     /**
-     * 取消无标准事件清单状态变为取消
-     *
-     * @param id
-     * @return
-     */
-    @DeleteMapping("{id}")
-    @ResponseBody
-    public SysResult destroy(@PathVariable(value = "id") Integer id) {
-        boolean res = eventListService.changeStatus(id);
-        if (res)
-            return SysResult.ok();
-        return SysResult.build(500, "无标准事件内容未删除成功，请确认操作后重新尝试");
-    }
-
-    /**
      * 更新保存修改事件清单评判标准事件清单
-     *
-     * @param eventList
-     * @return
      */
     @PostMapping("update1")
     @ResponseBody
     public SysResult update1(EventList eventList) {
         boolean result = eventListService.updateEventList(eventList);
-        if (result)
+        if (result) {
             return SysResult.ok();
+        }
         return SysResult.build(500, "更新失败，请检查数据后重新提交");
     }
 
@@ -388,8 +349,6 @@ public class EventListController {
 
     /**
      * 匹配基础事件
-     * @param model
-     * @return
      */
     @GetMapping("matchEventList")
     @RequiredLog("匹配基础事件")
@@ -399,7 +358,7 @@ public class EventListController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "system/performance/employee/entry-cas-new-plan-detail-match-event-list";
@@ -407,9 +366,6 @@ public class EventListController {
 
     /**
      * 返回新增单条基础事件页面
-     *
-     * @param request
-     * @return
      */
     @GetMapping("create")
     @RequiredLog("返回新增单条基础事件页面")
@@ -423,14 +379,11 @@ public class EventListController {
 
     /**
      * 保存eventList表
-     *
-     * @param eventList
-     * @return
      */
     @PostMapping("store")
     @RequiredLog("保存新增单条基础事件")
     @ResponseBody
-    public SysResult Store(EventList eventList, HttpServletRequest request) {
+    public SysResult store(EventList eventList, HttpServletRequest request) {
         eventListService.insertEventList(eventList);
         return SysResult.ok();
     }

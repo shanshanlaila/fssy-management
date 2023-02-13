@@ -23,15 +23,7 @@ import java.util.Map;
  * @author Solomon
  * @since 2022-10-11
  */
-public interface EntryCasPlanDetailService extends IService<EntryCasPlanDetail> {
-
-    /**
-     * 根据参数分页查询数据
-     *
-     * @param params 查询参数
-     * @return 数据分页
-     */
-    Page<EntryCasPlanDetail> findDataListByParams(Map<String, Object> params);
+public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetail> {
 
     /**
      * 读取附件数据到数据库表

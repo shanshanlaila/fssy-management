@@ -1,4 +1,4 @@
-package com.fssy.shareholder.management.controller.system.performance.employee;
+package com.fssy.shareholder.management.controller.system.performance.employee.review;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,9 +8,11 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCas
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
+import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.catalina.connector.Request;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,7 +35,7 @@ import java.util.*;
 @RequestMapping("/system/entry-cas-review-detail/")
 public class EntryCasReviewDetailController {
     @Autowired
-    private EntryCasReviewDetailService entryCasReviewDetailService;
+    private EntryCasReviewDetailService reviewService;
     @Autowired
     private DepartmentService departmentService;
 
@@ -56,7 +58,7 @@ public class EntryCasReviewDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
@@ -82,20 +84,8 @@ public class EntryCasReviewDetailController {
             return result;
         }
         Map<String, Object> params = getParams(request);
-        params.put("page", Integer.parseInt(request.getParameter("page")));
-        params.put("limit", Integer.parseInt(request.getParameter("limit")));
-
-        Page<EntryCasReviewDetail> handlersItemPage = entryCasReviewDetailService.findDataListByParams(params);
-        if (handlersItemPage.getTotal() == 0) {
-            result.put("code", 404);
-            result.put("msg", "未查出数据");
-        } else {
-            // 查出数据，返回分页数据
-            result.put("code", 0);
-            result.put("count", handlersItemPage.getTotal());
-            result.put("data", handlersItemPage.getRecords());
-        }
-
+        PerformanceServiceUtils<EntryCasReviewDetail> serviceUtils = new PerformanceServiceUtils<>();
+        serviceUtils.getDataResult(result, params, request, reviewService);
         return result;
     }
 
@@ -286,7 +276,7 @@ public class EntryCasReviewDetailController {
     @GetMapping("edit/{id}")
     @RequiredLog("展示总结修改页面")
     public String showEditPage(@PathVariable String id, Model model) {
-        EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
+        EntryCasReviewDetail entryCasReviewDetail = reviewService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态下的总结");
         }
@@ -304,7 +294,7 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     @RequiredLog("更新总结")
     public SysResult update(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
-        boolean result = entryCasReviewDetailService.updateEntryCasReviewDetail(entryCasReviewDetail, request);
+        boolean result = reviewService.updateEntryCasReviewDetail(entryCasReviewDetail, request);
         if (result) {
             return SysResult.ok();
         }
@@ -321,9 +311,9 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     @RequiredLog("取消总结")
     public SysResult cancel(@PathVariable Long id) {
-        EntryCasReviewDetail reviewDetail = entryCasReviewDetailService.getById(id);
+        EntryCasReviewDetail reviewDetail = reviewService.getById(id);
         reviewDetail.setStatus(PerformanceConstant.CANCEL);
-        boolean result = entryCasReviewDetailService.updateById(reviewDetail);
+        boolean result = reviewService.updateById(reviewDetail);
         if (result) {
             return SysResult.ok();
         }
@@ -345,7 +335,7 @@ public class EntryCasReviewDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
@@ -368,7 +358,7 @@ public class EntryCasReviewDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
@@ -386,7 +376,7 @@ public class EntryCasReviewDetailController {
     @GetMapping("MinisterEdit/{id}")
     @RequiredLog("单条总结审核-部长")
     public String showEditPageByMinister(@PathVariable Long id, Model model) {
-        EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
+        EntryCasReviewDetail entryCasReviewDetail = reviewService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能审核取消状态下的事件请单");
         }
@@ -403,7 +393,7 @@ public class EntryCasReviewDetailController {
     @GetMapping("sectionEdit/{id}")
     @RequiredLog("单条总结审核-科长")
     public String showEditPageBySection(@PathVariable String id, Model model) {
-        EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(id);
+        EntryCasReviewDetail entryCasReviewDetail = reviewService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
@@ -421,7 +411,7 @@ public class EntryCasReviewDetailController {
     @PostMapping("indexStatus")
     @ResponseBody
     public SysResult indexStatus(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds) {
-        boolean result = entryCasReviewDetailService.submitAudit(reviewDetailIds);
+        boolean result = reviewService.submitAudit(reviewDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -439,7 +429,7 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     public SysResult retreat(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds, HttpServletRequest request) {
         String identification = request.getParameter("identification");
-        boolean result = entryCasReviewDetailService.retreat(reviewDetailIds, identification);
+        boolean result = reviewService.retreat(reviewDetailIds, identification);
         if (result) {
             return SysResult.ok();
         }
@@ -456,7 +446,7 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     @RequiredLog("提交修改工作计划完成情况审核评价 （科长，事务类）")
     public SysResult SectionUpdate(EntryCasReviewDetail entryCasReviewDetail) {
-        boolean result = entryCasReviewDetailService.sectionWorkAudit(entryCasReviewDetail);
+        boolean result = reviewService.sectionWorkAudit(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
         }
@@ -477,7 +467,7 @@ public class EntryCasReviewDetailController {
                                 @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
                                 @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String ministerReview = request.getParameter("ministerReview");
-        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, ministerReview, auditNotes);
+        boolean result = reviewService.batchAudit(entryReviewDetailIds, ministerReview, auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -495,7 +485,7 @@ public class EntryCasReviewDetailController {
                                        @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String chargeTransactionEvaluateLevel = request.getParameter("chargeTransactionEvaluateLevel");
         String chargeTransactionBelowType = request.getParameter("chargeTransactionBelowType");
-        boolean result = entryCasReviewDetailService.batchAudit(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType, auditNotes);
+        boolean result = reviewService.batchAudit(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType, auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -512,7 +502,7 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     @RequiredLog("创建单条履职回顾")
     public SysResult create(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
-        boolean result = entryCasReviewDetailService.saveOneReviewDetail(entryCasReviewDetail);
+        boolean result = reviewService.saveOneReviewDetail(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
         }
@@ -552,7 +542,7 @@ public class EntryCasReviewDetailController {
         // 岗位下拉框数据
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         // 用户下拉框数据
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
@@ -571,7 +561,7 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     @RequiredLog("跳转创建单条履职回顾-不根据计划")
     public SysResult createReviewNotPlan(EntryCasReviewDetail entryCasReviewDetail) {
-        Boolean result = entryCasReviewDetailService.storeReviewNotPlan(entryCasReviewDetail);
+        Boolean result = reviewService.storeReviewNotPlan(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
         }
@@ -592,7 +582,7 @@ public class EntryCasReviewDetailController {
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
 
-        Page<Map<String, Object>> handlersItemPage = entryCasReviewDetailService.findDataListByMapParams(params);
+        Page<Map<String, Object>> handlersItemPage = reviewService.findDataListByMapParams(params);
         if (handlersItemPage.getTotal() == 0) {
             result.put("code", 404);
             result.put("msg", "未查出数据");

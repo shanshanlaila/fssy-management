@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>履职计划表管理</title>
+    <title>履职计划表查询</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -13,8 +13,8 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb">
-            <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">履职计划管理</a>
-            <a> <cite>履职计划提交审核</cite></a>
+            <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">查询中心</a>
+            <a><cite>履职计划查询</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -60,8 +60,43 @@
                             <input type="text" name="jobName" placeholder="按工作职责查询"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
                             <input type="text" name="times" placeholder="按频次查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
+                            <input type="text" name="createId" placeholder="按编制人查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
+                            <input type="text" name="auditId" placeholder="按审核人查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
+                            <input type="text" name="auditNote" placeholder="按审核意见查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
+                            <input type="text" name="mergeNo" placeholder="按员工编号查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
+                            <input type="text" name="note" placeholder="按备注查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
+                            <input type="text" name="auditStatus" placeholder="按审核状态查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 130px;">
+                            <select name="isNewEvent">
+                                <option value="">按是否为新增工作流查询</option>
+                                <option value="是">是新增工作</option>
+                                <option value="否">不是新增工作</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
+                            <input type="text" name="officeId" placeholder="按是科室查询"
                                    autocomplete="off" class="layui-input">
                         </div>
 
@@ -100,12 +135,6 @@
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                             <div class="layui-inline layui-show-xs-block">
-                                <button shiro:haspermission="system:performance:entryCasPlanDetail:import"
-                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
-                                    导入月度履职计划
-                                </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="export"
                                         title="请选择查询条件进行导出状态为‘待填报总结’履职计划">
                                     导出履职计划填报月底总结
@@ -116,29 +145,6 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
-                    <script type="text/html" id="toolbar">
-                        <form class="layui-form layui-col-space5">
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="confirm">提交审核
-                                </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit=""
-                                        lay-filter="retreat">撤销提交
-                                </button>
-                            </div>
-                        </form>
-                    </script>
-                    <!--行工具栏-->
-                    <script type="text/html" id="tool">
-                        {{# if(d.status != '取消') {}}
-                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
-                        {{# } }}
-                        <a lay-event="cancel" title="取消"><i class="layui-icon">&#x1007;</i></a>
-                        {{# if(d.status == '待填报回顾') {}}
-                        <a lay-event="createReview" title="新增单条履职回顾"><i class="layui-icon">&#xe608;</i></a>
-                        {{# } }}
-                    </script>
                 </div>
             </div>
         </div>
@@ -191,12 +197,7 @@
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
             limit: 50,
             limits: [50, 100, 200, 500],
-            toolbar: '#toolbar',
-            where: {
-                status: '待提交审核',
-                //userName:[[${userName}]],//登录用户
-                //departmentName: [[${departmentName}]],// 登录用户本部门
-            },
+            where: {},
             cols: [
                 [
                     {
@@ -211,14 +212,8 @@
                         width: 100,
                         fixed: 'left',
                         templet: function (d) {
-                            switch (d.status) {
-                                case '待提交审核':
-                                    return '<span class="layui-badge layui-bg">待提交审核</span>';
-                                case '待填报总结':
-                                    return '<span class="layui-badge layui-bg-green">待填报总结</span>';
-                                default:
-                                    return d.status;
-                            }
+                            // 模板字符串
+                            return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
                         },
                         align: "center"
                     },
@@ -334,6 +329,18 @@
                         align: "center"
                     },
                     {
+                        field: 'isNewEvent',
+                        title: '是否为新增工作流',
+                        width: 70,
+                        align: "center"
+                    },
+                    {
+                        field: 'auditStatus',
+                        title: '审核状态',
+                        width: 110,
+                        align: "center"
+                    },
+                    {
                         field: 'auditNote',
                         title: '审核意见',
                         width: 120,
@@ -358,113 +365,10 @@
                             }
                         },
                         align: "center"
-                    },
-                    {
-                        fixed: 'right',
-                        title: '操作',
-                        width: 100,
-                        align: 'center',
-                        toolbar: '#tool'
                     }
                 ]
             ]
         });
-
-        // 提交审核
-        form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id)
-            data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-            layer.confirm('确定提交审核吗？', {icon: 3, title: '提示'}, function (index) {
-                var planDetailIds = [];// 创建id数组，存放选择的数据id
-                data.forEach(function (item) {// 循环选择的每一行字段数据
-                    planDetailIds.push(item.id);// 放进ids
-                });
-                // 携带数据发送异步请求后端处理逻辑
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-plan-detail/indexStatus',
-                    data: {"planDetailIds": planDetailIds},
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
-                        }
-                    }
-                })
-            });
-            return false;
-        });
-
-        // 撤销审核
-        form.on('submit(retreat)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id);
-            data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-            let flag = false;
-            let msg = "";
-            var planDetailIds = [];
-            data.forEach(function (item) {
-                if (item.status === 5) {
-                    msg = msg ? msg + ',' + item.noticeNo : item.noticeNo;
-                    flag = true;
-                }
-                planDetailIds.push(item.id);
-            });
-
-            layer.confirm('确定撤销审核吗？', {icon: 3, title: '提示'}, function (index) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-plan-detail/retreat',
-                    data: {
-                        "planDetailIds": planDetailIds,
-                    },
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
-                        }
-                    }
-                })
-            });
-            return false;
-        });
-
-        // 导入按钮
-        form.on('submit(import)', function (data) {
-            var createLayer = layer.open({
-                type: 2,
-                title: "上传履职计划表",
-                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/entry-cas-plan-detail/attachment/import',
-                scrollbar: true,
-                maxmin: true,
-            });
-            return false;
-        });
-
 
         // 导出
         form.on('submit(export)', function (data) {
@@ -482,57 +386,6 @@
             layer.msg("正在导出事件列表，请稍候");
             window.open(url, true);
             return false;
-        });
-
-        // 监听行工具事件
-        table.on('tool(dataTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'edit') { // 修改
-                // 不能修改取消状态下的事件请单
-                if (data.status === '取消') {
-                    layer.msg('不能修改取消状态下的事件请单');
-                    return false;
-                }
-                layer.open({
-                    type: 2,
-                    title: '序号为' + data.id + '的履职计划明细信息修改',
-                    area:
-                        [
-                            $(window).width() * 0.9 + 'px',
-                            $(window).height() - 50 + 'px'
-                        ],
-                    content: '/system/entry-cas-plan-detail/edit/' + data.id,
-                    maxmin: true,
-                    scrollbar: true
-                });
-            } else if (obj.event === 'cancel') {
-                layer.confirm('确定要取消序号为' + data.id + '履职计划明细吗？', function () {
-                    $.ajax(
-                        {
-                            type: 'POST',
-                            url: '/system/entry-cas-plan-detail/cancel/' + data.id,
-                            success: function (result) {
-                                layer.msg(result.msg);
-                                if (result.status === 200) {
-                                    table.reload('dataTable');
-                                }
-                            }
-                        })
-                });
-            } else if (obj.event === 'createReview') { // 填写履职回顾
-                layer.open({
-                    type: 2,
-                    title: '序号为' + data.id + '的履职回顾填写',
-                    area:
-                        [
-                            $(window).width() * 0.9 + 'px',
-                            $(window).height() - 50 + 'px'
-                        ],
-                    content: '/system/entry-cas-plan-detail/createReview/' + data.id,
-                    maxmin: true,
-                    scrollbar: true
-                });
-            }
         });
 
     });

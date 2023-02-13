@@ -21,9 +21,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRe
  * @author Solomon
  * @since 2022-10-10
  */
-public interface EventsRelationRoleService
-		extends IService<EventsRelationRole>
-{
+public interface EventsRelationRoleService extends BaseService<EventsRelationRole> {
 
 	/**
 	 * 添加事件清单岗位关系
@@ -41,15 +39,6 @@ public interface EventsRelationRoleService
 	 * @return 事件清单岗位关系列表
 	 */
 	List<EventsRelationRole> findPerformanceEventsRelationRoleDataListByParams(
-			Map<String, Object> params);
-
-	/**
-	 * 通过查询条件分页查询事件清单岗位关系列表
-	 *
-	 * @param params 查询条件
-	 * @return 事件清单岗位关系分页数据
-	 */
-	Page<EventsRelationRole> findPerformanceEventsRelationRoleDataListPerPageByParams(
 			Map<String, Object> params);
 
 	/**

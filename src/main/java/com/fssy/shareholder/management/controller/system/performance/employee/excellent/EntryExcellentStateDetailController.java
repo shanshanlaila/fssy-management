@@ -1,7 +1,6 @@
-package com.fssy.shareholder.management.controller.system.performance.employee;
+package com.fssy.shareholder.management.controller.system.performance.employee.excellent;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.user.User;
@@ -15,6 +14,7 @@ import com.fssy.shareholder.management.service.manage.department.DepartmentServi
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
+import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
@@ -47,7 +47,7 @@ import java.util.*;
 @RequestMapping("/system/entry-excellent-state-detail/")
 public class EntryExcellentStateDetailController {
     @Autowired
-    private EntryExcellentStateDetailService entryExcellentStateDetailService;
+    private EntryExcellentStateDetailService excellentService;
 
     @Autowired
     private DepartmentService departmentService;
@@ -81,32 +81,22 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
+        Map<String, Object> userParams = new HashMap<>();
+        List<String> selectedUserIds = new ArrayList<>();
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
         return "system/performance/employee/entry-excellent-state-detail-list";
     }
 
     @RequestMapping("getObjects")
     @ResponseBody
     public Map<String, Object> getObject(HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(20);
         Map<String, Object> params = getParams(request);
-        params.put("page", Integer.parseInt(request.getParameter("page")));
-        params.put("limit", Integer.parseInt(request.getParameter("limit")));
-
-		Page<Map<String, Object>> entryExcellentStateDetailPage = entryExcellentStateDetailService
-				.findDataMapPageListByParams(params);
-		if (entryExcellentStateDetailPage.getTotal() == 0)
-		{
-			result.put("code", 404);
-			result.put("msg", "未查出数据");
-		}
-		else
-		{
-			result.put("code", 0);
-			result.put("count", entryExcellentStateDetailPage.getTotal());
-			result.put("data", entryExcellentStateDetailPage.getRecords());
-		}
-		return result;
+        PerformanceServiceUtils<EntryExcellentStateDetail> serviceUtils = new PerformanceServiceUtils<>();
+        serviceUtils.getDataResult(result, params, request, excellentService);
+        return result;
     }
 
     private Map<String, Object> getParams(HttpServletRequest request) {
@@ -253,18 +243,18 @@ public class EntryExcellentStateDetailController {
         if (!ObjectUtils.isEmpty(request.getParameter("roleId"))) {
             params.put("roleId", request.getParameter("roleId"));
         }
-		if (!ObjectUtils.isEmpty(request.getParameter("idAsc")))
-		{
-			params.put("idAsc", request.getParameter("idAsc"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("select")))
-		{
-			params.put("select", request.getParameter("select"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("groupBy")))
-		{
-			params.put("groupBy", request.getParameter("groupBy"));
-		}
+        if (!ObjectUtils.isEmpty(request.getParameter("idAsc"))) {
+            params.put("idAsc", request.getParameter("idAsc"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("select"))) {
+            params.put("select", request.getParameter("select"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("groupBy"))) {
+            params.put("groupBy", request.getParameter("groupBy"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("mainUserIds"))) {
+            params.put("mainUserIds", request.getParameter("mainUserIds"));
+        }
         return params;
     }
 
@@ -278,7 +268,7 @@ public class EntryExcellentStateDetailController {
     @PostMapping("indexStatus")
     @ResponseBody
     public SysResult indexStatus(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
-        boolean result = entryExcellentStateDetailService.submitAudit(excellentStateDetailIds);
+        boolean result = excellentService.submitAudit(excellentStateDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -295,7 +285,7 @@ public class EntryExcellentStateDetailController {
     @PostMapping("retreat")
     @ResponseBody
     public SysResult retreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
-        boolean result = entryExcellentStateDetailService.retreat(excellentStateDetailIds);
+        boolean result = excellentService.retreat(excellentStateDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -311,8 +301,8 @@ public class EntryExcellentStateDetailController {
     @RequiredLog("绩效科总结评优撤销审核")
     @PostMapping("PerformanceRetreat")
     @ResponseBody
-    public SysResult PerformanceRetreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
-        boolean result = entryExcellentStateDetailService.PerformanceRetreat(excellentStateDetailIds);
+    public SysResult performanceRetreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
+        boolean result = excellentService.PerformanceRetreat(excellentStateDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -330,7 +320,7 @@ public class EntryExcellentStateDetailController {
     @RequiredLog("绩效科审核展示修改页面")
     public String showEditPage(@PathVariable Long id, Model model) {
         // 查询评优材料对象
-        EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetailService.getById(id);
+        EntryExcellentStateDetail entryExcellentStateDetail = excellentService.getById(id);
         // 查询总结对象
         EntryCasReviewDetail entryCasReviewDetail = entryCasReviewDetailService.getById(entryExcellentStateDetail.getCasReviewId());
         if (ObjectUtils.isEmpty(entryCasReviewDetail)) {
@@ -355,7 +345,7 @@ public class EntryExcellentStateDetailController {
             model.addAttribute("mainNameValues", mainNameValues);
         }
         String nextUserNameStr = entryExcellentStateDetail.getNextUserName();
-        ArrayList<String> nextNameValues = new ArrayList<>();
+        ArrayList<String> nextNameValues = new ArrayList<>(100);
         if (ObjectUtils.isEmpty(nextUserNameStr)) {
             model.addAttribute("nextNameValues", nextNameValues);
         } else {
@@ -389,7 +379,7 @@ public class EntryExcellentStateDetailController {
         }
         String mainIds = request.getParameter("mainIds");
         String nextIds = request.getParameter("nextIds");
-        boolean result = entryExcellentStateDetailService.updateExcellent(entryExcellentStateDetail, mainIds, nextIds);
+        boolean result = excellentService.updateExcellent(entryExcellentStateDetail, mainIds, nextIds);
         if (result) {
             return SysResult.ok();
         }
@@ -411,7 +401,7 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         return "system/performance/employee/entry-excellent-state-detail-performance-list";
     }
 
@@ -430,7 +420,7 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         return "system/performance/employee/entry-excellent-state-detail-minister-list";
     }
 
@@ -444,7 +434,7 @@ public class EntryExcellentStateDetailController {
     @GetMapping("editMinister/{id}")
     @RequiredLog("经营管理部主管展示修改页面")
     public String showEditMinister(@PathVariable String id, Model model) {
-        EntryExcellentStateDetail entryExcellentStateDetail = entryExcellentStateDetailService.getById(id);
+        EntryExcellentStateDetail entryExcellentStateDetail = excellentService.getById(id);
         if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
             throw new ServiceException("不能修改取消状态下的事件请单");
         }
@@ -455,14 +445,14 @@ public class EntryExcellentStateDetailController {
     /**
      * 绩效科审核评优材料（修改按钮）
      *
-     * @param entryExcellentStateDetail
+     * @param entryExcellentStateDetail 评优材料
      * @return 结果
      */
     @PostMapping("updateMinister")
     @ResponseBody
     @RequiredLog("绩效科审核评优材料（修改按钮）")
     public SysResult updateMinister(EntryExcellentStateDetail entryExcellentStateDetail) {
-        boolean result = entryExcellentStateDetailService.updateMinister(entryExcellentStateDetail);
+        boolean result = excellentService.updateMinister(entryExcellentStateDetail);
         if (result) {
             return SysResult.ok();
         }
@@ -478,8 +468,8 @@ public class EntryExcellentStateDetailController {
     @RequiredLog("绩效科撤销审核评优材料")
     @PostMapping("MinisterRetreat")
     @ResponseBody
-    public SysResult MinisterRetreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
-        boolean result = entryExcellentStateDetailService.MinisterRetreat(excellentStateDetailIds);
+    public SysResult ministerRetreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
+        boolean result = excellentService.MinisterRetreat(excellentStateDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -555,7 +545,7 @@ public class EntryExcellentStateDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
@@ -604,10 +594,12 @@ public class EntryExcellentStateDetailController {
         String attachmentId = request.getParameter("attachmentId");
         String mainIds = request.getParameter("mainIds");
         String nextIds = request.getParameter("nextIds");
-        param.put("attachmentId", attachmentId);
+        if (!ObjectUtils.isEmpty(attachmentId)) {
+            param.put("attachmentId", attachmentId);
+        }
         param.put("mainIds", mainIds);
         param.put("nextIds", nextIds);
-        boolean result = entryExcellentStateDetailService.save(entryExcellentStateDetail, param);
+        boolean result = excellentService.save(entryExcellentStateDetail, param);
         if (result) {
             return SysResult.ok();
         }
@@ -629,7 +621,7 @@ public class EntryExcellentStateDetailController {
                                 @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         System.out.println("auditNotes = " + auditNotes);
         String classReview = request.getParameter("classReview");
-        boolean result = entryExcellentStateDetailService.batchAudit(excellentStateDetailIds, classReview, auditNotes);
+        boolean result = excellentService.batchAudit(excellentStateDetailIds, classReview, auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -650,7 +642,7 @@ public class EntryExcellentStateDetailController {
                                           @RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds,
                                           @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String ministerReview = request.getParameter("ministerReview");
-        boolean result = entryExcellentStateDetailService.MinisterBatchAudit(excellentStateDetailIds, ministerReview, auditNotes);
+        boolean result = excellentService.MinisterBatchAudit(excellentStateDetailIds, ministerReview, auditNotes);
         if (result) {
             return SysResult.ok();
         }

@@ -353,7 +353,8 @@
                     // 必填项控制
                     var year = data.field.year;
                     if (!year) {
-                        layer.msg("编制年份为必选项，请选择编制年份", {icon: 5, time: 4000});
+                        // year为空=false
+                        layer.msg("请选择编制年份后点击导出", {icon: 5, time: 4000});
                         return false;
                     }
                     if (!field.departmentIds) {
@@ -387,6 +388,7 @@
                     }
                 });
             });
+
     // 添加动画效果
     function animation() {
         for (const btn of document.querySelectorAll('button')) {

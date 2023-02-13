@@ -98,7 +98,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment) {
         // 导入月度履职计划
         // 返回消息
@@ -210,7 +210,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 如果事件类型为新增工作流，设置字段isNewEvent为是
             if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
                 entryCasPlanDetail.setIsNewEvent(PerformanceConstant.YES);
-            } else entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
+            } else {
+                entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
+            }
             entryCasPlanDetail.setEventsFirstType(eventsFirstType);
             entryCasPlanDetail.setJobName(jobName);
             entryCasPlanDetail.setWorkEvents(workEvents);
@@ -463,6 +465,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("newStatus")) {
             queryWrapper.eq("newStatus", params.get("newStatus"));
         }
+        if (params.containsKey("isNewEvent")) {
+            queryWrapper.eq("isNewEvent", params.get("isNewEvent"));
+        }
         // 状态为’待部长审核‘和事件类型为’非实物类‘或’新增工作流‘
         if (params.containsKey("twoStatus")) {
             queryWrapper
@@ -482,7 +487,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
 	/**
 	 * 履职表编号生成并保存(线程不安全，需要加锁)
-	 * 
+	 *
 	 * @param createDate    创建日期
 	 * @param otherParams   其他参数
 	 * @param entryCasMerge 履职表对象
@@ -539,7 +544,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                     entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
                     entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
                 }
-            } else return false;
+            } else {
+                return false;
+            }
         }
         return true;
     }
@@ -572,7 +579,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             }
             EntryCasPlanDetail entryCasPlanDetail = keyByPlanDetailMap.get(planId);
             // 审核通过设置状态为‘待填报总结’ 审核不通过设置状态为‘待提交审核’
-            entryCasPlanDetail.setStatus(event.equals("pass") ? PerformanceConstant.WAIT_WRITE_REVIEW : PerformanceConstant.WAIT_SUBMIT_AUDIT);
+            entryCasPlanDetail.setStatus("pass".equals(event) ? PerformanceConstant.WAIT_WRITE_REVIEW : PerformanceConstant.WAIT_SUBMIT_AUDIT);
             entryCasPlanDetail.setAuditNote(auditNote);
             entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
         }
@@ -584,10 +591,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
             if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR)) {
-                if (event.equals("yes")) {
+                if ("yes".equals(event)) {
                     // 属于新增工作流,设置新状态为待创建基础事件
                     entryCasPlanDetail.setNewStatus(PerformanceConstant.WAIT_CREATE_EVENT);
-                } else if (event.equals("no")) {
+                } else if ("no".equals(event)) {
                     // 不属于新增工作流，设置状态为待选择基础事件
                     entryCasPlanDetail.setNewStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SELECT);
                 }
@@ -625,7 +632,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         // 如果事件类型为新增工作流，设置字段isNewEvent为是
         if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
             entryCasPlanDetail.setIsNewEvent(PerformanceConstant.YES);
-        } else entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
+        } else {
+            entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
+        }
 
         // 根据条件查询或生成bs_performance_employee_entry_cas_merge表数据
         LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();

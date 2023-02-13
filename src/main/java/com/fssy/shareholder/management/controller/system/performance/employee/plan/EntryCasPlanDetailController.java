@@ -3,7 +3,7 @@
  * 修改人			修改日期			修改内容
  * 伍坚山           2022-10-14      新增履职计划表的导入导出
  */
-package com.fssy.shareholder.management.controller.system.performance.employee;
+package com.fssy.shareholder.management.controller.system.performance.employee.plan;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -17,6 +17,7 @@ import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
+import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
@@ -64,9 +65,7 @@ public class EntryCasPlanDetailController {
 
 
     /**
-     * 事件评价标准管理页面
-     *
-     * @return 事件评价标准管理页面
+     * 计划页面
      */
     @GetMapping("index")
     @RequiredLog("履职明细情况计划")
@@ -77,7 +76,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
@@ -85,7 +84,7 @@ public class EntryCasPlanDetailController {
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", viewDepartmentRoleUser.getDepartmentName());
         User user = GetTool.getUser();
-        model.addAttribute("userName",user.getName());
+        model.addAttribute("userName", user.getName());
         return "system/performance/employee/performance-entry-cas-plan-detail-list";
     }
 
@@ -98,7 +97,7 @@ public class EntryCasPlanDetailController {
     @RequestMapping("getObjects")
     @ResponseBody
     public Map<String, Object> getObjects(HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(20);
         // 审核页面，如果左侧没有数据或者没有点击，右侧显示未查出数据
         String isEmpty = request.getParameter("isEmpty");
         if (!ObjectUtils.isEmpty(isEmpty)) {
@@ -107,20 +106,8 @@ public class EntryCasPlanDetailController {
             return result;
         }
         Map<String, Object> params = getParams(request);
-        params.put("page", Integer.parseInt(request.getParameter("page")));
-        params.put("limit", Integer.parseInt(request.getParameter("limit")));
-
-        Page<EntryCasPlanDetail> handlersItemPage = entryCasPlanDetailService.findDataListByParams(params);
-        if (handlersItemPage.getTotal() == 0) {
-            result.put("code", 404);
-            result.put("msg", "未查出数据");
-        } else {
-            // 查出数据，返回分页数据
-            result.put("code", 0);
-            result.put("count", handlersItemPage.getTotal());
-            result.put("data", handlersItemPage.getRecords());
-        }
-
+        PerformanceServiceUtils<EntryCasPlanDetail> serviceUtils = new PerformanceServiceUtils<>();
+        serviceUtils.getDataResult(result, params, request, entryCasPlanDetailService);
         return result;
     }
 
@@ -270,6 +257,9 @@ public class EntryCasPlanDetailController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("userNameRight"))) {
             params.put("userNameRight", request.getParameter("userNameRight"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("isNewEvent"))) {
+            params.put("isNewEvent", request.getParameter("isNewEvent"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("userIds"))) {
             String userIdsStr = request.getParameter("userIds");
@@ -460,7 +450,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
@@ -479,7 +469,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         Map<String, Object> userParams = new HashMap<>();
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
@@ -509,7 +499,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         return "system/performance/employee/performance-entry-cas-plan-detail-HR-list";
     }
 
@@ -540,7 +530,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         return "system/performance/employee/performance-entry-cas-plan-detail-select-list";
     }
 
@@ -606,7 +596,7 @@ public class EntryCasPlanDetailController {
         model.addAttribute("departmentNameList", departmentNameList);
         Map<String, Object> roleParams = new HashMap<>();
         List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);//传到前端去
+        model.addAttribute("roleNameList", roleNameList);
         return "system/performance/employee/plan/entry-cas-plan-detail-create-event-list";
     }
 
