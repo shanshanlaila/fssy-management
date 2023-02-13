@@ -38,7 +38,7 @@ public class ViewManageYearMonthScore extends BaseModel {
      */
     @TableField("status")
     private String status;
-     /**
+    /**
      * 修改分数原因
      */
     @TableField("scoreAdjustCause")
@@ -118,6 +118,11 @@ public class ViewManageYearMonthScore extends BaseModel {
      */
     @TableField("monthActualValue")
     private BigDecimal monthActualValue;
+    /**
+     * 月度实绩生成标识
+     */
+    @TableField("monthActualValueMark")
+    private String monthActualValueMark;
 
     /**
      * 目标累积值

@@ -51,6 +51,7 @@ public class ViewManageMonthPerformanceController {
     private ViewManageMonthPerformanceService viewManageMonthPerformanceService;
     @Autowired
     private CompanyService companyService;
+
     /**
      * 经营管理指标 管理页面
      *
@@ -63,9 +64,10 @@ public class ViewManageMonthPerformanceController {
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
         List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
-        model.addAttribute("companyNameList",companyNameList);
+        model.addAttribute("companyNameList", companyNameList);
         return "system/performance/manager_kpi/view-manage-month-performance/view-manage-month-performance-list";
     }
+
     /**
      * 返回经营指标 数据
      *
@@ -83,10 +85,10 @@ public class ViewManageMonthPerformanceController {
         params.put("page", page);
         //获取前端年月查询的字符串
         String yearMonth = request.getParameter("yearMonth");
-        params.put("yearMonth",yearMonth);
+        params.put("yearMonth", yearMonth);
         //获取前端公司查询的主键
         String companyIds = request.getParameter("companyIds");
-        params.put("companyId",companyIds);
+        params.put("companyId", companyIds);
         Page<Map<String, Object>> manageKpiMonthPage = viewManageMonthPerformanceService.findManageKpiMonthDataMapListPerPageByParams(params);
         if (manageKpiMonthPage.getTotal() == 0) {
             result.put("code", 404);
@@ -98,6 +100,7 @@ public class ViewManageMonthPerformanceController {
         }
         return result;
     }
+
     /**
      * excel 导出
      *
@@ -120,8 +123,8 @@ public class ViewManageMonthPerformanceController {
         fieldMap.put("projectType", "重点工作");
         fieldMap.put("projectDesc", "管理项目");
         fieldMap.put("kpiFormula", "管理项目定义");
-        fieldMap.put("dataSource", "数据来源部门");
         fieldMap.put("unit", "单位");
+        fieldMap.put("dataSource", "数据来源部门");
         fieldMap.put("benchmarkCompany", "对标企业名称");
         fieldMap.put("benchmarkValue", "标杆值");
         fieldMap.put("pastThreeYearsActual", "过去第三年值");
@@ -146,6 +149,7 @@ public class ViewManageMonthPerformanceController {
         }
         sheetOutputService.exportNum("经营管理月度实绩项目", viewManageMonthPerformanceMapDataByParams, fieldMap, response, strList, null);
     }
+
     /**
      * 附件上传页面(年度目标）
      *
@@ -186,7 +190,7 @@ public class ViewManageMonthPerformanceController {
     @PostMapping("upYearLoadFile")
     @ResponseBody
     public SysResult upYearLoadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
-                                HttpServletRequest request) {
+                                    HttpServletRequest request) {
         //判断是否选择对应公司、年份
         Map<String, Object> params = getParams(request);
         String year = (String) params.get("year");
@@ -211,7 +215,7 @@ public class ViewManageMonthPerformanceController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiYearDataSource(result,year,companyName);
+            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiYearDataSource(result, year, companyName);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -235,6 +239,7 @@ public class ViewManageMonthPerformanceController {
         }
 
     }
+
     /**
      * 附件上传页面(月度目标)
      *
@@ -262,6 +267,7 @@ public class ViewManageMonthPerformanceController {
         model.addAttribute("module", importModules.get(0).getId());
         return "system/performance/manager_kpi/view-manage-month-performance/view-manage-month-aim-attachment-list";
     }
+
     /**
      * 附件上传 （月度目标）
      *
@@ -274,7 +280,7 @@ public class ViewManageMonthPerformanceController {
     @PostMapping("upMonthLoadFile")
     @ResponseBody
     public SysResult upMonthAimLoadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
-                                HttpServletRequest request) {
+                                        HttpServletRequest request) {
         //判断是否选择对应的时间
         Map<String, Object> params = getParams(request);
         String year = (String) params.get("year");
@@ -299,7 +305,7 @@ public class ViewManageMonthPerformanceController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiMonthAimDataSource(result,companyName,year);
+            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiMonthAimDataSource(result, companyName, year);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -323,6 +329,7 @@ public class ViewManageMonthPerformanceController {
         }
 
     }
+
     /**
      * 返回附件上传页面(月度实绩）
      *
@@ -351,6 +358,7 @@ public class ViewManageMonthPerformanceController {
         model.addAttribute("module", importModules.get(0).getId());
         return "system/performance/manager_kpi/view-manage-month-performance/view-manage-month-performance-attachment-list";
     }
+
     /**
      * 附件上传(月度实绩值）
      *
@@ -414,6 +422,7 @@ public class ViewManageMonthPerformanceController {
             throw e;
         }
     }
+
     /**
      * 与数据库进行匹配
      *

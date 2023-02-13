@@ -53,6 +53,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     public Page<ViewManageYearMonthScore> findViewManageYearMonthScoreDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ViewManageYearMonthScore> queryWrapper = getQueryWrapper(params);
         queryWrapper.eq("managerKpiMark", "经理人指标");
+        queryWrapper.eq("monthActualValueMark", "已生成");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<ViewManageYearMonthScore> myPage = new Page<>(page, limit);
@@ -86,7 +87,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         //条件查询出所有数据，进行未锁定和绩效指标进行筛选
         List<ViewManageYearMonthScore> viewManageYearMonthScoreList = viewManageYearMonthScoreMapper.selectList(queryWrapper);
         List<ViewManageYearMonthScore> filterList = viewManageYearMonthScoreList.stream()
-                .filter(i -> i.getStatus().equals("未锁定") && "经理人指标".equals(i.getManagerKpiMark()) && "系统评分".equals(i.getEvaluateMode())).collect(Collectors.toList());
+                .filter(i -> i.getStatus().equals("未锁定") && "已生成".equals(i.getMonthActualValueMark()) && "经理人指标".equals(i.getManagerKpiMark()) && "系统评分".equals(i.getEvaluateMode())).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(filterList)) {
             throw new ServiceException("没有查出数据或已生成！生成失败！");
         }
@@ -253,22 +254,22 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
             String scoreAdjust = cells.get(SheetService.columnToIndex("M"));
 
             //必填性检查
-            if(ObjectUtils.isEmpty(projectDesc)){
+            if (ObjectUtils.isEmpty(projectDesc)) {
                 setFailedContent(result, String.format("第%s行的项目名称存在多条", j + 1));
                 cell.setCellValue("项目名称未填写");
                 continue;
             }
-            if(ObjectUtils.isEmpty(companyCellValue)){
+            if (ObjectUtils.isEmpty(companyCellValue)) {
                 setFailedContent(result, String.format("第%s行的公司名称存在多条", j + 1));
                 cell.setCellValue("公司名称未填写");
                 continue;
             }
-            if(ObjectUtils.isEmpty(yearCellValue)){
+            if (ObjectUtils.isEmpty(yearCellValue)) {
                 setFailedContent(result, String.format("第%s行的年份存在多条", j + 1));
                 cell.setCellValue("年份未填写");
                 continue;
             }
-            if(ObjectUtils.isEmpty(monthCellValue)){
+            if (ObjectUtils.isEmpty(monthCellValue)) {
                 setFailedContent(result, String.format("第%s行的月份存在多条", j + 1));
                 cell.setCellValue("月份未填写");
                 continue;
@@ -383,6 +384,10 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         }
         if (params.containsKey("evaluateMode")) {
             queryWrapper.eq("evaluateMode", params.get("evaluateMode"));
+        }
+        //月度实绩生成标识
+        if (params.containsKey("monthActualValueMark")) {
+            queryWrapper.eq("monthActualValueMark", params.get("monthActualValueMark"));
         }
         //拆分前端的年月份的字符串，进行年月的查询
         String yearMonth = (String) params.get("yearMonth");

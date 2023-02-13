@@ -62,6 +62,12 @@ public class ManageKpiMonthPerformance extends BaseModel {
     private String projectType;
 
     /**
+     * 月度实绩生成标识
+     */
+    @TableField("monthActualValueMark")
+    private String monthActualValueMark;
+
+    /**
      * 序号
      */
     @TableField("projectIndex")

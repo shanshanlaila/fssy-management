@@ -53,8 +53,10 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
     private ManageKpiYearServiceImpl manageKpiYearServiceImpl;
     @Autowired
     private ManageKpiMonthPerformanceServiceImpl manageKpiMonthPerformanceServiceImpl;
+
     /**
      * 通过条件进行 分页查询(一年十二个月的数据展示）
+     *
      * @param params 查询条件
      * @return 分页数据
      */
@@ -66,6 +68,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         Page<Map<String, Object>> myPage = new Page<>(page, limit);
         return viewManageMonthPerformanceMapper.selectMapsPage(myPage, queryWrapper);
     }
+
     /**
      * 设置失败的内容
      *
@@ -81,6 +84,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         }
         result.put("failed", true);
     }
+
     /**
      * 读取附件数据到数据库表（年度目标的导入）
      *
@@ -116,10 +120,10 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         String yearCellValue = sheetService.getValue(yearCell);
 
         //效验年份、公司名称
-        if (!year.equals(yearCellValue)){
+        if (!year.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
         }
-        if (!companyName.equals(companyCellValue)){
+        if (!companyName.equals(companyCellValue)) {
             throw new ServiceException("导入的公司名称与excel中的年份不一致，导入失败");
         }
         // 循环总行数(不读表的标题，从第1行开始读)
@@ -162,8 +166,8 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             String mustInputTarget = cells.get(SheetService.columnToIndex("M"));
             String reachTarget = cells.get(SheetService.columnToIndex("N"));
             String challengeTarget = cells.get(SheetService.columnToIndex("O"));
-            String managerKpiMark= cells.get(SheetService.columnToIndex("P"));
-            String evaluateMode= cells.get(SheetService.columnToIndex("Q"));
+            String managerKpiMark = cells.get(SheetService.columnToIndex("P"));
+            String evaluateMode = cells.get(SheetService.columnToIndex("Q"));
             String monitorDepartment = cells.get(SheetService.columnToIndex("AD"));
             String monitorUser = cells.get(SheetService.columnToIndex("AE"));
 
@@ -187,20 +191,20 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             ManageKpiYear manageKpiYear = new ManageKpiYear();
             //判断是否已经存在年度id
             QueryWrapper<ManageKpiYear> yearQueryWrapper = new QueryWrapper<>();
-            yearQueryWrapper.eq("year",year).eq("companyName",companyName)
-                    .eq("projectDesc",projectDesc);
+            yearQueryWrapper.eq("year", year).eq("companyName", companyName)
+                    .eq("projectDesc", projectDesc);
             List<ManageKpiYear> manageKpiYearList = manageKpiYearMapper.selectList(yearQueryWrapper);
-            if (manageKpiYearList.size()>1){
-                setFailedContent(result,String.format("第%s行的年度指标存在多条", j + 1));
+            if (manageKpiYearList.size() > 1) {
+                setFailedContent(result, String.format("第%s行的年度指标存在多条", j + 1));
                 cell.setCellValue("存在多条年度指标，检查数据是否正确");
                 continue;
             }
-            if (manageKpiYearList.size()==1){
+            if (manageKpiYearList.size() == 1) {
                 manageKpiYear.setId(manageKpiYearList.get(0).getId());  //年份id
             }
             //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
             QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("shortName",companyName);
+            companyQueryWrapper.eq("shortName", companyName);
             List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
             if (companyList.size() > 1) {
                 setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
@@ -248,8 +252,10 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
         return result;
     }
+
     /**
      * 读取附件数据到数据库表(月度实绩导入）
+     *
      * @param attachment 附件
      * @return 附件map集合
      */
@@ -283,13 +289,13 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         String monthCellValue = sheetService.getValue(monthCell);
         String yearCellValue = sheetService.getValue(yearCell);
         //效验年份、公司名称
-        if (!companyName.equals(companyCellValue)){
+        if (!companyName.equals(companyCellValue)) {
             throw new ServiceException("导入的公司名称与excel中的名称不一致，导入失败");
         }
-        if (!year.equals(yearCellValue)){
+        if (!year.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
         }
-        if (!month.equals(monthCellValue)){
+        if (!month.equals(monthCellValue)) {
             throw new ServiceException("导入的月份与excel中的名称不一致，导入失败");
         }
 
@@ -329,10 +335,10 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
 
             //根据副标题中的年份、公司、月份和excel中的项目名称，对月份表进行查询找到唯一的id，再根据月份id进行导入
             QueryWrapper<ManageKpiMonthPerformance> manageKpiMonthPerformanceQueryWrapper = new QueryWrapper<>();
-            manageKpiMonthPerformanceQueryWrapper.eq("year",yearCellValue)
-                    .eq("companyName",companyCellValue).eq("month",monthCellValue).eq("projectDesc",projectDesc);
+            manageKpiMonthPerformanceQueryWrapper.eq("year", yearCellValue)
+                    .eq("companyName", companyCellValue).eq("month", monthCellValue).eq("projectDesc", projectDesc);
             List<ManageKpiMonthPerformance> monthPerformances = manageKpiMonthPerformanceMapper.selectList(manageKpiMonthPerformanceQueryWrapper);
-            if (monthPerformances.size()>1){
+            if (monthPerformances.size() > 1) {
                 setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));
                 cell.setCellValue("存在多个指标，检查数据是否正确");
                 continue;
@@ -346,7 +352,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
 
             //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
             QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("shortName",companyName);
+            companyQueryWrapper.eq("shortName", companyName);
             List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
             if (companyList.size() > 1) {
                 setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
@@ -365,21 +371,22 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             ManageKpiMonthPerformance manageKpiMonthPerformance = new ManageKpiMonthPerformance();
             manageKpiMonthPerformance.setCompanyId(company.getId());      //公司id
             manageKpiMonthPerformance.setId(Integer.valueOf(performance.getId()));  //月份id
-            if (!ObjectUtils.isEmpty(monthTarget)){
+            if (!ObjectUtils.isEmpty(monthTarget)) {
                 manageKpiMonthPerformance.setMonthTarget(new BigDecimal(monthTarget));
             }
-            if (!ObjectUtils.isEmpty(monthActualValue)){
+            if (!ObjectUtils.isEmpty(monthActualValue)) {
                 manageKpiMonthPerformance.setMonthActualValue(new BigDecimal(monthActualValue));
             }
-            if (!ObjectUtils.isEmpty(accumulateTarget)){
+            if (!ObjectUtils.isEmpty(accumulateTarget)) {
                 manageKpiMonthPerformance.setAccumulateTarget(new BigDecimal(accumulateTarget));
             }
-            if (!ObjectUtils.isEmpty(accumulateActual)){
+            if (!ObjectUtils.isEmpty(accumulateActual)) {
                 manageKpiMonthPerformance.setAccumulateActual(new BigDecimal(accumulateActual));
             }
             manageKpiMonthPerformance.setAnalyzeRes(analyzeRes);
             manageKpiMonthPerformance.setMonth(Integer.parseInt(monthCellValue));
             manageKpiMonthPerformance.setYear(Integer.parseInt(yearCellValue));
+            manageKpiMonthPerformance.setMonthActualValueMark("已生成");
             // 根据id进行判断，存在则更新，不存在则新增
             manageKpiMonthPerformanceServiceImpl.saveOrUpdate(manageKpiMonthPerformance);
             cell.setCellValue("导入成功");
@@ -387,6 +394,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
         return result;
     }
+
     /**
      * 读取附件数据到数据库表（月度目标导入）
      *
@@ -420,13 +428,13 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         String companyCellValue = sheetService.getValue(companyCell);
         String yearCellValue = sheetService.getValue(yearCell);
         //效验年份、公司名称
-        if (!year.equals(yearCellValue)){
+        if (!year.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
         }
-        if (!companyName.equals(companyCellValue)){
+        if (!companyName.equals(companyCellValue)) {
             throw new ServiceException("导入的公司名称与excel中的年份不一致，导入失败");
         }
-        for (int i = 1; i <=12; i++) {
+        for (int i = 1; i <= 12; i++) {
             // 循环总行数(不读表的标题，从第5行开始读)
             for (int j = 4; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
                 List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
@@ -467,48 +475,48 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 String mustInputTarget = cells.get(SheetService.columnToIndex("M"));
                 String reachTarget = cells.get(SheetService.columnToIndex("N"));
                 String challengeTarget = cells.get(SheetService.columnToIndex("O"));
-                String managerKpiMark= cells.get(SheetService.columnToIndex("P"));
-                String evaluateMode= cells.get(SheetService.columnToIndex("Q"));
+                String managerKpiMark = cells.get(SheetService.columnToIndex("P"));
+                String evaluateMode = cells.get(SheetService.columnToIndex("Q"));
                 String monitorDepartment = cells.get(SheetService.columnToIndex("AD"));
                 String monitorUser = cells.get(SheetService.columnToIndex("AE"));
 
 
-                int month=i;
+                int month = i;
                 String monthTarget = null;
-                if (i==1) {
+                if (i == 1) {
                     monthTarget = cells.get(SheetService.columnToIndex("R"));
                 }
-                if (i==2) {
+                if (i == 2) {
                     monthTarget = cells.get(SheetService.columnToIndex("S"));
                 }
-                if (i==3) {
+                if (i == 3) {
                     monthTarget = cells.get(SheetService.columnToIndex("T"));
                 }
-                if (i==4) {
+                if (i == 4) {
                     monthTarget = cells.get(SheetService.columnToIndex("U"));
                 }
-                if (i==5) {
+                if (i == 5) {
                     monthTarget = cells.get(SheetService.columnToIndex("V"));
                 }
-                if (i==6) {
+                if (i == 6) {
                     monthTarget = cells.get(SheetService.columnToIndex("W"));
                 }
-                if (i==7) {
+                if (i == 7) {
                     monthTarget = cells.get(SheetService.columnToIndex("X"));
                 }
-                if (i==8) {
+                if (i == 8) {
                     monthTarget = cells.get(SheetService.columnToIndex("Y"));
                 }
-                if (i==9) {
+                if (i == 9) {
                     monthTarget = cells.get(SheetService.columnToIndex("Z"));
                 }
-                if (i==10) {
+                if (i == 10) {
                     monthTarget = cells.get(SheetService.columnToIndex("AA"));
                 }
-                if (i==11) {
+                if (i == 11) {
                     monthTarget = cells.get(SheetService.columnToIndex("AB"));
                 }
-                if (i==12) {
+                if (i == 12) {
                     monthTarget = cells.get(SheetService.columnToIndex("AC"));
                 }
                 // 根据项目名称和年份找指标库对应的id，后导入指标库id
@@ -541,7 +549,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 ManageKpiMonthAim manageKpiMonthAim = new ManageKpiMonthAim();
                 //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
                 QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-                companyQueryWrapper.eq("shortName",companyName);
+                companyQueryWrapper.eq("shortName", companyName);
                 List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
                 if (companyList.size() > 1) {
                     setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
@@ -559,7 +567,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 manageKpiMonthAim.setCompanyId(company.getId());      //公司id
 
                 //更新id
-                if (monthAimList.size()==1){
+                if (monthAimList.size() == 1) {
                     Integer monthId = monthAimList.get(0).getId();
                     manageKpiMonthAim.setId(monthId);  //月度id
                 }
@@ -580,7 +588,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 }
                 ManageKpiYear manageKpiYear = manageKpiYearList.get(0);
                 //导入时固定状态
-                String status="未锁定";
+                String status = "未锁定";
                 //前端选择并写入
                 manageKpiMonthAim.setYear(Integer.valueOf(year));
                 manageKpiMonthAim.setCompanyName(companyName);
@@ -608,12 +616,12 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 manageKpiMonthAim.setPastTwoYearsActual(pastTwoYearsActual);
                 manageKpiMonthAim.setPastThreeYearsActual(pastThreeYearsActual);
                 manageKpiMonthAim.setKpiDefinition(kpiDefinition);
-                if (!ObjectUtils.isEmpty(monthTarget)){
+                if (!ObjectUtils.isEmpty(monthTarget)) {
                     manageKpiMonthAim.setMonthTarget(new BigDecimal(monthTarget));
                 }
                 manageKpiMonthAim.setManagerKpiMark(managerKpiMark);
                 manageKpiMonthAim.setEvaluateMode(evaluateMode);
-
+                manageKpiMonthAim.setMonthActualValueMark("未生成");
 
 
                 // 根据id进行判断，存在则更新，不存在则新增
@@ -624,6 +632,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
         return result;
     }
+
     /**
      * 通过查询条件查询数据，用于导出
      *
@@ -635,6 +644,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         QueryWrapper<ViewManageMonthPerformance> queryWrapper = getQueryWrapper(params);
         return viewManageMonthPerformanceMapper.selectMaps(queryWrapper);
     }
+
     private QueryWrapper<ViewManageMonthPerformance> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<ViewManageMonthPerformance> queryWrapper = new QueryWrapper<>();
         //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
@@ -647,18 +657,18 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             }
         }
         //拆分前端的年月份的字符串，进行年月的查询
-        int month=0;
-        int year=0;
+        int month = 0;
+        int year = 0;
         String yearMonth = (String) params.get("yearMonth");
         if (!ObjectUtils.isEmpty(yearMonth)) {
             if (params.containsKey("yearMonth")) {
                 List<String> strings = Arrays.asList(yearMonth.split("-"));
-                year=Integer.parseInt(strings.get(0));
-                month= Integer.parseInt(strings.get(1));
+                year = Integer.parseInt(strings.get(0));
+                month = Integer.parseInt(strings.get(1));
             }
         }
         //设置月份常量，十二月一共循环十二次，与数据查询的月份无关联
-        int MONTH=12;
+        int MONTH = 12;
         // 达成数量
         StringBuilder selectStr1 = new StringBuilder("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany,benchmarkValue," +
                 "monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget,reachTarget," +
@@ -668,11 +678,11 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             selectStr1.append(", sum(if(MONTH =" + MONTH + ",monthTarget,null)) AS 'monthTarget" + MONTH + "'"
                     + ", sum(if(MONTH =" + MONTH + ",monthActualValue,null)) AS 'monthActual" + MONTH + "'");
             MONTH--;
-        } while (MONTH>0);
+        } while (MONTH > 0);
         selectStr1.append(", sum(if(MONTH =" + month + ",accumulateActual,null)) AS 'monthATarget' , " +
                 "sum(if(MONTH =" + month + ",accumulateTarget,null)) AS 'monthAActual'" +
                 ", sum(if(MONTH =" + month + ",analyzeRes,null)) AS 'analyzeRes' ");
-        queryWrapper.select(selectStr1.toString()).eq("year",year)
+        queryWrapper.select(selectStr1.toString()).eq("year", year)
                 .groupBy("manageKpiYearId,companyName,projectType,projectDesc,unit,benchmarkCompany," +
                         "benchmarkValue,monitorDepartment,monitorUser,`year`,basicTarget,mustInputTarget," +
                         "reachTarget,dataSource,challengeTarget,proportion,pastOneYearActual,pastTwoYearsActual," +
