@@ -10,6 +10,7 @@ import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manager.DepityManagerQualitativeEvalService;
@@ -53,10 +54,12 @@ public class DepityManagerQualitativeEvalController {
     private FileAttachmentTool fileAttachmentTool;
     @Autowired
     private ImportModuleService importModuleService;
-
+    @Autowired
+    private CompanyService companyService;
 
     /**
      * 分管经理定性评价管理界面
+     *
      * @param model
      * @return
      */
@@ -65,6 +68,8 @@ public class DepityManagerQualitativeEvalController {
     @RequiredLog("分管经理定性评价")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
         return "system/performance/manager/depity-manager-qualitative-eval/depity-manager-qualitative-eval-list";
     }
 
@@ -97,6 +102,7 @@ public class DepityManagerQualitativeEvalController {
 
     /**
      * 导入
+     *
      * @param file       前台传来的附件数据
      * @param attachment 附件表实体类
      * @return 附件ID
@@ -104,7 +110,7 @@ public class DepityManagerQualitativeEvalController {
     @PostMapping("uploadFile")
     @RequiredLog("分管经理定性评价附件上传")
     @ResponseBody
-    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,HttpServletRequest request) {
+    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request) {
 
         //判断是否选择对应的时间
         Map<String, Object> params = getParams(request);
@@ -126,7 +132,7 @@ public class DepityManagerQualitativeEvalController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = depityManagerQualitativeEvalService.readManagerQualitativeEvalDataSource(result,year);
+            Map<String, Object> resultMap = depityManagerQualitativeEvalService.readManagerQualitativeEvalDataSource(result, year);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -152,6 +158,7 @@ public class DepityManagerQualitativeEvalController {
 
     /**
      * 返回导入 附件上传页面
+     *
      * @param model model对象
      * @return 页面
      */
@@ -179,20 +186,21 @@ public class DepityManagerQualitativeEvalController {
 
     /**
      * excel 导出
-     * @param request 请求
+     *
+     * @param request  请求
      * @param response 响应
      */
     @RequiredLog("数据导出")
     @GetMapping("downloadForCharge")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
-        Map<String,Object> params = getParams(request);
+        Map<String, Object> params = getParams(request);
         //Sql语句
-        params.put("select","id,managerName,companyName,position,year,skillScore,democraticEvalScore," +
+        params.put("select", "id,managerName,companyName,position,year,skillScore,democraticEvalScore," +
                 "superiorEvalScore,qualitativeEvalScoreAuto,qualitativeEvalScoreAdjust,adjustCause,yearImportantEvents," +
                 "eventsTrackSemiannual,eventsTrackAnnual,status");
         //查询
-        List<Map<String,Object>> managerQualitativeEvalDataByParams = depityManagerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params);
-        LinkedHashMap<String,String> fieldMap = new LinkedHashMap<>();
+        List<Map<String, Object>> managerQualitativeEvalDataByParams = depityManagerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params);
+        LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
 
         //需要改变背景的格子
         fieldMap.put("id", "序号");
@@ -210,7 +218,7 @@ public class DepityManagerQualitativeEvalController {
         fieldMap.put("eventsTrackSemiannual", "半年度");
         fieldMap.put("eventsTrackAnnual", "年度");
         //标识字符串的列
-        List<Integer> strList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13);
+        List<Integer> strList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
         SheetOutputService sheetOutputService = new SheetOutputService();
         if (org.apache.commons.lang3.ObjectUtils.isEmpty(managerQualitativeEvalDataByParams)) {
             throw new ServiceException("未查出数据");
@@ -219,15 +227,16 @@ public class DepityManagerQualitativeEvalController {
     }
 
     /**
-     *  自动生成分管经理定性评价分数
+     * 自动生成分管经理定性评价分数
+     *
      * @param
      * @return 结果
      */
     @PostMapping("updateScore")
     @ResponseBody
-    public SysResult updateScore(HttpServletRequest request){
+    public SysResult updateScore(HttpServletRequest request) {
         Map<String, Object> params = getParams(request);
-        if (ObjectUtils.isEmpty(params.get("year"))){
+        if (ObjectUtils.isEmpty(params.get("year"))) {
             throw new ServiceException("未选择年份，生成失败");
         }
         boolean result = depityManagerQualitativeEvalService.createScore(params);
@@ -239,6 +248,7 @@ public class DepityManagerQualitativeEvalController {
 
     /**
      * 以主键删除分管经理定性评价记录
+     *
      * @param id
      * @return true/false
      */
@@ -254,6 +264,7 @@ public class DepityManagerQualitativeEvalController {
 
     /**
      * 修改分管经理定性评价信息
+     *
      * @param request
      * @param model
      * @return
@@ -276,6 +287,7 @@ public class DepityManagerQualitativeEvalController {
 
     /**
      * 更新分管经理定性评价信息
+     *
      * @param managerQualitativeEval
      * @return
      */
@@ -299,8 +311,7 @@ public class DepityManagerQualitativeEvalController {
      * @return 页面
      */
     @GetMapping("search-detail")
-    public String searchByAssignFromBtn(HttpServletRequest request, Model model)
-    {
+    public String searchByAssignFromBtn(HttpServletRequest request, Model model) {
         //②将获取到的姓名、公司名称、年份返回到前端弹出层页面
         String year = request.getParameter("year");
         String companyName = request.getParameter("companyName");
@@ -310,9 +321,9 @@ public class DepityManagerQualitativeEvalController {
         model.addAttribute("managerName", managerName);
         //在ManagerQualitativeEval中查找指标
         Map<String, Object> params = new HashMap<>();
-        params.put("year",year);
-        params.put("companyName",companyName);
-        params.put("managerName",managerName);
+        params.put("year", year);
+        params.put("companyName", companyName);
+        params.put("managerName", managerName);
         Map<String, Object> managerQualitativeEval = depityManagerQualitativeEvalService.findManagerQualitativeEvalDataByParams(params).get(0);
         model.addAttribute("managerQualitativeEval", managerQualitativeEval);
         //对应分数下钻--获取值,用来计算原始数据
@@ -321,28 +332,29 @@ public class DepityManagerQualitativeEvalController {
         double superiorEvalScore = Double.parseDouble(managerQualitativeEval.get("superiorEvalScore").toString());
         //在ManagerQualitativeEvalStd中查找指标
         Map<String, Object> paramStd = new HashMap<>();
-        paramStd.put("year",year);
+        paramStd.put("year", year);
         ManagerQualitativeEvalStd managerQualitativeEvalStd = managerQualitativeEvalStdService.findManagerQualitativeEvalStdDataByParams(paramStd).get(0);
         model.addAttribute("managerQualitativeEvalStd", managerQualitativeEvalStd);
         //对应分数下钻--获取相关比例系数,进行原来值的计算
         double skillScoreR = managerQualitativeEvalStd.getSkillScoreR();
         double democraticEvalScoreR = managerQualitativeEvalStd.getDemocraticEvalScoreR();
         double superiorEvalScoreR = managerQualitativeEvalStd.getSuperiorEvalScoreR();
-        model.addAttribute("skillScoreR",skillScoreR);
-        model.addAttribute("democraticEvalScoreR",democraticEvalScoreR);
-        model.addAttribute("superiorEvalScoreR",superiorEvalScoreR);
+        model.addAttribute("skillScoreR", skillScoreR);
+        model.addAttribute("democraticEvalScoreR", democraticEvalScoreR);
+        model.addAttribute("superiorEvalScoreR", superiorEvalScoreR);
         //计算原来的值并将值传给前端
         double skillScoreOld = skillScore / skillScoreR;
         double democraticEvalScoreOld = democraticEvalScore / democraticEvalScoreR;
         double superiorEvalScoreOld = superiorEvalScore / superiorEvalScoreR;
-        model.addAttribute("skillScoreOld",skillScoreOld);
-        model.addAttribute("democraticEvalScoreOld",democraticEvalScoreOld);
-        model.addAttribute("superiorEvalScoreOld",superiorEvalScoreOld);
+        model.addAttribute("skillScoreOld", skillScoreOld);
+        model.addAttribute("democraticEvalScoreOld", democraticEvalScoreOld);
+        model.addAttribute("superiorEvalScoreOld", superiorEvalScoreOld);
         return "system/performance/manager/depity-manager-qualitative-eval/depity-manager-qualitative-eval-detail";
     }
 
     /**
      * 获取数据库里的数据 展示数据
+     *
      * @param request
      * @return
      */
@@ -419,6 +431,9 @@ public class DepityManagerQualitativeEvalController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("evalStdId"))) {
             params.put("evalStdId", request.getParameter("evalStdId"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            params.put("companyIds", request.getParameter("companyIds"));
         }
         return params;
     }

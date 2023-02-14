@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -379,6 +376,12 @@ public class DepityManagerQualitativeEvalServiceImpl extends ServiceImpl<DepityM
         }
         if (params.containsKey("evalStdId")) {
             queryWrapper.eq("evalStdId", params.get("evalStdId"));
+        }
+        //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
+        if (params.containsKey("companyIds")) {
+            String companyIds = (String) params.get("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            queryWrapper.in("companyId", strings);
         }
         return queryWrapper;
     }

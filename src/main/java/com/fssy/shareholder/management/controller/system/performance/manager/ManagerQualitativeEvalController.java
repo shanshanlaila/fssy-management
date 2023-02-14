@@ -10,6 +10,7 @@ import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.manager.ManagerQualitativeEvalService;
@@ -53,6 +54,8 @@ public class ManagerQualitativeEvalController {
     private FileAttachmentTool fileAttachmentTool;
     @Autowired
     private ImportModuleService importModuleService;
+    @Autowired
+    private CompanyService companyService;
 
 
     /**
@@ -65,6 +68,8 @@ public class ManagerQualitativeEvalController {
     @RequiredLog("总经理定性评价")
     public String manageIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("companyNameList",companyNameList);
         return "system/performance/manager/general-manager-qualitative-eval/general-manager-qualitative-eval-list";
     }
 
@@ -433,6 +438,9 @@ public class ManagerQualitativeEvalController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("evalStdId"))) {
             params.put("evalStdId", request.getParameter("evalStdId"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            params.put("companyIds", request.getParameter("companyIds"));
         }
         return params;
     }

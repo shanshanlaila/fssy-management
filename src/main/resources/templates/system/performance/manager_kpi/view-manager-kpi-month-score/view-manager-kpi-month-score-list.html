@@ -30,17 +30,26 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 250px;">
                             <div id="companyNameSelect"></div>
                         </div>
-<!--                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">-->
-<!--                            <input type="text" name="companyName" placeholder="企业名称" autocomplete="off"-->
-<!--                                   class="layui-input">-->
-<!--                        </div>-->
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="year" id="year" placeholder="年份" autocomplete="off"
-                                   class="layui-input">
+                                   class="layui-input laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="month" id="month" placeholder="月份" autocomplete="off"
-                                   class="layui-input">
+                            <select name="month" id="month">
+                                <option value="">月份</option>
+                                <option value="1">1月</option>
+                                <option value="2">2月</option>
+                                <option value="3">3月</option>
+                                <option value="4">4月</option>
+                                <option value="5">5月</option>
+                                <option value="6">6月</option>
+                                <option value="7">7月</option>
+                                <option value="8">8月</option>
+                                <option value="9">9月</option>
+                                <option value="10">10月</option>
+                                <option value="11">11月</option>
+                                <option value="12">12月</option>
+                            </select>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <select name="generalManager" id="generalManager">
@@ -92,7 +101,13 @@
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
-
+        // 重新重置日期控件
+        laydate.render({
+            elem : '#year',
+            trigger : 'click',
+            type : 'year',
+            // value : moment().format("YYYY")
+        });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
             // 重新加载表格
@@ -156,7 +171,7 @@
             limit: 50,
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
-            where:{generalManager:'是'},
+            // where:{generalManager:'是'},  //职务类别是否需要默认值
             cols: [
                 [
                     {
@@ -325,6 +340,7 @@
                     }
                 }
             });
+            return false;
         })
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
@@ -372,7 +388,7 @@
         $(document).ready(function() {
             console.log($("#year").val())
             table.reload('dataTable', {
-                url: "/system/performance/manager_kpi/view-manager-kpi-month-score/getObjects?year=" + moment().format("YYYY") + "&month=" + moment().month(),
+                url: "/system/performance/manager_kpi/view-manager-kpi-month-score/getObjects",
                 // where: data.field,
                 page: {
                     curr: 1

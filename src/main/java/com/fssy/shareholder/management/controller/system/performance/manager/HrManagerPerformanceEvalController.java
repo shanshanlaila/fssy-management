@@ -8,6 +8,7 @@ import com.fssy.shareholder.management.pojo.system.performance.manager.HrManager
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEval;
 import com.fssy.shareholder.management.pojo.system.performance.manager.ManagerQualitativeEvalStd;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreService;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ManagerKpiScoreServiceOld;
 import com.fssy.shareholder.management.service.system.performance.manage_kpi.ViewManagerKpiMonthService;
@@ -30,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
+import static org.jeecg.modules.jmreport.common.constant.c.co;
+
 /**
  * <p>
  * 经理人绩效汇总评分表 前端控制器
@@ -51,6 +54,8 @@ public class HrManagerPerformanceEvalController {
     private ManagerQualitativeEvalStdService managerQualitativeEvalStdService;
     @Autowired
     private ManagerQualitativeEvalService managerQualitativeEvalService;
+    @Autowired
+    private CompanyService companyService;
 
     /**
      * 经理人定性评价汇总表 管理页面
@@ -62,6 +67,8 @@ public class HrManagerPerformanceEvalController {
     @RequiresPermissions("system:performance:manager:manager-performance-eval:manager-performance-eval-list:index")
     public String managerIndex(Model model) {
         Map<String, Object> params = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("companyNameList",companyNameList);
         return "system/performance/manager/manager-performance-eval/manager-performance-eval-list";
     }
 
@@ -422,6 +429,9 @@ public class HrManagerPerformanceEvalController {
         }
         if (!com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isEmpty(request.getParameter("scoreAdjustCause"))) {
             params.put("scoreAdjustCause", request.getParameter("scoreAdjustCause"));
+        }
+        if (!com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isEmpty(request.getParameter("companyIds"))) {
+            params.put("companyIds", request.getParameter("companyIds"));
         }
         return params;
     }
