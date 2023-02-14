@@ -49,6 +49,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
     @Override
     public Page<ManagerKpiScoreOld> findManagerKpiScoreOldDataListPerPageByParams(Map<String, Object> params) {
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
+        queryWrapper.orderByDesc("year").orderByDesc("month");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<ManagerKpiScoreOld> myPage = new Page<>(page, limit);
@@ -70,7 +71,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             Calendar instance = Calendar.getInstance();
             year = instance.get(Calendar.YEAR);
         }
-        StringBuilder stringBuilder = new StringBuilder("managerName,companyName,position," +
+        StringBuilder stringBuilder = new StringBuilder("managerName,companyName,position,year," +
                 "(SELECT scoreAdjust FROM bs_manager_kpi_score AS c WHERE c.YEAR = bs_manager_kpi_score.`year`-3 AND MONTH = 12 AND c.companyName = bs_manager_kpi_score.companyName AND c.managerName = bs_manager_kpi_score.managerName ) AS '" + (year - 3) + "'," +
                 "(SELECT scoreAdjust FROM bs_manager_kpi_score AS b WHERE b.YEAR = bs_manager_kpi_score.`year`-2 AND MONTH = 12 AND b.companyName = bs_manager_kpi_score.companyName AND b.managerName = bs_manager_kpi_score.managerName ) AS '" + (year - 2) + "'," +
                 "(SELECT scoreAdjust FROM bs_manager_kpi_score AS a WHERE a.YEAR = bs_manager_kpi_score.`year`-1 AND MONTH = 12 AND a.companyName = bs_manager_kpi_score.companyName AND a.managerName = bs_manager_kpi_score.managerName ) AS '" + (year - 1) + "'," +
@@ -78,7 +79,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
                 "(SELECT scoreAdjust FROM bs_manager_kpi_score AS e WHERE e.YEAR = bs_manager_kpi_score.`year`+1 AND MONTH = 12 AND e.companyName = bs_manager_kpi_score.companyName AND e.managerName = bs_manager_kpi_score.managerName ) AS '" + (year + 1) + "'," +
                 "(SELECT scoreAdjust FROM bs_manager_kpi_score AS f WHERE f.YEAR = bs_manager_kpi_score.`year`+2 AND MONTH = 12 AND f.companyName = bs_manager_kpi_score.companyName AND f.managerName = bs_manager_kpi_score.managerName ) AS '" + (year + 2) + "'," +
                 "(SELECT scoreAdjust FROM bs_manager_kpi_score AS g WHERE g.YEAR = bs_manager_kpi_score.`year`+3 AND MONTH = 12 AND g.companyName = bs_manager_kpi_score.companyName AND g.managerName = bs_manager_kpi_score.managerName ) AS '" + (year + 3) + "'");
-        queryWrapper.select(stringBuilder.toString()).groupBy("managerName,companyName,position");
+        queryWrapper.select(stringBuilder.toString()).groupBy("managerName,companyName,position,year");
         int limit = (int) params.get("limit");
         int page = (int) params.get("page");
         Page<Map<String, Object>> myPage = new Page<>(page, limit);

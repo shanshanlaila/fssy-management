@@ -412,6 +412,12 @@ public class ManagerQualitativeEvalServiceImpl extends ServiceImpl<ManagerQualit
         if (params.containsKey("position")) {
             queryWrapper.eq("position", params.get("position"));
         }
+        //对前端传过来的公司主键进行非空判断，再进行字符串拆分使用SQL in进行查询
+        if (params.containsKey("companyIds")) {
+            String companyIds = (String) params.get("companyIds");
+            List<String> strings = Arrays.asList(companyIds.split(","));
+            queryWrapper.in("companyId", strings);
+        }
         return queryWrapper;
     }
 

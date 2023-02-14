@@ -31,12 +31,25 @@
                             <div id="companyNameSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="year" placeholder="年份" autocomplete="off"
-                                   class="layui-input">
+                            <input type="text" name="year" placeholder="年份" autocomplete="off" id="year"
+                                   class="layui-input laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="month" placeholder="月份" autocomplete="off"
-                                   class="layui-input">
+                            <select name="month" id="month">
+                                <option value="">月份</option>
+                                <option value="1">1月</option>
+                                <option value="2">2月</option>
+                                <option value="3">3月</option>
+                                <option value="4">4月</option>
+                                <option value="5">5月</option>
+                                <option value="6">6月</option>
+                                <option value="7">7月</option>
+                                <option value="8">8月</option>
+                                <option value="9">9月</option>
+                                <option value="10">10月</option>
+                                <option value="11">11月</option>
+                                <option value="12">12月</option>
+                            </select>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <select name="projectType" id="projectType">
@@ -67,6 +80,11 @@
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
+                            <div class="layui-inline layui-show-xs-block">
+                                <button class="layui-btn layui-btn-sm"
+                                        lay-submit="" lay-filter="confirmScore">自动生成分数
+                                </button>
+                            </div>
                             <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
                                     lay-filter="downloadForCharge" title="年度调整指标库，导出数据修改">导出人工评分项目
                             </button>
@@ -74,11 +92,6 @@
                         <div class="layui-inline layui-show-xs-block">
                             <button shiro:haspermission="system:performance:manager_kpi:view-manage-month-score:index"
                                     class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">导入人工评分表
-                            </button>
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn layui-btn-sm"
-                                    lay-submit="" lay-filter="confirmScore">自动生成分数
                             </button>
                         </div>
                     </div>
@@ -102,6 +115,13 @@
         'table', 'form', 'layer', 'laydate'
     ], function () {
         var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+        // 重新重置日期控件
+        laydate.render({
+            elem : '#year',
+            trigger : 'click',
+            type : 'year',
+            // value : moment().format("YYYY")
+        });
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
             console.log(data.field)
