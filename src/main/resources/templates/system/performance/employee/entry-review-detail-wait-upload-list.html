@@ -167,11 +167,9 @@
                         title: '状态',
                         width: 120,
                         templet: function (d) {
-                            if (d.status === '待经营管理部审核') {
-                                return '<span class="layui-badge layui-bg layui-bg-green">待经营管理部审核</span>';
-                            }else if(d.status==='待提交评优材料'){
+                             if(d.status==='待提交评优材料'){
                                 return '<span class="layui-badge layui-bg">待提交评优材料</span>';
-                            } else return d.status;
+                            } else return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
                         },
                         align: 'center',
                         fixed: 'left'

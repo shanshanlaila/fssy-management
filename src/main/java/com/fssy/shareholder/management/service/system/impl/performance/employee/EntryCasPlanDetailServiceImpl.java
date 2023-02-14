@@ -324,7 +324,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
 
     @SuppressWarnings("unchecked")
-	private QueryWrapper<EntryCasPlanDetail> getQueryWrapper(Map<String, Object> params) {
+    private QueryWrapper<EntryCasPlanDetail> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EntryCasPlanDetail> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("select")) {
             queryWrapper.select((String) params.get("select"));
@@ -468,12 +468,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("isNewEvent")) {
             queryWrapper.eq("isNewEvent", params.get("isNewEvent"));
         }
-        // 状态为’待部长审核‘和事件类型为’非实物类‘或’新增工作流‘
-        if (params.containsKey("twoStatus")) {
-            queryWrapper
-                    .eq("status", PerformanceConstant.WAIT_AUDIT_MINISTER)
-                    .and(item -> item.eq("eventsFirstType", PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION).or().eq("eventsFirstType", PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT));
-        }
         // 审核页面，左侧表格按人名分组
         if (params.containsKey("groupByUserName")) {
             queryWrapper.select("userName,roleName,departmentName").groupBy("userName", "roleName", "departmentName");
@@ -485,15 +479,15 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         return queryWrapper;
     }
 
-	/**
-	 * 履职表编号生成并保存(线程不安全，需要加锁)
-	 *
-	 * @param createDate    创建日期
-	 * @param otherParams   其他参数
-	 * @param entryCasMerge 履职表对象
-	 * @return
-	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+    /**
+     * 履职表编号生成并保存(线程不安全，需要加锁)
+     *
+     * @param createDate    创建日期
+     * @param otherParams   其他参数
+     * @param entryCasMerge 履职表对象
+     * @return
+     */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public synchronized EntryCasMerge storeNoticeMerge(LocalDate createDate,
                                                        Map<String, Object> otherParams, EntryCasMerge entryCasMerge) {
         // region 创建履职表数据
@@ -503,9 +497,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         int month = createDate.getMonthValue();
         QueryWrapper<EntryCasMerge> queryNoticeMergeSerialQueryWrapper = new QueryWrapper<>();
         // 2022-12-30 修改问题，查询条件添加月份和部门并修改编号规则
-		queryNoticeMergeSerialQueryWrapper.eq("year", year)
-				.eq("month", entryCasMerge.getMonth())
-				.eq("departmentId", entryCasMerge.getDepartmentId())
+        queryNoticeMergeSerialQueryWrapper.eq("year", year)
+                .eq("month", entryCasMerge.getMonth())
+                .eq("departmentId", entryCasMerge.getDepartmentId())
                 .select("max(serial) as serial");
         EntryCasMerge noticeMergeLastSerialData = entryCasMergeMapper
                 .selectOne(queryNoticeMergeSerialQueryWrapper);
@@ -527,39 +521,29 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     }
 
     @Override
-    public boolean submitAudit(List<String> planDetailIds) {
+    public boolean submitAuditForPlan(List<String> planDetailIds) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
             // 如果计划的状态为’待提交审核‘
             if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT)) {
-                LambdaUpdateWrapper<EntryCasPlanDetail> entryCasPlanDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-                // 如果事件类型为’事务类‘
-                if (entryCasPlanDetail.getEventsFirstType().equals(PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION)) {
-                    entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_AUDIT_CHIEF);
-                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
-                    entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
-                } else {
-                    // 如果事件类型为’非事务类’或者‘新增工作流‘
-                    entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MINISTER);
-                    entryCasPlanDetailLambdaUpdateWrapper.eq(EntryCasPlanDetail::getId, entryCasPlanDetail.getId());
-                    entryCasPlanDetailMapper.update(entryCasPlanDetail, entryCasPlanDetailLambdaUpdateWrapper);
-                }
+                // 都提交至科长审核
+                entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_AUDIT_CHIEF);
+                entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             } else {
-                return false;
+                throw new ServiceException(String.format("不能提交状态为【%s】的履职计划", entryCasPlanDetail.getStatus()));
             }
         }
         return true;
     }
 
     @Override
-    public boolean retreat(List<String> planDetailIds) {
+    public boolean retreatForPlan(List<String> planDetailIds) {
         List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
         for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
             //校验方法
-            if (!(entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER) || entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF))) {
-                throw new ServiceException("只能撤销【待部长审核】或【待科长审核】的计划");
-            }
-            else {
+            if (!entryCasPlanDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF)) {
+                throw new ServiceException(String.format("不能撤销状态为【%s】的履职计划", entryCasPlanDetail.getStatus()));
+            } else {
                 entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
                 entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
             }

@@ -8,6 +8,7 @@ import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +23,7 @@ import java.util.Map;
 /**
  * @author MI
  * @ClassName: QueryCenterController
- * @Description: TODO
+ * @Description: 查询中心controller
  * @date 2023/2/10 9:51
  */
 @Controller
@@ -44,24 +45,8 @@ public class QueryCenterController {
     @GetMapping("planIndex")
     @RequiredLog("履职计划查询页面")
     public String viewByPlan(Model model) {
-        getSelectorData(model);
-        return "/system/performance/employee/queryCenter/performance-plan-query";
-    }
-
-    /**
-     * 用于前端select组件展示数据
-     */
-    private void getSelectorData(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>(50);
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>(50);
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>(50);
-        List<String> selectedUserIds = new ArrayList<>(50);
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+        GetTool.getSelectorData(model);
+        return "system/performance/employee/queryCenter/performance-plan-query";
     }
 
     /**
@@ -70,8 +55,8 @@ public class QueryCenterController {
     @RequiredLog("岗位关系查询页面")
     @GetMapping("eventRoleIndex")
     public String eventRoleIndex(Model model) {
-        getSelectorData(model);
-        return "/system/performance/employee/queryCenter/performance-event-relation-role-query";
+        GetTool.getSelectorData(model);
+        return "system/performance/employee/queryCenter/performance-event-relation-role-query";
     }
 
     /**
@@ -80,8 +65,8 @@ public class QueryCenterController {
     @RequiredLog("履职总结查询页面")
     @GetMapping("reviewIndex")
     public String reviewIndex(Model model) {
-        getSelectorData(model);
-        return "/system/performance/employee/queryCenter/performance-review-query";
+        GetTool.getSelectorData(model);
+        return "system/performance/employee/queryCenter/performance-review-query";
     }
 
     /**
@@ -93,6 +78,6 @@ public class QueryCenterController {
         Map<String, Object> departmentParams = new HashMap<>(50);
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
-        return "/system/performance/employee/queryCenter/performance-excellent-query";
+        return "system/performance/employee/queryCenter/performance-excellent-query";
     }
 }

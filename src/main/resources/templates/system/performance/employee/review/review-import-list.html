@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>履职回顾提交审核</title>
+    <title>履职总结导入</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">履职回顾管理</a>
-            <a> <cite>履职回顾提交审核</cite></a>
+            <a> <cite>履职总结导入</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -81,37 +81,26 @@
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                         </div>
-                        <!--<div class="layui-inline layui-show-xs-block">
+                        <div class="layui-inline layui-show-xs-block">
                             <button shiro:haspermission="system:performance:entryCasReviewDetail:import"
                                     class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
                                 导入履职总结
                             </button>
-                        </div>-->
+                        </div>
                     </div>
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="toolbar">
-                        <form class="layui-form layui-col-space5" style="float: left">
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="confirm">提交审核
-                                </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit=""
-                                        lay-filter="retreat">撤销提交
-                                </button>
-                            </div>
-                        </form>
-                        <!--<div class="layui-btn-container" style="float: left;margin-left: 10px">
-                            <button class="layui-btn layui-btn-sm" lay-event="chooseEventRole">新增总结</button>
-                        </div>-->
+                    <div class="layui-btn-container" style="float: left;margin-left: 10px">
+                        <button class="layui-btn layui-btn-sm" lay-event="chooseEventRole">新增总结</button>
+                    </div>
                     </script>
-                    <!--<script type="text/html" id="tool">
+                    <script type="text/html" id="tool">
                         {{# if(d.status != '取消') {}}
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
                         {{# } }}
-                    </script>-->
+                    </script>
                 </div>
             </div>
         </div>
@@ -185,22 +174,12 @@
             cols: [
                 [
                     {
-                        type: 'checkbox',
-                        fixed: 'left',
-                        width: 50
-                    },
-                    {
                         field: 'status',
                         title: '状态',
                         width: 120,
                         fixed: 'left',
                         templet: function (d) {
-                            switch (d.status) {
-                                case '待提交审核':
-                                    return '<span class="layui-badge layui-bg">待提交审核</span>';
-                                default:
-                                    return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
-                            }
+                            return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
                         },
                         align: "center"
                     },
@@ -378,52 +357,15 @@
                         width: 100,
                         align: "center"
                     },
-                    /*{
+                    {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
                         align: 'center',
                         toolbar: '#tool'
-                    }*/
+                    }
                 ]
             ]
-        });
-
-        // 提交审核
-        form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id)
-            data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-            layer.confirm('确定提交审核吗？', {icon: 3, title: '提示'}, function (index) {
-                var reviewDetailIds = [];// 创建id数组，存放选择的数据id
-                data.forEach(function (item) {// 循环选择的每一行字段数据
-                    reviewDetailIds.push(item.id);// 放进ids
-                });
-                // 携带数据发送异步请求后端处理逻辑
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-review-detail/indexStatus',
-                    data: {"reviewDetailIds": reviewDetailIds},
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
-                        }
-                    }
-                })
-            });
-            return false;
         });
 
         // 监听头工具栏事件
@@ -469,44 +411,6 @@
                     scrollbar: true
                 });
             }
-        });
-
-        // 撤销提交
-        form.on('submit(retreat)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id);
-            data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-            var reviewDetailIds = [];
-            data.forEach(function (item) {
-                reviewDetailIds.push(item.id);
-            });
-            layer.confirm('确定撤销提交吗？', {icon: 3, title: '提示'}, function (index) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-review-detail/retreat?identification=',
-                    data: {
-                        "reviewDetailIds": reviewDetailIds,
-                    },
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
-                        }
-                    }
-                })
-            });
-            return false;
         });
     });
 

@@ -16,7 +16,7 @@
 			<a> <cite>导入事件清单岗位关系</cite></a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                              style="line-height: 30px"></i>
+                                                                style="line-height: 30px"></i>
 </a>
 </div>
 <div class="layui-fluid">
@@ -25,15 +25,15 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
-                        <!--部门查询-->
+                        <!--部门下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <!--岗位查询-->
+                        <!--角色下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
-                        <!--用户查询-->
+                        <!--用户下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="userSelect"></div>
                         </div>
@@ -64,7 +64,18 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="yearAndMonth" id="month" placeholder="编制月份查询" autocomplete="off"
+                            <input type="text" name="yearAndMonth" id="month" placeholder="编制月份查询"
+                                   autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="jobName" id="jobName" placeholder="工作职责查询"
+                                   autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="workEvents" id="workEvents" placeholder="工作事件查询"
+                                   autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 140px">
@@ -200,10 +211,18 @@
                         field: 'proportion',
                         title: '比重',
                         width: 50,
-                        style: 'cursor:pointer;background-color: pink;',
                         align: "center"
                     },
-
+                    {
+                        title: '比重后价值分',
+                        width: 90,
+                        align: "center",
+                        templet: function (d) {
+                            let number = d.proportion * d.standardValue;
+                            number=number.toFixed(2)
+                            return `<span class="layui-badge layui-bg-blue">${number}</span>`
+                        }
+                    },
                     {
                         field: 'isMainOrNext',
                         title: '主/次担',
@@ -215,8 +234,10 @@
                         field: 'activeDate',
                         title: '生效日期',
                         width: 100,
-                        style: 'cursor:pointer;background-color: pink;',
-                        align: "center"
+                        align: "center",
+                        templet: function (d) {
+                            return `<span class="layui-badge-rim">${d.activeDate}</span>`
+                        }
                     },
                     {
                         field: 'createDate',
@@ -308,11 +329,11 @@
 
         // 部门查询下拉列表
         let departmentSelect = xmSelect.render({
-            el: '#departmentSelect',
+            el: '#departmentSelect', // 绑定
             language: 'zn',
-            data: [[${departmentList}]],
+            data: [[${departmentNameList}]],// model过来的
             filterable: true,
-            // radio: true,
+            // radio: true,// 是否是单选
             tips: '部门查询',
             toolbar: {
                 show: true
@@ -320,36 +341,37 @@
             paging: true, // 分页
             pageSize: 20,
             style: {
-                width: '160px', 'min-height': '28px', 'line-height': '28px'
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
             },
             name: 'departmentIds',// 传到后端选择的departmentId集合字符串
         });
 
         // 岗位查询下拉列表
         let roleSelect = xmSelect.render({
-            el: '#roleSelect',
+            el: '#roleSelect', // 绑定
             language: 'zn',
-            data: [[${roleList}]],
+            data: [[${roleNameList}]],// model过来的
             filterable: true,
-            // radio: true,
+            // radio: true,// 是否是单选
             tips: '岗位查询',
             toolbar: {
                 show: true
             },
             paging: true, // 分页
-            pageSize: 20,
+            pageSize: 30,
             style: {
-                width: '160px', 'min-height': '28px', 'line-height': '28px'
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
             },
-            name: 'roleIds',// 传到后端选择的departmentId集合字符串
+            name: 'roleIds',// 传到后端选择的roleId集合字符串
         });
+
         // 职员名称查询下拉列表
         let userSelect = xmSelect.render({
             el: '#userSelect', // 绑定
             language: 'zn',
             data: [[${userList}]],// model过来的
             filterable: true,
-            // radio: true,// 是否是单选
+            //radio: true,// 是否是单选
             tips: '职员查询',
             toolbar: {
                 show: true

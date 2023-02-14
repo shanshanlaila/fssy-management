@@ -135,7 +135,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             queryWrapper.ge("activeDate", params.get("activeDate"));
         }
         if (params.containsKey("departmentIds")) {
-            String departmentIdsStr = InstandTool.objectToString(params.get("departmentIds"));
+            String departmentIdsStr = (String) params.get("departmentIds");
             List<String> departmentIdList = Arrays.asList(departmentIdsStr.split(","));
             queryWrapper.in("departmentId", departmentIdList);
         }
@@ -191,9 +191,6 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         if (params.containsKey("standardAttachmentId")) {
             queryWrapper.eq("standardAttachmentId", params.get("standardAttachmentId"));
         }
-        if (params.containsKey("departmentIdList")) {
-            queryWrapper.in("departmentId", (List<String>) params.get("departmentIdList"));
-        }
         if (params.containsKey("office")) {
             queryWrapper.like("office", params.get("office"));
         }
@@ -205,15 +202,6 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         }
         if (params.containsKey("statusCancel")) {
             queryWrapper.ne("status", PerformanceConstant.CANCEL);
-        }
-        if (params.containsKey("roleName")) {
-            queryWrapper.like("roleName", params.get("roleName"));
-        }
-        if (params.containsKey("roleId")) {
-            queryWrapper.eq("roleId", params.get("roleId"));
-        }
-        if (params.containsKey("roleIdList")) {
-            queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
         }
         return queryWrapper;
     }
@@ -586,7 +574,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean insertEventByPlan(EventList eventList, Long id) {
         EntryCasPlanDetail planDetail = entryCasPlanDetailMapper.selectById(id);
         eventList.setStatus(PerformanceConstant.FINAL);
@@ -606,11 +594,13 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             throw new ServiceException("不存在部门");
         }
         eventList.setDepartmentId(department.getDepartmentId());
-        int result = eventListMapper.insert(eventList);// 新增event
+        // 新增event
+        int result = eventListMapper.insert(eventList);
         planDetail.setEventsId(eventList.getId());
         planDetail.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
         planDetail.setNewStatus(PerformanceConstant.FINAL);
-        entryCasPlanDetailMapper.updateById(planDetail);// 更新plan
+        // 更新plan
+        entryCasPlanDetailMapper.updateById(planDetail);
         return result > 0;
     }
 }

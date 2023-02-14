@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>履职回顾提交审核</title>
+    <title>导入履职计划</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
@@ -13,8 +13,8 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb">
-            <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">履职回顾管理</a>
-            <a> <cite>履职回顾提交审核</cite></a>
+            <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">履职计划管理</a>
+            <a> <cite>履职计划提交审核</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -31,7 +31,7 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
                         </div>
-                        <!--岗位下拉框-->
+                        <!--角色下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="roleSelect"></div>
                         </div>
@@ -40,37 +40,55 @@
                             <div id="userSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" id="year" name="year" placeholder="审核年份查询" autocomplete="off"
+                            <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
                                    class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 90px;">
-                            <input type="text" id="createDate" name="createDate" placeholder="编制日期" autocomplete="off"
-                                   class="layui-input laydate search-laydate">
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="createDate" placeholder="编制日期" autocomplete="off"
+                                   class="layui-input laydate search-laydate" id="createDate">
+                        </div>
+
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="workEvents" placeholder="按流程（工作事件）查询"
+                                   autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="workEvents" placeholder="流程（工作事件）"
+                            <input type="text" name="planOutput" placeholder="按表单查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="jobName" placeholder="按工作职责查询"
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="times" placeholder="频次"
+                            <input type="text" name="times" placeholder="按频次查询"
                                    autocomplete="off" class="layui-input">
+                        </div>
+
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px">
+                            <label>
+                                <select name="eventsFirstType">
+                                    <option style="display: none" value="">请选择事务类型</option>
+                                    <option value="事务类">事物类</option>
+                                    <option value="非事务类">非事物类</option>
+                                    <option value="新增工作流">新增工作流</option>
+                                </select>
+                            </label>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
-                                <select id=“status” name="status">
+                                <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="待提交审核">待提交审核</option>
-                                    <option value="待部长审核">待部长审核</option>
                                     <option value="待科长审核">待科长审核</option>
-                                    <option value="待经营管理部审核">待经营管理部审核</option>
-                                    <option value="完结">完结</option>
+                                    <option value="待填报总结">待填报总结</option>
                                 </select>
                             </label>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <label>
                                 <select id=“mainOrNext” name="mainOrNext">
-                                    <option style="display: none" value="">请选择主担/次担</option>
+                                    <option style="display: none" value="">主担/次担</option>
                                     <option value="主担">主担</option>
                                     <option value="次担">次担</option>
                                 </select>
@@ -80,38 +98,27 @@
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
+                            <div class="layui-inline layui-show-xs-block">
+                                <button shiro:haspermission="system:performance:entryCasPlanDetail:import"
+                                        class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
+                                    导入月度履职计划
+                                </button>
+                            </div>
                         </div>
-                        <!--<div class="layui-inline layui-show-xs-block">
-                            <button shiro:haspermission="system:performance:entryCasReviewDetail:import"
-                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
-                                导入履职总结
-                            </button>
-                        </div>-->
                     </div>
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
-                    <script type="text/html" id="toolbar">
-                        <form class="layui-form layui-col-space5" style="float: left">
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="confirm">提交审核
-                                </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit=""
-                                        lay-filter="retreat">撤销提交
-                                </button>
-                            </div>
-                        </form>
-                        <!--<div class="layui-btn-container" style="float: left;margin-left: 10px">
-                            <button class="layui-btn layui-btn-sm" lay-event="chooseEventRole">新增总结</button>
-                        </div>-->
-                    </script>
-                    <!--<script type="text/html" id="tool">
+                    <!--行工具栏-->
+                    <script type="text/html" id="tool">
                         {{# if(d.status != '取消') {}}
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
                         {{# } }}
-                    </script>-->
+                        <a lay-event="cancel" title="取消"><i class="layui-icon">&#x1007;</i></a>
+                        {{# if(d.status == '待填报总结') {}}
+                        <a lay-event="createReview" title="填报单条履职总结"><i class="layui-icon">&#xe608;</i></a>
+                        {{# } }}
+                    </script>
                 </div>
             </div>
         </div>
@@ -134,18 +141,6 @@
                     type: 'date'
                 });
         });
-        // 导入按钮
-        form.on('submit(import)', function (data) {
-            var createLayer = layer.open({
-                type: 2,
-                title: "导入履职总结",
-                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
-                content: '/system/entry-cas-review-detail/attachment/import',
-                scrollbar: true,
-                maxmin: true,
-            });
-            return false;
-        });
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
@@ -165,12 +160,11 @@
             , type: 'year'
         });
 
-
         // 实例表格
         var dataTable = table.render({
             elem: '#dataTable',
             id: 'dataTable',
-            url: "/system/entry-cas-review-detail/getObjects",
+            url: "/system/entry-cas-plan-detail/getObjects",
             page: true,
             totalRow: true,
             size: 'sm',
@@ -179,28 +173,19 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                /*statusCancel: true*/
-                status: '待提交审核'
+                //status: '待提交审核',
+                //userName:[[${userName}]],//登录用户
+                //departmentName: [[${departmentName}]],// 登录用户本部门
             },
             cols: [
                 [
                     {
-                        type: 'checkbox',
-                        fixed: 'left',
-                        width: 50
-                    },
-                    {
                         field: 'status',
                         title: '状态',
-                        width: 120,
+                        width: 100,
                         fixed: 'left',
                         templet: function (d) {
-                            switch (d.status) {
-                                case '待提交审核':
-                                    return '<span class="layui-badge layui-bg">待提交审核</span>';
-                                default:
-                                    return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
-                            }
+                            return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
                         },
                         align: "center"
                     },
@@ -226,51 +211,46 @@
                         field: 'eventsFirstType',
                         title: '事件类型',
                         width: 80,
-                        templet: function (d) {
-                            if (d.isNewEvent === '是') {
-                                return '新增工作流'
-                            }else return d.eventsFirstType
-                        },
                         align: "center"
                     },
                     {
                         field: 'jobName',
                         title: '工作职责',
-                        width: 150
+                        width: 130
                     },
                     {
                         field: 'workEvents',
                         title: '流程（工作事件）',
                         width: 200,
                     },
+
                     {
                         field: 'standardValue',
                         title: '事件标准价值',
-                        width: 100,
+                        width: 90,
                         align: 'center'
-                    },
-
-                    {
-                        field: 'planningWork',
-                        title: '对应工作事件的计划内容',
-                        width: 200
-                    },
-
-                    {
-                        field: 'planOutput',
-                        title: '表单(输出内容)来源自己填写',
-                        width: 180
-                    },
-                    {
-                        field: 'workOutput',
-                        title: '表单(来源于基础事件)',
-                        width: 130
                     },
                     {
                         field: 'mainOrNext',
                         title: '主/次担',
-                        width: 80,
+                        width: 50,
                         align: "center"
+                    },
+                    {
+                        field: 'planningWork',
+                        title: '计划内容',
+                        width: 150
+                    },
+                    {
+                        field: 'times',
+                        title: '频次',
+                        width: 50,
+                        align: 'center'
+                    },
+                    {
+                        field: 'planOutput',
+                        title: '表单输出内容',
+                        width: 150
                     },
                     {
                         field: 'planStartDate',
@@ -285,32 +265,10 @@
                         align: "center"
                     },
                     {
-                        field: 'actualCompleteDate',
-                        title: '实际完成时间',
-                        width: 90,
-                        align: "center"
-                    },
-                    {
-                        field: 'completeDesc',
-                        title: '工作完成描述',
-                        width: 90
-                    },
-                    {
-                        field: 'times',
-                        title: '频次',
-                        width: 50,
-                        align: "center"
-                    },
-                    {
                         field: 'createDate',
                         title: '编制日期',
-                        width: 100,
+                        width: 90,
                         align: "center"
-                    },
-                    {
-                        field: 'note',
-                        title: '备注',
-                        width: 50
                     },
                     {
                         field: 'applyDate',
@@ -337,13 +295,14 @@
                         align: "center"
                     },
                     {
-                        field: 'auditNote',
-                        title: '审核意见',
-                        width: 130
-                    },
-                    {
                         field: 'mergeNo',
                         title: '月度计划表编号',
+                        width: 110,
+                        align: "center"
+                    },
+                    {
+                        field: 'auditNote',
+                        title: '审核意见',
                         width: 120,
                         align: "center"
                     },
@@ -368,83 +327,27 @@
                         align: "center"
                     },
                     {
-                        field: 'isNewEvent',
-                        title: '是否为新增工作走流',
-                        align: "center"
-                    },
-                    {
-                        field: 'autoScore',
-                        title: '系统自动算分',
-                        width: 100,
-                        align: "center"
-                    },
-                    /*{
                         fixed: 'right',
                         title: '操作',
                         width: 100,
                         align: 'center',
                         toolbar: '#tool'
-                    }*/
+                    }
                 ]
             ]
         });
 
-        // 提交审核
-        form.on('submit(confirm)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id)
-            data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-            layer.confirm('确定提交审核吗？', {icon: 3, title: '提示'}, function (index) {
-                var reviewDetailIds = [];// 创建id数组，存放选择的数据id
-                data.forEach(function (item) {// 循环选择的每一行字段数据
-                    reviewDetailIds.push(item.id);// 放进ids
-                });
-                // 携带数据发送异步请求后端处理逻辑
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-review-detail/indexStatus',
-                    data: {"reviewDetailIds": reviewDetailIds},
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
-                        }
-                    }
-                })
+        // 导入按钮
+        form.on('submit(import)', function (data) {
+            var createLayer = layer.open({
+                type: 2,
+                title: "上传履职计划表",
+                area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+                content: '/system/entry-cas-plan-detail/attachment/import',
+                scrollbar: true,
+                maxmin: true,
             });
             return false;
-        });
-
-        // 监听头工具栏事件
-        // 新增回顾
-        table.on('toolbar(dataTable)', function (obj) {
-            if (obj.event === 'chooseEventRole') {
-                // 弹出添加页面
-                layer.open(
-                    {
-                        type: 2,
-                        title: '双击选择基础事件随后创建履职总结',
-                        area:
-                            [
-                                $(window).width() * 0.9 + 'px',
-                                $(window).height() - 50 + 'px'
-                            ],
-                        content: '/system/entry-cas-review-detail/chooseEventRole',
-                        scrollbar: true,
-                        maxmin: true
-                    });
-            }
         });
 
         // 监听行工具事件
@@ -458,57 +361,48 @@
                 }
                 layer.open({
                     type: 2,
-                    title: '序号为' + data.id + '的履职总结内容修改',
+                    title: '序号为' + data.id + '的履职计划明细信息修改',
                     area:
                         [
-                            $(window).width() * 0.4 + 'px',
-                            '380px'
+                            $(window).width() * 0.9 + 'px',
+                            $(window).height() - 50 + 'px'
                         ],
-                    content: '/system/entry-cas-review-detail/edit/' + data.id,
+                    content: '/system/entry-cas-plan-detail/edit/' + data.id,
+                    maxmin: true,
+                    scrollbar: true
+                });
+            } else if (obj.event === 'cancel') {
+                layer.confirm('确定要取消序号为' + data.id + '履职计划明细吗？', function () {
+                    $.ajax(
+                        {
+                            type: 'POST',
+                            url: '/system/entry-cas-plan-detail/cancel/' + data.id,
+                            success: function (result) {
+                                layer.msg(result.msg);
+                                if (result.status === 200) {
+                                    table.reload('dataTable');
+                                }
+                            }
+                        })
+                });
+            } else if (obj.event === 'createReview') { // 填写履职回顾
+                layer.open({
+                    type: 2,
+                    title: '序号为' + data.id + '的履职回顾填写',
+                    area:
+                        [
+                            $(window).width() * 0.9 + 'px',
+                            $(window).height() - 50 + 'px'
+                        ],
+                    content: '/system/entry-cas-plan-detail/createReview/' + data.id,
                     maxmin: true,
                     scrollbar: true
                 });
             }
         });
 
-        // 撤销提交
-        form.on('submit(retreat)', function (data) {
-            var checkStatus = table.checkStatus(dataTable.config.id);
-            data = checkStatus.data;
-            if (data.length <= 0) {
-                layer.alert("请至少选择一行数据");
-                return false;
-            }
-            var reviewDetailIds = [];
-            data.forEach(function (item) {
-                reviewDetailIds.push(item.id);
-            });
-            layer.confirm('确定撤销提交吗？', {icon: 3, title: '提示'}, function (index) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/system/entry-cas-review-detail/retreat?identification=',
-                    data: {
-                        "reviewDetailIds": reviewDetailIds,
-                    },
-                    success: function (result) {
-                        layer.msg(result.msg);
-                        if (result.status === 200) {
-                            table.reload('dataTable');
-                            laydate.render(
-                                {
-                                    elem: this,
-                                    //更换触发方式
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: new Date()
-                                });
-                        }
-                    }
-                })
-            });
-            return false;
-        });
     });
+
 
     // 部门查询下拉列表
     let departmentSelect = xmSelect.render({
@@ -554,8 +448,8 @@
         language: 'zn',
         data: [[${userList}]],// model过来的
         filterable: true,
-        // radio: true,// 是否是单选
-        tips: '用户查询',
+        //radio: true,// 是否是单选
+        tips: '职员查询',
         toolbar: {
             show: true
         },

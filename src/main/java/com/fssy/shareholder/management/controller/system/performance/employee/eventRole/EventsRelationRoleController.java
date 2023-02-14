@@ -4,15 +4,10 @@
  */
 package com.fssy.shareholder.management.controller.system.performance.employee.eventRole;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
-import com.fssy.shareholder.management.service.manage.department.DepartmentService;
-import com.fssy.shareholder.management.service.manage.role.RoleService;
-import com.fssy.shareholder.management.service.manage.user.UserService;
-import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -51,44 +46,15 @@ public class EventsRelationRoleController
 	private EventsRelationRoleService eventsRelationRoleService;
 
 	/**
-	 * 组织结构功能业务实现类
-	 */
-	@Autowired
-	private DepartmentService departmentService;
-
-	/**
-	 * 角色功能业务实现类
-	 */
-	@Autowired
-	private RoleService roleService;
-
-	@Autowired
-	private UserService userService;
-
-	/**
 	 * 返回事件清单岗位关系管理页面
 	 *
 	 * @param model model对象
-	 * @return
 	 */
 	@RequiredLog("事件清单岗位关系管理")
 	@RequiresPermissions("performance:employee:event:relation:role:index")
 	@GetMapping("index")
 	public String index(Model model) {
-		Map<String, Object> params = new HashMap<>();
-		List<String> selectedIds = new ArrayList<>();
-		List<Map<String, Object>> departmentList = departmentService
-				.findDepartmentsSelectedDataListByParams(params, selectedIds);
-		model.addAttribute("departmentList", departmentList);
-		params = new HashMap<>();
-		List<Long> longSelectedIds = new ArrayList<>();
-		List<Map<String, Object>> roleList = roleService.findRoleSelectedDataListByParams(params,
-				longSelectedIds);
-		model.addAttribute("roleList", roleList);
-		Map<String, Object> userParams = new HashMap<>();
-		List<String> selectedUserIds = new ArrayList<>();
-		List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams,selectedUserIds);
-		model.addAttribute("userList", userList);
+		GetTool.getSelectorData(model);
 		ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
 		model.addAttribute("departmentName",viewDepartmentRoleUser.getDepartmentName());
 		return "system/performance/employee/performance-event-relation-role-list";
@@ -98,170 +64,15 @@ public class EventsRelationRoleController
 	 * 获取数据格式
 	 *
 	 * @param request 请求对象
-	 * @return
 	 */
     @GetMapping("getObjects")
     @ResponseBody
     public Map<String, Object> getObjects(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>(20);
-        Map<String, Object> params = getParams(request);
-        PerformanceServiceUtils<EventsRelationRole> serviceUtils = new PerformanceServiceUtils<>();
-        serviceUtils.getDataResult(result, params, request, eventsRelationRoleService);
+        Map<String, Object> params = GetTool.getParams(request);
+		GetTool.getPageDataRes(result,params,request,eventsRelationRoleService);
         return result;
     }
-
-	private Map<String, Object> getParams(HttpServletRequest request)
-	{
-		Map<String, Object> params = new HashMap<>();
-		// 事件清单岗位关系表主键查询
-		if (!ObjectUtils.isEmpty(request.getParameter("id")))
-		{
-			params.put("id", request.getParameter("id"));
-		}
-		// 事件清单岗位关系表主键列表查询
-		if (!ObjectUtils.isEmpty(request.getParameter("ids")))
-		{
-			String idsStr = request.getParameter("ids");
-			List<String> ids = Arrays.asList(idsStr.split(","));
-			params.put("ids", ids);
-		}
-		// 事件表主键主键查询
-		if (!ObjectUtils.isEmpty(request.getParameter("eventsId")))
-		{
-			params.put("eventsId", request.getParameter("eventsId"));
-		}
-		// 事件表主键主键列表查询
-		if (!ObjectUtils.isEmpty(request.getParameter("eventsIds")))
-		{
-			String eventsIdStr = request.getParameter("eventsIds");
-			List<String> eventsId = Arrays.asList(eventsIdStr.split(","));
-			params.put("eventsId", eventsId);
-		}
-		// 岗位名称精确查询
-		if (!ObjectUtils.isEmpty(request.getParameter("roleNameEq")))
-		{
-			params.put("roleName", request.getParameter("roleNameEq"));
-		}
-		// 岗位主键精确查询
-		if (!ObjectUtils.isEmpty(request.getParameter("roleId")))
-		{
-			params.put("roleId", request.getParameter("roleId"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("year")))
-		{
-			params.put("year", request.getParameter("year"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("month")))
-		{
-			params.put("month", request.getParameter("month"));
-		}
-		// 生效日期查询
-		if (!ObjectUtils.isEmpty(request.getParameter("activeDateStart")))
-		{
-			params.put("activeDateStart", request.getParameter("activeDateStart"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("activeDateEnd")))
-		{
-			params.put("activeDateEnd", request.getParameter("activeDateEnd"));
-		}
-		// 编制日期查询
-		if (!ObjectUtils.isEmpty(request.getParameter("createDateStart")))
-		{
-			params.put("createDateStart", request.getParameter("createDateStart"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("createDateEnd")))
-		{
-			params.put("createDateEnd", request.getParameter("createDateEnd"));
-		}
-		// 部门名称精确查询
-		if (!ObjectUtils.isEmpty(request.getParameter("departmentNameEq")))
-		{
-			params.put("departmentName", request.getParameter("departmentNameEq"));
-		}
-		// 部门主键精确查询
-		if (!ObjectUtils.isEmpty(request.getParameter("departmentId")))
-		{
-			params.put("departmentId", request.getParameter("departmentId"));
-		}
-		// 事件类别精确查询
-		if (!ObjectUtils.isEmpty(request.getParameter("eventsTypeEq")))
-		{
-			params.put("eventsType", request.getParameter("eventsTypeEq"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("isMainOrNext")))
-		{
-			params.put("isMainOrNext", request.getParameter("isMainOrNext"));
-		}
-		// 用户名称精确查询
-		if (!ObjectUtils.isEmpty(request.getParameter("userNameEq")))
-		{
-			params.put("userName", request.getParameter("userNameEq"));
-		}
-		// 用户主键精确查询
-		if (!ObjectUtils.isEmpty(request.getParameter("userId")))
-		{
-			params.put("userId", request.getParameter("userId"));
-		}
-		// 岗位名称查询
-		if (!ObjectUtils.isEmpty(request.getParameter("roleName")))
-		{
-			params.put("roleName", request.getParameter("roleName"));
-		}
-		// 部门名称查询
-		if (!ObjectUtils.isEmpty(request.getParameter("departmentName")))
-		{
-			params.put("departmentName", request.getParameter("departmentName"));
-		}
-		// 事件类别查询
-		if (!ObjectUtils.isEmpty(request.getParameter("eventsType")))
-		{
-			params.put("eventsType", request.getParameter("eventsType"));
-		}
-		// 用户名称查询
-		if (!ObjectUtils.isEmpty(request.getParameter("userName")))
-		{
-			params.put("userName", request.getParameter("userName"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("idDesc")))
-		{
-			params.put("idDesc", request.getParameter("idDesc"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("groupBy")))
-		{
-			params.put("groupBy", request.getParameter("groupBy"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("select")))
-		{
-			params.put("select", request.getParameter("select"));
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("departmentIds")))
-		{
-			String departmentIdsStr = request.getParameter("departmentIds");
-			List<String> departmentIds = Arrays.asList(departmentIdsStr.split(","));
-			params.put("departmentIds", departmentIds);
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("roleIds")))
-		{
-			String roleIdsStr = request.getParameter("roleIds");
-			List<String> roleIds = Arrays.asList(roleIdsStr.split(","));
-			params.put("roleIds", roleIds);
-		}
-		if (!ObjectUtils.isEmpty(request.getParameter("userIds")))
-		{
-			String userIdsStr = request.getParameter("userIds");
-			List<String> userIds = Arrays.asList(userIdsStr.split(","));
-			params.put("userIds", userIds);
-		}
-		// 年月组合查询
-		if (!ObjectUtils.isEmpty(request.getParameter("yearAndMonth"))){
-			params.put("yearAndMonth",request.getParameter("yearAndMonth"));
-		}
-		// 事务类型
-		if (!ObjectUtils.isEmpty(request.getParameter("eventsFirstType"))){
-			params.put("eventsFirstType",request.getParameter("eventsFirstType"));
-		}
-		return params;
-	}
 
 	/**
 	 * excel导出(按钮：导出事件清单填报履职计划)
@@ -273,7 +84,7 @@ public class EventsRelationRoleController
 	@RequiredLog("导出事件清单填报履职计划")
 	public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
 		// 导出事件清单填报履职计划
-		Map<String, Object> params = getParams(request);
+		Map<String, Object> params = GetTool.getParams(request);
 		params.put("select",
 				"id,"+
 						"eventsId," +

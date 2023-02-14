@@ -8,11 +8,10 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCas
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
-import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
-import org.apache.catalina.connector.Request;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -84,8 +83,7 @@ public class EntryCasReviewDetailController {
             return result;
         }
         Map<String, Object> params = getParams(request);
-        PerformanceServiceUtils<EntryCasReviewDetail> serviceUtils = new PerformanceServiceUtils<>();
-        serviceUtils.getDataResult(result, params, request, reviewService);
+        GetTool.getPageDataRes(result,params,request,reviewService);
         return result;
     }
 
@@ -411,7 +409,7 @@ public class EntryCasReviewDetailController {
     @PostMapping("indexStatus")
     @ResponseBody
     public SysResult indexStatus(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds) {
-        boolean result = reviewService.submitAudit(reviewDetailIds);
+        boolean result = reviewService.submitAuditForReview(reviewDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -429,7 +427,7 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     public SysResult retreat(@RequestParam(value = "reviewDetailIds[]") List<String> reviewDetailIds, HttpServletRequest request) {
         String identification = request.getParameter("identification");
-        boolean result = reviewService.retreat(reviewDetailIds, identification);
+        boolean result = reviewService.retreatForReview(reviewDetailIds, identification);
         if (result) {
             return SysResult.ok();
         }
@@ -594,5 +592,11 @@ public class EntryCasReviewDetailController {
         }
 
         return result;
+    }
+
+    @GetMapping("reviewImport")
+    public String reviewImport (Model model){
+        GetTool.getSelectorData(model);
+        return "system/performance/employee/review/review-import-list";
     }
 }

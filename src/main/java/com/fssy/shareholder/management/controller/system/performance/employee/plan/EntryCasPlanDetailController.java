@@ -17,7 +17,6 @@ import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
-import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
@@ -106,8 +105,7 @@ public class EntryCasPlanDetailController {
             return result;
         }
         Map<String, Object> params = getParams(request);
-        PerformanceServiceUtils<EntryCasPlanDetail> serviceUtils = new PerformanceServiceUtils<>();
-        serviceUtils.getDataResult(result, params, request, entryCasPlanDetailService);
+        GetTool.getPageDataRes(result,params,request,entryCasPlanDetailService);
         return result;
     }
 
@@ -390,7 +388,7 @@ public class EntryCasPlanDetailController {
     @PostMapping("indexStatus")
     @ResponseBody
     public SysResult indexStatus(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds) {
-        boolean result = entryCasPlanDetailService.submitAudit(planDetailIds);
+        boolean result = entryCasPlanDetailService.submitAuditForPlan(planDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -407,7 +405,7 @@ public class EntryCasPlanDetailController {
     @PostMapping("retreat")
     @ResponseBody
     public SysResult retreat(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds) {
-        boolean result = entryCasPlanDetailService.retreat(planDetailIds);
+        boolean result = entryCasPlanDetailService.retreatForPlan(planDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -579,7 +577,9 @@ public class EntryCasPlanDetailController {
         boolean result = entryCasPlanDetailService.updateById(planDetail);
         if (result) {
             return SysResult.build(200, "关联基础事件成功");
-        } else return SysResult.build(500, "关联基础事件失败");
+        } else {
+            return SysResult.build(500, "关联基础事件失败");
+        }
     }
 
     /**
@@ -650,7 +650,25 @@ public class EntryCasPlanDetailController {
             result.put("count", handlersItemPage.getTotal());
             result.put("data", handlersItemPage.getRecords());
         }
-
         return result;
     }
+
+    /**
+     * 转发到计划导入页面
+     */
+    @GetMapping("planImport")
+    @RequiredLog("计划导入")
+    public String planImport(Model model) {
+        GetTool.getSelectorData(model);
+        return "system/performance/employee/plan/plan-import-list";
+    }/**
+     * 转发到计划导入页面
+     */
+    @GetMapping("planExport")
+    @RequiredLog("计划导出")
+    public String planExport(Model model) {
+        GetTool.getSelectorData(model);
+        return "system/performance/employee/plan/plan-export-list";
+    }
+
 }

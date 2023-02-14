@@ -192,11 +192,11 @@
                         title: '状态',
                         align: "center",
                         fixed: 'left',
-                        width: 80,
+                        width: 100,
                         templet: function (d) {
                             if (d.status === "待经管部主管复核") {
                                 return '<span class="layui-badge layui-bg">待审核</span>';
-                            } else return d.status;
+                            } else return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
                         },
                         rowspan: 2
                     },
@@ -210,15 +210,15 @@
                         templet: function (d) {
                             switch (d.classReview) {
                                 case '优':
-                                    return '<span class="layui-badge layui-bg layui-bg-green">优</span>';
+                                    return '<span class="layui-badge layui-bg layui-bg-blue">优</span>';
                                 case '良':
-                                    return '<span class="layui-badge layui-bg layui-bg-green">良</span>';
+                                    return '<span class="layui-badge layui-bg layui-bg-blue">良</span>';
                                 case '中':
-                                    return '<span class="layui-badge layui-bg layui-bg-green">中</span>';
+                                    return '<span class="layui-badge layui-bg layui-bg-blue">中</span>';
                                 case '不合格':
                                     return '<span class="layui-badge layui-bg">不合格</span>';
                                 default:
-                                    return '未评'
+                                    return '<span class="layui-badge layui-bg-gray">未评</span>'
                             }
                         },
                     },

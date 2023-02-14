@@ -80,7 +80,6 @@
                                 <select name="status">
                                     <option style="display: none" value="">请选择状态</option>
                                     <option value="待提交审核">待提交审核</option>
-                                    <option value="待部长审核">待部长审核</option>
                                     <option value="待科长审核">待科长审核</option>
                                     <option value="待填报总结">待填报总结</option>
                                 </select>
@@ -99,18 +98,18 @@
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <div class="layui-inline layui-show-xs-block">
+                            <!--<div class="layui-inline layui-show-xs-block">
                                 <button shiro:haspermission="system:performance:entryCasPlanDetail:import"
                                         class="layui-btn layui-btn-sm" lay-submit="" lay-filter="import">
                                     导入月度履职计划
                                 </button>
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
+                            </div>-->
+                            <!--<div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="export"
                                         title="请选择查询条件进行导出状态为‘待填报总结’履职计划">
                                     导出履职计划填报月底总结
                                 </button>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </form>
@@ -130,15 +129,15 @@
                         </form>
                     </script>
                     <!--行工具栏-->
-                    <script type="text/html" id="tool">
+                    <!--<script type="text/html" id="tool">
                         {{# if(d.status != '取消') {}}
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
                         {{# } }}
                         <a lay-event="cancel" title="取消"><i class="layui-icon">&#x1007;</i></a>
-                        {{# if(d.status == '待填报回顾') {}}
-                        <a lay-event="createReview" title="新增单条履职回顾"><i class="layui-icon">&#xe608;</i></a>
+                        {{# if(d.status == '待填报总结') {}}
+                        <a lay-event="createReview" title="新增单条履职总结"><i class="layui-icon">&#xe608;</i></a>
                         {{# } }}
-                    </script>
+                    </script>-->
                 </div>
             </div>
         </div>
@@ -214,10 +213,8 @@
                             switch (d.status) {
                                 case '待提交审核':
                                     return '<span class="layui-badge layui-bg">待提交审核</span>';
-                                case '待填报总结':
-                                    return '<span class="layui-badge layui-bg-green">待填报总结</span>';
                                 default:
-                                    return d.status;
+                                    return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
                             }
                         },
                         align: "center"
@@ -359,13 +356,13 @@
                         },
                         align: "center"
                     },
-                    {
+                    /*{
                         fixed: 'right',
                         title: '操作',
                         width: 100,
                         align: 'center',
                         toolbar: '#tool'
-                    }
+                    }*/
                 ]
             ]
         });

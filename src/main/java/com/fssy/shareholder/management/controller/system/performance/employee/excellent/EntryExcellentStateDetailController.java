@@ -14,12 +14,12 @@ import com.fssy.shareholder.management.service.manage.department.DepartmentServi
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
-import com.fssy.shareholder.management.service.system.performance.PerformanceServiceUtils;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryExcellentStateDetailService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -94,8 +94,7 @@ public class EntryExcellentStateDetailController {
     public Map<String, Object> getObject(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>(20);
         Map<String, Object> params = getParams(request);
-        PerformanceServiceUtils<EntryExcellentStateDetail> serviceUtils = new PerformanceServiceUtils<>();
-        serviceUtils.getDataResult(result, params, request, excellentService);
+        GetTool.getPageDataRes(result,params,request,excellentService);
         return result;
     }
 
@@ -268,7 +267,7 @@ public class EntryExcellentStateDetailController {
     @PostMapping("indexStatus")
     @ResponseBody
     public SysResult indexStatus(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
-        boolean result = excellentService.submitAudit(excellentStateDetailIds);
+        boolean result = excellentService.submitAuditForExcellent(excellentStateDetailIds);
         if (result) {
             return SysResult.ok();
         }
@@ -285,7 +284,7 @@ public class EntryExcellentStateDetailController {
     @PostMapping("retreat")
     @ResponseBody
     public SysResult retreat(@RequestParam(value = "excellentStateDetailIds[]") List<String> excellentStateDetailIds) {
-        boolean result = excellentService.retreat(excellentStateDetailIds);
+        boolean result = excellentService.retreatForExcellent(excellentStateDetailIds);
         if (result) {
             return SysResult.ok();
         }

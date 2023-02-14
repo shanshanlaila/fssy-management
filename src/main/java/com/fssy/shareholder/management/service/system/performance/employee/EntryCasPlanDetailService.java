@@ -5,7 +5,6 @@
 package com.fssy.shareholder.management.service.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 
@@ -43,20 +42,20 @@ public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetai
 
 
     /**
-     * 提交审核
+     * 履职计划提交审核
      *
-     * @param planDetailIds
+     * @param planDetailIds 计划ids
      * @return 审核成功结果
      */
-    boolean submitAudit(List<String> planDetailIds);
+    boolean submitAuditForPlan(List<String> planDetailIds);
 
     /**
-     * 撤销审核
+     * 计划撤销审核
      *
-     * @param planDetailIds
+     * @param planDetailIds 计划ids
      * @return 撤销成功结果
      */
-    boolean retreat(List<String> planDetailIds);
+    boolean retreatForPlan(List<String> planDetailIds);
 
     /**
      * 审核

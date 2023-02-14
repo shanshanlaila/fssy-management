@@ -254,7 +254,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
      * @param excellentStateDetailIds 履职总结的Ids
      */
     @Override
-    public boolean submitAudit(List<String> excellentStateDetailIds) {
+    public boolean submitAuditForExcellent(List<String> excellentStateDetailIds) {
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
             //只能提交 待提交审核 状态的评优材料
@@ -273,24 +273,21 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     /**
      * 评优材料撤销审核
      *
-     * @param excellentStateDetailIds 履职总结的Ids
+     * @param excellentStateDetailIds 评优材料的ids
      * @return 撤销结果
      */
     @Override
-    public boolean retreat(List<String> excellentStateDetailIds) {
+    public boolean retreatForExcellent(List<String> excellentStateDetailIds) {
         List<EntryExcellentStateDetail> entryExcellentStateDetails = entryExcellentStateDetailMapper.selectBatchIds(excellentStateDetailIds);
         for (EntryExcellentStateDetail entryExcellentStateDetail : entryExcellentStateDetails) {
-            LambdaUpdateWrapper<EntryExcellentStateDetail> entryExcellentStateDetailLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_PERFORMANCE)) {
-                entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
-                entryExcellentStateDetailLambdaUpdateWrapper.eq(EntryExcellentStateDetail::getId, entryExcellentStateDetail.getId());
-                entryExcellentStateDetailMapper.update(entryExcellentStateDetail, entryExcellentStateDetailLambdaUpdateWrapper);
-                continue;
-            }
             //校验方法
             if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT)
                     || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.FINAL) || entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MANAGEMENT_CHIEF)) {
                 throw new ServiceException(String.format("不能撤销状态为【%s】的评优材料", entryExcellentStateDetail.getStatus()));
+            }
+            if (entryExcellentStateDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_PERFORMANCE)) {
+                entryExcellentStateDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
+                entryExcellentStateDetailMapper.updateById(entryExcellentStateDetail);
             }
         }
         return true;

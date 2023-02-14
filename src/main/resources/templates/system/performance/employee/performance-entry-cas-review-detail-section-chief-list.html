@@ -371,7 +371,7 @@
                                 case '待部长审核':
                                     return '<span class="layui-badge layui-bg">待审核</span>';
                                 default:
-                                    return d.status;
+                                    return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
                             }
                         }
                     },

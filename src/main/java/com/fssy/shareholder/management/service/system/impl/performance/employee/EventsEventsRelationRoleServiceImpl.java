@@ -122,10 +122,6 @@ public class EventsEventsRelationRoleServiceImpl
         if (params.containsKey("id")) {
             queryWrapper.eq("id", params.get("id"));
         }
-        // 事件清单岗位关系表主键列表查询
-        if (params.containsKey("ids")) {
-            queryWrapper.in("id", (List<String>) params.get("ids"));
-        }
         // 事件表主键主键查询
         if (params.containsKey("eventsId")) {
             queryWrapper.eq("eventsId", params.get("eventsId"));
@@ -133,10 +129,6 @@ public class EventsEventsRelationRoleServiceImpl
         // 事件表主键主键列表查询
         if (params.containsKey("eventsIds")) {
             queryWrapper.in("eventsId", (List<String>) params.get("eventsIds"));
-        }
-        // 岗位名称精确查询
-        if (params.containsKey("roleNameEq")) {
-            queryWrapper.eq("roleName", params.get("roleNameEq"));
         }
         // 岗位主键精确查询
         if (params.containsKey("roleId")) {
@@ -162,10 +154,6 @@ public class EventsEventsRelationRoleServiceImpl
         if (params.containsKey("createDateEnd")) {
             queryWrapper.le("createDate", params.get("createDateEnd"));
         }
-        // 部门名称精确查询
-        if (params.containsKey("departmentNameEq")) {
-            queryWrapper.eq("departmentName", params.get("departmentNameEq"));
-        }
         // 部门主键精确查询
         if (params.containsKey("departmentId")) {
             queryWrapper.eq("departmentId", params.get("departmentId"));
@@ -187,11 +175,15 @@ public class EventsEventsRelationRoleServiceImpl
         }
         // 部门表主键列表查询
         if (params.containsKey("departmentIds")) {
-            queryWrapper.in("departmentId", (List<String>) params.get("departmentIds"));
+            String departmentIdsStr = (String) params.get("departmentIds");
+            List<String> departmentIds = Arrays.asList(departmentIdsStr.split(","));
+            queryWrapper.in("departmentId", departmentIds);
         }
         // 角色表主键列表查询
         if (params.containsKey("roleIds")) {
-            queryWrapper.in("roleId", (List<String>) params.get("roleIds"));
+            String roleIdsStr = (String) params.get("roleIds");
+            List<String> roleIds = Arrays.asList(roleIdsStr.split(","));
+            queryWrapper.in("roleId",roleIds );
         }
         // 岗位名称查询
         if (params.containsKey("roleName")) {
@@ -211,11 +203,18 @@ public class EventsEventsRelationRoleServiceImpl
         }
         // 用户表主键列表查询
         if (params.containsKey("userIds")) {
-            queryWrapper.in("userId", (List<String>) params.get("userIds"));
+            String userIdsStr = (String) params.get("userIds");
+            List<String> userIds = Arrays.asList(userIdsStr.split(","));
+            queryWrapper.in("userId", userIds);
         }
         if (params.containsKey("idDesc")) {
             queryWrapper.orderByDesc("id");
         }
+
+        queryWrapper.like(params.containsKey("jobName"), "jobName", params.get("jobName"));
+
+        queryWrapper.like(params.containsKey("workEvents"), "workEvents", params.get("workEvents"));
+
         if (params.containsKey("groupBy")) {
             queryWrapper.groupBy(InstandTool.objectToString(params.get("groupBy")));
         }
