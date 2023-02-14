@@ -299,7 +299,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     public boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
         String mark = request.getParameter("mark");
         // 履职总结列表页面修改按钮
-        if (mark.equals("reviewList")) {
+        if ("reviewList".equals(mark)) {
             if (!(entryCasReviewDetail.getStatus().equals(PerformanceConstant.FINAL))) {
                 entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
                 return true;
@@ -334,7 +334,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
 
     @Override
-    public boolean submitAudit(List<String> reviewDetailIds) {
+    public boolean submitAuditForReview(List<String> reviewDetailIds) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(reviewDetailIds);
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
             // 只能提交 待提交审核 状态的事件清单
@@ -354,11 +354,11 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
 
     @Override
-    public boolean retreat(List<String> reviewDetailIds, String identification) {
+    public boolean retreatForReview(List<String> reviewDetailIds, String identification) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(reviewDetailIds);
         for (EntryCasReviewDetail entryCasReviewDetail : entryCasReviewDetails) {
             if (!ObjectUtils.isEmpty(identification)) {
-                if (identification.equals("retreatAuditByMinister")) {
+                if ("retreatAuditByMinister".equals(identification)) {
                     // 总结部长一键撤销审核：状态变为待部长审核
                     if (!(entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT) || entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_MINISTER))) {
                         entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MINISTER);
@@ -368,7 +368,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                     } else {
                         throw new ServiceException(String.format("不能撤销状态为【%S】的总结", entryCasReviewDetail.getStatus()));
                     }
-                } else if (identification.equals("retreatAuditByChief")) {
+                } else if ("retreatAuditByChief".equals(identification)) {
                     // 总结科长一键撤销审核：状态变为待科长审核
                     if (!(entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_SUBMIT_AUDIT) || entryCasReviewDetail.getStatus().equals(PerformanceConstant.WAIT_AUDIT_CHIEF))) {
                         entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_CHIEF);

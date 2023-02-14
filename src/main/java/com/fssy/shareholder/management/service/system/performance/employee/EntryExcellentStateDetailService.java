@@ -1,7 +1,6 @@
 package com.fssy.shareholder.management.service.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryExcellentStateDetail;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public interface EntryExcellentStateDetailService extends BaseService<EntryExcel
      * @param excellentStateDetailIds 履职总结的Ids
      * @return 提交成功
      */
-    boolean submitAudit(List<String> excellentStateDetailIds);
+    boolean submitAuditForExcellent(List<String> excellentStateDetailIds);
 
     /**
      * 评优材料撤销审核
@@ -47,7 +46,7 @@ public interface EntryExcellentStateDetailService extends BaseService<EntryExcel
      * @param excellentStateDetailIds 履职总结的Ids
      * @return 撤销成功
      */
-    boolean retreat(List<String> excellentStateDetailIds);
+    boolean retreatForExcellent(List<String> excellentStateDetailIds);
 
     /**
      * 经营管理部主管审核评优材料（修改按钮）
@@ -55,7 +54,6 @@ public interface EntryExcellentStateDetailService extends BaseService<EntryExcel
      * @param entryExcellentStateDetail 履职总结表
      * @return 提交成功
      */
-
     boolean updateMinister(EntryExcellentStateDetail entryExcellentStateDetail);
 
     /**

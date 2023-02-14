@@ -187,7 +187,17 @@
                         style: 'cursor:pointer;background-color: pink;',
                         align: "center"
                     },
-
+                    {
+                        title: '比重后价值分',
+                        width: 90,
+                        style: 'cursor:pointer;background-color: pink;',
+                        align: "center",
+                        templet: function (d) {
+                            let number = d.proportion * d.standardValue;
+                            number=number.toFixed(2)
+                            return number
+                        }
+                    },
                     {
                         field: 'isMainOrNext',
                         title: '主/次担',

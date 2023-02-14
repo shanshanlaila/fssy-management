@@ -6,6 +6,7 @@ package com.fssy.shareholder.management.tools.common;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasReviewDetailMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
@@ -14,17 +15,24 @@ import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRole
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
+import com.fssy.shareholder.management.service.manage.department.DepartmentService;
+import com.fssy.shareholder.management.service.manage.role.RoleService;
+import com.fssy.shareholder.management.service.manage.user.UserService;
+import com.fssy.shareholder.management.service.system.performance.employee.BaseService;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author MI
@@ -55,12 +63,30 @@ public class GetTool {
 
     static EventsRelationRoleMapper eventsRelationRoleMappers;
 
+    @Autowired
+    private DepartmentService departmentService;
+
+    static DepartmentService departmentServices;
+
+    @Autowired
+    private RoleService roleService;
+
+    static RoleService roleServices;
+
+    @Autowired
+    private UserService userService;
+
+    static UserService userServices;
+
     @PostConstruct
     public void init() {
         viewDepartmentRoleUserMappers = viewDepartmentRoleUserMapper;
         eventListMappers = eventListMapper;
         entryCasReviewDetailMappers = entryCasReviewDetailMapper;
         eventsRelationRoleMappers = eventsRelationRoleMapper;
+        departmentServices = departmentService;
+        userServices = userService;
+        roleServices = roleService;
     }
 
     /**
@@ -232,5 +258,71 @@ public class GetTool {
      */
     public static User getUser() {
         return (User) SecurityUtils.getSubject().getPrincipal();
+    }
+
+    /**
+     * 获取selector数据用于前端展示
+     * 使用此方法的前端x-mselect的name要求如下：
+     * 部门：departmentNameList
+     * 角色：roleNameList
+     * 用户：userList
+     */
+    public static void getSelectorData(Model model) {
+        Map<String, Object> departmentParams = new HashMap<>(50);
+        List<Map<String, Object>> departmentNameList = departmentServices.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> roleParams = new HashMap<>(50);
+        List<Map<String, Object>> roleNameList = roleServices.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
+        model.addAttribute("roleNameList", roleNameList);
+        Map<String, Object> userParams = new HashMap<>(50);
+        List<String> selectedUserIds = new ArrayList<>(50);
+        List<Map<String, Object>> userList = userServices.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
+    }
+
+    /**
+     * 封装多条件查询map
+     *
+     * @param request 查询请求
+     * @return map
+     */
+    public static Map<String, Object> getParams(HttpServletRequest request) {
+        Map<String, Object> params = new HashMap<>(30);
+        // 所有请求参数集合map
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        // 遍历map中的每一键值对
+        for (Map.Entry<String, String[]> stringEntry : parameterMap.entrySet()) {
+            // 判断值是否为空
+            if (!Arrays.asList(stringEntry.getValue()).get(0).isEmpty()) {
+                // 获取键
+                String key = stringEntry.getKey();
+                // 获取值
+                String value = request.getParameter(stringEntry.getKey());
+                params.put(key, value);
+            }
+        }
+        return params;
+    }
+
+    /**
+     * 获取分页数据
+     *
+     * @param params  参数map
+     * @param request 分页数据
+     * @param service service
+     */
+    public static<T> void getPageDataRes(Map<String, Object> result, Map<String, Object> params, HttpServletRequest request, BaseService<T> service) {
+        params.put("page", Integer.parseInt(request.getParameter("page")));
+        params.put("limit", Integer.parseInt(request.getParameter("limit")));
+        Page<T> page = service.findDataListByParams(params);
+        if (page.getTotal() == 0) {
+            result.put("code", 404);
+            result.put("msg", "未查出数据");
+        } else {
+            // 查出数据，返回分页数据
+            result.put("code", 0);
+            result.put("count", page.getTotal());
+            result.put("data", page.getRecords());
+        }
     }
 }

@@ -204,7 +204,9 @@
                                         title: '事件标准价值',
                                         width: 90,
                                         align: 'center',
-                                        style: 'background-color: pink;',
+                                        templet: function (d) {
+                                            return `<span class="layui-badge layui-bg-blue">${d.standardValue}</span>`;
+                                        },
                                     },
                                     {
                                         field: 'note',

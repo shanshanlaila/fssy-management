@@ -157,7 +157,7 @@
                             if (data.status === '待提交审核') {
                                 return '<span class="layui-badge layui-bg">待提交审核</span>'
                             } else {
-                                return data.status
+                                return `<span class="layui-badge layui-bg-green">${data.status}</span>`
                             }
                         }
                     },

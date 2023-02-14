@@ -1,7 +1,6 @@
 package com.fssy.shareholder.management.service.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 
@@ -28,20 +27,21 @@ public interface EntryCasReviewDetailService extends BaseService<EntryCasReviewD
     boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request);
 
     /**
-     * 工作计划完成情况提交审核
+     * 履职总结提交审核
      *
-     * @param reviewDetailIds
-     * @return
+     * @param reviewDetailIds 总结ids
+     * @return 审核结果
      */
-    boolean submitAudit(List<String> reviewDetailIds);
+    boolean submitAuditForReview(List<String> reviewDetailIds);
 
     /**
-     * 工作计划完成情况撤销审核
+     * 总结撤销审核
      *
      * @param reviewDetailIds 总结dis
+     * @param identification 区分科长和部长操作的标志
      * @return 结果
      */
-    boolean retreat(List<String> reviewDetailIds, String identification);
+    boolean retreatForReview(List<String> reviewDetailIds, String identification);
 
     /**
      * 工作计划完成情况审核评价 （科长，事务类）
