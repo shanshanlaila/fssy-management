@@ -175,6 +175,9 @@ public class ViewManageMonthPerformanceController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理年度项目指标"));
         }
         model.addAttribute("module", importModules.get(0).getId());
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
         return "system/performance/manager_kpi/view-manage-month-performance/view-manage-year-attachment-list";
     }
 
@@ -191,16 +194,6 @@ public class ViewManageMonthPerformanceController {
     @ResponseBody
     public SysResult upYearLoadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                     HttpServletRequest request) {
-        //判断是否选择对应公司、年份
-        Map<String, Object> params = getParams(request);
-        String year = (String) params.get("year");
-        String companyName = (String) params.get("companyName");
-        if (ObjectUtils.isEmpty(params.get("companyName"))) {
-            throw new ServiceException("未选择公司，导入失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("year"))) {
-            throw new ServiceException("未选择年份，导入失败");
-        }
         // 保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -215,7 +208,7 @@ public class ViewManageMonthPerformanceController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiYearDataSource(result, year, companyName);
+            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiYearDataSource(result,request);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -259,12 +252,16 @@ public class ViewManageMonthPerformanceController {
         // 查询导入场景
         Map<String, Object> params = new HashMap<>();
         params.put("noteEq", "经营管理月度目标数据");
+
         List<ImportModule> importModules = importModuleService
                 .findImportModuleDataListByParams(params);
         if (ObjectUtils.isEmpty(importModules)) {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度目标数据"));
         }
         model.addAttribute("module", importModules.get(0).getId());
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
         return "system/performance/manager_kpi/view-manage-month-performance/view-manage-month-aim-attachment-list";
     }
 
@@ -281,16 +278,6 @@ public class ViewManageMonthPerformanceController {
     @ResponseBody
     public SysResult upMonthAimLoadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                         HttpServletRequest request) {
-        //判断是否选择对应的时间
-        Map<String, Object> params = getParams(request);
-        String year = (String) params.get("year");
-        String companyName = (String) params.get("companyName");
-        if (ObjectUtils.isEmpty(params.get("companyName"))) {
-            throw new ServiceException("未选择公司，导入失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("year"))) {
-            throw new ServiceException("未选择年份，导入失败");
-        }
         // 保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -305,7 +292,7 @@ public class ViewManageMonthPerformanceController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiMonthAimDataSource(result, companyName, year);
+            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiMonthAimDataSource(result,request);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -356,6 +343,9 @@ public class ViewManageMonthPerformanceController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经营管理月度实绩项目"));
         }
         model.addAttribute("module", importModules.get(0).getId());
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
         return "system/performance/manager_kpi/view-manage-month-performance/view-manage-month-performance-attachment-list";
     }
 
@@ -371,20 +361,20 @@ public class ViewManageMonthPerformanceController {
     @PostMapping("upMonthPerformanceLoadFile")
     @ResponseBody
     public SysResult upMonthPerformanceLoadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request) {
-        //判断是否选择对应公司、年份
-        Map<String, Object> params = getParams(request);
-        String year = (String) params.get("year");
-        String companyName = (String) params.get("companyName");
-        String month = (String) params.get("month");
-        if (ObjectUtils.isEmpty(params.get("companyName"))) {
-            throw new ServiceException("未选择公司，导入失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("year"))) {
-            throw new ServiceException("未选择年份，导入失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("month"))) {
-            throw new ServiceException("未选择月份，导入失败");
-        }
+//        //判断是否选择对应公司、年份
+//        Map<String, Object> params = getParams(request);
+//        String year = (String) params.get("year");
+//        String companyName = (String) params.get("companyName");
+//        String month = (String) params.get("month");
+//        if (ObjectUtils.isEmpty(params.get("companyName"))) {
+//            throw new ServiceException("未选择公司，导入失败");
+//        }
+//        if (ObjectUtils.isEmpty(params.get("year"))) {
+//            throw new ServiceException("未选择年份，导入失败");
+//        }
+//        if (ObjectUtils.isEmpty(params.get("month"))) {
+//            throw new ServiceException("未选择月份，导入失败");
+//        }
         //保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -399,7 +389,7 @@ public class ViewManageMonthPerformanceController {
         Attachment result = fileAttachmentTool.storeFileToModule(file, module, attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiMonthPerformanceDataSource(result, companyName, year, month);
+            Map<String, Object> resultMap = viewManageMonthPerformanceService.readManageKpiMonthPerformanceDataSource(result, request);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
@@ -440,6 +430,9 @@ public class ViewManageMonthPerformanceController {
         }
         if (!ObjectUtils.isEmpty(request.getParameter("companyName"))) {
             params.put("companyName", request.getParameter("companyName"));
+        }
+        if (!ObjectUtils.isEmpty(request.getParameter("companyId"))) {
+            params.put("companyId", request.getParameter("companyId"));
         }
         if (!ObjectUtils.isEmpty(request.getParameter("companyNameShort"))) {
             params.put("companyNameShort", request.getParameter("companyNameShort"));

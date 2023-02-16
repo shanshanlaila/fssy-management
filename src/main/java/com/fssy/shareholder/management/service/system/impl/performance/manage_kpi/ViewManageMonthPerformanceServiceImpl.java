@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -89,12 +90,12 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
      * 读取附件数据到数据库表（年度目标的导入）
      *
      * @param attachment 附件
-     * @param year
+     * @param request
      * @return 附件map集合
      */
     @Override
     @Transactional
-    public Map<String, Object> readManageKpiYearDataSource(Attachment attachment, String year, String companyName) {
+    public Map<String, Object> readManageKpiYearDataSource(Attachment attachment, HttpServletRequest request) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -118,13 +119,30 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("F"));
         String companyCellValue = sheetService.getValue(companyCell);
         String yearCellValue = sheetService.getValue(yearCell);
-
+        //根据Excel表中公司名称与公司表中的公司名称对应找到公司id并进行验证
+        QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+        companyQueryWrapper.eq("name", companyCellValue);
+        List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+        if (companyList.size() > 1) {
+            throw new ServiceException("Excel表格中公司名称存在多个id，请检查公司名称！");
+        }
+        if (companyList.size() == 0) {
+            throw new ServiceException("Excel表格中公司名称不存在，请检查公司名称！");
+        }
+        //公司表中存在数据，获取这个公司名称的id/name/shortName
+        Company company = companyMapper.selectList(companyQueryWrapper).get(0);
+        Integer companyIdCell = company.getId();
+        String companyNameCell = company.getName();
+        String shortNameCell = company.getShortName();
+        String companyIdStr = request.getParameter("companyId");
+        int companyId = Integer.parseInt(companyIdStr);
+        String year = request.getParameter("year");
         //效验年份、公司名称
         if (!year.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
         }
-        if (!companyName.equals(companyCellValue)) {
-            throw new ServiceException("导入的公司名称与excel中的年份不一致，导入失败");
+        if (companyId != companyIdCell) {
+            throw new ServiceException("导入的公司名称与excel中的公司名称不一致，导入失败");
         }
         // 循环总行数(不读表的标题，从第1行开始读)
         for (int j = 4; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
@@ -151,7 +169,6 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             }
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("AF"));
-            String id = cells.get(SheetService.columnToIndex("A"));
             String projectType = cells.get(SheetService.columnToIndex("B"));
             String projectDesc = cells.get(SheetService.columnToIndex("C"));
             String kpiDefinition = cells.get(SheetService.columnToIndex("D"));
@@ -191,7 +208,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             ManageKpiYear manageKpiYear = new ManageKpiYear();
             //判断是否已经存在年度id
             QueryWrapper<ManageKpiYear> yearQueryWrapper = new QueryWrapper<>();
-            yearQueryWrapper.eq("year", year).eq("companyName", companyName)
+            yearQueryWrapper.eq("year", year).eq("companyName", companyNameCell)
                     .eq("projectDesc", projectDesc);
             List<ManageKpiYear> manageKpiYearList = manageKpiYearMapper.selectList(yearQueryWrapper);
             if (manageKpiYearList.size() > 1) {
@@ -202,28 +219,12 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
             if (manageKpiYearList.size() == 1) {
                 manageKpiYear.setId(manageKpiYearList.get(0).getId());  //年份id
             }
-            //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
-            QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("name", companyName);
-            List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
-            if (companyList.size() > 1) {
-                setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
-                cell.setCellValue("存在多个公司名称，公司名称是否正确");
-                continue;
-            }
-            if (companyList.size() == 0) {
-                setFailedContent(result, String.format("第%s行的公司不存在", j + 1));
-                cell.setCellValue("公司名称不存在，公司名称是否正确");
-                continue;
-            }
-            //公司表中存在数据，获取这个公司名称的id
-            Company company = companyMapper.selectList(companyQueryWrapper).get(0);
 
-            manageKpiYear.setCompanyId(company.getId());      //公司id
-            manageKpiYear.setCompanyNameShort(company.getShortName());  //公司简称
+            manageKpiYear.setCompanyId(companyIdCell);      //公司id
+            manageKpiYear.setCompanyNameShort(shortNameCell);  //公司简称
             //前端选择并写入
             manageKpiYear.setYear(Integer.valueOf(year));
-            manageKpiYear.setCompanyName(companyName);
+            manageKpiYear.setCompanyName(companyNameCell);
             //excel导入
             manageKpiYear.setKpiLibId(manageKpiLib.getId());  //指标库id
             manageKpiYear.setProjectType(projectType);
@@ -262,7 +263,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
      */
     @Override
     @Transactional
-    public Map<String, Object> readManageKpiMonthPerformanceDataSource(Attachment attachment, String companyName, String year, String month) {
+    public Map<String, Object> readManageKpiMonthPerformanceDataSource(Attachment attachment, HttpServletRequest request) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -289,14 +290,37 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         String companyCellValue = sheetService.getValue(companyCell);
         String monthCellValue = sheetService.getValue(monthCell);
         String yearCellValue = sheetService.getValue(yearCell);
-        //效验年份、公司名称
-        if (!companyName.equals(companyCellValue)) {
-            throw new ServiceException("导入的公司名称与excel中的名称不一致，导入失败");
+        //根据Excel表中公司名称与公司表中的公司名称对应找到公司id并进行验证
+        QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+        companyQueryWrapper.eq("name", companyCellValue);
+        List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+        if (companyList.size() > 1) {
+            throw new ServiceException("Excel表格中公司名称存在多个id，请检查公司名称！");
         }
-        if (!year.equals(yearCellValue)) {
+        if (companyList.size() == 0) {
+            throw new ServiceException("Excel表格中公司名称不存在，请检查公司名称！");
+        }
+        //公司表中存在数据，获取这个公司名称的id/name/shortName
+        Company company = companyMapper.selectList(companyQueryWrapper).get(0);
+        Integer companyIdCell = company.getId();
+        String companyNameCell = company.getName();
+        String shortNameCell = company.getShortName();
+        String companyIdStr = request.getParameter("companyId");
+        int companyId = Integer.parseInt(companyIdStr);
+        String year = request.getParameter("year");
+        List<String> strings = Arrays.asList(year.split("-"));
+        String yearStr = strings.get(0);
+        String monthStr = strings.get(1);
+        int month=Integer.parseInt(monthStr);  //改变前端月份的类型
+        int monthValue=Integer.parseInt(monthCellValue); //改变Excel中月份的类型
+        //效验年份、公司名称、月份
+        if (!yearStr.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
         }
-        if (!month.equals(monthCellValue)) {
+        if (companyId != companyIdCell) {
+            throw new ServiceException("导入的公司名称与excel中的公司名称不一致，导入失败");
+        }
+        if (month != monthValue) {
             throw new ServiceException("导入的月份与excel中的名称不一致，导入失败");
         }
 
@@ -350,27 +374,8 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 continue;
             }
             ManageKpiMonthPerformance performance = monthPerformances.get(0);
-
-            //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
-            QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("name", companyName);
-            List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
-            if (companyList.size() > 1) {
-                setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
-                cell.setCellValue("存在多个公司名称，公司名称是否正确");
-                continue;
-            }
-            if (companyList.size() == 0) {
-                setFailedContent(result, String.format("第%s行的公司不存在", j + 1));
-                cell.setCellValue("公司名称不存在，公司名称是否正确");
-                continue;
-            }
-            //公司表中存在数据，获取这个公司名称的id
-            Company company = companyMapper.selectList(companyQueryWrapper).get(0);
-
             //构建实体类
             ManageKpiMonthPerformance manageKpiMonthPerformance = new ManageKpiMonthPerformance();
-            manageKpiMonthPerformance.setCompanyId(company.getId());      //公司id
             manageKpiMonthPerformance.setId(Integer.valueOf(performance.getId()));  //月份id
             if (!ObjectUtils.isEmpty(monthTarget)) {
                 manageKpiMonthPerformance.setMonthTarget(new BigDecimal(monthTarget));
@@ -404,7 +409,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
      */
     @Override
     @Transactional
-    public Map<String, Object> readManageKpiMonthAimDataSource(Attachment attachment, String companyName, String year) {
+    public Map<String, Object> readManageKpiMonthAimDataSource(Attachment attachment, HttpServletRequest request) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -428,12 +433,30 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
         Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("F"));
         String companyCellValue = sheetService.getValue(companyCell);
         String yearCellValue = sheetService.getValue(yearCell);
+        //根据Excel表中公司名称与公司表中的公司名称对应找到公司id并进行验证
+        QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+        companyQueryWrapper.eq("name", companyCellValue);
+        List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+        if (companyList.size() > 1) {
+            throw new ServiceException("Excel表格中公司名称存在多个id，请检查公司名称！");
+        }
+        if (companyList.size() == 0) {
+            throw new ServiceException("Excel表格中公司名称不存在，请检查公司名称！");
+        }
+        //公司表中存在数据，获取这个公司名称的id/name/shortName
+        Company company = companyMapper.selectList(companyQueryWrapper).get(0);
+        Integer companyIdCell = company.getId();
+        String companyNameCell = company.getName();
+        String shortNameCell = company.getShortName();
+        String companyIdStr = request.getParameter("companyId");
+        int companyId = Integer.parseInt(companyIdStr);
+        String year = request.getParameter("year");
         //效验年份、公司名称
         if (!year.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
         }
-        if (!companyName.equals(companyCellValue)) {
-            throw new ServiceException("导入的公司名称与excel中的年份不一致，导入失败");
+        if (companyId != companyIdCell) {
+            throw new ServiceException("导入的公司名称与excel中的公司名称不一致，导入失败");
         }
         for (int i = 1; i <= 12; i++) {
             // 循环总行数(不读表的标题，从第5行开始读)
@@ -461,7 +484,6 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 }
                 // 导入结果写入列
                 Cell cell = row.createCell(SheetService.columnToIndex("AF"));
-                String id = cells.get(SheetService.columnToIndex("A"));
                 String projectType = cells.get(SheetService.columnToIndex("B"));
                 String projectDesc = cells.get(SheetService.columnToIndex("C"));
                 String kpiDefinition = cells.get(SheetService.columnToIndex("D"));
@@ -538,7 +560,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
 
                 //查询出对应的经营管理年度指标，如果存在两条及两条以上的数据就抛出错误,月度id
                 QueryWrapper<ManageKpiMonthAim> manageKpiMonthAimQueryWrapper = new QueryWrapper<>();
-                manageKpiMonthAimQueryWrapper.eq("companyName", companyName).eq("year", year)
+                manageKpiMonthAimQueryWrapper.eq("companyName", companyNameCell).eq("year", year)
                         .eq("month", month).eq("projectDesc", projectDesc);
                 List<ManageKpiMonthAim> monthAimList = manageKpiMonthAimMapper.selectList(manageKpiMonthAimQueryWrapper);
                 if (monthAimList.size() > 1) {
@@ -548,26 +570,9 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 }
                 //构建实体类
                 ManageKpiMonthAim manageKpiMonthAim = new ManageKpiMonthAim();
-                //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
-                QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-                companyQueryWrapper.eq("name", companyName);
-                List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
-                if (companyList.size() > 1) {
-                    setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
-                    cell.setCellValue("存在多个公司名称，公司名称是否正确");
-                    continue;
-                }
-                if (companyList.size() == 0) {
-                    setFailedContent(result, String.format("第%s行的公司不存在", j + 1));
-                    cell.setCellValue("公司名称不存在，公司名称是否正确");
-                    continue;
-                }
-                //公司表中存在数据，获取这个公司名称的id
-                Company company = companyMapper.selectList(companyQueryWrapper).get(0);
-
-                manageKpiMonthAim.setCompanyId(company.getId());      //公司id
-                manageKpiMonthAim.setCompanyNameShort(company.getShortName());      //公司简称
-
+                manageKpiMonthAim.setCompanyId(companyIdCell);      //公司id
+                manageKpiMonthAim.setCompanyNameShort(shortNameCell);      //公司简称
+                manageKpiMonthAim.setCompanyName(companyNameCell);  //公司名称
                 //更新id
                 if (monthAimList.size() == 1) {
                     Integer monthId = monthAimList.get(0).getId();
@@ -575,7 +580,7 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 }
                 //查询年度经营管理指标库中的id，写入月度表中，找出年度id
                 QueryWrapper<ManageKpiYear> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("companyName", companyName)
+                queryWrapper.eq("companyName", companyNameCell)
                         .eq("year", year).eq("projectDesc", projectDesc);
                 List<ManageKpiYear> manageKpiYearList = manageKpiYearMapper.selectList(queryWrapper);
                 if (manageKpiYearList.size() > 1) {
@@ -593,7 +598,6 @@ public class ViewManageMonthPerformanceServiceImpl extends ServiceImpl<ViewManag
                 String status = "未锁定";
                 //前端选择并写入
                 manageKpiMonthAim.setYear(Integer.valueOf(year));
-                manageKpiMonthAim.setCompanyName(companyName);
                 //自定义月份根据循环次数依次对应相应月份
                 manageKpiMonthAim.setMonth(Integer.valueOf(month));
                 //对应id数据
