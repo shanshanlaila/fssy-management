@@ -311,9 +311,9 @@ public class GetTool {
      * @param request 分页数据
      * @param service service
      */
-    public static<T> void getPageDataRes(Map<String, Object> result, Map<String, Object> params, HttpServletRequest request, BaseService<T> service) {
+    public static <T>void getPageDataRes(Map<String, Object> result, Map<String, Object> params, HttpServletRequest request, BaseService<T> service) {
         params.put("page", Integer.parseInt(request.getParameter("page")));
-        params.put("limit", Integer.parseInt(request.getParameter("limit")));
+        params.put("limit",  Integer.parseInt(request.getParameter("limit")));
         Page<T> page = service.findDataListByParams(params);
         if (page.getTotal() == 0) {
             result.put("code", 404);

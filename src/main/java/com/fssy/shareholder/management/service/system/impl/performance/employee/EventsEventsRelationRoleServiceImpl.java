@@ -221,11 +221,9 @@ public class EventsEventsRelationRoleServiceImpl
         if (params.containsKey("select")) {
             queryWrapper.select(InstandTool.objectToString(params.get("select")));
         }
-        // 年月组合查询
-        if (params.containsKey("yearAndMonth")) {
-            String yearAndMonth = (String) params.get("yearAndMonth");
-            List<String> asList = Arrays.asList(yearAndMonth.split("-"));
-            queryWrapper.eq("year", asList.get(0)).eq("month", asList.get(1));
+        // 编制月份
+        if (params.containsKey("month")) {
+            queryWrapper.eq("month", params.get("month"));
         }
         if (params.containsKey("eventsFirstType")) {
             queryWrapper.eq("eventsFirstType", params.get("eventsFirstType"));

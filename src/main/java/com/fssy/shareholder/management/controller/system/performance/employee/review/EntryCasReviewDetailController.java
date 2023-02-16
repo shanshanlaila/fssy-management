@@ -45,23 +45,13 @@ public class EntryCasReviewDetailController {
     private UserService userService;
 
     /**
-     * @param model
-     * @return
+     * 履职总结index
      */
     @GetMapping("index")
     @RequiredLog("员工履职总结明细")
     @RequiresPermissions("system:performance:entryCasReviewDetail")
     public String showEntryCasReviewDetail(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+        GetTool.getSelectorData(model);
         return "system/performance/employee/performance-entry-cas-review-detail-list";
     }
 
@@ -82,186 +72,9 @@ public class EntryCasReviewDetailController {
             result.put("msg", "未查出数据");
             return result;
         }
-        Map<String, Object> params = getParams(request);
+        Map<String, Object> params = GetTool.getParams(request);
         GetTool.getPageDataRes(result,params,request,reviewService);
         return result;
-    }
-
-    private Map<String, Object> getParams(HttpServletRequest request) {
-        Map<String, Object> params = new HashMap<>();
-        if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
-            params.put("id", request.getParameter("id"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("createDate"))) {
-            params.put("createDate", request.getParameter("createDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("eventsId"))) {
-            params.put("eventsId", request.getParameter("eventsId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("jobName"))) {
-            params.put("jobName", request.getParameter("jobName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("workEvents"))) {
-            params.put("workEvents", request.getParameter("workEvents"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("eventsForm"))) {
-            params.put("eventsForm", request.getParameter("eventsForm"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("standardValue"))) {
-            params.put("standardValue", request.getParameter("standardValue"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("delowStandard"))) {
-            params.put("delowStandard", request.getParameter("delowStandard"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("middleStandard"))) {
-            params.put("middleStandard", request.getParameter("middleStandard"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("fineStandard"))) {
-            params.put("fineStandard", request.getParameter("fineStandard"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("excellentStandard"))) {
-            params.put("excellentStandard", request.getParameter("excellentStandard"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("mainOrNext"))) {
-            params.put("mainOrNext", request.getParameter("mainOrNext"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("departmentName"))) {
-            params.put("departmentName", request.getParameter("departmentName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("departmentIds"))) {
-            String departmentIds = request.getParameter("departmentIds");
-            List<String> departmentIdList = Arrays.asList(departmentIds.split(","));
-            params.put("departmentIdList", departmentIdList);
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("roleName"))) {
-            params.put("roleName", request.getParameter("roleName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("roleIds"))) {
-            String roleIds = request.getParameter("roleIds");
-            List<String> roleIdList = Arrays.asList(roleIds.split(","));
-            params.put("roleIdList", roleIdList);
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("roleId"))) {
-            params.put("roleId", request.getParameter("roleId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("userName"))) {
-            params.put("userName", request.getParameter("userName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("userId"))) {
-            params.put("userId", request.getParameter("userId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("applyDate"))) {
-            params.put("applyDate", request.getParameter("applyDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
-            params.put("year", request.getParameter("year"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("month"))) {
-            params.put("month", request.getParameter("month"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("planningWork"))) {
-            params.put("planningWork", request.getParameter("planningWork"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("times"))) {
-            params.put("times", request.getParameter("times"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("workOutput"))) {
-            params.put("workOutput", request.getParameter("workOutput"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("planOutput"))) {
-            params.put("planOutput", request.getParameter("planOutput"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("planStartDate"))) {
-            params.put("planStartDate", request.getParameter("planStartDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("planEndDate"))) {
-            params.put("planEndDate", request.getParameter("planEndDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("createDate"))) {
-            params.put("createDate", request.getParameter("createDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("createName"))) {
-            params.put("createName", request.getParameter("createName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("createId"))) {
-            params.put("createId", request.getParameter("createId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditName"))) {
-            params.put("auditName", request.getParameter("auditName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditId"))) {
-            params.put("auditId", request.getParameter("auditId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditDate"))) {
-            params.put("auditDate", request.getParameter("auditDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditNote"))) {
-            params.put("auditNote", request.getParameter("auditNote"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("status"))) {
-            params.put("status", request.getParameter("status"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("autoScore"))) {
-            params.put("autoScore", request.getParameter("autoScore"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("mergeNo"))) {
-            params.put("mergeNo", request.getParameter("mergeNo"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("mergeId"))) {
-            params.put("mergeId", request.getParameter("mergeId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("eventsFirstType"))) {
-            params.put("eventsFirstType", request.getParameter("eventsFirstType"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("note"))) {
-            params.put("note", request.getParameter("note"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditStatus"))) {
-            params.put("auditStatus", request.getParameter("auditStatus"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("attachmentId"))) {
-            params.put("attachmentId", request.getParameter("attachmentId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("statusCancel"))) {
-            params.put("statusCancel", request.getParameter("statusCancel"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("chargeTransactionEvaluateLevel"))) {
-            params.put("chargeTransactionEvaluateLevel", request.getParameter("chargeTransactionEvaluateLevel"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("chargeTransactionBelowType"))) {
-            params.put("chargeTransactionBelowType", request.getParameter("chargeTransactionBelowType"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("chargeNontransactionEvaluateLevel"))) {
-            params.put("chargeNontransactionEvaluateLevel", request.getParameter("chargeNontransactionEvaluateLevel"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("chargeNontransactionBelowType"))) {
-            params.put("chargeNontransactionBelowType", request.getParameter("chargeNontransactionBelowType"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("finalNontransactionEvaluateLevel"))) {
-            params.put("finalNontransactionEvaluateLevel", request.getParameter("finalNontransactionEvaluateLevel"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("ministerReview"))) {
-            params.put("ministerReview", request.getParameter("ministerReview"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("eventsFirstTypeNe"))) {
-            params.put("eventsFirstTypeNe", request.getParameter("eventsFirstTypeNe"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("groupByUserName"))) {
-            params.put("groupByUserName", request.getParameter("groupByUserName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("userNameRight"))) {
-            params.put("userNameRight", request.getParameter("userNameRight"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("userIds"))) {
-            String userIdsStr = request.getParameter("userIds");
-            List<String> userIds = Arrays.asList(userIdsStr.split(","));
-            params.put("userIds", userIds);
-        }
-        // 筛选两种状态：待经营管理部审核、待提交评优材料
-        if (!ObjectUtils.isEmpty(request.getParameter("towStatus"))) {
-            params.put("towStatus", request.getParameter("towStatus"));
-        }
-        return params;
     }
 
     /**
@@ -328,16 +141,7 @@ public class EntryCasReviewDetailController {
     @RequiredLog("总结审核-部长页面")
     @RequiresPermissions("system:performance:entryCasReviewDetail:MinisterIndex")
     public String showEntryCasReviewDetailByMinster(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+        GetTool.getSelectorData(model);
         return "system/performance/employee/performance-entry-cas-review-detail-minister-list";
     }
 
@@ -350,17 +154,8 @@ public class EntryCasReviewDetailController {
     @GetMapping("index1")
     @RequiredLog("总结审核-科长页面")
     @RequiresPermissions("system:performance:entryCasPlanDetail:index1")
-    public String showEntryCasPlanDetailListBySection_chief(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+    public String showEntryCasPlanDetailListBySectionChief(Model model) {
+        GetTool.getSelectorData(model);
         return "system/performance/employee/performance-entry-cas-review-detail-section-chief-list";
     }
 
@@ -443,7 +238,7 @@ public class EntryCasReviewDetailController {
     @PostMapping("sectionUpdate")
     @ResponseBody
     @RequiredLog("提交修改工作计划完成情况审核评价 （科长，事务类）")
-    public SysResult SectionUpdate(EntryCasReviewDetail entryCasReviewDetail) {
+    public SysResult sectionUpdate(EntryCasReviewDetail entryCasReviewDetail) {
         boolean result = reviewService.sectionWorkAudit(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
@@ -513,39 +308,17 @@ public class EntryCasReviewDetailController {
      * @return 路径
      */
     @GetMapping("chooseEventRole")
-    @RequiredLog("跳转创建单条履职回顾-不根据计划")
+    @RequiredLog("跳转创建单条履职总结-不根据计划")
     public String createReview(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-
         return "system/performance/employee/entry-cas-review-detail-create-new";
     }
 
     /**
      * 双击选择事件岗位配比
-     *
-     * @param model
-     * @return
      */
     @GetMapping("matchReview")
     public String matchReview(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        // 部门下拉框数据
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        // 岗位下拉框数据
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        // 用户下拉框数据
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+        GetTool.getSelectorData(model);
         return "system/performance/employee/event-relation-role-choose-list";
     }
 
@@ -576,7 +349,7 @@ public class EntryCasReviewDetailController {
     @ResponseBody
     public Map<String, Object> getObjectsByMap(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>();
-        Map<String, Object> params = getParams(request);
+        Map<String, Object> params = GetTool.getParams(request);
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
 

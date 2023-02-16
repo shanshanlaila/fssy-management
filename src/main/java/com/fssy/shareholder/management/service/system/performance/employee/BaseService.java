@@ -25,6 +25,4 @@ public interface BaseService<T> extends IService<T> {
      * @return 分页对象
      */
     Page<T> findDataListByParams(Map<String, Object> params);
-
-    //Page<EventsRelationRole> findDataListByParams(Map<String, Object> params);
 }

@@ -78,6 +78,9 @@ public class QueryCenterController {
         Map<String, Object> departmentParams = new HashMap<>(50);
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
+        Map<String, Object> params = new HashMap<>(10);
+        List<Map<String, Object>> userNameList = userService.findUserSelectedDataListByParams(params, new ArrayList<>());
+        model.addAttribute("userNameList", userNameList);
         return "system/performance/employee/queryCenter/performance-excellent-query";
     }
 }

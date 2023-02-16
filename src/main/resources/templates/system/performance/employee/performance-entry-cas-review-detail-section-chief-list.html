@@ -62,7 +62,7 @@
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body ">
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
+                            <input type="text" id="year" name="year" placeholder="申报年份" autocomplete="off"
                                    class="layui-input ">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -166,7 +166,7 @@
                         field: 'userName',
                         title: '职员名称',
                         width: '100%',
-                        align:'center'
+                        align: 'center'
                     },
                     {
                         field: 'roleName',
@@ -182,8 +182,8 @@
                     }
                 ]
             ],
-            done: function(res,curr,count){  //关键一，实现指针放在数据行显示手指状
-                $('td').css({'cursor':'pointer'}); //设置成指针放在表格上换成手指
+            done: function (res, curr, count) {  //关键一，实现指针放在数据行显示手指状
+                $('td').css({'cursor': 'pointer'}); //设置成指针放在表格上换成手指
                 $('table').width('100%');
             }
         });
@@ -231,7 +231,7 @@
                         templet: function (d) {
                             if (d.isNewEvent === '是') {
                                 return '新增工作流'
-                            }else return d.eventsFirstType
+                            } else return d.eventsFirstType
                         }
                     },
                     {
@@ -450,6 +450,15 @@
             table.reload('dataTableRight', {
                 url: "/system/entry-cas-review-detail/getObjects?userNameRight=" + data.userName,
             });
+        });
+        // 双击选中行后改变行背景及字体颜色
+        $("body").on('dblclick', '.layui-table-body tr ', function () {
+            var data_index = $(this).attr('data-index');//得到当前的tr的index
+            // 判断是否是左表格
+            if (this.children[0].attributes[0].value === "userName") {
+                $(".layui-table-body tr").attr({"style": "background:#FFFFFF; color:#666666"});//其他tr恢复颜色
+                $(".layui-table-body tr[data-index=" + data_index + "]").attr({"style": "background:#009688;color:black"});//改变当前tr颜色
+            }
         });
 
         // 导出
