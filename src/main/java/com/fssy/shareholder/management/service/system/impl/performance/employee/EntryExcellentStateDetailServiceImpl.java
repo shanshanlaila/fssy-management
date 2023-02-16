@@ -92,7 +92,6 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     }
 
 
-    @SuppressWarnings("unchecked")
     private QueryWrapper<EntryExcellentStateDetail> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EntryExcellentStateDetail> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("select")) {
@@ -131,8 +130,10 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         if (params.containsKey("departmentName")) {
             queryWrapper.like("departmentName", params.get("departmentName"));
         }
-        if (params.containsKey("departmentIdList")) {
-            queryWrapper.in("departmentId", (List<String>) params.get("departmentIdList"));
+        if (params.containsKey("departmentIds")) {
+            String departmentIdsStr = (String) params.get("departmentIds");
+            List<String> departmentIds = Arrays.asList(departmentIdsStr.split(","));
+            queryWrapper.in("departmentId", departmentIds);
         }
         if (params.containsKey("createDate")) {
             queryWrapper.eq("createDate", params.get("createDate"));
@@ -231,8 +232,10 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         if (params.containsKey("roleId")) {
             queryWrapper.eq("roleId", params.get("roleId"));
         }
-        if (params.containsKey("roleIdList")) {
-            queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
+        if (params.containsKey("roleIds")) {
+            String roleIdsStr = (String) params.get("roleIds");
+            List<String> roleIds = Arrays.asList(roleIdsStr.split(","));
+            queryWrapper.in("roleId", roleIds);
         }
         if (params.containsKey("idAsc")) {
             queryWrapper.orderByAsc("id");
@@ -244,6 +247,32 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
         }
         if (params.containsKey("groupBy")) {
             queryWrapper.groupBy(InstandTool.objectToString(params.get("groupBy")));
+        }
+        // 编制人
+        if (params.containsKey("creatNameIds")) {
+            String creatIdsStr = (String) params.get("creatNameIds");
+            List<String> creatIds = Arrays.asList(creatIdsStr.split(","));
+            queryWrapper.in("createId", creatIds);
+        }
+        // 实际完成日期起
+        if (params.containsKey("actualCompleteDateStart")) {
+            queryWrapper.ge("actualCompleteDate", params.get("actualCompleteDateStart"));
+        }
+        // 实际完成日期止
+        if (params.containsKey("actualCompleteDateEnd")) {
+            queryWrapper.le("actualCompleteDate", params.get("actualCompleteDateEnd"));
+        }
+        // 编制日期起
+        if (params.containsKey("createDateStart")) {
+            queryWrapper.ge("createDate", params.get("createDateStart"));
+        }
+        // 编制日期止
+        if (params.containsKey("createDateEnd")) {
+            queryWrapper.le("createDate", params.get("createDateStart"));
+        }
+        // 计划内容
+        if (params.containsKey("planningWork")) {
+            queryWrapper.like("planningWork", params.get("planningWork"));
         }
         return queryWrapper;
     }
@@ -419,7 +448,7 @@ public class EntryExcellentStateDetailServiceImpl extends ServiceImpl<EntryExcel
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean save(EntryExcellentStateDetail entryExcellentStateDetail, Map<String, Object> param) {
         if (param.containsKey("mainIds")) {
             String mainIdsStr = (String) param.get("mainIds");

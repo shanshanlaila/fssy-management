@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>导入基础事件清单</title>
+    <title>基础事件清单管理</title>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/common.js}"></script>
 </head>
@@ -13,7 +13,7 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">基础事件管理</a><a>
-				<cite>导入基础事件清单</cite>
+				<cite>基础事件清单管理</cite>
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
@@ -25,12 +25,17 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body ">
+                        <!--部门-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="departmentSelect"></div>
+                        </div>
+                        <!--基础事件创建人-->
+                        <div class="layui-inline layui-show-xs-block">
+                            <div id="userSelect"></div>
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 100px">
                             <input type="text" id="year" name="year" placeholder="编制年份"
                                    autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
-                            <div id="departmentSelect"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="strategyFunctions" placeholder="战略职能"
@@ -54,6 +59,28 @@
                                 <option value="事务类">事务类</option>
                                 <option value="非事务类">非事务类</option>
                             </select>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
+                            <input
+                                    type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
+                                    autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="createDateEnd" placeholder="编制日期止" id="createDateEnd"
+                                   autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0;">生效日期</label>
+                            <input
+                                    type="text" name="activeDateStart" placeholder="生效日期起" id="activeDateStart"
+                                    autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
+                                   autocomplete="off" class="layui-input laydate search-laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block layer-anim">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
@@ -311,6 +338,25 @@
                         width: '160px', 'min-height': '28px', 'line-height': '28px',
                     },
                     name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+                });
+
+                // 职员名称查询下拉列表
+                let userSelect = xmSelect.render({
+                    el: '#userSelect', // 绑定
+                    language: 'zn',
+                    data: [[${userList}]],// model过来的
+                    filterable: true,
+                    // radio: true,// 是否是单选
+                    tips: '事件创建人查询',
+                    toolbar: {
+                        show: true
+                    },
+                    paging: true, // 分页
+                    pageSize: 30,
+                    style: {
+                        width: '150px', 'min-height': '28px', 'line-height': '28px',
+                    },
+                    name: 'listCreateUserIds',// 传到后端选择的userId集合字符串
                 });
 
                 // 监听行工具事件

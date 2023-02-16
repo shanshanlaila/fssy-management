@@ -125,20 +125,14 @@
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <select name="month" id="month" lay-verify="required" lay-reqText="月份为必填项">
-                                <option value=1 th:selected="${investPlan.month} eq '1'">一月</option>
-                                <option value=2 th:selected="${investPlan.month} eq '2'">二月</option>
-                                <option value=3 th:selected="${investPlan.month} eq '3'">三月</option>
-                                <option value=4 th:selected="${investPlan.month} eq '4'">四月</option>
-                                <option value=5 th:selected="${investPlan.month} eq '5'">五月</option>
-                                <option value=6 th:selected="${investPlan.month} eq '6'">六月</option>
-                                <option value=7 th:selected="${investPlan.month} eq '7'">七月</option>
-                                <option value=8 th:selected="${investPlan.month} eq '8'">八月</option>
-                                <option value=9 th:selected="${investPlan.month} eq '9'">九月</option>
-                                <option value=10 th:selected="${investPlan.month} eq '10'">十月</option>
-                                <option value=11 th:selected="${investPlan.month} eq '11'">十一月</option>
-                                <option value=12 th:selected="${investPlan.month} eq '12'">十二月</option>
-                            </select>
+                            <label for="month">
+                                <select name="month" id="month" lay-verify="required" lay-reqText="月份为必填项">
+                                    <option th:each="i:${#numbers.sequence(1,12)}"
+                                            th:value="${i}"
+                                            th:selected="${investPlan.month} eq ${i}">[[${i}]]月
+                                    </option>
+                                </select>
+                            </label>
                         </div>
                     </td>
                 </tr>

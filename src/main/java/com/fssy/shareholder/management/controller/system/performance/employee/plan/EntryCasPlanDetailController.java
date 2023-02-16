@@ -70,16 +70,7 @@ public class EntryCasPlanDetailController {
     @RequiredLog("履职明细情况计划")
     @RequiresPermissions("system:performance:entryCasPlanDetail")
     public String showEntryCasPlanDetailList(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+        GetTool.getSelectorData(model);
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", viewDepartmentRoleUser.getDepartmentName());
         User user = GetTool.getUser();
@@ -398,8 +389,8 @@ public class EntryCasPlanDetailController {
     /**
      * 撤销审核
      *
-     * @param planDetailIds
-     * @return
+     * @param planDetailIds 计划ids
+     * @return 撤销结果
      */
     @RequiredLog("撤销审核")
     @PostMapping("retreat")
@@ -433,45 +424,11 @@ public class EntryCasPlanDetailController {
         return SysResult.build(500, "提交失败请检查数据后重试");
     }
 
-    /**
-     * 履职计划部长审核管理页面
-     *
-     * @param model
-     * @return
-     */
-    @GetMapping("MinisterIndex")
-    @RequiredLog("履职计划部长审核")
-    @RequiresPermissions("system:performance:entryCasPlanDetail")
-    public String showEntryCasPlanDetailListByMinster(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
-        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
-        return "system/performance/employee/performance-entry-cas-plan-detail-minister-list";
-    }
-
     @GetMapping("index1")
     @RequiredLog("履职计划科长审核")
     @RequiresPermissions("system:performance:entryCasPlanDetail")
-    public String showEntryCasPlanDetailListBySection_chief(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+    public String showEntryCasPlanDetailListBySectionChief(Model model) {
+        GetTool.getSelectorData(model);
         return "system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
     }
 
@@ -488,41 +445,10 @@ public class EntryCasPlanDetailController {
         return "system/performance/employee/entry-cas-plan-detail-createReview";
     }
 
-    @GetMapping("HRIndex")
-    @RequiredLog("人力资源部审核")
-    @RequiresPermissions("system:performance:entryCasPlanDetail:HRIndex")
-    public String HRIndex(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        return "system/performance/employee/performance-entry-cas-plan-detail-HR-list";
-    }
-
-    /**
-     * 判断新增工作流
-     *
-     * @param planDetailIds 计划ids
-     * @param request       请求
-     * @return 结果
-     */
-    @PostMapping("HRAffirmStore")
-    @ResponseBody
-    public SysResult HRAffirmStore(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds, HttpServletRequest request) {
-        String event = request.getParameter("event");
-        boolean res = entryCasPlanDetailService.HRAffirmStore(planDetailIds, event);
-        if (res) {
-            return SysResult.ok();
-        }
-        return SysResult.build(500, "提交失败请检查数据后重试");
-    }
-
     @GetMapping("SelectIndex")
     @RequiredLog("待选择关联事件清单")
     @RequiresPermissions("system:performance:entryCasPlanDetail")
-    public String SelectIndex(Model model) {
+    public String selectIndex(Model model) {
         Map<String, Object> departmentParams = new HashMap<>();
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
@@ -555,7 +481,7 @@ public class EntryCasPlanDetailController {
      * @return 页面路径
      */
     @GetMapping("AssociateEvents/{id}")
-    public String AssociateEvents(@PathVariable String id, Model model) {
+    public String associateEvents(@PathVariable String id, Model model) {
         model.addAttribute("planId", id);
         return "system/performance/employee/entry-cas-new-plan-detail";
     }
@@ -635,7 +561,7 @@ public class EntryCasPlanDetailController {
     @RequestMapping("getObjectsByMap")
     @ResponseBody
     public Map<String, Object> getObjectsByMap(HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(10);
         Map<String, Object> params = getParams(request);
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
@@ -661,7 +587,9 @@ public class EntryCasPlanDetailController {
     public String planImport(Model model) {
         GetTool.getSelectorData(model);
         return "system/performance/employee/plan/plan-import-list";
-    }/**
+    }
+
+    /**
      * 转发到计划导入页面
      */
     @GetMapping("planExport")

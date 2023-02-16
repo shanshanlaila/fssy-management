@@ -203,6 +203,28 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         if (params.containsKey("statusCancel")) {
             queryWrapper.ne("status", PerformanceConstant.CANCEL);
         }
+        // 编制日期起
+        if (params.containsKey("createDateStart")) {
+            queryWrapper.ge("createDate", params.get("createDateStart"));
+        }
+        // 编制日期止
+        if (params.containsKey("createDateEnd")) {
+            queryWrapper.le("createDate", params.get("createDateStart"));
+        }
+        // 生效日期起
+        if (params.containsKey("activeDateStart")) {
+            queryWrapper.ge("activeDate", params.get("activeDateStart"));
+        }
+        // 生效日期止
+        if (params.containsKey("activeDateEnd")) {
+            queryWrapper.le("activeDate", params.get("activeDateEnd"));
+        }
+        // 生效日期止
+        if (params.containsKey("listCreateUserIds")) {
+            String listCreateUserIdsStr = (String) params.get("listCreateUserIds");
+            List<String> listCreateUserIds = Arrays.asList(listCreateUserIdsStr.split(","));
+            queryWrapper.in("userId", listCreateUserIds);
+        }
         return queryWrapper;
     }
 
