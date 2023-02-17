@@ -4,8 +4,8 @@ package com.fssy.shareholder.management.controller.system.operate.company;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
-import com.fssy.shareholder.management.pojo.system.operate.company.FinanceData;
-import com.fssy.shareholder.management.service.system.operate.company.FinanceDataService;
+import com.fssy.shareholder.management.pojo.system.company.FinanceData;
+import com.fssy.shareholder.management.service.system.company.FinanceDataService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -152,22 +152,7 @@ public class FinanceDataController {
         financeDataService.insertFinanceData(financeData);
         return SysResult.ok();
     }
-    /**
-     * 展示修改页面
-     *
-     * @param id   企业财务基础数据id
-     * @param model 数据模型
-     * @return 修改页面
-     */
-    @GetMapping("edit/{id}")
-    public String showEditPage(@PathVariable String id, Model model) {
-        FinanceData financeData = financeDataService.getById(id);
-//        if (financeData.getStatus().equals(PerformanceConstant.EVENT_LIST_STATUS_CANCEL)) {
-//            throw new ServiceException("不能修改取消状态下的事件请单");
-//        }
-        model.addAttribute("financeData", financeData);//projectList传到前端
-        return "system/operate/company/finance-data-edit";
-    }
+
 
     /**
      * 更新企业财务基础数据

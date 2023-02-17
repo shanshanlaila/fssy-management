@@ -1,9 +1,9 @@
-package com.fssy.shareholder.management.service.system.operate.company;
+package com.fssy.shareholder.management.service.system.company;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.operate.company.FinanceData;
+import com.fssy.shareholder.management.pojo.system.company.FinanceData;
 
 import java.util.Map;
 

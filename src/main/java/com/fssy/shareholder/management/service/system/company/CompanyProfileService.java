@@ -1,7 +1,7 @@
-package com.fssy.shareholder.management.service.system.operate.company;
+package com.fssy.shareholder.management.service.system.company;
 
-import com.fssy.shareholder.management.pojo.system.operate.company.CompanyProfile;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.fssy.shareholder.management.pojo.system.company.CompanyProfile;
+import com.fssy.shareholder.management.service.system.performance.employee.BaseService;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +14,7 @@ import java.util.Map;
  * @author 农浩
  * @since 2022-12-13
  */
-public interface CompanyProfileService extends IService<CompanyProfile> {
+public interface CompanyProfileService extends BaseService<CompanyProfile> {
     /**
      *  获取组织结构列表用于xm-select插件
      * @param params
@@ -23,4 +23,5 @@ public interface CompanyProfileService extends IService<CompanyProfile> {
      */
     List<Map<String, Object>> findCompanyProfileSelectedDataListByParams(Map<String, Object> params, List<String> selectedIds);
 
+    boolean insertCompanyProfile(CompanyProfile companyProfile);
 }

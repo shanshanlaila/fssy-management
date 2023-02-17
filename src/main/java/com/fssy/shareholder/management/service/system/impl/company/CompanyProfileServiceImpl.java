@@ -1,10 +1,11 @@
-package com.fssy.shareholder.management.service.system.impl.operate.company;
+package com.fssy.shareholder.management.service.system.impl.company;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.operate.company.CompanyProfileMapper;
-import com.fssy.shareholder.management.pojo.system.operate.company.CompanyProfile;
-import com.fssy.shareholder.management.service.system.operate.company.CompanyProfileService;
+import com.fssy.shareholder.management.pojo.system.company.CompanyProfile;
+import com.fssy.shareholder.management.service.system.company.CompanyProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +56,19 @@ public class CompanyProfileServiceImpl extends ServiceImpl<CompanyProfileMapper,
         return resultList;
     }
 
+    @Override
+    public boolean insertCompanyProfile(CompanyProfile companyProfile) {
+        companyProfileMapper.insert(companyProfile);
+        return true;
+    }
+
+    @Override
+    public Page<CompanyProfile> findDataListByParams(Map<String, Object> params) {
+        QueryWrapper<CompanyProfile> queryWrapper = getQueryWrapper(params).orderByDesc("id");
+        Page<CompanyProfile> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
+        return companyProfileMapper.selectPage(myPage, queryWrapper);
+    }
+
     private QueryWrapper<CompanyProfile> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<CompanyProfile> queryWrapper = new QueryWrapper<>();
         // 添加查询条件
@@ -74,6 +88,5 @@ public class CompanyProfileServiceImpl extends ServiceImpl<CompanyProfileMapper,
             queryWrapper.like("companyShortName", params.get("companyShortName"));
         }
         return queryWrapper;
-
     }
 }
