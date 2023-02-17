@@ -144,7 +144,6 @@ public class ProcessAbilityListController {
     public SysResult store(ProcessAbilityList processAbilityList){
 
         boolean result = processAbilityListService.insertProcessAbilityListStd(processAbilityList);
-        System.out.println(result);
         if (result){
             return SysResult.ok();
         }

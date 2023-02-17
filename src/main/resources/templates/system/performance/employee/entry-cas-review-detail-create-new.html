@@ -232,44 +232,6 @@
             });
         });
 
-        // 部门选择获得器
-        var departmentSelect = xmSelect.render({
-            el: '#departmentSelect',
-            language: 'zn',
-            data: [[${departmentNameList}]],
-            filterable: true,
-            radio: true,
-            tips: '请选择部门',
-            toolbar: {
-                show: true
-            },
-            paging: true, // 分页
-            pageSize: 20,
-            style: {
-                width: '160px', 'min-height': '28px', 'line-height': '28px',
-            },
-            name: 'departmentId',// 传到后端选择的departmentId集合字符串
-        });
-
-        // 岗位查询下拉列表
-        let roleSelect = xmSelect.render({
-            el: '#roleSelect', // 绑定
-            language: 'zn',
-            data: [[${roleNameList}]],// model过来的
-            filterable: true,
-            radio: true,// 是否是单选
-            tips: '岗位查询',
-            toolbar: {
-                show: true
-            },
-            paging: true, // 分页
-            pageSize: 30,
-            style: {
-                width: '160px', 'min-height': '28px', 'line-height': '28px',
-            },
-            name: 'roleIds',// 传到后端选择的roleId集合字符串
-        });
-
     });
 </script>
 </body>

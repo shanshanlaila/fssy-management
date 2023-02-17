@@ -133,8 +133,10 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (params.containsKey("departmentName")) {
             queryWrapper.like("departmentName", params.get("departmentName"));
         }
-        if (params.containsKey("departmentIdList")) {
-            queryWrapper.in("departmentId", (List<String>) params.get("departmentIdList"));
+        if (params.containsKey("departmentIds")) {
+            String departmentIdsStr = (String) params.get("departmentIds");
+            List<String> departmentIds = Arrays.asList(departmentIdsStr.split(","));
+            queryWrapper.in("departmentId", departmentIds);
         }
         if (params.containsKey("roleName")) {
             queryWrapper.like("roleName", params.get("roleName"));
@@ -142,8 +144,10 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (params.containsKey("roleId")) {
             queryWrapper.eq("roleId", params.get("roleId"));
         }
-        if (params.containsKey("roleIdList")) {
-            queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
+        if (params.containsKey("roleIds")) {
+            String roleIds = (String) params.get("roleIds");
+            List<String> roleIdList = Arrays.asList(roleIds.split(","));
+            queryWrapper.in("roleId",roleIdList);
         }
         if (params.containsKey("userName")) {
             queryWrapper.like("userName", params.get("userName"));
@@ -285,11 +289,53 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         // 用户表主键列表查询
         if (params.containsKey("userIds")) {
-            queryWrapper.in("userId", (List<String>) params.get("userIds"));
+            String userIdsStr = (String) params.get("userIds");
+            List<String> userIds = Arrays.asList(userIdsStr.split(","));
+            queryWrapper.in("userId", userIds);
         }
         // 筛选两种状态：待经营管理部审核、待提交评优材料
         if (params.containsKey("towStatus")) {
             queryWrapper.in("status", PerformanceConstant.WAIT_SUBMIT_EXCELLENT, PerformanceConstant.WAIT_AUDIT_MANAGEMENT);
+        }
+        // 编制日期起
+        if (params.containsKey("createDateStart")) {
+            queryWrapper.ge("createDate", params.get("createDateStart"));
+        }
+        // 编制日期止
+        if (params.containsKey("createDateEnd")) {
+            queryWrapper.le("createDate", params.get("createDateStart"));
+        }
+        // 计划开始日期起
+        if (params.containsKey("planStartDateStart")) {
+            queryWrapper.ge("planStartDate", params.get("planStartDateStart"));
+        }
+        // 计划开始日期止
+        if (params.containsKey("planStartDateEnd")) {
+            queryWrapper.le("planStartDate", params.get("planStartDateEnd"));
+        }
+        // 计划完成日期起
+        if (params.containsKey("planEndDateStart")) {
+            queryWrapper.ge("planEndDate", params.get("planEndDateStart"));
+        }
+        // 计划完成日期止
+        if (params.containsKey("planEndDateEnd")) {
+            queryWrapper.le("planEndDate", params.get("planEndDateEnd"));
+        }
+        // 申报日期起
+        if (params.containsKey("applyDateStart")) {
+            queryWrapper.ge("applyDate", params.get("applyDateStart"));
+        }
+        // 申报日期止
+        if (params.containsKey("applyDateEnd")) {
+            queryWrapper.le("applyDate", params.get("applyDateEnd"));
+        }
+        // 实际完成日期起
+        if (params.containsKey("actualCompleteDateStart")) {
+            queryWrapper.ge("actualCompleteDate", params.get("actualCompleteDateStart"));
+        }
+        // 实际完成日期止
+        if (params.containsKey("actualCompleteDateEnd")) {
+            queryWrapper.le("actualCompleteDate", params.get("actualCompleteDateEnd"));
         }
         return queryWrapper;
     }
@@ -347,7 +393,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                     entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_AUDIT_MINISTER);
                 }
                 entryCasReviewDetailMapper.updateById(entryCasReviewDetail);
-            } else return false;
+            } else {
+                return false;
+            }
         }
         return true;
     }
@@ -798,7 +846,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
         Map<String, EntryCasReviewDetail> keyByReviewDetailMap = IteratorTool.keyByPattern("id", entryCasReviewDetails);

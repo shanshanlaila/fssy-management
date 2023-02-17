@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<div class="layui-fluid">
+    <div class="layui-card-body">
+        <form class="layui-form" style="margin-top: 10px;" id="head">
+            <table class="layui-table layui-form" lay-size="sm">
+                <div style="margin-left: 40%;height: 30px;font-size: 20px">
+                    基础投资方明细信息
+                </div>
+
+                <!--第一行-->
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>出资台账ID:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="stockRightsListId" id="stockRightsListId"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>被投资公司ID:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="companyId" id="companyId"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>被投资公司名称:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="companyName" id="companyName"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                </tr>
+                <!--第二行-->
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>出资文件ID:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="contributionsDocId" id="contributionsDocId"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>出资文件名称:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="contributionsDocName" id="contributionsDocName"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>出资事由:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="causeDesc" id="causeDesc"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                </tr>
+                <!--第三行-->
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>投资方类别:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="investorType" id="investorType"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>出资方Id:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="investorId" id="investorId"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>投资方姓名:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="investorName" id="investorName"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>出资形式:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="contributionsMode" id="contributionsMode"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>注册资本:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="registeredCapital" id="registeredCapital"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">实缴/认缴资本:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="contributedCapital" id="contributedCapital">
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="width: 10%;text-align: right">计划到账时间:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="planArrivalTime" id="planArrivalTime">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">实际到账时间:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="actualArrivalTime" id="actualArrivalTime">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: right">是否为最新记录:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="sign" id="sign">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;text-align: right">出资状态:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="status" id="status">
+                        </div>
+                    </td>
+                </tr>
+
+
+
+            </table>
+
+            <table class="layui-table layui-form" lay-size="sm">
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">
+                            提交
+                        </button>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+</div>
+
+<!--laui-->
+<script th:inline="javascript">
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        // 每个标签加一个class，名为laydate
+        $(".laydate").each(function () {
+            laydate.render({
+                elem: this,
+                //更换触发方式
+                trigger: 'click',
+                type: 'date'
+            });
+        });
+        /**
+         * 添加学生信息
+         */
+        form.on('submit(baseForm)', function (data) {
+            var elem = data.elem;
+            $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+            $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+            $.ajax({
+                url: '/system/company/contributor/store',
+                type: 'POST',
+                data: data.field,
+                success: function (result) {
+                    if (result.status == 200) {
+                        layer.msg(result.msg, {icon: 6, time: 2000});
+                        setTimeout(function () {
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }, 1000)
+                    } else {
+                        $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+                        $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+                        layer.msg(result.msg, {icon: 5, time: 4000});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+</script>
+
+</body>
+</html>

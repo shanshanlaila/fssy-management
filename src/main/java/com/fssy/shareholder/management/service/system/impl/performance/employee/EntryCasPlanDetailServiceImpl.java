@@ -476,6 +476,38 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("userNameRight")) {
             queryWrapper.eq("userName", params.get("userNameRight"));
         }
+        // 编制日期起
+        if (params.containsKey("createDateStart")) {
+            queryWrapper.ge("createDate", params.get("createDateStart"));
+        }
+        // 编制日期止
+        if (params.containsKey("createDateEnd")) {
+            queryWrapper.le("createDate", params.get("createDateStart"));
+        }
+        // 计划开始日期起
+        if (params.containsKey("planStartDateStart")) {
+            queryWrapper.ge("planStartDate", params.get("planStartDateStart"));
+        }
+        // 计划开始日期止
+        if (params.containsKey("planStartDateEnd")) {
+            queryWrapper.le("planStartDate", params.get("planStartDateEnd"));
+        }
+        // 计划完成日期起
+        if (params.containsKey("planEndDateStart")) {
+            queryWrapper.ge("planEndDate", params.get("planEndDateStart"));
+        }
+        // 计划完成日期止
+        if (params.containsKey("planEndDateEnd")) {
+            queryWrapper.le("planEndDate", params.get("planEndDateEnd"));
+        }
+        // 申报日期起
+        if (params.containsKey("applyDateStart")) {
+            queryWrapper.ge("applyDate", params.get("applyDateStart"));
+        }
+        // 申报日期止
+        if (params.containsKey("applyDateEnd")) {
+            queryWrapper.le("applyDate", params.get("applyDateEnd"));
+        }
         return queryWrapper;
     }
 

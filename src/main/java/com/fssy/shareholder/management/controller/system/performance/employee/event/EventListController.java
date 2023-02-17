@@ -12,6 +12,7 @@ import com.fssy.shareholder.management.pojo.system.performance.employee.EventLis
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
+import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
@@ -47,23 +48,8 @@ public class EventListController {
     @Autowired
     private RoleService roleService;
 
-    /**
-     * 无标准事件管理页面
-     *
-     * @return 事件评价标准管理页面
-     */
-    @GetMapping("index")
-    @RequiredLog("无标准事件管理")
-    @RequiresPermissions("system:performance:event")
-    public String showEventList(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        return "system/performance/employee/performance-event-list";
-    }
+    @Autowired
+    private UserService userService;
 
     /**
      * “事件清单评判标准管理”菜单
@@ -99,25 +85,22 @@ public class EventListController {
     /**
      * 返回附件上传页面
      */
-    @RequiredLog("无标准事件管理")
-    @GetMapping("withoutStandardIndex")
+    @RequiredLog("基础事件清单管理")
+    @GetMapping("index")
     @RequiresPermissions("performance:employee:event:without:standard:index")
     public String withoutStandardIndex(Model model) {
-        SimpleDateFormat ssad = new SimpleDateFormat();
-        ssad.applyPattern("yyyy-MM-dd");
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        String importDateStart = ssad.format(date);
-        model.addAttribute("importDateStart", importDateStart);
-        Map<String, Object> departmentParams = new HashMap<>();
+        // 部门
+        Map<String, Object> departmentParams = new HashMap<>(20);
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
+        // 基础事件创建人
+        Map<String, Object> userParams = new HashMap<>(50);
+        List<String> selectedUserIds = new ArrayList<>(50);
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
-        return "system/performance/events-list-list";
+        return "system/performance/employee/eventList/event-list";
     }
 
     /**

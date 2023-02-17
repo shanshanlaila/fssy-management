@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManageMonthPerformance;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -27,23 +28,23 @@ public interface ViewManageMonthPerformanceService extends IService<ViewManageMo
      * 读取附件数据到数据库表（年度目标的导入）
      *
      * @param attachment 附件
-     * @param year
+     * @param
      * @return 附件map集合
      */
-    Map<String, Object> readManageKpiYearDataSource(Attachment attachment, String year,String companyName);
+    Map<String, Object> readManageKpiYearDataSource(Attachment attachment, HttpServletRequest request);
     /**
      * 读取附件数据到数据库表(月度实绩导入）
      * @param attachment 附件
      * @return 附件map集合
      */
-    Map<String,Object> readManageKpiMonthPerformanceDataSource(Attachment attachment, String companyName, String year, String month);
+    Map<String,Object> readManageKpiMonthPerformanceDataSource(Attachment attachment, HttpServletRequest request);
     /**
      * 读取附件数据到数据库表（月度目标导入）
      *
      * @param attachment 附件
      * @return 数据列表
      */
-    Map<String, Object> readManageKpiMonthAimDataSource(Attachment attachment,String companyName,String year);
+    Map<String, Object> readManageKpiMonthAimDataSource(Attachment attachment,HttpServletRequest request);
     /**
      * 通过查询条件查询数据，用于导出
      *

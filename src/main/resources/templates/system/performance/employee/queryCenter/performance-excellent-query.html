@@ -36,8 +36,34 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="createDate" placeholder="编制日期" autocomplete="off"
-                                   class="layui-input laydate search-laydate" id="createDate">
+                            <input type="text" name="planningWork" placeholder="计划内容查询" autocomplete="off"
+                                   class="layui-input" id="planningWork">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 100px; line-height: 1.1; padding: 9px 10px 9px 0;"
+                                   for="actualCompleteDateStart">实际完成日期</label>
+                            <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                                <input type="text" name="actualCompleteDateStart" placeholder="实际完成日期起"
+                                       id="actualCompleteDateStart"
+                                       autocomplete="off" class="layui-input laydate ">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="actualCompleteDateEnd" placeholder="实际完成日期止"
+                                   id="actualCompleteDateEnd"
+                                   autocomplete="off" class="layui-input laydate ">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0;">编制日期</label>
+                            <input
+                                    type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
+                                    autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="createDateEnd" placeholder="编制日期止" id="createDateEnd"
+                                   autocomplete="off" class="layui-input laydate search-laydate">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <label>
@@ -49,6 +75,9 @@
                                     <option value="完结">完结</option>
                                 </select>
                             </label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <div id="creatNameSelector"></div>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
@@ -82,13 +111,13 @@
                     elem: this,
                     //更换触发方式
                     trigger: 'click',
-                    type: 'date'
+                    type: 'date',
                 });
         });
         //年选择器
         laydate.render({
-            elem: '#year'
-            , type: 'year'
+            elem: '#year',
+            type: 'year',
         });
 
         // 监听搜索按钮
@@ -114,6 +143,7 @@
             height: 'full-100', // 设置高度，使数据置于滚动条控制下
             limit: 50,
             limits: [50, 100, 200, 500],
+            toolbar: '#toolbar',
             where: {},
             cols: [
                 [
@@ -248,24 +278,43 @@
                 ]
             ]
         });
-    });
 
-    // 部门查询下拉列表
-    let departmentSelect = xmSelect.render({
-        el: '#departmentSelect', // 绑定
-        language: 'zn',
-        data: [[${departmentNameList}]],// model过来的
-        filterable: true,
-        // radio: true,// 是否是单选
-        tips: '部门查询',
-        toolbar: {
-            show: true
-        },
-        paging: true, // 分页
-        pageSize: 20,
-        style: {
-            width: '150px', 'min-height': '28px', 'line-height': '28px',
-        },
-        name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+        // 编制人下拉选择器
+        let creatNameSelector = xmSelect.render({
+            el: '#creatNameSelector',
+            language: 'zn',
+            data: [[${userNameList}]],
+            filterable: true,
+            // radio: true,
+            tips: '编制人查询',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'creatNameIds',// 传到后端选择的departmentId集合字符串
+        });
+
+        // 部门查询下拉列表
+        let departmentSelect = xmSelect.render({
+            el: '#departmentSelect', // 绑定
+            language: 'zn',
+            data: [[${departmentNameList}]],// model过来的
+            filterable: true,
+            // radio: true,// 是否是单选
+            tips: '部门查询',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '150px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'departmentIds',// 传到后端选择的departmentId集合字符串
+        });
     });
 </script>
