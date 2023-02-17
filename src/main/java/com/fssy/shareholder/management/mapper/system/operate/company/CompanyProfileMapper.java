@@ -1,6 +1,6 @@
 package com.fssy.shareholder.management.mapper.system.operate.company;
 
-import com.fssy.shareholder.management.pojo.system.operate.company.CompanyProfile;
+import com.fssy.shareholder.management.pojo.system.company.CompanyProfile;
 import com.fssy.shareholder.management.mapper.manage.common.MyBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

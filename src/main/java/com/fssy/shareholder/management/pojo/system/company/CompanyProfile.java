@@ -1,12 +1,14 @@
-package com.fssy.shareholder.management.pojo.system.operate.company;
+package com.fssy.shareholder.management.pojo.system.company;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,12 +83,16 @@ public class CompanyProfile extends BaseModel {
      * 成立日期
      */
     @TableField("dateOfEstablishment")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     private LocalDate dateOfEstablishment;
 
     /**
      * 核准日期
      */
     @TableField("dateOfApproval")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     private LocalDate dateOfApproval;
 
     /**
