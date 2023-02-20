@@ -74,9 +74,9 @@ mybatis-plus:
 # enterprise wechat配置
 wechat:
   # 微信企业号的appid
-  corpId: ENC(tW4tjVKQcubJPJx2ic+gBU5+7PB/TTqWJggoMtQjCik=)
+  corpId: ENC(YZ+7vRPfYeMnFLvjq2jQ1qiQRAqIXi5hKhOH2pgnJxo=)
   # 微信企业号的app corpSecret
-  corpSecret: ENC(qit1ORpJGMVCSm78CMEWsTeoiE7XUxw5zbGAYIq39OjPGzfhLUgXVwsRorzzey0cVLmRrfE4080=)
+  corpSecret: ENC(PC3FBBhtEM8GmSvONSG2huD5/O7qs26jft+73VqV0ZCYzcV3dEgggC6QKrWRLMBN9qG8HirgvF8=)
   
 jasypt:
   encryptor:
