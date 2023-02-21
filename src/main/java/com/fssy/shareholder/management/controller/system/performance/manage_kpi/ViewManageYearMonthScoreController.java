@@ -147,6 +147,9 @@ public class ViewManageYearMonthScoreController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "激励约束项目评分表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
         return "system/performance/manager_kpi/view-manage-month-score/view-manage-month-score-attachment-list";
     }
 
@@ -163,20 +166,6 @@ public class ViewManageYearMonthScoreController {
     @ResponseBody
     public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
                                 HttpServletRequest request) {
-        //判断是否选择对应的时间
-        Map<String, Object> params = getParams(request);
-        String year = (String) params.get("year");
-        String companyName = (String) params.get("companyName");
-        String month = (String) params.get("month");
-        if (ObjectUtils.isEmpty(params.get("companyName"))) {
-            throw new ServiceException("未选择公司，导入失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("year"))) {
-            throw new ServiceException("未选择年份，导入失败");
-        }
-        if (ObjectUtils.isEmpty(params.get("month"))) {
-            throw new ServiceException("未选择月份，导入失败");
-        }
         // 保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -191,7 +180,7 @@ public class ViewManageYearMonthScoreController {
                 attachment);
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = viewManageYearMonthScoreService.readViewManageYearMonthScoreDataSource(result,companyName,year,month);
+            Map<String, Object> resultMap = viewManageYearMonthScoreService.readViewManageYearMonthScoreDataSource(result,request);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_FAILED,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));
