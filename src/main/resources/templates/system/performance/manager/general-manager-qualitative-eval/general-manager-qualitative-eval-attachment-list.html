@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>总经理定性评价</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
 </head>
 
 <body>
@@ -177,7 +179,22 @@
                 ]
             ]
         });
+        // 重新重置日期控件方法
+        function reloadDate() {
+            laydate.render({
+                elem: '#importDate',
+                trigger: 'click',
+                type: 'date',
+                value: moment().format('YYYY-MM-DD')
+            });
 
+            laydate.render({
+                elem: '#year',
+                trigger: 'click',
+                type: 'year',
+                value:moment().format('YYYY')
+            });
+        }
         // 重新重置日期控件
         laydate.render(
             {
@@ -192,15 +209,9 @@
                 trigger: 'click',
                 type: 'date'
             });
-
         // 重新重置日期控件
-        laydate.render(
-            {
-                elem: '#importDate',
-                trigger: 'click',
-                type: 'date',
-                value: moment().format("YYYY-MM-DD")
-            });
+        reloadDate();
+
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
@@ -214,13 +225,10 @@
                         }
                 });
             // 重新重置日期控件
-            laydate.render(
-                {
-                    elem: '#importDate',
-                    trigger: 'click',
-                    type: 'date',
-                    value: moment().format("YYYY-MM-DD")
-                });
+            reloadDate();
+            // 在点击导入按钮之前，需要选择年月
+            initChoose()
+
 
             upload.render({
                 elem : '#chooseFile',
@@ -252,13 +260,7 @@
                             var index = parent.layer.getFrameIndex(window.name);
                             parent.layer.close(index);
                             // 重新重置日期控件
-                            laydate.render(
-                                {
-                                    elem: '#importDate',
-                                    trigger: 'click',
-                                    type: 'date',
-                                    value: moment().format("YYYY-MM-DD")
-                                });
+                            reloadDate();
                         }, 2000)
                     } else {
                         layer.msg(result.msg, {
@@ -271,7 +273,8 @@
             });
             return false;
         });
-
+        // 在点击导入按钮之前，需要选择年
+        initChoose()
         // 重新重置日期控件
         upload.render({
             elem : '#chooseFile',
@@ -305,13 +308,7 @@
                         var index = parent.layer.getFrameIndex(window.name);
                         parent.layer.close(index);
                         // 重新重置日期控件
-                        laydate.render(
-                            {
-                                elem: '#importDate',
-                                trigger: 'click',
-                                type: 'date',
-                                value: moment().format("YYYY-MM-DD")
-                            });
+                        reloadDate();
                     }, 2000)
                 } else {
                     layer.msg(result.msg, {
@@ -363,13 +360,7 @@
                                         setTimeout(function () {
                                             table.reload('dataTable');
                                             // 重新重置日期控件
-                                            laydate.render(
-                                                {
-                                                    elem: '#importDate',
-                                                    trigger: 'click',
-                                                    type: 'date',
-                                                    value: moment().format("YYYY-MM-DD")
-                                                });
+                                            reloadDate();
                                         }, 2000)
                                     }
                                 }
@@ -380,8 +371,20 @@
                 window.location.href = '/system/config/attachment/downloadFile?id=' + data.id + '&md5Path=' + data.md5Path;
             }
         });
-
+        // 点击导入按钮之前选择校验
+        function initChoose() {
+            let importBtn = document.querySelector('#importAccountStatement');
+            importBtn.addEventListener('click', function () {
+                if (year.value === null || year.value === undefined || year.value === '') {
+                    layer.msg('请选择年份', {
+                        icon: 5,
+                        time: 2000
+                    })
+                }
+            })
+        }
     });
+
 
 </script>
 </body>

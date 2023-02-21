@@ -361,20 +361,7 @@ public class ViewManageMonthPerformanceController {
     @PostMapping("upMonthPerformanceLoadFile")
     @ResponseBody
     public SysResult upMonthPerformanceLoadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request) {
-//        //判断是否选择对应公司、年份
-//        Map<String, Object> params = getParams(request);
-//        String year = (String) params.get("year");
-//        String companyName = (String) params.get("companyName");
-//        String month = (String) params.get("month");
-//        if (ObjectUtils.isEmpty(params.get("companyName"))) {
-//            throw new ServiceException("未选择公司，导入失败");
-//        }
-//        if (ObjectUtils.isEmpty(params.get("year"))) {
-//            throw new ServiceException("未选择年份，导入失败");
-//        }
-//        if (ObjectUtils.isEmpty(params.get("month"))) {
-//            throw new ServiceException("未选择月份，导入失败");
-//        }
+
         //保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间

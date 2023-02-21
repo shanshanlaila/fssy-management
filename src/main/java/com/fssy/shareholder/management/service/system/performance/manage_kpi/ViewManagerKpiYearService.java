@@ -6,6 +6,7 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiYear;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManagerKpiYear;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +31,7 @@ public interface ViewManagerKpiYearService extends IService<ViewManagerKpiYear> 
      * @param attachment 附件
      * @return 附件map集合
      */
-    Map<String,Object> readViewManagerKpiYearDataSource(Attachment attachment,String companyName, String year);
-
-
+    Map<String,Object> readViewManagerKpiYearDataSource(Attachment attachment, HttpServletRequest request);
 
     /**
      * 导出 通过查询条件查询履职计划map数据

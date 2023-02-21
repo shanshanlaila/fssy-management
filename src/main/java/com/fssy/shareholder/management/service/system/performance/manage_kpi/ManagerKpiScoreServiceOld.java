@@ -5,6 +5,7 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public interface ManagerKpiScoreServiceOld extends IService<ManagerKpiScoreOld> 
      * @param attachment 附件
      * @return 附件map集合
      */
-    Map<String,Object> readManagerKpiScoreOldDataSource(Attachment attachment);
+    Map<String,Object> readManagerKpiScoreOldDataSource(Attachment attachment, HttpServletRequest request);
 
     /**
      * 通过查询条件查询履职计划map数据，用于导出

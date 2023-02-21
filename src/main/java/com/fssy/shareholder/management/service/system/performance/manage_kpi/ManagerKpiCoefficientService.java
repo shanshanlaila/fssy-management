@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiCoefficient;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public interface ManagerKpiCoefficientService extends IService<ManagerKpiCoeffic
      * @param
      * @return 附件map集合
      */
-    Map<String, Object> readManagerKpiCoefficientDataSource(Attachment attachment, String companyName, String year);
+    Map<String, Object> readManagerKpiCoefficientDataSource(Attachment attachment, HttpServletRequest request);
 
     /**
      * 通过查询条件查询履职计划map数据，用于导出

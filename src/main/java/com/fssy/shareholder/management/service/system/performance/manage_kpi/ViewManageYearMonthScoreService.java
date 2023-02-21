@@ -6,6 +6,7 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManageYearMonthScore;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public interface ViewManageYearMonthScoreService extends IService<ViewManageYear
      * @param attachment 附件
      * @return 数据列表
      */
-    Map<String, Object> readViewManageYearMonthScoreDataSource(Attachment attachment, String companyName, String year,String month);
+    Map<String, Object> readViewManageYearMonthScoreDataSource(Attachment attachment, HttpServletRequest request);
     /**
      * 修改分数记录
      */

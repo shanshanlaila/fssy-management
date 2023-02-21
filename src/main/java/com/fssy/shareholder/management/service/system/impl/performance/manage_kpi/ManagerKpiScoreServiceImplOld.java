@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -110,7 +111,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
      */
     @Override
     @Transactional
-    public Map<String, Object> readManagerKpiScoreOldDataSource(Attachment attachment) {
+    public Map<String, Object> readManagerKpiScoreOldDataSource(Attachment attachment, HttpServletRequest request) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -130,6 +131,14 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
         List<ManagerKpiScoreOld> managerKpiScoreOlds = new ArrayList<>(); //实体类集合，用于后面的批量写入数据库
         // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
+        //获取年份
+        Cell yearCell = sheet.getRow(1).getCell(SheetService.columnToIndex("A"));
+        String yearValue = sheetService.getValue(yearCell);
+        String yearRequest = request.getParameter("year");
+        //验证年份
+        if (!yearValue.equals(yearRequest)){
+            throw new ServiceException("导入的年份与Excel中的年份不一致，导入失败！");
+        }
         // 循环总行数(不读表的标题，从第1行开始读)
         for (int j = 1; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
