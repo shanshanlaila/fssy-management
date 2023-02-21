@@ -29,7 +29,7 @@ public class EnterpriseWeChatService
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnterpriseWeChatService.class);
 	
 	/** 用于发送消息的企业微信应用ID */
-	public static final Integer AGENT_ID = 1000017;
+	public static final Integer AGENT_ID = 1000012;
 
 	/** 企业微信的appId,通过配置文件获取 */
 	@Value(value = "${wechat.corpId}")
