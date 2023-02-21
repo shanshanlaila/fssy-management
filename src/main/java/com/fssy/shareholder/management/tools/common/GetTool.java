@@ -142,10 +142,10 @@ public class GetTool {
      * 计算分数
      *
      * @param entryCasReviewDetail 总结
-     * @param EvaluationGrade      评价等级
+     * @param evaluationGrade      评价等级
      * @return 分数
      */
-    public static BigDecimal getScore(EntryCasReviewDetail entryCasReviewDetail, String EvaluationGrade) {
+    public static BigDecimal getScore(EntryCasReviewDetail entryCasReviewDetail, String evaluationGrade) {
         // 获取方式改变：查询条件为部门review的departmentId、roleId、userId、year、month找事件岗位配比表，生效日期是year+month+当月最后一天之前（生效日期《=），取最近的那个（倒序，get（0））
         if (ObjectUtils.isEmpty(entryCasReviewDetail.getEventsRoleId())) {
             return null;
@@ -174,21 +174,21 @@ public class GetTool {
         EventsRelationRole eventsRelationRole = eventsRelationRoles.get(0);
         entryCasReviewDetail.setEventsRoleId(eventsRelationRole.getId());
         BigDecimal autoScore;
-        switch (EvaluationGrade) {
+        switch (evaluationGrade) {
             case PerformanceConstant.UNQUALIFIED:
-                // EvaluationGrade=‘不合格’时取delow，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                // evaluationGrade=‘不合格’时取delow，设置到entryCasReviewDetail.autoScore和artifactualScore；
                 autoScore = eventsRelationRole.getDelow();
                 break;
             case PerformanceConstant.MIDDLE:
-                // EvaluationGrade=‘中’时取middle，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                // evaluationGrade=‘中’时取middle，设置到entryCasReviewDetail.autoScore和artifactualScore；
                 autoScore = eventsRelationRole.getMiddle();
                 break;
             case PerformanceConstant.FINE:
-                // EvaluationGrade=‘良’时取fine，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                // evaluationGrade=‘良’时取fine，设置到entryCasReviewDetail.autoScore和artifactualScore；
                 autoScore = eventsRelationRole.getFine();
                 break;
             default:
-                // EvaluationGrade=‘优或者合格’excellent，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                // evaluationGrade=‘优或者合格’excellent，设置到entryCasReviewDetail.autoScore和artifactualScore；
                 // 结果为符合，以绩效科的审核结果为准
                 autoScore = eventsRelationRole.getExcellent();
                 break;
@@ -216,28 +216,28 @@ public class GetTool {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMappers.selectList(entryCasReviewDetailLambdaQueryWrapper);
         if (!ObjectUtils.isEmpty(entryCasReviewDetails)) {
             for (EntryCasReviewDetail casReviewDetail : entryCasReviewDetails) {
-                String evaluationGrade;
+                String reEvaluationGrade;
                 if (PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION.equals(casReviewDetail.getEventsFirstType())) {
-                    evaluationGrade = casReviewDetail.getFinalTransactionEvaluateLevel();
+                    reEvaluationGrade = casReviewDetail.getFinalTransactionEvaluateLevel();
                 } else {
-                    evaluationGrade = casReviewDetail.getFinalNontransactionEvaluateLevel();
+                    reEvaluationGrade = casReviewDetail.getFinalNontransactionEvaluateLevel();
                 }
                 BigDecimal reAutoScore;
-                switch (evaluationGrade) {
+                switch (reEvaluationGrade) {
                     case PerformanceConstant.UNQUALIFIED:
-                        // EvaluationGrade=‘不合格’时取delow，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                        // evaluationGrade=‘不合格’时取delow，设置到entryCasReviewDetail.autoScore和artifactualScore；
                         reAutoScore = eventsRelationRole.getDelow();
                         break;
                     case PerformanceConstant.MIDDLE:
-                        // EvaluationGrade=‘中’时取middle，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                        // evaluationGrade=‘中’时取middle，设置到entryCasReviewDetail.autoScore和artifactualScore；
                         reAutoScore = eventsRelationRole.getMiddle();
                         break;
                     case PerformanceConstant.FINE:
-                        // EvaluationGrade=‘良’时取fine，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                        // evaluationGrade=‘良’时取fine，设置到entryCasReviewDetail.autoScore和artifactualScore；
                         reAutoScore = eventsRelationRole.getFine();
                         break;
                     default:
-                        // EvaluationGrade=‘优或者合格’excellent，设置到entryCasReviewDetail.autoScore和artifactualScore；
+                        // evaluationGrade=‘优或者合格’excellent，设置到entryCasReviewDetail.autoScore和artifactualScore；
                         // 结果为符合，以绩效科的审核结果为准
                         reAutoScore = eventsRelationRole.getExcellent();
                         break;
@@ -262,7 +262,7 @@ public class GetTool {
 
     /**
      * 获取selector数据用于前端展示
-     * 使用此方法的前端x-mselect的name要求如下：
+     * 使用此方法的前端xm-select的name要求如下：
      * 部门：departmentNameList
      * 角色：roleNameList
      * 用户：userList

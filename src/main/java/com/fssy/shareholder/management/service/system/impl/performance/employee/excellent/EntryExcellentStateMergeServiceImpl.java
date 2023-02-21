@@ -1,4 +1,4 @@
-package com.fssy.shareholder.management.service.system.impl.performance.employee;
+package com.fssy.shareholder.management.service.system.impl.performance.employee.excellent;
 
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryExcellentStateMerge;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryExcellentStateMergeMapper;

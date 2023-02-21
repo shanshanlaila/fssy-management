@@ -167,16 +167,15 @@ public class EntryExcellentStateDetailController {
             throw new ServiceException("不存在对应的总结");
         }
         // 查询用户
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>(10);
         List<Map<String, Object>> userNameList = userService.findUserSelectedDataListByParams(params, new ArrayList<>());
         // 查询主/次担
         String mainUserNameStr = entryExcellentStateDetail.getMainUserName();
-        ArrayList<String> mainNameValues = new ArrayList<>();
+        ArrayList<String> mainNameValues = new ArrayList<>(50);
         if (ObjectUtils.isEmpty(mainUserNameStr)) {
             model.addAttribute("mainNameValues", mainNameValues);
         } else {
-            String[] mainUserNames = mainUserNameStr.split(",");
-            for (String mainUserName : mainUserNames) {
+            for (String mainUserName : mainUserNameStr.split(",")) {
                 LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
                 userQueryWrapper.eq(User::getName, mainUserName);
                 User user = userService.getByName(userQueryWrapper);
@@ -185,12 +184,11 @@ public class EntryExcellentStateDetailController {
             model.addAttribute("mainNameValues", mainNameValues);
         }
         String nextUserNameStr = entryExcellentStateDetail.getNextUserName();
-        ArrayList<String> nextNameValues = new ArrayList<>(100);
+        ArrayList<String> nextNameValues = new ArrayList<>(50);
         if (ObjectUtils.isEmpty(nextUserNameStr)) {
             model.addAttribute("nextNameValues", nextNameValues);
         } else {
-            String[] nextUserNames = nextUserNameStr.split(",");
-            for (String nextUserName : nextUserNames) {
+            for (String nextUserName : nextUserNameStr.split(",")) {
                 LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
                 userQueryWrapper.eq(User::getName, nextUserName);
                 User user = userService.getByName(userQueryWrapper);

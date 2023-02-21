@@ -14,7 +14,7 @@
 <div class="x-nav">
 		<span class="layui-breadcrumb">
             <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">履职回顾管理</a>
-            <a> <cite>履职回顾-部门领导评分</cite></a>
+            <a> <cite>履职总结-部门领导评分</cite></a>
 		</span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
@@ -40,9 +40,8 @@
                         <div class="layui-inline layui-show-xs-block">
                             <div id="userSelect"></div>
                         </div>
-                        <br>
-                        <div>
-                            <button type="button" class="layui-btn" lay-submit lay-filter="leftSearch">
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit lay-filter="searchLeft">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
                         </div>
@@ -62,17 +61,25 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body ">
-                        <div class="layui-inline layui-show-xs-block" style="width: 100px;">
-                            <input type="text" id="year" name="year" placeholder="申报年份" autocomplete="off"
-                                   class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="createDate" placeholder="编制日期" autocomplete="off"
-                                   class="layui-input laydate search-laydate" id="createDate">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px">
                             <input type="text" name="workEvents" placeholder="流程（工作事件）"
                                    autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
+                            <input type="text" name="times" placeholder="频次"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <label>
+                                <select id=“status” name="status">
+                                    <option style="display: none" value="">请选择状态</option>
+                                    <option value="待提交审核">待提交审核</option>
+                                    <option value="待部长审核">待部长审核</option>
+                                    <option value="待科长审核">待科长审核</option>
+                                    <option value="待经营管理部审核">待经营管理部审核</option>
+                                    <option value="完结">完结</option>
+                                </select>
+                            </label>
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 150px;">
                             <label>
@@ -83,9 +90,122 @@
                                 </select>
                             </label>
                         </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 80px;">
-                            <input type="text" name="times" placeholder="频次"
-                                   autocomplete="off" class="layui-input">
+                        <div class="layui-inline layui-show-xs-block" style="width: 170px;">
+                            <select name="eventsFirstType">
+                                <option value="">按是事件类型查询</option>
+                                <option value="事务类">事务类</option>
+                                <option value="非事务类">非事务类</option>
+                                <option value="新增工作流">新增工作流</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="jobName" name="jobName" placeholder="工作职责查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 90px;">
+                            <input type="text" id="autoScore" name="autoScore" placeholder="分数查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 130px;">
+                            <input type="text" id="standardValue" name="standardValue" placeholder="事件标准价值查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="planningWork" name="planningWork" placeholder="工作计划查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="planOutput" name="planOutput" placeholder="表单(输出内容)" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="workOutput" name="workOutput" placeholder="表单(基础事件)" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 100px; line-height: 1.1; padding: 9px 10px 9px 0;"
+                                   for="planStartDateStart">计划开始日期</label>
+                            <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                                <input type="text" name="planStartDateStart" placeholder="计划开始日期起"
+                                       id="planStartDateStart"
+                                       autocomplete="off" class="layui-input laydate">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="planStartDateEnd" placeholder="计划开始日期止"
+                                   id="planStartDateEnd"
+                                   autocomplete="off" class="layui-input laydate ">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 100px; line-height: 1.1; padding: 9px 10px 9px 0;"
+                                   for="planEndDateStart">计划完成日期</label>
+                            <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                                <input type="text" name="planEndDateStart" placeholder="计划完成日期起"
+                                       id="planEndDateStart"
+                                       autocomplete="off" class="layui-input laydate ">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="planEndDateEnd" placeholder="计划完成日期止" id="planEndDateEnd"
+                                   autocomplete="off" class="layui-input laydate ">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 100px; line-height: 1.1; padding: 9px 10px 9px 0;"
+                                   for="actualCompleteDateStart">实际完成日期</label>
+                            <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                                <input type="text" name="actualCompleteDateStart" placeholder="实际完成日期起"
+                                       id="actualCompleteDateStart"
+                                       autocomplete="off" class="layui-input laydate ">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="actualCompleteDateEnd" placeholder="实际完成日期止" id="actualCompleteDateEnd"
+                                   autocomplete="off" class="layui-input laydate ">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
+                            <input
+                                    type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
+                                    autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="createDateEnd" placeholder="编制日期止" id="createDateEnd"
+                                   autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0;">申报日期</label>
+                            <input
+                                    type="text" name="applyDateStart" placeholder="申报日期起" id="applyDateStart"
+                                    autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="applyDateEnd" placeholder="申报日期止" id="applyDateEnd"
+                                   autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
+                            <input type="text" id="mergeNo" name="mergeNo" placeholder="月度计划表编号查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 135px;">
+                            <input type="text" id="completeDesc" name="completeDesc" placeholder="工作完成描述查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" id="year" name="year" placeholder="申报年份查询" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 150px;">
+                            <label for="month">
+                                <select name="month" id="month">
+                                    <option selected value="">请选择申报月份</option>
+                                    <option th:each="i:${#numbers.sequence(1,12)}" th:value="${i}">[[${i}]]月</option>
+                                </select>
+                            </label>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
@@ -98,7 +218,7 @@
                     <table class="layui-table layui-form" id="dataTableRight" lay-filter="dataTableRight"></table>
                     <script type="text/html" id="tool">
                         {{# if(d.status != '取消') {}}
-                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+                        <a lay-event="edit" title="单条审核"><i class="layui-icon">&#xe62a;</i></a>
                         {{# } }}
                         <a lay-event="cancel" title="取消"><i class="layui-icon">&#x1007;</i></a>
                     </script>
@@ -180,6 +300,7 @@
                     }
                 ]
             ],
+            // 表格渲染完成之后的回调
             done: function(res,curr,count){  //关键一，实现指针放在数据行显示手指状
                 $('td').css({'cursor':'pointer'}); //设置成指针放在表格上换成手指
                 $('table').width('100%');
@@ -220,6 +341,20 @@
                         event: 'auditNote',
                         style: 'cursor:pointer;background-color: pink;',
                         fixed: 'left'
+                    },
+                    {
+                        field: 'status',
+                        title: '状态',
+                        width: 90,
+                        align: 'center',
+                        templet: function (d) {
+                            switch (d.status) {
+                                case '待部长审核':
+                                    return '<span class="layui-badge layui-bg">待部长审核</span>';
+                                default:
+                                    return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
+                            }
+                        }
                     },
                     {
                         field: 'eventsFirstType',
@@ -360,19 +495,7 @@
                             }
                         }
                     },
-                    {
-                        field: 'status',
-                        title: '状态',
-                        width: 90,
-                        templet: function (d) {
-                            switch (d.status) {
-                                case '待部长审核':
-                                    return '<span class="layui-badge layui-bg">待审核</span>';
-                                default:
-                                    return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
-                            }
-                        }
-                    },
+
                     {
                         fixed: 'right',
                         title: '操作',
@@ -401,7 +524,7 @@
         });
 
         // 监听搜索按钮(左)
-        form.on('submit(leftSearch)', function (data) {
+        form.on('submit(searchLeft)', function (data) {
             // 必填项控制
             var roleIds = data.field.roleIds;
             var userIds = data.field.userIds;
@@ -550,7 +673,7 @@
                             $(window).width() * 0.25 + 'px',
                             $(window).height() - 620 + 'px'
                         ],
-                    content: '/system/entry-cas-review-detail/MinisterEdit/' + data.id,
+                    content: '/system/entry-cas-review-detail/ministerEdit/' + data.id,
                     maxmin: true,
                     scrollbar: true
                 });

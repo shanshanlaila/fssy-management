@@ -3,7 +3,7 @@
  * 修改人			修改日期			修改内容
  * 兰宇铧			2022-12-30 		修改问题，先查询merge是否有数据，有直接用，没有则重新创建;修改问题，查询条件添加月份和部门并修改编号规则
  */
-package com.fssy.shareholder.management.service.system.impl.performance.employee;
+package com.fssy.shareholder.management.service.system.impl.performance.employee.excellent;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

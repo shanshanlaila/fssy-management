@@ -67,16 +67,6 @@ public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetai
     boolean affirmStore(List<String> planDetailIds, String event, List<String> auditNotes);
 
     /**
-     * 人力资源部 审核新增工作流
-     *
-     * @param planDetailIds
-     * @param event
-     * @return 属于/不属于
-     */
-    boolean HRAffirmStore(List<String> planDetailIds, String event);
-
-
-    /**
      * 单条填写履职计划
      *
      * @param entryCasPlanDetail 履职计划
@@ -91,4 +81,10 @@ public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetai
      * @return 数据分页
      */
     Page<Map<String, Object>> findDataListByMapParams(Map<String, Object> params);
+
+    /**
+     * 需要通知计划到期的时间
+     * @return map
+     */
+    Map<Long, Map<String, Object>> findWeChatNoticeMap();
 }
