@@ -2,7 +2,7 @@
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
-package com.fssy.shareholder.management.service.system.impl.performance.employee;
+package com.fssy.shareholder.management.service.system.impl.performance.employee.relationRole;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

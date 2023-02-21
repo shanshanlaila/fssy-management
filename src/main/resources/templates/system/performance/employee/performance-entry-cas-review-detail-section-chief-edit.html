@@ -2,80 +2,54 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>工作计划完成情况审核评价 （科长，事务类）</title>
+    <title>履职总结-科长审核</title>
     <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
 </head>
 <body>
 <!-- 引入layui -->
 <div th:replace="~{common/layui :: layui}"></div>
-<!-- 引入layui -->
-<div th:replace="~{common/layui :: layui}"></div>
-<!-- 引入zTree -->
-<div th:replace="~{common/zTree :: zTree}"></div>
-<style type="text/css">
-    #head .layui-form-label {
-        width: 120px;
-    }
-
-    #head .layui-input-block {
-        margin-left: 150px;
-    }
-
-    #head td, #head th {
-        padding: 9px 0px;
-        border: 0px;
-    }
-
-    #head .layui-input {
-        height: 50px;
-    }
-
-    #head .layui-input-inline {
-        padding-right: 8px;
-    }
-</style>
 <div class="layui-fluid">
     <div class="layui-card-body">
         <form class="layui-form" style="margin-top: 10px;" id="head">
             <table class="layui-table layui-form" lay-size="sm">
-                <colgroup>
-                    <col width="80px">
-                    <col width="160px">
-                    <col width="80px">
-                    <col width="160px">
-                    <col width="80px">
-                    <col width="160px">
-                </colgroup>
-            </table>
-            <table class="layui-table layui-form" lay-size="sm">
                 <tr>
-                    <td colspan="4" style="background: #f7f7f7; color: black;">回顾内容</td>
+                    <td colspan="4" style="background: #f7f7f7; color: black;">履职总结单条审核</td>
                 </tr>
                 <tr>
-                    <td style="text-align: left;width: 100px"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;实际完成时间:
-                    </td>
-                    <td style="text-align: left">
-                        <div class="layui-input-inline" style="width: 100%;text-align: left">
-                            <input type="text" class="layui-input laydate" name="actualCompleteDate"
-                                   id="actualCompleteDate" lay-verify="required"
-                                   autocomplete="off" />
+                    <div class="layui-inline layui-show-xs-block">
+                        <label class="layui-form-label"
+                               style="width: 110px; line-height: 1.1; padding: 9px 0px;">事物类评价等级&nbsp;&nbsp;</label>
+                        <div class="layui-input-inline" style="width: 140px;">
+                            <select lay-filter="chargeTransactionEvaluateLevel"
+                                    lay-verify="required"
+                                    name="chargeTransactionEvaluateLevel"
+                                    id="chargeTransactionEvaluateLevel">
+                                <option value="合格">合格</option>
+                                <option value="不合格">不合格</option>
+                            </select>
                         </div>
-                    </td>
+                    </div>
                 </tr>
                 <tr>
-                    <td style="text-align: left;width: 50px"><span style='color: red; font-weight: bold'>*</span>&nbsp;工作完成描述：</td>
-                    <td colspan="4">
-                        <div class="layui-input-inline" style="width: 100%;text-align: left">
-                            <textarea name="completeDesc" rowspan="3" class="layui-textarea" style="width: 100%"></textarea>
+                    <div class="layui-inline layui-show-xs-block" id="choseHidden" style="display: none">
+                        <label class="layui-form-label"
+                               style="width: 140px;  line-height: 1.1; padding: 9px 0px;">事物类评价不同类型&nbsp;&nbsp;</label>
+                        <div class="layui-input-inline" style="width: 140px;">
+                            <select lay-filter="chargeTransactionBelowType"
+                                    name="chargeTransactionBelowType"
+                                    id="chargeTransactionBelowType">
+                                <option value="时间不合格">时间不合格</option>
+                                <option value="质量不合格">质量不合格</option>
+                            </select>
                         </div>
-                    </td>
+                    </div>
                 </tr>
             </table>
                 <table class="layui-table layui-form" lay-size="sm">
                 <tr>
                     <td colspan="4" style="text-align: center">
-                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+                        <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">审核</button>
                     </td>
                 </tr>
             </table>
@@ -102,13 +76,23 @@
                 });
         });
 
+        //事务类评价不同类型出现条件，根据
+        form.on('select(chargeTransactionEvaluateLevel)', function (data) {
+            let choseHidden = document.getElementById('choseHidden');
+            if (data.value === "合格") {
+                choseHidden.setAttribute('style', 'display:none')
+            } else {
+                choseHidden.removeAttribute('style')
+            }
+        });
+
         // 提交
         form.on('submit(baseForm)', function (data) {
             var elem = data.elem;
             $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
             $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
             $.ajax({
-                url: '/system/entry-cas-review-detail/sectionUpdate',
+                url: '/system/entry-cas-review-detail/sectionAudit',
                 type: 'POST',
                 data: data.field,
                 success: function (result) {

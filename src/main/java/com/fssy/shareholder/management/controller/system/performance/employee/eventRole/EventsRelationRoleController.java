@@ -99,8 +99,8 @@ public class EventsRelationRoleController
 
 		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
 		// 需要改背景色的格子
-		fieldMap.put("id", "系统序号");// A
-		fieldMap.put("eventsId", "事件清单序号");// B
+		fieldMap.put("id", "事件岗位ID");// A
+		fieldMap.put("eventsId", "事件清单ID");// B
 		fieldMap.put("departmentName", "部门名称");// C
 		fieldMap.put("roleName", "岗位名称");// D
 		fieldMap.put("userName", "职员名称");// E

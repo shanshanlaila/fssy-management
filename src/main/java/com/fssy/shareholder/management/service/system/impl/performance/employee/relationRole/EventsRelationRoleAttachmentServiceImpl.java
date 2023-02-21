@@ -2,7 +2,7 @@
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
-package com.fssy.shareholder.management.service.system.impl.performance.employee;
+package com.fssy.shareholder.management.service.system.impl.performance.employee.relationRole;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,6 +17,7 @@ import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRo
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import com.fssy.shareholder.management.tools.common.GetTool;
+import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -374,6 +375,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventsRelationRole.setUpdatedName(user.getName());
             eventsRelationRole.setCreatedAt(LocalDateTime.now());
             eventsRelationRole.setUpdatedAt(LocalDateTime.now());
+            eventsRelationRole.setStatus(PerformanceConstant.WAIT_PLAN);
             // endregion
             // 存入集合，用于读取循环数据完毕后批量写入数据库
             relationRoleList.add(eventsRelationRole);
