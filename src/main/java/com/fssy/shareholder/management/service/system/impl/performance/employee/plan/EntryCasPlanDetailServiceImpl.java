@@ -380,8 +380,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("departmentName")) {
             queryWrapper.like("departmentName", params.get("departmentName"));
         }
-        if (params.containsKey("departmentIdList")) {
-            queryWrapper.in("departmentId", (List<String>) params.get("departmentIdList"));
+        if (params.containsKey("departmentIds")) {
+            String departmentIdsStr = (String) params.get("departmentIds");
+            List<String> departmentIds = Arrays.asList(departmentIdsStr.split(","));
+            queryWrapper.in("departmentId", departmentIds);
         }
         if (params.containsKey("roleName")) {
             queryWrapper.like("roleName", params.get("roleName"));
@@ -389,11 +391,22 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("roleId")) {
             queryWrapper.eq("roleId", params.get("roleId"));
         }
-        if (params.containsKey("roleIdList")) {
-            queryWrapper.in("roleId", (List<String>) params.get("roleIdList"));
+        if (params.containsKey("roleIds")) {
+            String roleIds = (String) params.get("roleIds");
+            List<String> roleIdList = Arrays.asList(roleIds.split(","));
+            queryWrapper.in("roleId", roleIdList);
         }
         if (params.containsKey("userName")) {
             queryWrapper.like("userName", params.get("userName"));
+        }
+        if (params.containsKey("userId")) {
+            queryWrapper.eq("userId", params.get("userId"));
+        }
+        // 用户表主键列表查询
+        if (params.containsKey("userIds")) {
+            String userIdsStr = (String) params.get("userIds");
+            List<String> userIds = Arrays.asList(userIdsStr.split(","));
+            queryWrapper.in("userId", userIds);
         }
         if (params.containsKey("userId")) {
             queryWrapper.eq("userId", params.get("userId"));

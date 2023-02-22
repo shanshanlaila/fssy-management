@@ -95,167 +95,9 @@ public class EntryCasPlanDetailController {
             result.put("msg", "未查出数据");
             return result;
         }
-        Map<String, Object> params = getParams(request);
+        Map<String, Object> params = GetTool.getParams(request);
         GetTool.getPageDataRes(result,params,request,entryCasPlanDetailService);
         return result;
-    }
-
-    private Map<String, Object> getParams(HttpServletRequest request) {
-        Map<String, Object> params = new HashMap<>();
-        if (!ObjectUtils.isEmpty(request.getParameter("id"))) {
-            params.put("id", request.getParameter("id"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("createDate"))) {
-            params.put("createDate", request.getParameter("createDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("eventsId"))) {
-            params.put("eventsId", request.getParameter("eventsId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("jobName"))) {
-            params.put("jobName", request.getParameter("jobName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("workEvents"))) {
-            params.put("workEvents", request.getParameter("workEvents"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("eventsForm"))) {
-            params.put("eventsForm", request.getParameter("eventsForm"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("standardValue"))) {
-            params.put("standardValue", request.getParameter("standardValue"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("delowStandard"))) {
-            params.put("delowStandard", request.getParameter("delowStandard"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("middleStandard"))) {
-            params.put("middleStandard", request.getParameter("middleStandard"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("fineStandard"))) {
-            params.put("fineStandard", request.getParameter("fineStandard"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("excellentStandard"))) {
-            params.put("excellentStandard", request.getParameter("excellentStandard"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("mainOrNext"))) {
-            params.put("mainOrNext", request.getParameter("mainOrNext"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("departmentName"))) {
-            params.put("departmentName", request.getParameter("departmentName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("departmentIds"))) {
-            String departmentIds = request.getParameter("departmentIds");
-            List<String> departmentIdList = Arrays.asList(departmentIds.split(","));
-            params.put("departmentIdList", departmentIdList);
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("roleName"))) {
-            params.put("roleName", request.getParameter("roleName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("roleIds"))) {
-            String roleIds = request.getParameter("roleIds");
-            List<String> roleIdList = Arrays.asList(roleIds.split(","));
-            params.put("roleIdList", roleIdList);
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("roleId"))) {
-            params.put("roleId", request.getParameter("roleId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("userName"))) {
-            params.put("userName", request.getParameter("userName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("userId"))) {
-            params.put("userId", request.getParameter("userId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("applyDate"))) {
-            params.put("applyDate", request.getParameter("applyDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("year"))) {
-            params.put("year", request.getParameter("year"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("month"))) {
-            params.put("month", request.getParameter("month"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("planningWork"))) {
-            params.put("planningWork", request.getParameter("planningWork"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("times"))) {
-            params.put("times", request.getParameter("times"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("workOutput"))) {
-            params.put("workOutput", request.getParameter("workOutput"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("planOutput"))) {
-            params.put("planOutput", request.getParameter("planOutput"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("planStartDate"))) {
-            params.put("planStartDate", request.getParameter("planStartDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("planEndDate"))) {
-            params.put("planEndDate", request.getParameter("planEndDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("createDate"))) {
-            params.put("createDate", request.getParameter("createDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("createName"))) {
-            params.put("createName", request.getParameter("createName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("createId"))) {
-            params.put("createId", request.getParameter("createId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditName"))) {
-            params.put("auditName", request.getParameter("auditName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditId"))) {
-            params.put("auditId", request.getParameter("auditId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditDate"))) {
-            params.put("auditDate", request.getParameter("auditDate"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditNote"))) {
-            params.put("auditNote", request.getParameter("auditNote"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("status"))) {
-            params.put("status", request.getParameter("status"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("mergeNo"))) {
-            params.put("mergeNo", request.getParameter("mergeNo"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("mergeId"))) {
-            params.put("mergeId", request.getParameter("mergeId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("eventsFirstType"))) {
-            params.put("eventsFirstType", request.getParameter("eventsFirstType"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("note"))) {
-            params.put("note", request.getParameter("note"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("auditStatus"))) {
-            params.put("auditStatus", request.getParameter("auditStatus"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("attachmentId"))) {
-            params.put("attachmentId", request.getParameter("attachmentId"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("statusCancel"))) {
-            params.put("statusCancel", request.getParameter("statusCancel"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("twoStatus"))) {
-            params.put("twoStatus", request.getParameter("twoStatus"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("newStatus"))) {
-            params.put("newStatus", request.getParameter("newStatus"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("groupByUserName"))) {
-            params.put("groupByUserName", request.getParameter("groupByUserName"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("userNameRight"))) {
-            params.put("userNameRight", request.getParameter("userNameRight"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("isNewEvent"))) {
-            params.put("isNewEvent", request.getParameter("isNewEvent"));
-        }
-        if (!ObjectUtils.isEmpty(request.getParameter("userIds"))) {
-            String userIdsStr = request.getParameter("userIds");
-            List<String> userIds = Arrays.asList(userIdsStr.split(","));
-            params.put("userIds", userIds);
-        }
-        return params;
     }
 
     /**
@@ -268,7 +110,7 @@ public class EntryCasPlanDetailController {
     @RequiredLog("导出履职计划填报月底总结")
     public void downloadForCharge(HttpServletRequest request, HttpServletResponse response) {
         // 导出履职计划填报月底总结
-        Map<String, Object> params = getParams(request);
+        Map<String, Object> params = GetTool.getParams(request);
         params.put("select",
                 "id,eventsRoleId," +
                         "eventsFirstType," +
@@ -562,7 +404,7 @@ public class EntryCasPlanDetailController {
     @ResponseBody
     public Map<String, Object> getObjectsByMap(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>(10);
-        Map<String, Object> params = getParams(request);
+        Map<String, Object> params = GetTool.getParams(request);
         params.put("page", Integer.parseInt(request.getParameter("page")));
         params.put("limit", Integer.parseInt(request.getParameter("limit")));
 

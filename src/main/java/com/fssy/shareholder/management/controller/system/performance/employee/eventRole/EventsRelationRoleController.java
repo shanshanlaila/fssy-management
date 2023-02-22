@@ -5,7 +5,6 @@
 package com.fssy.shareholder.management.controller.system.performance.employee.eventRole;
 
 import com.fssy.shareholder.management.annotation.RequiredLog;
-import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
@@ -70,6 +69,9 @@ public class EventsRelationRoleController {
         GetTool.getSelectorData(model);
         User user = GetTool.getUser();
         model.addAttribute("userId", user.getId());
+        // 查出当前登录用户是否存在符合打出的数据
+        boolean flag = eventsRelationRoleService.isExistExportData();
+        model.addAttribute("isExistExportData",flag);
         return "system/performance/employee/eventRole/relation-role-list-export";
     }
 

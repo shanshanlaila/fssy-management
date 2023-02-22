@@ -7,7 +7,6 @@ package com.fssy.shareholder.management.controller.system.performance.employee.e
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
-import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
@@ -17,7 +16,6 @@ import com.fssy.shareholder.management.service.system.performance.employee.Event
 import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -98,8 +95,6 @@ public class EventListController {
         List<String> selectedUserIds = new ArrayList<>(50);
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
-        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "system/performance/employee/eventList/event-list";
     }
 
@@ -121,6 +116,8 @@ public class EventListController {
         model.addAttribute("userList", userList);
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
+        boolean flag = eventListService.isExistData();
+        model.addAttribute("flag", flag);
         return "system/performance/employee/eventList/event-list-export";
     }
 
@@ -130,17 +127,10 @@ public class EventListController {
     @GetMapping("edit")
     //@RequiresPermissions("performance:employee:event:edit")
     public String edit(HttpServletRequest request, Model model) {
-        //获取无标准事件内容和清单Id
         String id = request.getParameter("id");
         EventList eventList = eventListService.getById(Long.valueOf(id));
-        if (eventList.getStatus().equals(PerformanceConstant.CANCEL)) {
-            throw new ServiceException("不能修改取消状态的事件清单");
-        }
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(user);
-        String userDepartmentName = departmentRoleByUser.getDepartmentName();
-        if (!userDepartmentName.equals(eventList.getDepartmentName())) {
-            throw new ServiceException("不能操作其他部门的事件");
+        if (!eventList.getStatus().equals(PerformanceConstant.WAIT_RELATION_ROLE)) {
+            throw new ServiceException(String.format("不能修改【%s】状态下的基础事件", eventList.getStatus()));
         }
         model.addAttribute("eventList", eventList);
         return "system/performance/events-list-edit";

@@ -141,7 +141,6 @@ public class InvestProjectListServiceImpl extends ServiceImpl<InvestProjectListM
 
     @Override
     public Map<String, Object> readInvestProjectListDataSource(Attachment attachment) {
-        // 导入基础事件
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");

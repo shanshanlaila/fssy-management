@@ -299,8 +299,7 @@
         // 监听导出按钮
         form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
-            // 导出参数设置-只导出完结状态下的数据-status=“完结”
-            field.status = '完结';
+            field.status = '待导出填报计划';
             // 只能导出本人的数据
             field.userIds = [[${userId}]]
             /*var userIds = data.field.userIds;
@@ -311,6 +310,10 @@
             }*/
             if (field.userIds !== [[${userId}]]) {
                 layer.msg("只能导出本人的数据", {icon: 5, time: 4000});
+                return false;
+            }
+            if ([[${isExistExportData}]]===false){
+                layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
                 return false;
             }
             field.url = "/system/performance/employee/events-relation-role/downloadForCharge";
