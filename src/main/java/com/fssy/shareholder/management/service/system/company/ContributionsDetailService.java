@@ -3,8 +3,11 @@ package com.fssy.shareholder.management.service.system.company;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.pojo.system.company.ContributionsDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fssy.shareholder.management.pojo.system.operate.invest.InvestProjectList;
 import org.checkerframework.checker.units.qual.C;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,7 +26,9 @@ public interface ContributionsDetailService extends IService<ContributionsDetail
      * @param params
      * @return
      */
-    Page<ContributionsDetail> findContributionsDetailPerPageByParams(Map<String, Object> params);
+    Page<Map<String, Object>> findContributionsDetailPerPageByParams(Map<String, Object> params);
+
+//    List<Map<String, Object>> findContributionsDetailByParams(Map<String, Object>params ,List<String> selectedIds);
 
 
     /**
@@ -39,7 +44,7 @@ public interface ContributionsDetailService extends IService<ContributionsDetail
      * @param contributionsDetail
      * @return
      */
-    public boolean updateContributionsDetailData(ContributionsDetail contributionsDetail);
+    public boolean updateContributionsDetailData(ContributionsDetail contributionsDetail, HttpServletRequest request);
 
 
     /**
@@ -47,5 +52,9 @@ public interface ContributionsDetailService extends IService<ContributionsDetail
      * @param contributionsDetail
      * @return
      */
-    public boolean insertContributionsDetailData(ContributionsDetail contributionsDetail);
+    public boolean insertContributionsDetailData(ContributionsDetail contributionsDetail,HttpServletRequest request);
+
+
+    public boolean submitUploadFile(ContributionsDetail contributionsDetail, Map<String, Object> param);
+
 }

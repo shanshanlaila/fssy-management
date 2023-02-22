@@ -17,45 +17,27 @@
 
                 <!--第一行-->
                 <tr>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>被投资公司ID:</td>
-                    <td style="width: 10%">
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;被投资公司名称:</td>
+                    <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyId" id="companyId"
-                                   lay-verify="required">
+                            <div id="companySelect"></div>
                         </div>
                     </td>
-
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>被投资公司名称:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyName" id="companyName"
-                                   lay-verify="required">
-                        </div>
-                    </td>
-                </tr>
-                <!--第二行-->
-                <tr>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>营业执照附件ID:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="businessLicenseDocId" id="businessLicenseDocId"
-                                   lay-verify="required">
-                        </div>
-                    </td>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>营业执照附件名称:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="businessLicenseDocName" id="businessLicenseDocName"
-                                   lay-verify="required">
-                        </div>
-                    </td>
-                </tr>
-                <!--第三行-->
-                <tr>
                     <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>变更项目:</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="changeProject" id="changeProject"
+                                   lay-verify="required">
+                        </div>
+                    </td>
+                </tr>
+
+                <!--第三行-->
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>变更前法人:</td>
+                    <td style="width: 10%">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="changeBefore" id="changeBefore"
                                    lay-verify="required">
                         </div>
                     </td>
@@ -69,29 +51,25 @@
                 </tr>
 
                 <tr>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>变更前:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="changeBefore" id="changeBefore"
-                                   lay-verify="required">
-                        </div>
-                    </td>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>变更后:</td>
+
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>变更后法人:</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="changeAfter" id="changeAfter"
                                    lay-verify="required">
                         </div>
                     </td>
-                </tr>
-
-                <tr>
                     <td style="width: 10%;text-align: right">营业执照信息状态:</td>
-                    <td style="width: 10%">
+                    <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="status" id="status">
+                            <select name="stockRightsType" lay-verify="required" lay-reqText="营业执照信息为必填项">
+                                <option value="" selected>请选择营业执照信息状态</option>
+                                <option value="已使用">已使用</option>
+                                <option value="未使用">未使用</option>
+                            </select>
                         </div>
                     </td>
+
                 </tr>
 
 
@@ -128,6 +106,7 @@
                 type: 'date'
             });
         });
+
         /**
          * 添加学生信息
          */
@@ -157,6 +136,24 @@
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
 
+        // 公司选择获得器
+        xmSelect.render({
+            el: '#companySelect',
+            language: 'zn',
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyId',// 传到后端选择的companyId集合字符串
+        });
     });
 </script>
 
