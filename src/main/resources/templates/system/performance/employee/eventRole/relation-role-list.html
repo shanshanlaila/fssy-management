@@ -13,7 +13,7 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb"> <<a href="">首页</a> <a href="">总部员工绩效</a> <a href="">基础事件管理</a>
-			<a> <cite>事件清单岗位关系管理</cite></a>
+			<a> <cite>事件清单岗位关系导入</cite></a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
                                                                 style="line-height: 30px"></i>
@@ -79,6 +79,13 @@
                             <input type="text" name="workEvents" id="workEvents" placeholder="工作事件查询" autocomplete="off"
                                    class="layui-input">
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
+                            <select name="status" id="status">
+                                <option selected value="">请选择状态</option>
+                                <option value="待导出填报计划">待导出填报计划</option>
+                                <option value="完结">完结</option>
+                            </select>
+                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 140px">
                             <select name="eventsFirstType" id="eventsFirstType">
                                 <option value="" selected>请选择事件类型</option>
@@ -95,9 +102,9 @@
                                     class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
                                     lay-filter="showImport">导入事件岗位关系
                             </button>
-                            <button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
+                            <!--<button class="layui-btn layui-btn-sm" style="margin-left: 0px;" lay-submit
                                     lay-filter="downloadForCharge" title="状态‘完结’事件清单，可以导出">导出事件清单填报履职计划
-                            </button>
+                            </button>-->
                         </div>
                     </div>
                 </form>

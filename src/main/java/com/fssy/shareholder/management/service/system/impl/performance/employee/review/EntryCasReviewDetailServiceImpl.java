@@ -459,6 +459,19 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             // 审核结果为合格
             entryCasReviewDetail.setChargeTransactionBelowType(null);
         }
+        User user = GetTool.getUser();
+        // 审核人
+        entryCasReviewDetail.setAuditName(user.getName());
+        // 审核人主键
+        entryCasReviewDetail.setAuditId(user.getId());
+        // 审核日期
+        entryCasReviewDetail.setAuditDate(LocalDate.now());
+        // 状态设置为完结
+        entryCasReviewDetail.setStatus(PerformanceConstant.FINAL);
+        entryCasReviewDetail.setIsExcellent(PerformanceConstant.NO);
+        BigDecimal score = GetTool.getScore(entryCasReviewDetail, entryCasReviewDetail.getChargeTransactionEvaluateLevel());
+        entryCasReviewDetail.setAutoScore(score);
+        entryCasReviewDetail.setArtifactualScore(score);
         return entryCasReviewDetailMapper.updateById(entryCasReviewDetail) > 0;
 
     }
@@ -816,7 +829,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     }
 
     @Override
-    public boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview, List<String> auditNotes) {
+    public boolean batchAuditBySection(List<String> entryReviewDetailIds, String ministerReview, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
         Map<String, EntryCasReviewDetail> keyByReviewDetailMap = IteratorTool.keyByPattern("id", entryCasReviewDetails);
         for (int i = 0; i < entryCasReviewDetails.size(); i++) {
@@ -855,7 +868,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType, List<String> auditNotes) {
+    public boolean batchAuditByChief(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType, List<String> auditNotes) {
         List<EntryCasReviewDetail> entryCasReviewDetails = entryCasReviewDetailMapper.selectBatchIds(entryReviewDetailIds);
         Map<String, EntryCasReviewDetail> keyByReviewDetailMap = IteratorTool.keyByPattern("id", entryCasReviewDetails);
         for (int i = 0; i < entryCasReviewDetails.size(); i++) {
@@ -1054,7 +1067,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     @Override
     public Map<Long, Map<String, Object>> findWeChatNoticeMap() {
         Map<Long, Map<String, Object>> map = new HashMap<>(30);
-        Map<String, Object> childMap = new HashMap<>(100);
+        Map<String, Object> childMap = new HashMap<>(50);
 
         QueryWrapper<EntryCasPlanDetail> wrapper = new QueryWrapper<>();
         // 查找未填报总结的用户

@@ -83,12 +83,12 @@ public class EventListController {
     }
 
     /**
-     * 返回附件上传页面
+     * 基础事件清单首页
      */
     @RequiredLog("基础事件清单管理")
     @GetMapping("index")
     @RequiresPermissions("performance:employee:event:without:standard:index")
-    public String withoutStandardIndex(Model model) {
+    public String index(Model model) {
         // 部门
         Map<String, Object> departmentParams = new HashMap<>(20);
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
@@ -101,6 +101,27 @@ public class EventListController {
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
         return "system/performance/employee/eventList/event-list";
+    }
+
+    /**
+     * 基础事件清单导出
+     */
+    @RequiredLog("基础事件清单导出")
+    @GetMapping("indexExport")
+    @RequiresPermissions("performance:employee:event:without:standard:indexExport")
+    public String indexExport(Model model) {
+        // 部门
+        Map<String, Object> departmentParams = new HashMap<>(20);
+        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
+        model.addAttribute("departmentNameList", departmentNameList);
+        // 基础事件创建人
+        Map<String, Object> userParams = new HashMap<>(50);
+        List<String> selectedUserIds = new ArrayList<>(50);
+        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
+        model.addAttribute("userList", userList);
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
+        return "system/performance/employee/eventList/event-list-export";
     }
 
     /**

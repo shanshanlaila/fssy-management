@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.time.LocalDateTime;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * @author MI
  * @ClassName: EmployeeReviewJob
- * @Description: TODO
+ * @Description: 总结的定时任务
  * @date 2023/2/21 14:28
  */
 @Component
@@ -43,7 +43,7 @@ public class EmployeeReviewJob implements Job {
         for (Map<String, Object> chiMap : userInfoMap.values()) {
             List<String> wetChatId = Collections.singletonList(chiMap.get("weChat").toString());
             List<String> userName = Collections.singletonList(chiMap.get("userName").toString());
-            String content = String.format("%s，你好，你填写的计划有%s条准备到总结时间，请及时到系统进行履职总结填报。", userName, chiMap.get("num"));
+            String content = String.format("%s，您好，您填写的计划有%s条准备到总结时间，请及时到系统进行履职总结填报。", userName, chiMap.get("num"));
             try {
                 enterpriseWeChatService.push(content, wetChatId, null, null);
             } catch (Exception e) {
