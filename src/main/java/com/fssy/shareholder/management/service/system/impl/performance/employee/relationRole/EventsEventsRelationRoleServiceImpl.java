@@ -183,7 +183,7 @@ public class EventsEventsRelationRoleServiceImpl
         if (params.containsKey("roleIds")) {
             String roleIdsStr = (String) params.get("roleIds");
             List<String> roleIds = Arrays.asList(roleIdsStr.split(","));
-            queryWrapper.in("roleId",roleIds );
+            queryWrapper.in("roleId", roleIds);
         }
         // 岗位名称查询
         if (params.containsKey("roleName")) {
@@ -228,6 +228,10 @@ public class EventsEventsRelationRoleServiceImpl
         if (params.containsKey("eventsFirstType")) {
             queryWrapper.eq("eventsFirstType", params.get("eventsFirstType"));
         }
+        // 状态
+        queryWrapper.eq(params.containsKey("status"), "status", params.get("status"));
+
+
         return queryWrapper;
     }
 }

@@ -148,8 +148,6 @@ public class EntryCasReviewDetailController {
     /**
      * 总结审核-科长
      *
-     * @param model
-     * @return
      */
     @GetMapping("index1")
     @RequiredLog("总结审核-科长页面")
@@ -256,12 +254,12 @@ public class EntryCasReviewDetailController {
      */
     @PostMapping("batchAudit")
     @ResponseBody
-    @RequiredLog("部长回顾批量审核")
+    @RequiredLog("部长总结批量审核")
     public SysResult batchAudit(HttpServletRequest request,
                                 @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
                                 @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String ministerReview = request.getParameter("ministerReview");
-        boolean result = reviewService.batchAudit(entryReviewDetailIds, ministerReview, auditNotes);
+        boolean result = reviewService.batchAuditBySection(entryReviewDetailIds, ministerReview, auditNotes);
         if (result) {
             return SysResult.ok();
         }
@@ -279,7 +277,7 @@ public class EntryCasReviewDetailController {
                                        @RequestParam(value = "auditNotes[]") List<String> auditNotes) {
         String chargeTransactionEvaluateLevel = request.getParameter("chargeTransactionEvaluateLevel");
         String chargeTransactionBelowType = request.getParameter("chargeTransactionBelowType");
-        boolean result = reviewService.batchAudit(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType, auditNotes);
+        boolean result = reviewService.batchAuditByChief(entryReviewDetailIds, chargeTransactionEvaluateLevel, chargeTransactionBelowType, auditNotes);
         if (result) {
             return SysResult.ok();
         }

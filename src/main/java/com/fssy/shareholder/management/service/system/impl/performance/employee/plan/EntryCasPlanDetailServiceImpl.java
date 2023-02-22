@@ -322,9 +322,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             //设置事件岗位清单状态为完结
             EventsRelationRole relationRole = eventsRelationRoleMapper.selectById(eventsRoleId);
             relationRole.setStatus(PerformanceConstant.FINAL);
-            // 写入
+            eventsRelationRoleMapper.updateById(relationRole);
+            // 写入计划
             entryCasPlanDetailMapper.insert(entryCasPlanDetail);
-            eventsRelationRoleMapper.insert(relationRole);
             cell.setCellValue("导入成功");// 写在upload目录下的excel表格
         }
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
@@ -706,7 +706,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     @Override
     public Map<Long, Map<String, Object>> findWeChatNoticeMap() {
         Map<Long, Map<String, Object>> map = new HashMap<>(30);
-        Map<String, Object> childMap = new HashMap<>(100);
+        Map<String, Object> childMap = new HashMap<>(50);
 
         QueryWrapper<EventsRelationRole> wrapper = new QueryWrapper<>();
         wrapper.select("userId,COUNT(userId) as num")

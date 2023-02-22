@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>履职总结-科长审核</title>
-    <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
     <script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
 </head>
 <body>
@@ -13,40 +12,68 @@
     <div class="layui-card-body">
         <form class="layui-form" style="margin-top: 10px;" id="head">
             <table class="layui-table layui-form" lay-size="sm">
+                <input type="hidden" id="eventsFirstType" name="eventsFirstType" th:value="${entryCasReviewDetail.eventsFirstType}">
+                <input type="hidden" id="id" name="id" th:value="${entryCasReviewDetail.id}">
                 <tr>
-                    <td colspan="4" style="background: #f7f7f7; color: black;">履职总结单条审核</td>
+                    <td>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 110px;">事物类评价等级&nbsp;&nbsp;</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="layui-inline layui-show-xs-block" style="width: 140px;">
+                            <label for="chargeTransactionEvaluateLevel">
+                                <select
+                                        lay-filter="chargeTransactionEvaluateLevel"
+                                        lay-verify="required"
+                                        name="chargeTransactionEvaluateLevel"
+                                        id="chargeTransactionEvaluateLevel">
+                                    <option value="合格">合格</option>
+                                    <option value="不合格">不合格</option>
+                                </select>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                <tr id="choseHidden" style="display: none">
+                    <td>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label"
+                                   style="width: 140px;">事物类评价不同类型&nbsp;&nbsp;</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="layui-input-inline layui-show-xs-block" style="width: 140px;">
+                            <label for="chargeTransactionBelowType">
+                                <select lay-filter="chargeTransactionBelowType"
+                                        name="chargeTransactionBelowType"
+                                        id="chargeTransactionBelowType">
+                                    <option value="时间不合格">时间不合格</option>
+                                    <option value="质量不合格">质量不合格</option>
+                                </select>
+                            </label>
+                        </div>
+                    </td>
+
                 </tr>
                 <tr>
-                    <div class="layui-inline layui-show-xs-block">
-                        <label class="layui-form-label"
-                               style="width: 110px; line-height: 1.1; padding: 9px 0px;">事物类评价等级&nbsp;&nbsp;</label>
-                        <div class="layui-input-inline" style="width: 140px;">
-                            <select lay-filter="chargeTransactionEvaluateLevel"
-                                    lay-verify="required"
-                                    name="chargeTransactionEvaluateLevel"
-                                    id="chargeTransactionEvaluateLevel">
-                                <option value="合格">合格</option>
-                                <option value="不合格">不合格</option>
-                            </select>
+                    <td>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label class="layui-form-label">审核意见&nbsp;&nbsp;</label>
                         </div>
-                    </div>
-                </tr>
-                <tr>
-                    <div class="layui-inline layui-show-xs-block" id="choseHidden" style="display: none">
-                        <label class="layui-form-label"
-                               style="width: 140px;  line-height: 1.1; padding: 9px 0px;">事物类评价不同类型&nbsp;&nbsp;</label>
-                        <div class="layui-input-inline" style="width: 140px;">
-                            <select lay-filter="chargeTransactionBelowType"
-                                    name="chargeTransactionBelowType"
-                                    id="chargeTransactionBelowType">
-                                <option value="时间不合格">时间不合格</option>
-                                <option value="质量不合格">质量不合格</option>
-                            </select>
+                    </td>
+                    <td>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label for="auditNote">
+                                <input type="text" name="auditNote" id="auditNote" class="layui-input layui-input-inline"
+                                       placeholder="请输入审核意见">
+                            </label>
                         </div>
-                    </div>
+                    </td>
                 </tr>
             </table>
-                <table class="layui-table layui-form" lay-size="sm">
+            <table class="layui-table layui-form" lay-size="sm">
                 <tr>
                     <td colspan="4" style="text-align: center">
                         <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">审核</button>
@@ -99,7 +126,8 @@
                     if (result.status === 200) {
                         layer.msg(result.msg, {icon: 6, time: 1000});
                         setTimeout(function () {
-                            parent.layui.table.reload('dataTable');
+                            parent.layui.table.reload('dataTableLeft');
+                            parent.layui.table.reload('dataTableRight');
                             var index = parent.layer.getFrameIndex(window.name);
                             parent.layer.close(index);
                         }, 1000)
