@@ -212,4 +212,7 @@ public class EventsRelationRole extends BaseModel {
      */
     @TableField("excellentStandard")
     private String excellentStandard;
+
+    @TableField("status")
+    private String status;
 }

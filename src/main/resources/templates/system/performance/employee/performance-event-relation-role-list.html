@@ -163,6 +163,20 @@
             cols: [
                 [
                     {
+                      field: 'status',
+                      width: 120,
+                      title: '状态',
+                      align: 'center',
+                      fixed: 'left',
+                      templet:function (d) {
+                          if (d.status==='待导出填报计划'){
+                              return `<span class="layui-badge layui-bg">${d.status}</span>`
+                          }else{
+                              return `<span class="layui-badge layui-bg-green">${d.status}</span>`
+                          }
+                      }
+                    },
+                    {
                         field: 'departmentName',
                         title: '部门名称',
                         width: 90,

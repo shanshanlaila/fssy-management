@@ -30,14 +30,6 @@ public interface EventListService extends BaseService<EventList> {
     //Page<EventList> findDataListByParams(Map<String, Object> params);
 
     /**
-     * 读取附件数据到数据库表
-     *
-     * @param attachment 经理绩效附件
-     * @return 经理绩效附件
-     */
-    Map<String, Object> readEventListDataSource(Attachment attachment);
-
-    /**
      * 通过查询条件查询实时库存凭证关系台账列表(Map)
      *
      * @param params 查询条件

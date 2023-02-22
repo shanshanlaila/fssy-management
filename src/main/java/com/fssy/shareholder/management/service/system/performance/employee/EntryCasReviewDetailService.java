@@ -24,7 +24,7 @@ public interface EntryCasReviewDetailService extends BaseService<EntryCasReviewD
      * @param entryCasReviewDetail 总结
      * @return 结果
      */
-    boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail,HttpServletRequest request);
+    boolean updateEntryCasReviewDetail(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request);
 
     /**
      * 履职总结提交审核
@@ -38,18 +38,18 @@ public interface EntryCasReviewDetailService extends BaseService<EntryCasReviewD
      * 总结撤销审核
      *
      * @param reviewDetailIds 总结dis
-     * @param identification 区分科长和部长操作的标志
+     * @param identification  区分科长和部长操作的标志
      * @return 结果
      */
     boolean retreatForReview(List<String> reviewDetailIds, String identification);
 
     /**
-     * 工作计划完成情况审核评价 （科长，事务类）
+     * 履职总结-科长单条审核
      *
      * @param entryCasReviewDetail 总结履职
      * @return 结果
      */
-    boolean sectionWorkAudit(EntryCasReviewDetail entryCasReviewDetail);
+    boolean sectionAudit(EntryCasReviewDetail entryCasReviewDetail);
 
     /**
      * 读取附件数据到数据库表
@@ -67,7 +67,7 @@ public interface EntryCasReviewDetailService extends BaseService<EntryCasReviewD
      * @param ministerReview       部长复核
      * @return 审核结果
      */
-    boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview,List<String> auditNotes);
+    boolean batchAudit(List<String> entryReviewDetailIds, String ministerReview, List<String> auditNotes);
 
     /**
      * 履职总结-科长审核
@@ -77,7 +77,7 @@ public interface EntryCasReviewDetailService extends BaseService<EntryCasReviewD
      * @param chargeTransactionBelowType     事务类评价不同类型
      * @return 审核结果
      */
-    boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType,List<String> auditNotes);
+    boolean batchAudit(List<String> entryReviewDetailIds, String chargeTransactionEvaluateLevel, String chargeTransactionBelowType, List<String> auditNotes);
 
     /**
      * 新增单履职总结
@@ -97,4 +97,10 @@ public interface EntryCasReviewDetailService extends BaseService<EntryCasReviewD
 
     Page<Map<String, Object>> findDataListByMapParams(Map<String, Object> params);
 
+    /**
+     * 查找履职总结通知
+     *
+     * @return map
+     */
+    Map<Long, Map<String, Object>> findWeChatNoticeMap();
 }

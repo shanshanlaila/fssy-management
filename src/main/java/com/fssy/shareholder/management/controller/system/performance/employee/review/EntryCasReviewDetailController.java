@@ -166,29 +166,30 @@ public class EntryCasReviewDetailController {
      * @param model 模型
      * @return 页面
      */
-    @GetMapping("MinisterEdit/{id}")
+    @GetMapping("ministerEdit/{id}")
     @RequiredLog("单条总结审核-部长")
     public String showEditPageByMinister(@PathVariable Long id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = reviewService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
-            throw new ServiceException("不能审核取消状态下的事件请单");
+            throw new ServiceException("不能审核取消状态下的履职总结");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         return "system/performance/employee/performance-entry-cas-review-detail-minister-edit";
     }
 
     /**
-     * 工作计划完成情况审核（科长）-修改按钮
+     * 单条总结审核-科长
      *
-     * @param id id
-     * @return 路径
+     * @param id    总结id
+     * @param model 模型
+     * @return 页面
      */
-    @GetMapping("sectionEdit/{id}")
+    @GetMapping("chiefEdit/{id}")
     @RequiredLog("单条总结审核-科长")
-    public String showEditPageBySection(@PathVariable String id, Model model) {
+    public String showEditPageByChief(@PathVariable Long id, Model model) {
         EntryCasReviewDetail entryCasReviewDetail = reviewService.getById(id);
         if (entryCasReviewDetail.getStatus().equals(PerformanceConstant.CANCEL)) {
-            throw new ServiceException("不能修改取消状态下的事件请单");
+            throw new ServiceException("不能审核取消状态下的履职总结");
         }
         model.addAttribute("entryCasReviewDetail", entryCasReviewDetail);
         return "system/performance/employee/performance-entry-cas-review-detail-section-chief-edit";
@@ -230,20 +231,20 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 提交修改工作计划完成情况审核评价 （科长，事务类）
+     * 履职总结-科长单条审核
      *
-     * @param entryCasReviewDetail 回顾履职
+     * @param entryCasReviewDetail 履职总结
      * @return 提交结果
      */
-    @PostMapping("sectionUpdate")
+    @PostMapping("sectionAudit")
     @ResponseBody
-    @RequiredLog("提交修改工作计划完成情况审核评价 （科长，事务类）")
-    public SysResult sectionUpdate(EntryCasReviewDetail entryCasReviewDetail) {
-        boolean result = reviewService.sectionWorkAudit(entryCasReviewDetail);
+    @RequiredLog("履职总结-科长单条审核")
+    public SysResult sectionAudit(EntryCasReviewDetail entryCasReviewDetail) {
+        boolean result = reviewService.sectionAudit(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();
         }
-        return SysResult.build(500, "履职明细更新失败");
+        return SysResult.build(500, "履职总结审核失败");
     }
 
     /**
@@ -268,11 +269,11 @@ public class EntryCasReviewDetailController {
     }
 
     /**
-     * 工作计划完成情况批量审核（科长，事物类）
+     * 科长总结批量审核
      */
     @RequestMapping("sectionBatchAudit")
     @ResponseBody
-    @RequiredLog("科长回顾批量审核")
+    @RequiredLog("科长总结批量审核")
     public SysResult sectionBatchAudit(HttpServletRequest request,
                                        @RequestParam(value = "entryReviewDetailIds[]") List<String> entryReviewDetailIds,
                                        @RequestParam(value = "auditNotes[]") List<String> auditNotes) {

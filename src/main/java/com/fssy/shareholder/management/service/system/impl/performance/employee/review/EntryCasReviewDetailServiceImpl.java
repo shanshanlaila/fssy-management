@@ -1,4 +1,4 @@
-package com.fssy.shareholder.management.service.system.impl.performance.employee;
+package com.fssy.shareholder.management.service.system.impl.performance.employee.review;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -32,8 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import sun.util.resources.LocaleData;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -147,7 +149,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (params.containsKey("roleIds")) {
             String roleIds = (String) params.get("roleIds");
             List<String> roleIdList = Arrays.asList(roleIds.split(","));
-            queryWrapper.in("roleId",roleIdList);
+            queryWrapper.in("roleId", roleIdList);
         }
         if (params.containsKey("userName")) {
             queryWrapper.like("userName", params.get("userName"));
@@ -273,9 +275,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (params.containsKey("selfNontransactionEvaluateLevel")) {
             queryWrapper.eq("selfNontransactionEvaluateLevel", params.get("selfNontransactionEvaluateLevel"));
         }
-        if (params.containsKey("finalTransactionEvaluateLevel")) {
-            queryWrapper.eq("finalTransactionEvaluateLevel", params.get("finalTransactionEvaluateLevel"));
-        }
+        queryWrapper.eq(params.containsKey("finalTransactionEvaluateLevel"), "finalTransactionEvaluateLevel", params.get("finalTransactionEvaluateLevel"));
         if (params.containsKey("finalNontransactionEvaluateLevel")) {
             queryWrapper.eq("finalNontransactionEvaluateLevel", params.get("finalNontransactionEvaluateLevel"));
         }
@@ -449,10 +449,18 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
 
 
     @Override
-    public boolean sectionWorkAudit(EntryCasReviewDetail entryCasReviewDetail) {
+    public boolean sectionAudit(EntryCasReviewDetail entryCasReviewDetail) {
+        if (ObjectUtils.isEmpty(entryCasReviewDetail)) {
+            throw new ServiceException("要审核的履职总结不存在");
+        }
         // 事务类评价等级与最终非事务类评价等级值相等
         entryCasReviewDetail.setFinalNontransactionEvaluateLevel(entryCasReviewDetail.getChargeTransactionEvaluateLevel());
+        if (PerformanceConstant.QUALIFIED.equals(entryCasReviewDetail.getChargeTransactionEvaluateLevel())) {
+            // 审核结果为合格
+            entryCasReviewDetail.setChargeTransactionBelowType(null);
+        }
         return entryCasReviewDetailMapper.updateById(entryCasReviewDetail) > 0;
+
     }
 
     /**
@@ -857,6 +865,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                 auditNote = auditNotes.get(i);
             }
             EntryCasReviewDetail entryCasReviewDetail = keyByReviewDetailMap.get(reviewId);
+            if (!PerformanceConstant.WAIT_AUDIT_CHIEF.equals(entryCasReviewDetail.getStatus())) {
+                throw new ServiceException(String.format("不能审核【%s】状态下的履职总结", entryCasReviewDetail.getStatus()));
+            }
             // 当事务评价等级为合格，事务类评价不同类型就取值为空，因为事务类评价不同类型是针对事务类评价等级为不合格时的情况。
             if (chargeTransactionEvaluateLevel.equals(PerformanceConstant.QUALIFIED)) {
                 entryCasReviewDetail.setChargeTransactionEvaluateLevel(PerformanceConstant.QUALIFIED);
@@ -1038,6 +1049,56 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         QueryWrapper<EntryCasReviewDetail> queryWrapper = getQueryWrapper(params);
         Page<Map<String, Object>> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
         return entryCasReviewDetailMapper.selectMapsPage(myPage, queryWrapper);
+    }
+
+    @Override
+    public Map<Long, Map<String, Object>> findWeChatNoticeMap() {
+        Map<Long, Map<String, Object>> map = new HashMap<>(30);
+        Map<String, Object> childMap = new HashMap<>(100);
+
+        QueryWrapper<EntryCasPlanDetail> wrapper = new QueryWrapper<>();
+        // 查找未填报总结的用户
+        wrapper.select("userId")
+                .lambda()
+                .eq(EntryCasPlanDetail::getStatus, PerformanceConstant.WAIT_WRITE_REVIEW)
+                .groupBy(EntryCasPlanDetail::getUserId);
+
+        List<Map<String, Object>> planUserList = entryCasPlanDetailMapper.selectMaps(wrapper);
+        if (ObjectUtils.isEmpty(planUserList)) {
+            System.out.println("没有要通知填报总结的用户");
+            return null;
+        }
+        for (Map<String, Object> eventsRelationRole : planUserList) {
+            User user = userMapper.selectById((Serializable) eventsRelationRole.get("userId"));
+            // 用户id
+            childMap.put("userId", user.getId());
+            // 用户名
+            childMap.put("userName", user.getName());
+            // 用户企业微信号
+            childMap.put("weChat", user.getQyweixinUserId());
+            // 循环遍历每个需要通知的用户的计划数
+            LambdaQueryWrapper<EntryCasPlanDetail> planWrapper = new LambdaQueryWrapper<>();
+            planWrapper.eq(EntryCasPlanDetail::getUserId, user.getId())
+                    .eq(EntryCasPlanDetail::getStatus, PerformanceConstant.WAIT_WRITE_REVIEW);
+            List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectList(planWrapper);
+            int num = 0;
+            // 获取计划完成时间
+            for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
+                // 计划完成时间
+                LocalDate planEndDate = entryCasPlanDetail.getPlanEndDate();
+                // 现在的时间
+                LocalDate now = LocalDate.now();
+                // 相差的天数<3天的就是要通知的数量
+                long cha = planEndDate.toEpochDay() - now.toEpochDay();
+                if (cha < 3 && cha > 0) {
+                    num++;
+                }
+            }
+            // 用户需要被通知填报总结的计划数
+            childMap.put("num", num);
+        }
+        map.put((Long) childMap.get("userId"), childMap);
+        return map;
     }
 
     public synchronized EntryCasMerge storeNoticeMerge(LocalDate createDate,

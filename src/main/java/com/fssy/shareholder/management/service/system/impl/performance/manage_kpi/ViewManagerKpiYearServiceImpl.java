@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -97,7 +98,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
      */
     @Override
     @Transactional
-    public Map<String, Object> readViewManagerKpiYearDataSource(Attachment attachment, String companyName, String year) {
+    public Map<String, Object> readViewManagerKpiYearDataSource(Attachment attachment, HttpServletRequest request) {
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -122,12 +123,30 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
         Cell companyCell = sheet.getRow(1).getCell(SheetService.columnToIndex("C"));
         String companyCellValue = sheetService.getValue(companyCell);
         String yearCellValue = sheetService.getValue(yearCell);
-        //效验年份、公司名称
-        if (!companyName.equals(companyCellValue)) {
-            throw new ServiceException("导入的公司名称与excel中的名称不一致，导入失败");
+        //根据Excel表中公司名称与公司表中的公司名称对应找到公司id并进行验证
+        QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+        companyQueryWrapper.eq("name", companyCellValue);
+        List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+        if (companyList.size() > 1) {
+            throw new ServiceException("Excel表格中公司名称存在多个id，请检查公司名称！");
         }
+        if (companyList.size() == 0) {
+            throw new ServiceException("Excel表格中公司名称不存在，请检查公司名称！");
+        }
+        //公司表中存在数据，获取这个公司名称的id/name/shortName
+        Company company = companyMapper.selectList(companyQueryWrapper).get(0);
+        Integer companyIdCell = company.getId();
+        String companyNameCell = company.getName();
+        String shortNameCell = company.getShortName();
+        String companyIdStr = request.getParameter("companyId");
+        int companyId = Integer.parseInt(companyIdStr);
+        String year = request.getParameter("year");
+        //效验年份、公司名称
         if (!year.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
+        }
+        if (companyId != companyIdCell) {
+            throw new ServiceException("导入的公司名称与excel中的公司名称不一致，导入失败");
         }
         // 循环总行数(不读表的标题，从第1行开始读)
         //sheet.getLastRowNum();返回最后一行的索引，即比行总数小1
@@ -164,8 +183,8 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             String proportion = cells.get(SheetService.columnToIndex("R"));
             String note =cells.get(SheetService.columnToIndex("S"));
             // 判斷空值
-            if (ObjectUtils.isEmpty(companyName)) {
-                companyName = "0";
+            if (ObjectUtils.isEmpty(companyNameCell)) {
+                companyNameCell = "0";
             }
             if (ObjectUtils.isEmpty(projectDesc)) {
                 projectDesc = "0";
@@ -181,7 +200,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             ManagerKpiYear managerKpiYear = new ManagerKpiYear();
             //在表中查询是否有相同的id，并导入经理人年度id
             QueryWrapper<ManagerKpiYear> managerKpiYearQueryWrapper = new QueryWrapper<>();
-            managerKpiYearQueryWrapper.eq("managerName", managerName).eq("companyName", companyName)
+            managerKpiYearQueryWrapper.eq("managerName", managerName).eq("companyName", companyNameCell)
                     .eq("year", year).eq("projectDesc", projectDesc);
             List<ManagerKpiYear> managerKpiYearList = managerKpiYearMapper.selectList(managerKpiYearQueryWrapper);
             if (managerKpiYearList.size() > 1) {
@@ -194,7 +213,7 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             }
             // 根据指标、年份和公司名称找月度报表对应的id，后导入经营管理年度id
             QueryWrapper<ManageKpiYear> manageKpiYearQueryWrapper = new QueryWrapper<>();
-            manageKpiYearQueryWrapper.eq("projectDesc", projectDesc).eq("year", year).eq("companyName", companyName);
+            manageKpiYearQueryWrapper.eq("projectDesc", projectDesc).eq("year", year).eq("companyName", companyNameCell);
             List<ManageKpiYear> manageKpiYears = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper);
             if (manageKpiYears.size() > 1) {
                 setFailedContent(result, String.format("第%s行的指标存在多条", j + 1));
@@ -209,28 +228,11 @@ public class ViewManagerKpiYearServiceImpl extends ServiceImpl<ViewManagerKpiYea
             //表中存在数据的情况下获取这个MangeKpiYear
             ManageKpiYear manageKpiYear = manageKpiYearMapper.selectList(manageKpiYearQueryWrapper).get(0);
 
-            //根据公司名称与公司表中的公司简称对应找到公司id并写入新表中
-            QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
-            companyQueryWrapper.eq("name",companyName);
-            List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
-            if (companyList.size() > 1) {
-                setFailedContent(result, String.format("第%s行的公司存在多条", j + 1));
-                cell.setCellValue("存在多个公司名称，公司名称是否正确");
-                continue;
-            }
-            if (companyList.size() == 0) {
-                setFailedContent(result, String.format("第%s行的公司不存在", j + 1));
-                cell.setCellValue("公司名称不存在，公司名称是否正确");
-                continue;
-            }
-            //公司表中存在数据，获取这个公司名称的id
-            Company company = companyMapper.selectList(companyQueryWrapper).get(0);
-
-            managerKpiYear.setCompanyId(company.getId());      //公司id
+            managerKpiYear.setCompanyId(companyIdCell);      //公司id
             managerKpiYear.setManageKpiYearId(manageKpiYear.getId());  //经营管理年度指标id
             managerKpiYear.setManagerKpiMark(managerKpiMark);   //经理人年度KPI绩效标识
             managerKpiYear.setProjectType(projectType);
-            managerKpiYear.setCompanyName(companyName);
+            managerKpiYear.setCompanyName(companyNameCell); //公司名称
             managerKpiYear.setYear(Integer.valueOf(year));
             managerKpiYear.setProjectDesc(projectDesc);
             managerKpiYear.setManagerName(managerName);

@@ -3,7 +3,7 @@
  * 修改人			修改日期			修改内容
  * 兰宇铧			2022-12-30 		修改问题，查询条件添加月份和部门并修改编号规则
  */
-package com.fssy.shareholder.management.service.system.impl.performance.employee;
+package com.fssy.shareholder.management.service.system.impl.performance.employee.plan;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -14,12 +14,15 @@ import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
+import com.fssy.shareholder.management.service.common.EnterpriseWeChatService;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
@@ -37,9 +40,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
+import sun.util.resources.LocaleData;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -73,6 +78,13 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
     @Autowired
     private EntryCasMergeMapper entryCasMergeMapper;
+
+    @Autowired
+    private EnterpriseWeChatService enterpriseWeChatService;
+
+    @Autowired
+    private EventsRelationRoleMapper eventsRelationRoleMapper;
+
 
     @Override
     public Page<EntryCasPlanDetail> findDataListByParams(Map<String, Object> params) {
@@ -148,7 +160,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("Z"));// 每一行的结果信息上传到S列
             // 检查必填项
-            String eventsRoleId = cells.get(SheetService.columnToIndex("A"));// 岗位关系序号
+            String eventsRoleId = cells.get(SheetService.columnToIndex("A"));// 事件岗位ID
             String eventsId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
             String departmentName = cells.get(SheetService.columnToIndex("C"));//部门
             String userName = cells.get(SheetService.columnToIndex("E"));// 岗位人员姓名
@@ -307,9 +319,12 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 添加计划表编号和序号
             entryCasPlanDetail.setMergeNo(entryCasMerge.getMergeNo());
             entryCasPlanDetail.setMergeId(entryCasMerge.getId());
-
+            //设置事件岗位清单状态为完结
+            EventsRelationRole relationRole = eventsRelationRoleMapper.selectById(eventsRoleId);
+            relationRole.setStatus(PerformanceConstant.FINAL);
             // 写入
             entryCasPlanDetailMapper.insert(entryCasPlanDetail);
+            eventsRelationRoleMapper.insert(relationRole);
             cell.setCellValue("导入成功");// 写在upload目录下的excel表格
         }
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
@@ -482,7 +497,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         }
         // 编制日期止
         if (params.containsKey("createDateEnd")) {
-            queryWrapper.le("createDate", params.get("createDateStart"));
+            queryWrapper.le("createDate", params.get("createDateEnd"));
         }
         // 计划开始日期起
         if (params.containsKey("planStartDateStart")) {
@@ -602,24 +617,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         return true;
     }
 
-    @Override
-    public boolean HRAffirmStore(List<String> planDetailIds, String event) {
-        List<EntryCasPlanDetail> entryCasPlanDetails = entryCasPlanDetailMapper.selectBatchIds(planDetailIds);
-        for (EntryCasPlanDetail entryCasPlanDetail : entryCasPlanDetails) {
-            if (entryCasPlanDetail.getStatus().equals(PerformanceConstant.PLAN_DETAIL_STATUS_AUDIT_HR)) {
-                if ("yes".equals(event)) {
-                    // 属于新增工作流,设置新状态为待创建基础事件
-                    entryCasPlanDetail.setNewStatus(PerformanceConstant.WAIT_CREATE_EVENT);
-                } else if ("no".equals(event)) {
-                    // 不属于新增工作流，设置状态为待选择基础事件
-                    entryCasPlanDetail.setNewStatus(PerformanceConstant.PLAN_DETAIL_STATUS_SELECT);
-                }
-            }
-            entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
-            entryCasPlanDetailMapper.updateById(entryCasPlanDetail);
-        }
-        return true;
-    }
 
     @Override
     public boolean saveOneCasPlanDetail(EntryCasPlanDetail entryCasPlanDetail, HttpServletRequest request) {
@@ -705,5 +702,34 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         Page<Map<String, Object>> myPage = new Page<>((int) params.get("page"), (int) params.get("limit"));
         return entryCasPlanDetailMapper.selectMapsPage(myPage, queryWrapper);
     }
+
+    @Override
+    public Map<Long, Map<String, Object>> findWeChatNoticeMap() {
+        Map<Long, Map<String, Object>> map = new HashMap<>(30);
+        Map<String, Object> childMap = new HashMap<>(100);
+
+        QueryWrapper<EventsRelationRole> wrapper = new QueryWrapper<>();
+        wrapper.select("userId,COUNT(userId) as num")
+                .lambda()
+                .eq(EventsRelationRole::getYear, LocalDateTime.now().getYear())
+                .eq(EventsRelationRole::getMonth, LocalDateTime.now().getMonth())
+                .eq(EventsRelationRole::getStatus, PerformanceConstant.WAIT_PLAN)
+                .groupBy(EventsRelationRole::getUserId);
+
+        List<Map<String, Object>> eventsRelationRoles = eventsRelationRoleMapper.selectMaps(wrapper);
+        if (ObjectUtils.isEmpty(eventsRelationRoles)){
+            return null;
+        }
+        for (Map<String, Object> eventsRelationRole : eventsRelationRoles) {
+            User user = userMapper.selectById((Serializable) eventsRelationRole.get("userId"));
+            childMap.put("userId", user.getId());
+            childMap.put("userName", user.getName());
+            childMap.put("weChat", user.getQyweixinUserId());
+            childMap.put("num", eventsRelationRole.get("num"));
+        }
+        map.put((Long) childMap.get("userId"), childMap);
+        return map;
+    }
+
 
 }

@@ -13,13 +13,11 @@ package com.fssy.shareholder.management.tools.constant;
  */
 public interface PerformanceConstant {
     String FINAL = "完结";
-    String EVENT_LIST_STATUS_WAIT = "待填报标准";
     String CANCEL = "取消";
     String WAIT_WRITE_REVIEW ="待填报总结";
     String WAIT_SUBMIT_AUDIT ="待提交审核";
     String WAIT_AUDIT_MINISTER ="待部长审核";
     String WAIT_AUDIT_CHIEF ="待科长审核";
-    String PLAN_DETAIL_STATUS_AUDIT_HR="待人力资源部审核";
     // management
     String WAIT_AUDIT_MANAGEMENT ="待经营管理部审核";
     String WAIT_AUDIT_MANAGEMENT_CHIEF ="待经管部主管复核";
@@ -35,11 +33,10 @@ public interface PerformanceConstant {
     String FINE="良";
     String CONFORM="符合";
     String NON_CONFORM="不符合";
-    String BASICS_EVENT="基础事件绩效";
-    String EXPAND_EVENT="拓展事件绩效";
     String WAIT_CREATE_EVENT="待创建基础事件";
     String YES="是";
     String NO="否";
     String WAIT_SUBMIT_EXCELLENT="待提交评优材料";
     String WAIT_EXCELLENT="待评优材料审核完成";
+    String WAIT_PLAN="待导出填报计划";
 }

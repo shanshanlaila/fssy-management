@@ -78,6 +78,9 @@ public class ViewManagerKpiMonthController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "经理人KPI分数表"));
         }
         model.addAttribute("module", importModules.get(0).getId());
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
         return "system/performance/manager_kpi/view-manager-kpi-month-score/view-manager-kpi-month-score-attachment-list";
     }
 
@@ -91,7 +94,8 @@ public class ViewManagerKpiMonthController {
     @PostMapping("uploadFile")
     @RequiredLog("经理人KPI分数附件上传")
     @ResponseBody
-    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment) {
+    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
+    HttpServletRequest request) {
         // 保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());//设置时间
@@ -108,7 +112,7 @@ public class ViewManagerKpiMonthController {
 
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = managerKpiScoreService.readManagerKpiScoreOldDataSource(result);
+            Map<String, Object> resultMap = managerKpiScoreService.readManagerKpiScoreOldDataSource(result,request);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));

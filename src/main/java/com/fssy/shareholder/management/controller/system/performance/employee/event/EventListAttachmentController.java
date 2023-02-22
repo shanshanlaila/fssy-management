@@ -68,7 +68,6 @@ public class EventListAttachmentController {
      * @param file       前台传来的附件数据
      * @param attachment 附件表实体类
      * @return 附件ID
-     */
     @PostMapping("uploadFile")
     @RequiredLog("事件清单附件上传")
     @ResponseBody
@@ -113,7 +112,7 @@ public class EventListAttachmentController {
             e.printStackTrace();
             throw e;
         }
-    }
+    }*/
 
 	/**
 	 * 返回无标准事件清单附件页面

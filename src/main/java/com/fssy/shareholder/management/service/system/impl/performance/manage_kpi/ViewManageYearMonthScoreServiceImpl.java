@@ -3,8 +3,10 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManageKpiMonthAimMapper;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ViewManageYearMonthScoreMapper;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManageKpiMonthAim;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ViewManageYearMonthScore;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,6 +45,8 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
     private SheetService sheetService;
     @Autowired
     private ManageKpiMonthAimServiceImpl manageKpiMonthAimServiceImpl;
+    @Autowired
+    private CompanyMapper companyMapper;
 
     /**
      * 通过查询条件 分页查询列表
@@ -178,7 +183,8 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
      */
     @Override
     @Transactional
-    public Map<String, Object> readViewManageYearMonthScoreDataSource(Attachment attachment, String companyName, String year, String month) {
+    public Map<String, Object> readViewManageYearMonthScoreDataSource(Attachment attachment, HttpServletRequest request) {
+
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");
@@ -204,16 +210,38 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
         String companyCellValue = sheetService.getValue(companyCell);
         String yearCellValue = sheetService.getValue(yearCell);
         String monthCellValue = sheetService.getValue(monthCell);
-
-        //效验年份、公司名称
-        if (!companyName.equals(companyCellValue)) {
+//根据Excel表中公司名称与公司表中的公司名称对应找到公司id并进行验证
+        QueryWrapper<Company> companyQueryWrapper = new QueryWrapper<>();
+        companyQueryWrapper.eq("name", companyCellValue);
+        List<Company> companyList = companyMapper.selectList(companyQueryWrapper);
+        if (companyList.size() > 1) {
+            throw new ServiceException("Excel表格中公司名称存在多个id，请检查公司名称！");
+        }
+        if (companyList.size() == 0) {
+            throw new ServiceException("Excel表格中公司名称不存在，请检查公司名称！");
+        }
+        //公司表中存在数据，获取这个公司名称的id/name/shortName
+        Company company = companyMapper.selectList(companyQueryWrapper).get(0);
+        Integer companyIdCell = company.getId();
+        String companyNameCell = company.getName();
+        String shortNameCell = company.getShortName();
+        String companyIdStr = request.getParameter("companyId");
+        int companyId = Integer.parseInt(companyIdStr);
+        String year = request.getParameter("year");
+        List<String> strings = Arrays.asList(year.split("-"));
+        String yearStr = strings.get(0);
+        String monthStr = strings.get(1);
+        int month=Integer.parseInt(monthStr);  //改变前端月份的类型
+        int monthValue=Integer.parseInt(monthCellValue); //改变Excel中月份的类型
+        //效验年份、公司名称、月份
+        if (companyId != companyIdCell) {
             throw new ServiceException("导入的公司名称与excel中的公司名称不一致，导入失败");
         }
-        if (!year.equals(yearCellValue)) {
+        if (!yearStr.equals(yearCellValue)) {
             throw new ServiceException("导入的年份与excel中的年份不一致，导入失败");
         }
-        if (!month.equals(monthCellValue)) {
-            throw new ServiceException("导入的月份与excel中的月份不一致，导入失败");
+        if (month != monthValue) {
+            throw new ServiceException("导入的月份与excel中的名称不一致，导入失败");
         }
         // 循环总行数(不读表的标题，从第5行开始读)
         for (int j = 3; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
@@ -276,7 +304,7 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
             }
             //查询出对应的经营管理年度指标，如果存在两条及两条以上的数据就抛出错误,月度id
             QueryWrapper<ManageKpiMonthAim> manageKpiMonthAimQueryWrapper = new QueryWrapper<>();
-            manageKpiMonthAimQueryWrapper.eq("companyName", companyName).eq("year", year)
+            manageKpiMonthAimQueryWrapper.eq("companyName", companyNameCell).eq("year", year)
                     .eq("month", month).eq("projectDesc", projectDesc);
             List<ManageKpiMonthAim> monthAimList = manageKpiMonthAimMapper.selectList(manageKpiMonthAimQueryWrapper);
             if (monthAimList.size() > 1) {
@@ -299,8 +327,8 @@ public class ViewManageYearMonthScoreServiceImpl extends ServiceImpl<ViewManageY
             //导入时固定状态
             String status = "已锁定";
             //前端选择并写入
-            manageKpiMonthAim.setYear(Integer.valueOf(year));
-            manageKpiMonthAim.setCompanyName(companyName);
+            manageKpiMonthAim.setYear(Integer.valueOf(yearStr));
+            manageKpiMonthAim.setCompanyName(companyNameCell);
             manageKpiMonthAim.setMonth(Integer.valueOf(month));
             manageKpiMonthAim.setStatus(status);//固定状态
             //excel导入

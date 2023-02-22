@@ -4,7 +4,7 @@
  * 农浩         2022-10-11     新增无标准事件清单导入
  * 伍坚山       2022-10-11     新增事件清单评判标准管理
  */
-package com.fssy.shareholder.management.service.system.impl.performance.employee;
+package com.fssy.shareholder.management.service.system.impl.performance.employee.eventList;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
 import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
+import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
@@ -76,6 +77,9 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
     @Autowired
     private EntryCasPlanDetailMapper entryCasPlanDetailMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Override
     public Page<EventList> findDataListByParams(Map<String, Object> params) {
         QueryWrapper<EventList> queryWrapper = getQueryWrapper(params).orderByDesc("id");
@@ -83,7 +87,6 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         return eventListMapper.selectPage(myPage, queryWrapper);
     }
 
-    @SuppressWarnings("unchecked")
     private QueryWrapper<EventList> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EventList> queryWrapper = Wrappers.query();
         if (params.containsKey("select")) {
@@ -197,9 +200,6 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         if (params.containsKey("officeId")) {
             queryWrapper.eq("officeId", params.get("officeId"));
         }
-        if (params.containsKey("statusWait")) {
-            queryWrapper.eq("status", PerformanceConstant.EVENT_LIST_STATUS_WAIT);
-        }
         if (params.containsKey("statusCancel")) {
             queryWrapper.ne("status", PerformanceConstant.CANCEL);
         }
@@ -209,7 +209,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         }
         // 编制日期止
         if (params.containsKey("createDateEnd")) {
-            queryWrapper.le("createDate", params.get("createDateStart"));
+            queryWrapper.le("createDate", params.get("createDateEnd"));
         }
         // 生效日期起
         if (params.containsKey("activeDateStart")) {
@@ -219,11 +219,16 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         if (params.containsKey("activeDateEnd")) {
             queryWrapper.le("activeDate", params.get("activeDateEnd"));
         }
-        // 生效日期止
+        // 事件清单创建人
         if (params.containsKey("listCreateUserIds")) {
             String listCreateUserIdsStr = (String) params.get("listCreateUserIds");
             List<String> listCreateUserIds = Arrays.asList(listCreateUserIdsStr.split(","));
-            queryWrapper.in("userId", listCreateUserIds);
+            // 存储名字集合
+            ArrayList<String> names = new ArrayList<>();
+            for (User user : userMapper.selectBatchIds(listCreateUserIds)) {
+                names.add(user.getName());
+            }
+            queryWrapper.in("listCreateUser", names);
         }
         return queryWrapper;
     }
@@ -245,102 +250,13 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> readEventListDataSource(Attachment attachment) {
-        // 按钮：导入事件标准
-        // 返回消息
-        Map<String, Object> result = new HashMap<>();
-        StringBuffer sb = new StringBuffer();// 用于数据校验
-        result.put("content", "");
-        result.put("failed", false);
-        // 读取附件
-        sheetService.load(attachment.getPath(), attachment.getFilename()); // 根据路径和名称读取附件
-        // 读取表单
-        sheetService.readByName("事件清单标准评价表"); //根据表单名称获取该工作表单
-        // 获取表单数据
-        Sheet sheet = sheetService.getSheet();
-        if (ObjectUtils.isEmpty(sheet)) {
-            throw new ServiceException("表单【事件清单标准评价表】不存在，无法读取数据，请检查");
-        }
-
-        // 获取单价列表数据
-        Row row;
-        // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
-        short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
-        // 循环总行数(不读表头，从第2行开始读，索引从0开始，所以j=1)
-        for (int j = 1; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
-            List<String> cells = new ArrayList<>();// 每一行的数据用一个list接收
-            row = sheet.getRow(j);// 获取第j行
-            // 获取一行中有多少列 Row：行，cell：列
-            // 循环row行中的每一个单元格
-            for (int k = 0; k < maxSize + 2; k++) {
-                // 如果这单元格为空，就写入空
-                if (row.getCell(k) == null) {
-                    cells.add("");
-                    continue;
-                }
-                // 处理单元格读取到公式的问题
-                if (row.getCell(k).getCellType() == CellType.FORMULA) {
-                    row.getCell(k).setCellType(CellType.STRING);
-                    String res = row.getCell(k).getStringCellValue();
-                    cells.add(res);
-                    continue;
-                }
-                // Cannot get a STRING value from a NUMERIC cell 无法从单元格获取数值
-                Cell cell = row.getCell(k);
-                String res = sheetService.getValue(cell).trim();// 获取单元格的值
-                cells.add(res);// 将单元格的值写入行
-            }
-            // 导入结果写入列
-            Cell cell = row.createCell(SheetService.columnToIndex("J"));// 每一行的结果信息上传到S列
-            // 检查必填项
-            String id = cells.get(SheetService.columnToIndex("A"));// 根据id去更新
-            String eventsType = cells.get(SheetService.columnToIndex("B"));
-            String jobName = cells.get(SheetService.columnToIndex("C"));
-            String workEvents = cells.get(SheetService.columnToIndex("D"));
-            String status = cells.get(SheetService.columnToIndex("E"));
-            String delowStandard = cells.get(SheetService.columnToIndex("F"));
-            String middleStandard = cells.get(SheetService.columnToIndex("G"));
-            String fineStandard = cells.get(SheetService.columnToIndex("H"));
-            String excellentStandard = cells.get(SheetService.columnToIndex("I"));
-            // 数据校验
-            if (!status.equals(PerformanceConstant.EVENT_LIST_STATUS_WAIT)) {
-                StringTool.setMsg(sb, String.format("第【%s】行状态为【%s】的事件清单不为待填报标准，不能导入", j + 1, status));
-                cell.setCellValue(String.format("序号为【%s】的事件清单状态不为待填报标准，不能导入", id));
-                continue;
-            }
-            // 构建实体类
-            EventList eventList = new EventList();
-            User user = (User) SecurityUtils.getSubject().getPrincipal();
-            eventList.setId(Long.valueOf(id));// 要更新的数据id
-            eventList.setEventsType(eventsType);
-            eventList.setJobName(jobName);
-            eventList.setWorkEvents(workEvents);
-            eventList.setDelowStandard(delowStandard);
-            eventList.setMiddleStandard(middleStandard);
-            eventList.setFineStandard(fineStandard);
-            eventList.setExcellentStandard(excellentStandard);
-            eventList.setStandardCreateUser(user.getName());
-            eventList.setStandardCreateUserId(user.getId());
-            eventList.setStandardCreateDate(new Date());
-            eventList.setStandardAttachmentId(attachment.getId());
-            eventList.setStatus(PerformanceConstant.FINAL);
-            // 更新
-            eventListMapper.updateById(eventList);
-            cell.setCellValue("导入成功");// 写在upload目录下的excel表格
-        }
-        sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
-        return result;
-    }
-
-    @Override
     public List<Map<String, Object>> findEventListMapDataByParams(Map<String, Object> params) {
         QueryWrapper<EventList> queryWrapper = getQueryWrapper(params);
         return eventListMapper.selectMaps(queryWrapper);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> readEventListWithoutStandardDataSource(Attachment attachment) {
         // 导入基础事件
         // 返回消息
@@ -431,7 +347,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
                 cell.setCellValue("事件类型是空的");
                 continue;
             }
-            String duration = cells.get(SheetService.columnToIndex("G"));
+            //String duration = cells.get(SheetService.columnToIndex("G"));
             String standardValue = cells.get(SheetService.columnToIndex("H"));
             if (ObjectUtils.isEmpty(standardValue)) {
                 setFailedContent(result, String.format("第%s行的事件标准价值是空的", j + 1));
@@ -460,9 +376,9 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
                 cell.setCellValue("表中事件类型填写有误");
                 continue;
             }
-            LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            departmentLambdaQueryWrapper.eq(Department::getDepartmentName, departmentName);
-            List<Department> departmentList = departmentMapper.selectList(departmentLambdaQueryWrapper);
+            LambdaQueryWrapper<Department> departmentWrapper = new LambdaQueryWrapper<>();
+            departmentWrapper.eq(Department::getDepartmentName, departmentName);
+            List<Department> departmentList = departmentMapper.selectList(departmentWrapper);
             if (ObjectUtils.isEmpty(departmentList)) {
                 setFailedContent(result, String.format("第%s行的部门名称填写有误", j + 1));
                 cell.setCellValue("部门名称填写有误");
@@ -484,7 +400,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             String year = Arrays.asList(format.split("-")).get(0);
             eventList.setYear(InstandTool.stringToInteger(year));
 
-            eventList.setDuration(new BigDecimal(duration));
+            //eventList.setDuration(new BigDecimal(duration));
             eventList.setStandardValue(new BigDecimal(standardValue));
             eventList.setNote(note);
             eventList.setDepartmentName(departmentName);
@@ -505,9 +421,9 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             eventList.setStandardCreateDate(new Date());
             eventList.setStandardAttachmentId(attachment.getId());
             eventList.setOffice(office);
-            LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentRoleUserLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            viewDepartmentRoleUserLambdaQueryWrapper.eq(ViewDepartmentRoleUser::getOfficeName, office);
-            List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentRoleUserLambdaQueryWrapper);
+            LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentWrapper = new LambdaQueryWrapper<>();
+            viewDepartmentWrapper.eq(ViewDepartmentRoleUser::getDepartmentName, departmentName);
+            List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentWrapper);
             if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
                 StringTool.setMsg(sb, String.format("第【%s】行的【%s】的部门名称在系统中未查找到，不能导入", j + 1, departmentName));
                 cell.setCellValue(String.format("行数为【%s】的部门名称未查到，不能导入", j + 1));
@@ -515,7 +431,8 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             }
             ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
             eventList.setOfficeId(viewDepartmentRoleUser.getOfficeId());
-            eventList.setStatus(PerformanceConstant.FINAL);// 不需要填报事件标准，直接完结
+            // 不需要填报事件标准，直接完结
+            eventList.setStatus(PerformanceConstant.FINAL);
             eventListMapper.insert(eventList);
             cell.setCellValue("导入成功");
         }
