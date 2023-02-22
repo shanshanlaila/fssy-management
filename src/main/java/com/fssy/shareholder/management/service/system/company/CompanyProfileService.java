@@ -3,6 +3,7 @@ package com.fssy.shareholder.management.service.system.company;
 import com.fssy.shareholder.management.pojo.system.company.CompanyProfile;
 import com.fssy.shareholder.management.service.system.performance.employee.BaseService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -23,5 +24,5 @@ public interface CompanyProfileService extends BaseService<CompanyProfile> {
      */
     List<Map<String, Object>> findCompanyProfileSelectedDataListByParams(Map<String, Object> params, List<String> selectedIds);
 
-    boolean insertCompanyProfile(CompanyProfile companyProfile);
+    boolean insertCompanyProfile(CompanyProfile companyProfile, HttpServletRequest request);
 }

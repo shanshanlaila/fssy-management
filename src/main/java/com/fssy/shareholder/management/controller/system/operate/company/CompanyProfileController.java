@@ -4,6 +4,8 @@ package com.fssy.shareholder.management.controller.system.operate.company;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
 import com.fssy.shareholder.management.pojo.system.company.CompanyProfile;
+import com.fssy.shareholder.management.service.manage.company.CompanyService;
+import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.company.CompanyProfileService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -13,7 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,7 +33,10 @@ import java.util.Map;
 public class CompanyProfileController {
     @Autowired
     private CompanyProfileService companyProfileService;
-
+    @Autowired
+    private CompanyService companyService;
+    @Autowired
+    private UserService userService;
     /**
      * 企业简介
      *
@@ -41,7 +48,7 @@ public class CompanyProfileController {
     @RequiresPermissions("system:operate:company:company-profile:index")
     public String showCompany(Model model) {
 
-        return "/system/company/company-profile-list";
+        return "system/company/profile/company-profile-list";
     }
 
     /**
@@ -69,7 +76,7 @@ public class CompanyProfileController {
     public String showDetailsPage(@PathVariable String id, Model model) {
         CompanyProfile companyProfile = companyProfileService.getById(id);
         model.addAttribute("companyProfile", companyProfile);//companyProfile传到前端
-        return "system/company/company-profile-details";
+        return "system/company/profile/company-profile-details";
     }
     /**
      * 展示修改页面
@@ -82,7 +89,7 @@ public class CompanyProfileController {
     public String showEditPage(@PathVariable String id, Model model) {
         CompanyProfile companyProfile = companyProfileService.getById(id);
         model.addAttribute("companyProfile", companyProfile);//companyProfile传到前端
-        return "system/company/company-profile-edit";
+        return "system/company/profile/company-profile-edit";
     }
     /**
      * 更新公司简介
@@ -100,14 +107,19 @@ public class CompanyProfileController {
         return SysResult.build(500, "公司简介更新失败");
     }
     /**
-     * 返回新增公司简介页面
+     * 返回新增页面
      *
      * @param request 请求前端
      * @return 展示页面
      */
     @GetMapping("create")
     public String createFinanceData(HttpServletRequest request, Model model) {
-        return "system/company/company-profile-create";
+        //1、查询公司列表，用于customerName xm-select插件
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
+        GetTool.getSelectorData(model);
+        return "system/company/profile/company-profile-create";
     }
     /**
      * 保存companyProfile表
@@ -119,7 +131,7 @@ public class CompanyProfileController {
     @RequiredLog("新增单条企业财务基础数据")
     @ResponseBody
     public SysResult Store(CompanyProfile companyProfile, HttpServletRequest request) {
-       boolean result = companyProfileService.insertCompanyProfile(companyProfile);
+       boolean result = companyProfileService.insertCompanyProfile(companyProfile,request);
         if (result) {
             return SysResult.ok();
         } return SysResult.build(500, "公司简介新增失败");

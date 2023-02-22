@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>新增公司简介</title>
+  <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<div class="layui-fluid">
+  <div class="layui-card-body">
+    <form class="layui-form" style="margin-top: 10px;" id="head">
+      <table class="layui-table layui-form" lay-size="sm">
+        <tr>
+          <td colspan="4" style="background: #f7f7f7; color: black;">填写内容</td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right">&nbsp;<span style='color: red; font-weight: bold'>*</span>&nbsp;公司代码:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input " name="companyCode" id="companyCode"
+                     lay-verify="required" />
+            </div>
+          </td>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;经营状态:</td>
+          <td>
+            <div class="layui-input-inline" style="width: 100%">
+              <select name="managementFroms" lay-verify="required" lay-reqText="经营状态为必填项">
+                <option value="" selected>请选择经营状态</option>
+                <option value="开业">开业</option>
+                <option value="未开业">未开业</option>
+              </select>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;公司名称:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <div id="companySelect"></div>
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;纳税人识别号:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="taxpayerID" id="taxpayerID"
+                     lay-verify="required" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right">&nbsp;公司简称:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="companyShortName" id="companyShortName"/>
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;实缴资本:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="contributedCapital" id="contributedCapital"
+                     lay-verify="required" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;类型:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="type" id="type"
+                     lay-verify="required" />
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;核准日期:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="dateOfApproval" id="dateOfApproval"
+                     lay-verify="required" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;法定代表人:</td>
+          <td>
+            <div class="layui-input-inline" style="width: 100%">
+              <div id="userSelect"></div>
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;所属行业:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="industryInvolved" id="industryInvolved"
+                     lay-verify="required" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;注册资本:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="registeredCapital" id="registeredCapital"
+                     lay-verify="required" />
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;组织结构:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="institutionalFramework" id="institutionalFramework"
+                     lay-verify="required" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;成立日期:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="dateOfEstablishment" id="dateOfEstablishment"
+                     lay-verify="required" />
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;纳税人资:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="taxpayerCapital" id="taxpayerCapital"
+                     lay-verify="required" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;营业期限:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="businessTerm" id="businessTerm"
+                     lay-verify="required" />
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;参保人数:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="contributors" id="contributors"
+                     lay-verify="required" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;登记机关:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="registrationAuthority" id="registrationAuthority"
+                     lay-verify="required" />
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right">&nbsp;曾用名:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="formerName" id="formerName"/>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;行政划分:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="administrationPartition" id="administrationPartition"
+                     lay-verify="required" />
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;工商注册号:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="businessRegistrationNumber" id="businessRegistrationNumber"
+                     lay-verify="required" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right">&nbsp;官网:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="officialWebsite" id="officialWebsite"/>
+            </div>
+          </td>
+          <td style="width: 10%; text-align: right">&nbsp;邮箱:
+          </td>
+          <td style="width: 40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input" name="postCode" id="postCode"/>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;地址:
+          </td>
+          <td colspan="6">
+            <div class="layui-input-inline" style="width: 100%">
+                            <textarea rows="2" style="resize: vertical; height: auto" class="layui-input"
+                                      name="address" lay-verify="required">
+                            </textarea>
+            </div>
+          </td>
+        <tr>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;简介:
+          </td>
+          <td colspan="6">
+            <div class="layui-input-inline" style="width: 100%">
+                            <textarea rows="4" style="resize: vertical; height: auto" class="layui-input" name="brief">
+                            </textarea>
+            </div>
+          </td>
+        </tr>
+        </tr>
+        <tr>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;经营范围:
+          </td>
+          <td colspan="6">
+            <div class="layui-input-inline" style="width: 100%">
+                            <textarea rows="8" style="resize: vertical; height: auto" class="layui-input"
+                                      name="operatingRange" lay-verify="required">
+                            </textarea>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <table class="layui-table layui-form" lay-size="sm">
+        <tr>
+          <td colspan="4" style="text-align: center">
+            <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</div>
+
+<!--laui-->
+<script th:inline="javascript">
+  layui.use(['layer', 'form', 'laydate'], function () {
+    var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+    // 每个标签加一个class，名为laydate
+    $(".laydate").each(function () {
+      laydate.render({
+        elem: this,
+        //更换触发方式
+        trigger: 'click',
+        type: 'date',
+        value: new Date()
+      });
+    });
+
+
+    form.on('submit(baseForm)', function (data) {
+      var elem = data.elem;
+      $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+      $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+      $.ajax({
+        url: '/system/operate/company/company-profile/store',
+        type: 'POST',
+        data: data.field,
+        success: function (result) {
+          if (result.status == 200) {
+            layer.msg(result.msg, {icon: 6, time: 2000});
+            setTimeout(function () {
+              parent.layui.table.reload('dataTable');
+              var index = parent.layer.getFrameIndex(window.name);
+              parent.layer.close(index);
+            }, 1000)
+          } else {
+            $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+            $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+            layer.msg(result.msg, {icon: 5, time: 4000});
+          }
+        }
+      });
+      return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+    });
+    // 公司选择获得器
+    xmSelect.render({
+      el: '#companySelect',
+      language: 'zn',
+      data: [[${companyNameList}]],
+      filterable: true,
+      radio: true,
+      tips: '请选择公司',
+      toolbar: {
+        show: true
+      },
+      paging: true, // 分页
+      pageSize: 20,
+      style: {
+        width: '160px', 'min-height': '28px', 'line-height': '28px',
+      },
+      name: 'companyId',// 传到后端选择的companyId集合字符串
+    });
+    // 职员名称查询下拉列表
+    let userSelect = xmSelect.render({
+      el: '#userSelect', // 绑定
+      language: 'zn',
+      data: [[${userList}]],// model过来的
+      filterable: true,
+      radio: true,// 是否是单选
+      tips: '法定代表人查询',
+      toolbar: {
+        show: true
+      },
+      paging: true, // 分页
+      pageSize: 30,
+      style: {
+        width: '160px', 'min-height': '28px', 'line-height': '28px',
+      },
+      name: 'userId',// 传到后端选择的userId集合字符串
+    });
+  });
+</script>
+</body>
+</html>
