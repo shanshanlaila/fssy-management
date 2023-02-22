@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>新增</title>
+  <script type="text/javascript" th:src="@{/js/xm-select.js}"></script>
+</head>
+<body>
+<!-- 引入layui -->
+<div th:replace="~{common/layui :: layui}"></div>
+<div class="layui-fluid">
+  <div class="layui-card-body">
+    <form class="layui-form" style="margin-top: 10px;" id="head">
+      <table class="layui-table layui-form" lay-size="sm">
+        <tr>
+          <td colspan="4" style="background: #f7f7f7; color: black;">填写内容</td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right">&nbsp;<span style='color: red; font-weight: bold'>*</span>&nbsp;部门名称:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <div id="departmentSelect"></div>
+            </div>
+          </td>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;公司名称:</td>
+          <td>
+            <div class="layui-input-inline" style="width: 100%">
+              <div id="companySelect"></div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:10%; text-align: right">&nbsp;<span style='color: red; font-weight: bold'>*</span>&nbsp;职位名称:
+          </td>
+          <td style="width:40%">
+            <div class="layui-input-inline" style="width: 100%">
+              <div id="roleSelect"></div>
+            </div>
+          </td>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;用户名称:</td>
+          <td>
+            <div class="layui-input-inline" style="width: 100%">
+              <div id="userSelect"></div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;公司内部/外部人员:</td>
+          <td>
+            <div class="layui-input-inline" style="width: 100%">
+              <select name="internalUser" lay-verify="required" lay-reqText="这是必填项">
+                <option value="" selected>请选择</option>
+                <option value="公司内部人员">公司内部人员</option>
+                <option value="公司外部人员">公司外部人员</option>
+              </select>
+            </div>
+          </td>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;集团内/外公司:</td>
+          <<td>
+          <div class="layui-input-inline" style="width: 100%">
+            <select name="internalCompany" lay-verify="required" lay-reqText="这是必填项">
+              <option value="" selected>请选择</option>
+              <option value="集团内公司">集团内公司</option>
+              <option value="集团外公司">集团外公司</option>
+            </select>
+          </div>
+        </td>
+        <tr>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;任职起日期:</td>
+          <td>
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input laydate" name="startDate" id="projectSrartDatePlan"
+                     lay-verify="required" autocomplete="off"/>
+            </div>
+          </td>
+          <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;任职止日期:
+          </td>
+          <td>
+            <div class="layui-input-inline" style="width: 100%">
+              <input type="text" class="layui-input laydate" name="endDate" id="projectEndDatePlan"
+                     lay-verify="required" autocomplete="off"/>
+            </div>
+          </td>
+        </tr>
+        </tr>
+
+      </table>
+      <table class="layui-table layui-form" lay-size="sm">
+        <tr>
+          <td colspan="4" style="text-align: center">
+            <button class="layui-btn" lay-submit id="create" lay-filter="baseForm">提交</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</div>
+
+<!--layui-->
+<script th:inline="javascript">
+  layui.use(['layer', 'form', 'laydate'], function () {
+    var $ = layui.$
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+    // 每个标签加一个class，名为laydate
+    $(".laydate").each(function () {
+      laydate.render({
+        elem: this,
+        //更换触发方式
+        trigger: 'click',
+        type: 'date',
+        value: new Date()
+      });
+    });
+
+    form.on('submit(baseForm)', function (data) {
+      var elem = data.elem;
+      $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
+      $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
+      $.ajax({
+        url: '/system/company/position-department-company/store',
+        type: 'POST',
+        data: data.field,
+        success: function (result) {
+          if (result.status == 200) {
+            layer.msg(result.msg, {icon: 6, time: 2000});
+            setTimeout(function () {
+              parent.layui.table.reload('dataTable');
+              var index = parent.layer.getFrameIndex(window.name);
+              parent.layer.close(index);
+            }, 1000)
+          } else {
+            $(elem).removeClass('layui-btn-disabled'); // 提交失败修改回原来状态
+            $(elem).removeAttr('disabled'); // 提交失败修改回原来状态
+            layer.msg(result.msg, {icon: 5, time: 4000});
+          }
+        }
+      });
+      return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+    });
+    // 部门选择获得器
+    let departmentSelect = xmSelect.render({
+      el: '#departmentSelect',
+      language: 'zn',
+      data: [[${departmentNameList}]],
+      filterable: true,
+      radio: true,
+      tips: '请选择部门',
+      toolbar: {
+        show: true
+      },
+      paging: true, // 分页
+      pageSize: 20,
+      style: {
+        width: '160px', 'min-height': '28px', 'line-height': '28px',
+      },
+      name: 'departmentId',// 传到后端选择的departmentId集合字符串
+    });
+    // 公司选择获得器
+    xmSelect.render({
+      el: '#companySelect',
+      language: 'zn',
+      data: [[${companyNameList}]],
+      filterable: true,
+      radio: true,
+      tips: '请选择公司',
+      toolbar: {
+        show: true
+      },
+      paging: true, // 分页
+      pageSize: 20,
+      style: {
+        width: '160px', 'min-height': '28px', 'line-height': '28px',
+      },
+      name: 'companyId',// 传到后端选择的companyId集合字符串
+    });
+    // 岗位查询下拉列表
+    let roleSelect = xmSelect.render({
+      el: '#roleSelect', // 绑定
+      language: 'zn',
+      data: [[${roleNameList}]],// model过来的
+      filterable: true,
+      radio: true,// 是否是单选
+      tips: '岗位查询',
+      toolbar: {
+        show: true
+      },
+      paging: true, // 分页
+      pageSize: 30,
+      style: {
+        width: '160px', 'min-height': '28px', 'line-height': '28px',
+      },
+      name: 'positionId',// 传到后端选择的roleId集合字符串
+    });
+
+    // 职员名称查询下拉列表
+    let userSelect = xmSelect.render({
+      el: '#userSelect', // 绑定
+      language: 'zn',
+      data: [[${userList}]],// model过来的
+      filterable: true,
+      radio: true,// 是否是单选
+      tips: '用户查询',
+      toolbar: {
+        show: true
+      },
+      paging: true, // 分页
+      pageSize: 30,
+      style: {
+        width: '160px', 'min-height': '28px', 'line-height': '28px',
+      },
+      name: 'userId',// 传到后端选择的userId集合字符串
+    });
+  });
+</script>
+</body>
+</html>

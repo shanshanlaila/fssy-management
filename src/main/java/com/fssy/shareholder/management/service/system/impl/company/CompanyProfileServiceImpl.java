@@ -3,12 +3,15 @@ package com.fssy.shareholder.management.service.system.impl.company;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
 import com.fssy.shareholder.management.mapper.system.operate.company.CompanyProfileMapper;
+import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.company.CompanyProfile;
 import com.fssy.shareholder.management.service.system.company.CompanyProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +29,12 @@ import java.util.Map;
 public class CompanyProfileServiceImpl extends ServiceImpl<CompanyProfileMapper, CompanyProfile> implements CompanyProfileService {
     @Autowired
     private CompanyProfileMapper companyProfileMapper;
+    @Autowired
+    private CompanyMapper companyMapper;
 
     /**
      * 获取组织结构列表用于xm-select插件
+     *
      * @param params
      * @param selectedIds
      * @return
@@ -57,9 +63,14 @@ public class CompanyProfileServiceImpl extends ServiceImpl<CompanyProfileMapper,
     }
 
     @Override
-    public boolean insertCompanyProfile(CompanyProfile companyProfile) {
-        companyProfileMapper.insert(companyProfile);
-        return true;
+    public boolean insertCompanyProfile(CompanyProfile companyProfile, HttpServletRequest request) {
+        //获取companyID
+        Long companyId= Long.valueOf(request.getParameter("companyId"));
+        Company company = companyMapper.selectById(companyId);
+        companyProfile.setCompanyName(company.getName());
+        companyProfile.setCompanyShortName(company.getShortName());
+        int insert = companyProfileMapper.insert(companyProfile);
+        return insert > 0;
     }
 
     @Override
