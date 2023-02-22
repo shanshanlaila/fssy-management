@@ -15,68 +15,33 @@
             <table class="layui-table layui-form" lay-size="sm">
 
 <!--                    <input type="hidden" th:value="${rightsDetail['year']}" name="year">-->
-                    <input type="hidden" th:value="${rightsDetail['id']}" name="id">
+
 
 
                 <!--第一行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;股权台账id:
+
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;被投资公司名称:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="stockRightsListId" id="stockRightsListId"
-                                   lay-verify="required" th:value="${rightsDetail['stockRightsListId']}"/>
+                            <div id="companySelect"></div>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;被投资公司ID:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权变更原因:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="companyId" id="companyId"
-                                   lay-verify="required" th:value="${rightsDetail['companyId']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;投资公司名称:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="companyName" id="companyName"
-                                   lay-verify="required" th:value="${rightsDetail['companyName']}"/>
+                            <input type="hidden" th:value="${rightsDetail.id}" name="id" id="id">
+                            <input type="text" class="layui-input" name="causeDesc" id="causeDesc"
+                                   lay-verify="required" th:value="${rightsDetail['causeDesc']}"/>
                         </div>
                     </td>
                 </tr>
                 <!--第二行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;股权文件id:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="stockRightsDocId" id="stockRightsDocId"
-                                   lay-verify="required" th:value="${rightsDetail['stockRightsDocId']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;股权文件名称:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="stockRightsDocName" id="stockRightsDocName"
-                                   lay-verify="required" th:value="${rightsDetail['stockRightsDocName']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;股权变更原因:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="causeDesc" id="causeDesc"
-                                   lay-verify="required" th:value="${rightsDetail['causeDesc']}"/>
-                        </div>
-                    </td>
-                </tr>
-                <!--第三行-->
-                <tr>
 
-                    <td style="text-align: right"><span
-                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权类别:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权类别:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
@@ -87,73 +52,71 @@
                             </select>
                         </div>
                     </td>
-
-
-                    <td style="text-align: right"><span
-                            style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权方类别:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权方类别:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <select name="investorType" lay-verify="required" lay-reqText="项目投资类型为必填项">
-                                <option value="" selected>请选择项目投资类型</option>
+                            <select name="investorType" lay-verify="required" lay-reqText="股权方类型为必填项">
+                                <option value="" selected>请选择股权方类型</option>
                                 <option value="自然人股东" th:selected="${rightsDetail.investorType} eq '自然人股东'">自然人股东</option>
                                 <option value="法人股东" th:selected="${rightsDetail.investorType} eq '法人股东'">法人股东</option>
                             </select>
                         </div>
                     </td>
-
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;股权方ID:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="investorId" id="investorId"
-                                   lay-verify="required" th:value="${rightsDetail['investorId']}"/>
-                        </div>
-                    </td>
                 </tr>
-                <!--第四行-->
+                <!--第三行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;股权方姓名:
+
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权方姓名:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="investorName" id="investorName"
-                                   lay-verify="required" th:value="${rightsDetail['investorName']}"/>
+                            <div id="companySelectTwo"></div>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;变更前比例:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;变更前比例:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="beforeRightsRatio" id="beforeRightsRatio"
+                            <input type="text" class="layui-input" name="beforeRightsRatio" id="beforeRightsRatio"
                                    lay-verify="required" th:value="${rightsDetail['beforeRightsRatio']}"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;变更后/现在比例:
+
+
+                </tr>
+                <!--第四行-->
+                <tr>
+
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;变更后/现在比例:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="rightsRatio" id="rightsRatio"
+                            <input type="text" class="layui-input" name="rightsRatio" id="rightsRatio"
                                    lay-verify="required" th:value="${rightsDetail['rightsRatio']}"/>
+                        </div>
+                    </td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;变更时间:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input laydate" name="changeTime" id="changeTime"
+                                   lay-verify="required" th:value="${rightsDetail['changeTime']}"/>
                         </div>
                     </td>
                 </tr>
                 <!--第五行-->
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;变更时间:
+
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;标识是否是最新的记录（1为最新，0为历史记录）:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled laydate" name="changeTime" id="changeTime"
-                                   lay-verify="required" th:value="${rightsDetail['changeTime']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'></span>&nbsp;&nbsp;标识是否是最新的记录（1为最新，0为历史记录）:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input layui-disabled" name="sign" id="sign"
-                                   lay-verify="required" th:value="${rightsDetail['sign']}"/>
+                            <select name="sign" lay-verify="required" lay-reqText="记录为必选项">
+                                <option value="" selected>请选择记录类型</option>
+                                <option value="1" th:selected="${rightsDetail.sign} eq '1'">是</option>
+                                <option value="0" th:selected="${rightsDetail.sign} eq '0'">否</option>
+                            </select>
                         </div>
                     </td>
                 </tr>
@@ -190,6 +153,47 @@
                     trigger: 'click',
                     type: 'date'
                 });
+        });
+
+        // 公司选择获得器
+        var companySelect = xmSelect.render({
+            el: '#companySelect',
+            language: 'zn',
+            initValue: [[${companyIds}]],
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyOneId',// 传到后端选择的companyId集合字符串
+        });
+
+
+        // 公司选择获得器
+        var companySelectTwo = xmSelect.render({
+            el: '#companySelectTwo',
+            language: 'zn',
+            initValue: [[${investorIds}]],
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyTowId',// 传到后端选择的companyId集合字符串
         });
 
         form.on('submit(baseForm)', function (data) {

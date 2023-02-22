@@ -1,9 +1,11 @@
 package com.fssy.shareholder.management.service.system.company;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.pojo.system.company.ContributionsDetail;
 import com.fssy.shareholder.management.pojo.system.company.RightsDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +33,7 @@ public interface RightsDetailService extends IService<RightsDetail> {
      * @param params
      * @return
      */
-    Page<RightsDetail> findRightsDetailDataListPerPageByParams(Map<String, Object> params);
+    Page<Map<String, Object>> findRightsDetailDataListPerPageByParams(Map<String, Object> params);
 
 
     /**
@@ -55,7 +57,7 @@ public interface RightsDetailService extends IService<RightsDetail> {
      * @param rightsDetail
      * @return
      */
-    public boolean updateRightsDetailData(RightsDetail rightsDetail);
+    public boolean updateRightsDetailData(RightsDetail rightsDetail, HttpServletRequest request);
 
 
     /**
@@ -63,5 +65,9 @@ public interface RightsDetailService extends IService<RightsDetail> {
      * @param rightsDetail
      * @return
      */
-    public boolean insertRightsDetailData(RightsDetail rightsDetail);
+    public boolean insertRightsDetailData(RightsDetail rightsDetail,HttpServletRequest request);
+
+
+    public boolean submitUploadFile(RightsDetail rightsDetail, Map<String, Object> param);
+
 }

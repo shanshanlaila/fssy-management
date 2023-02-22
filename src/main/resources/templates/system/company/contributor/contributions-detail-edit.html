@@ -18,49 +18,14 @@
                 <input type="hidden" th:value="${contributionsDetail['id']}" name="id">
 
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;出资台账ID:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="contributionsListId" id="contributionsListId"
-                                   lay-verify="required" th:value="${contributionsDetail['contributionsListId']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;被投资公司ID:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyId" id="companyId"
-                                   lay-verify="required" th:value="${contributionsDetail['companyId']}"/>
-                        </div>
-                    </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;被投资公司名称:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyName" id="companyName"
-                                   lay-verify="required" th:value="${contributionsDetail['companyName']}"/>
+                            <div id="companySelect"></div>
                         </div>
                     </td>
-                </tr>
 
-                <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;出资文件ID:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="contributionsDocId" id="contributionsDocId"
-                                   lay-verify="required" th:value="${contributionsDetail['contributionsDocId']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;出资文件名称:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="contributionsDocName" id="contributionsDocName"
-                                   lay-verify="required" th:value="${contributionsDetail['contributionsDocName']}"/>
-                        </div>
-                    </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;出资事由:
                     </td>
                     <td>
@@ -81,20 +46,12 @@
                                    lay-verify="required" th:value="${contributionsDetail['investorType']}"/>
                         </div>
                     </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;出资方Id:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="investorId" id="investorId"
-                                   lay-verify="required" th:value="${contributionsDetail['investorId']}"/>
-                        </div>
-                    </td>
+
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;投资方姓名:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="investorName" id="investorName"
-                                   lay-verify="required" th:value="${contributionsDetail['investorName']}"/>
+                            <div id="companySelectTwo"></div>
                         </div>
                     </td>
                 </tr>
@@ -108,7 +65,7 @@
                                    lay-verify="required" th:value="${contributionsDetail['contributionsMode']}"/>
                         </div>
                     </td>
-                    <td style="text-align: right">注册资本:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;注册资本:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
@@ -116,31 +73,36 @@
                                    lay-verify="required" th:value="${contributionsDetail['registeredCapital']}"/>
                         </div>
                     </td>
+
+                </tr>
+
+                <tr>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;实缴/认缴资本:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="contributedCapital" id="contributedCapital"
-                                    th:value="${contributionsDetail['contributedCapital']}"/>
+                                   th:value="${contributionsDetail['contributedCapital']}"/>
                         </div>
                     </td>
-                </tr>
 
-                <tr>
                     <td style="text-align: right">计划到账时间:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input laydate" name="planArrivalTime" id="planArrivalTime"
-                                   lay-verify="required" th:value="${contributionsDetail['planArrivalTime']}"/>
+                                    th:value="${contributionsDetail['planArrivalTime']}"/>
                         </div>
                     </td>
+
+                </tr>
+                <tr>
                     <td style="text-align: right">实际到账时间:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input laydate" name="actualArrivalTime" id="actualArrivalTime"
-                                    th:value="${contributionsDetail['actualArrivalTime']}"/>
+                                   th:value="${contributionsDetail['actualArrivalTime']}"/>
                         </div>
                     </td>
                     <td style="text-align: right">标识是否为最新记录:
@@ -148,7 +110,7 @@
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="sign" id="sign"
-                                    th:value="${contributionsDetail['sign']}"/>
+                                   th:value="${contributionsDetail['sign']}"/>
                         </div>
                     </td>
                 </tr>
@@ -157,10 +119,14 @@
 
                     <td style="text-align: right">出资状态:
                     </td>
+
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="status" id="status"
-                                    th:value="${contributionsDetail['status']}"/>
+                            <select name="status" lay-verify="required" lay-reqText="出资状态为必填项">
+                                <option value="" selected>请选择出资状态</option>
+                                <option value="启用" th:selected="${contributionsDetail.status} eq '启用'">启用</option>
+                                <option value="未启用" th:selected="${contributionsDetail.status} eq '未启用'">未启用</option>
+                            </select>
                         </div>
                     </td>
                 </tr>
@@ -193,6 +159,47 @@
                 trigger: 'click',
                 type: 'date'
             });
+        });
+
+        // 公司选择获得器
+        var companySelect = xmSelect.render({
+            el: '#companySelect',
+            language: 'zn',
+            initValue: [[${companyIds}]],
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyOneId',// 传到后端选择的companyId集合字符串
+        });
+
+
+        // 公司选择获得器
+        var companySelectTwo = xmSelect.render({
+            el: '#companySelectTwo',
+            language: 'zn',
+            initValue: [[${investorIds}]],
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyTowId',// 传到后端选择的companyId集合字符串
         });
 
 

@@ -18,51 +18,31 @@
                 <input type="hidden" th:value="${licenseWarranty['id']}" name="id">
 
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;被投资公司ID:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyId" id="companyId"
-                                   lay-verify="required" th:value="${licenseWarranty['companyId']}"/>
-                        </div>
-                    </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;被投资公司名称:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyName" id="companyName"
-                                   lay-verify="required" th:value="${licenseWarranty['companyName']}"/>
+                            <div id="companySelect"></div>
                         </div>
                     </td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;营业执照附件ID:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="businessLicenseDocId" id="businessLicenseDocId"
-                                   lay-verify="required" th:value="${licenseWarranty['businessLicenseDocId']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;营业执照附件名称:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="businessLicenseDocName" id="businessLicenseDocName"
-                                   lay-verify="required" th:value="${licenseWarranty['businessLicenseDocName']}"/>
-                        </div>
-                    </td>
-                </tr>
-
-
-                <tr>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;变更时间:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input laydate" name="changeTime" id="changeTime"
-                                    lay-verify="required" th:value="${licenseWarranty['changeTime']}"/>
+                                   lay-verify="required" th:value="${licenseWarranty['changeTime']}"/>
+                        </div>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;变更前法人:
+                    </td>
+                    <td>
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" class="layui-input" name="changeBefore" id="changeBefore"
+                                   lay-verify="required" th:value="${licenseWarranty['changeBefore']}"/>
                         </div>
                     </td>
                     <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;变更项目:
@@ -76,15 +56,7 @@
                 </tr>
 
                 <tr>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;变更前:
-                    </td>
-                    <td>
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="changeBefore" id="changeBefore"
-                                   lay-verify="required" th:value="${licenseWarranty['changeBefore']}"/>
-                        </div>
-                    </td>
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;变更后:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;变更后法人:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
@@ -92,18 +64,19 @@
                                    lay-verify="required" th:value="${licenseWarranty['changeAfter']}"/>
                         </div>
                     </td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: right">营业执照信息状态:
+                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;&nbsp;营业执照信息状态:
                     </td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="status" id="status"
-                                   lay-verify="required" th:value="${licenseWarranty['status']}"/>
+                            <select name="status" lay-verify="required" lay-reqText="营业执照信息状态为必填项">
+                                <option value="" selected>请选择营业执照信息状态</option>
+                                <option value="使用" th:selected="${licenseWarranty.status} eq '使用'">使用</option>
+                                <option value="未使用" th:selected="${licenseWarranty.status} eq '未使用'">未使用</option>
+                            </select>
                         </div>
                     </td>
                 </tr>
+
 
 
             </table>
@@ -134,6 +107,26 @@
                 trigger: 'click',
                 type: 'date'
             });
+        });
+
+        // 公司选择获得器
+        var companySelect = xmSelect.render({
+            el: '#companySelect',
+            language: 'zn',
+            initValue: [[${companyIds}]],
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyId',// 传到后端选择的companyId集合字符串
         });
 
 

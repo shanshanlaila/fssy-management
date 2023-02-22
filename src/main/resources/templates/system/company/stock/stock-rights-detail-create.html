@@ -17,39 +17,14 @@
 
                 <!--第一行-->
                 <tr>
-                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold'>*</span>股权台账id:</td>
-                    <td style="width: 10%">
+
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;被投资公司名称:</td>
+                    <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="stockRightsListId" id="stockRightsListId">
+                            <div id="companySelect"></div>
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">被投资公司ID:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyId" id="companyId">
-                        </div>
-                    </td>
-                    <td style="width: 10%;text-align: right">投资公司名称:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="companyName" id="companyName">
-                        </div>
-                    </td>
-                </tr>
-                <!--第二行-->
-                <tr>
-                    <td style="width: 10%;text-align: right">股权文件id:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="stockRightsDocId" id="stockRightsDocId">
-                        </div>
-                    </td>
-                    <td style="width: 10%;text-align: right">股权文件名称:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="stockRightsDocName" id="stockRightsDocName">
-                        </div>
-                    </td>
+
                     <td style="width: 10%;text-align: right">股权变更原因:</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
@@ -57,20 +32,15 @@
                         </div>
                     </td>
                 </tr>
+
                 <!--第三行-->
                 <tr>
-                    <td style="width: 10%;text-align: right">指标创建年份:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="year" id="year">
-                        </div>
-                    </td>
 
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;股权类别:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权类别:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <select name="stockRightsType" lay-verify="required" lay-reqText="项目投资类型为必填项">
-                                <option value="" selected>请选择项目投资类型</option>
+                            <select name="stockRightsType" lay-verify="required" lay-reqText="股权类型为必填项">
+                                <option value="" selected>请选择股权类型</option>
                                 <option value="成立股权">成立股权</option>
                                 <option value="股权变更">股权变更</option>
                             </select>
@@ -78,11 +48,11 @@
                     </td>
 
 
-                    <td style="text-align: right"><span style='color: red; font-weight: bold'>*</span>&nbsp;股权方类别:</td>
+                    <td style="text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权方类别:</td>
                     <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <select name="investorType" lay-verify="required" lay-reqText="项目投资类型为必填项">
-                                <option value="" selected>请选择项目投资类型</option>
+                            <select name="investorType" lay-verify="required" lay-reqText="股权方类型为必填项">
+                                <option value="" selected>股权方投资类型</option>
                                 <option value="自然人股东">自然人股东</option>
                                 <option value="法人股东">法人股东</option>
                             </select>
@@ -91,16 +61,11 @@
                 </tr>
 
                 <tr>
-                    <td style="width: 10%;text-align: right">股权方ID:</td>
-                    <td style="width: 10%">
+
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;股权方姓名:</td>
+                    <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="investorId" id="investorId">
-                        </div>
-                    </td>
-                    <td style="width: 10%;text-align: right">股权方姓名:</td>
-                    <td style="width: 10%">
-                        <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="investorName" id="investorName">
+                            <div id="companySelectTwo"></div>
                         </div>
                     </td>
                     <td style="width: 10%;text-align: right">变更前比例:</td>
@@ -112,22 +77,30 @@
                 </tr>
 
                 <tr>
-                    <td style="width: 10%;text-align: right">变更后/现在比例:</td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;变更后/现在比例:</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input" name="rightsRatio" id="rightsRatio">
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">变更时间:</td>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;变更时间:</td>
                     <td style="width: 10%">
                         <div class="layui-input-inline" style="width: 100%">
                             <input type="text" class="layui-input laydate" name="changeTime" id="changeTime">
                         </div>
                     </td>
-                    <td style="width: 10%;text-align: right">标识是否是最新的记录:</td>
-                    <td style="width: 10%">
+
+                </tr>
+                <tr>
+                    <td style="width: 10%;text-align: right"><span style='color: red; font-weight: bold; width:200px;height:20px'>*</span>&nbsp;&nbsp;标识是否是最新的记录（1为最新，0为历史记录）：</td>
+
+                    <td>
                         <div class="layui-input-inline" style="width: 100%">
-                            <input type="text" class="layui-input" name="sign" id="sign">
+                            <select name="sign" lay-verify="required" lay-reqText="记录为必选项">
+                                <option value="" selected>请选择记录类型</option>
+                                <option value="1">1</option>
+                                <option value="0">0</option>
+                            </select>
                         </div>
                     </td>
                 </tr>
@@ -166,6 +139,45 @@
                 trigger: 'click',
                 type: 'date'
             });
+        });
+
+        // 公司选择获得器
+        var companySelect = xmSelect.render({
+            el: '#companySelect',
+            language: 'zn',
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyOneId',// 传到后端选择的companyId集合字符串
+        });
+
+
+        // 公司选择获得器
+        var companySelectTwo = xmSelect.render({
+            el: '#companySelectTwo',
+            language: 'zn',
+            data: [[${companyNameList}]],
+            filterable: true,
+            radio: true,
+            tips: '请选择公司',
+            toolbar: {
+                show: true
+            },
+            paging: true, // 分页
+            pageSize: 20,
+            style: {
+                width: '160px', 'min-height': '28px', 'line-height': '28px',
+            },
+            name: 'companyTowId',// 传到后端选择的companyId集合字符串
         });
         /**
          * 添加学生信息
