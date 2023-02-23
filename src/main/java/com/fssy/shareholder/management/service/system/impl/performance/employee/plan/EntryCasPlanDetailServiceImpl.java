@@ -335,7 +335,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     }
 
 
-    @SuppressWarnings("unchecked")
     private QueryWrapper<EntryCasPlanDetail> getQueryWrapper(Map<String, Object> params) {
         QueryWrapper<EntryCasPlanDetail> queryWrapper = new QueryWrapper<>();
         if (params.containsKey("select")) {
@@ -407,13 +406,6 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             String userIdsStr = (String) params.get("userIds");
             List<String> userIds = Arrays.asList(userIdsStr.split(","));
             queryWrapper.in("userId", userIds);
-        }
-        if (params.containsKey("userId")) {
-            queryWrapper.eq("userId", params.get("userId"));
-        }
-        // 用户表主键列表查询
-        if (params.containsKey("userIds")) {
-            queryWrapper.in("userId", (List<String>) params.get("userIds"));
         }
         if (params.containsKey("applyDate")) {
             queryWrapper.eq("applyDate", params.get("applyDate"));
@@ -716,13 +708,16 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     @Override
     public Map<Long, Map<String, Object>> findWeChatNoticeMap() {
         Map<Long, Map<String, Object>> map = new HashMap<>(30);
-        Map<String, Object> childMap = new HashMap<>(50);
+        Map<String, Object> childMap;
 
         QueryWrapper<EventsRelationRole> wrapper = new QueryWrapper<>();
         wrapper.select("userId,COUNT(userId) as num")
                 .lambda()
+                // 今年
                 .eq(EventsRelationRole::getYear, LocalDateTime.now().getYear())
+                // 今月
                 .eq(EventsRelationRole::getMonth, LocalDateTime.now().getMonth())
+                // 状态为待导出填报计划
                 .eq(EventsRelationRole::getStatus, PerformanceConstant.WAIT_PLAN)
                 .groupBy(EventsRelationRole::getUserId);
 
@@ -732,12 +727,13 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         }
         for (Map<String, Object> eventsRelationRole : eventsRelationRoles) {
             User user = userMapper.selectById((Serializable) eventsRelationRole.get("userId"));
+            childMap=new HashMap<>(50);
             childMap.put("userId", user.getId());
             childMap.put("userName", user.getName());
             childMap.put("weChat", user.getQyweixinUserId());
             childMap.put("num", eventsRelationRole.get("num"));
+            map.put((Long) childMap.get("userId"), childMap);
         }
-        map.put((Long) childMap.get("userId"), childMap);
         return map;
     }
 
