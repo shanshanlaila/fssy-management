@@ -56,13 +56,18 @@
 
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="causeDesc" placeholder="股权变更原因" id="causeDesc"
-                                   autocomplete="off" class="layui-input laydate">
+                                   autocomplete="off" class="layui-input">
                         </div>
 
 
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
                             <input type="text" name="investorName" placeholder="股权方姓名" id="investorName"
-                                   autocomplete="off" class="layui-input laydate">
+                                   autocomplete="off" class="layui-input">
+                        </div>
+
+                        <div class="layui-inline layui-show-xs-block" style="width: 120px;">
+                            <input type="text" name="sign" placeholder="是否为最新记录" id="sign"
+                                   autocomplete="off" class="layui-input">
                         </div>
 
                         <div class="layui-inline layui-show-xs-block">
@@ -91,12 +96,13 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
 <!--                        <a lay-event="detail" title="企业研发工艺能力评价数据明细"><i class="layui-icon">&#xe63c;</i></a>-->
-                        <a lay-event="edit" title="修改企业研发工艺能力评价数据信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除企业研发工艺能力评价数据信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a shiro:hasPermission="system:company:detail:upload" lay-event="upload" title="出资文件附件上传"><i class="layui-icon">&#xe681;</i></a>
+                        <a shiro:hasPermission="system:company:detail:edit" lay-event="edit" title="修改基础股权明细信息"><i class="layui-icon">&#xe642;</i></a>
+                        <a shiro:hasPermission="system:company:detail:delete" lay-event="delete" title="删除基础股权明细信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
-                            <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>
+                            <button shiro:hasPermission="system:company:detail:create" class="layui-btn layui-btn-sm" lay-event="create">新增</button>
                         </div>
                     </script>
                 </div>
@@ -187,23 +193,12 @@
                     },
 
                     {
-                        field: 'companyId',
-                        title: '被投资公司ID',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
                         field: 'companyName',
                         title: '投资公司名称',
                         align: 'center',
                         width: 120
                     },
-                    {
-                        field: 'stockRightsDocId',
-                        title: '股权文件id',
-                        align: 'center',
-                        width: 120
-                    },
+
                     {
                         field: 'stockRightsDocName',
                         title: '股权文件名称',
@@ -273,6 +268,26 @@
                         width: 120
                     },
                     {
+                        field: 'attachmentList',
+                        title: '材料附件',
+                        width: 100,
+                        rowspan: 2,
+                        templet : function(d) {
+                            if (!d.attachmentList || d.attachmentList.length === 0) {
+                                return '';
+                            } else {
+                                var element = '';
+                                for (var i = 0; i < d.attachmentList.length; i++) {
+                                    var attachment = d.attachmentList[i];
+                                    element = element + '<a href="/system/config/attachment/downloadFile?id=' + attachment.attachmentId + '&md5Path='
+                                        + attachment.md5Path + '" target="_blank" title="' + attachment.filename
+                                        + '"><i class="fa fa-file-text-o" aria-hidden="true"></i></a>';
+                                }
+                                return element;
+                            }
+                        }
+                    },
+                    {
                         fixed: 'right',
                         title: '操作',
                         width: 100,
@@ -294,8 +309,18 @@
                     area: [
                         $(window).width() * 0.7 + 'px', $(window).height() - 200 + 'px'
                     ],
-                    content: '/system/company/stock/edit?id=' + data.id,
+                    content: '/system/company/stock/edit/'+data.id,
                     maxmin: true
+                });
+            }else if (obj.event === 'upload'){
+                layer.open({
+                    type : 2,
+                    title : '文件名称为【'+data.contributionsDocName+'】附件上传',
+                    area : [
+                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                    ],
+                    content : '/system/company/stock/upload/'+data.id,
+                    maxmin : true
                 });
             } else if (obj.event === 'delete') { // 删除
                 layer.confirm('确认删除公司为：' + data.companyName + '的基础股权信息吗？', function () {

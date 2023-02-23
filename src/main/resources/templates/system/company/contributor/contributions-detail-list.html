@@ -99,13 +99,21 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                     <script type="text/html" id="tool">
 <!--                        <a lay-event="detail" title="企业研发工艺能力评价数据明细"><i class="layui-icon">&#xe63c;</i></a>-->
-                        <a lay-event="edit" title="修改企业研发工艺能力评价数据信息"><i class="layui-icon">&#xe642;</i></a>
-                        <a lay-event="delete" title="删除企业研发工艺能力评价数据信息"><i class="layui-icon">&#xe640;</i></a>
+                        <a shiro:hasPermission="system:company:contributor:upload" lay-event="upload" title="出资文件附件上传"><i class="layui-icon">&#xe681;</i></a>
+                        <a shiro:hasPermission="system:company:contributor:edit" lay-event="edit" title="修改基础出资方明细信息"><i class="layui-icon">&#xe642;</i></a>
+                        <a shiro:hasPermission="system:company:contributor:delete" lay-event="delete" title="删除基础出资方明细信息"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                     <script type="text/html" id="toolbar">
                         <div class="layui-btn-container">
-                            <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>
+                            <button shiro:hasPermission="system:company:contributor:create" class="layui-btn layui-btn-sm" lay-event="create">新增</button>
+<!--                            <button  type="button" class="layui-btn" id="upload"><i class="layui-icon"></i>出资文件附件上传</button>-->
                         </div>
+<!--                        <div class="layui-btn-container">-->
+<!--                            <button shiro:hasPermission="system:company:contributor:upload"-->
+<!--                                    class="layui-btn layui-btn-sm" lay-submit="" lay-filter="upload"-->
+<!--                                    title="出资文件附件上传">出资文件附件上传-->
+<!--                            </button>-->
+<!--                        </div>-->
                     </script>
                 </div>
             </div>
@@ -195,23 +203,12 @@
                         width: 120
                     },
                     {
-                        field: 'companyId',
-                        title: '被投资公司ID',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
                         field: 'companyName',
                         title: '投资公司名称',
                         align: 'center',
                         width: 120
                     },
-                    {
-                        field: 'contributionsDocId',
-                        title: '出资文件ID',
-                        align: 'center',
-                        width: 120
-                    },
+
                     {
                         field: 'contributionsDocName',
                         title: '出资文件名称',
@@ -280,6 +277,26 @@
                         width: 120
                     },
                     {
+                        field: 'attachmentList',
+                        title: '材料附件',
+                        width: 100,
+                        rowspan: 2,
+                        templet : function(d) {
+                            if (!d.attachmentList || d.attachmentList.length === 0) {
+                                return '';
+                            } else {
+                                var element = '';
+                                for (var i = 0; i < d.attachmentList.length; i++) {
+                                    var attachment = d.attachmentList[i];
+                                    element = element + '<a href="/system/config/attachment/downloadFile?id=' + attachment.attachmentId + '&md5Path='
+                                        + attachment.md5Path + '" target="_blank" title="' + attachment.filename
+                                        + '"><i class="fa fa-file-text-o" aria-hidden="true"></i></a>';
+                                }
+                                return element;
+                            }
+                        }
+                    },
+                    {
                         field: 'status',
                         title: '出资状态',
                         align: 'center',
@@ -297,6 +314,32 @@
             ]
         });
 
+
+        // 导入按钮
+        // form.on('submit(upload)', function (data) {
+        //     var createLayer = layer.open({
+        //         type: 2,
+        //         title: "上传事件清单附件",
+        //         area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+        //         content: '/system/company/contributor/upload',
+        //         scrollbar: true,
+        //         maxmin: true,
+        //     });
+        //     return false;
+        // });
+        // // 导入按钮
+        // form.on('submit(import)', function (data) {
+        //     var createLayer = layer.open({
+        //         type: 2,
+        //         title: "上传总经理定性评价附件",
+        //         area: [$(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'],
+        //         content: '/system/performance/manager/general-manager-qualitative-eval/index',
+        //         scrollbar: true,
+        //         maxmin: true,
+        //     });
+        //     return false;
+        // });
+
         // 监听行工具事件
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
@@ -309,6 +352,16 @@
                     ],
                     content: '/system/company/contributor/edit?id=' + data.id,
                     maxmin: true
+                });
+            } else if (obj.event === 'upload'){
+                layer.open({
+                    type : 2,
+                    title : '公司为【'+data.companyName+'】附件上传',
+                    area : [
+                        $(window).width() * 0.9 + 'px', $(window).height() - 50 + 'px'
+                    ],
+                    content : '/system/company/contributor/upload/'+data.id,
+                    maxmin : true
                 });
             } else if (obj.event === 'delete') { // 删除
                 layer.confirm('确认删除公司为：' + data.companyName + '的出资方数据信息吗？', function () {

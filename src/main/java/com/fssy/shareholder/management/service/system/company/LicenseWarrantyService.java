@@ -1,9 +1,11 @@
 package com.fssy.shareholder.management.service.system.company;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.pojo.system.company.ContributionsDetail;
 import com.fssy.shareholder.management.pojo.system.company.LicenseWarranty;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -21,7 +23,7 @@ public interface LicenseWarrantyService extends IService<LicenseWarranty> {
      * @param params
      * @return
      */
-    Page<LicenseWarranty> findLicenseWarrantyPerPageByParams(Map<String, Object>params);
+    Page<Map<String,Object>> findLicenseWarrantyPerPageByParams(Map<String, Object>params);
 
 
     /**
@@ -36,12 +38,15 @@ public interface LicenseWarrantyService extends IService<LicenseWarranty> {
      * @param licenseWarranty
      * @return
      */
-    public boolean updateLicenseWarrantyData(LicenseWarranty licenseWarranty);
+    public boolean updateLicenseWarrantyData(LicenseWarranty licenseWarranty, HttpServletRequest request);
 
     /**
      * 增加 基础 营业执照信息
      * @param licenseWarranty
      * @return
      */
-    public boolean insertLicenseWarrantyData(LicenseWarranty licenseWarranty);
+    public boolean insertLicenseWarrantyData(LicenseWarranty licenseWarranty,HttpServletRequest request);
+
+
+    public boolean submitUploadFile(LicenseWarranty licenseWarranty, Map<String, Object> param);
 }
