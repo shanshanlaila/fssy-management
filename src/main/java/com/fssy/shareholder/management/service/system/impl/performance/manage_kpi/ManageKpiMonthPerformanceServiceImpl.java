@@ -164,21 +164,7 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
             //导入结果写入列
             //错误信息提示存入到AD单元格内
             Cell cell = row.createCell(SheetService.columnToIndex("U"));
-//            String id = cells.get(SheetService.columnToIndex("A"));
-//            String projectType = cells.get(SheetService.columnToIndex("B"));
             String projectDesc = cells.get(SheetService.columnToIndex("C"));
-//            String kpiFormula = cells.get(SheetService.columnToIndex("D"));
-//            String dataSource = cells.get(SheetService.columnToIndex("E"));
-//            String unit = cells.get(SheetService.columnToIndex("F"));
-//            String benchmarkCompany = cells.get(SheetService.columnToIndex("G"));
-//            String benchmarkValue = cells.get(SheetService.columnToIndex("H"));
-//            String pastThreeYearsActual = cells.get(SheetService.columnToIndex("I"));
-//            String pastTwoYearsActual = cells.get(SheetService.columnToIndex("J"));
-//            String pastOneYearActual = cells.get(SheetService.columnToIndex("K"));
-//            String basicTarget = cells.get(SheetService.columnToIndex("L"));
-//            String mustInputTarget = cells.get(SheetService.columnToIndex("M"));
-//            String reachTarget = cells.get(SheetService.columnToIndex("N"));
-//            String challengeTarget = cells.get(SheetService.columnToIndex("O"));
             String monthTarget = cells.get(SheetService.columnToIndex("R"));
             String monthActualValue = cells.get(SheetService.columnToIndex("S"));
             String accumulateTarget = cells.get(SheetService.columnToIndex("T"));
@@ -204,21 +190,7 @@ public class ManageKpiMonthPerformanceServiceImpl extends ServiceImpl<ManageKpiM
 
             //构建实体类
             ManageKpiMonthPerformance manageKpiMonthPerformance = new ManageKpiMonthPerformance();
-            manageKpiMonthPerformance.setId(Integer.valueOf(performance.getId()));  //月份id
-//            manageKpiMonthPerformance.setProjectType(projectType);
-//            manageKpiMonthPerformance.setProjectDesc(projectDesc);
-//            manageKpiMonthPerformance.setKpiFormula(kpiFormula);
-//            manageKpiMonthPerformance.setDataSource(dataSource);
-//            manageKpiMonthPerformance.setUnit(unit);
-//            manageKpiMonthPerformance.setBenchmarkCompany(benchmarkCompany);
-//            manageKpiMonthPerformance.setBenchmarkValue(benchmarkValue);
-//            manageKpiMonthPerformance.setPastThreeYearsActual(pastThreeYearsActual);
-//            manageKpiMonthPerformance.setPastTwoYearsActual(pastTwoYearsActual);
-//            manageKpiMonthPerformance.setPastOneYearActual(pastOneYearActual);
-//            manageKpiMonthPerformance.setBasicTarget(basicTarget);
-//            manageKpiMonthPerformance.setMustInputTarget(mustInputTarget);
-//            manageKpiMonthPerformance.setReachTarget(reachTarget);
-//            manageKpiMonthPerformance.setChallengeTarget(challengeTarget);
+            manageKpiMonthPerformance.setId(performance.getId());  //月份id
             if (!ObjectUtils.isEmpty(monthTarget)){
                 manageKpiMonthPerformance.setMonthTarget(new BigDecimal(monthTarget));
             }

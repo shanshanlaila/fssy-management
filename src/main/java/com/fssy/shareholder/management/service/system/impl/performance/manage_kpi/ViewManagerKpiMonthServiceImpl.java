@@ -182,6 +182,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                         managerKpiScore.setScoreAuto(scoreSys);
                         managerKpiScore.setScoreAdjust(scoreSys);
                         managerKpiScore.setGeneralManagerScore(scoreSys);
+//                        managerKpiScore.setAnomalyMark("正常");  //添加异常分析标识
                         //插入数据,先判断数据库中是否有此条数据，有则不插，无则插
                         QueryWrapper<ManagerKpiScoreOld> queryWrapperss = new QueryWrapper<>();
                         queryWrapperss.eq("generalManager","是").eq("managerName",temp.getManagerName()).eq("year",temp.getYear())
@@ -304,6 +305,7 @@ public class ViewManagerKpiMonthServiceImpl extends ServiceImpl<ViewManagerKpiMo
                         managerKpiScore.setScoreAdjust(scoreSys);
                         managerKpiScore.setDifficultyCoefficient(difficultCoefficient);
                         managerKpiScore.setGeneralManagerScore(newBusinessScore);
+//                        managerKpiScore.setAnomalyMark("正常");  //添加异常分析标识
                         //插入数据,先判断数据库中是否有此条数据，有则不插，无则插
                         QueryWrapper<ManagerKpiScoreOld> queryWrapperss = new QueryWrapper<>();
                         queryWrapperss.eq("generalManager","否").eq("managerName",temp.getManagerName()).eq("year",temp.getYear())

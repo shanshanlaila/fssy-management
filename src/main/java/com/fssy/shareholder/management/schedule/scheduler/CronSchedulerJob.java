@@ -6,6 +6,7 @@ package com.fssy.shareholder.management.schedule.scheduler;
 import com.fssy.shareholder.management.schedule.job.system.manage.*;
 import com.fssy.shareholder.management.schedule.job.system.manage.employee.EmployeePlanJob;
 import com.fssy.shareholder.management.schedule.job.system.manage.employee.EmployeeReviewJob;
+import com.fssy.shareholder.management.schedule.job.system.manage.manager.ManagerAnalysisJob;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -151,7 +152,25 @@ public class CronSchedulerJob {
                 .withSchedule(cronScheduleBuilder).build();
         scheduler.scheduleJob(jobDetail, cronTrigger);
     }
-
+    /**
+     * 对经理人绩效异常进行提醒
+     *
+     * @param scheduler
+     * @throws SchedulerException
+     */
+    private void managerAnalysisJob(Scheduler scheduler) throws SchedulerException
+    {
+        JobDetail jobDetail = JobBuilder.newJob(ManagerAnalysisJob.class)
+                .withIdentity("managerAnalysisJob", "transmit5").build();
+        // 每月25-27号九点提醒一次
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
+                .cronSchedule("0 0 9 25-27 * ?");
+//                .cronSchedule("0 0 9 * * ?");
+        CronTrigger cronTrigger = TriggerBuilder.newTrigger()
+                .withIdentity("triggerManager", "groupManager")
+                .withSchedule(cronScheduleBuilder).build();
+        scheduler.scheduleJob(jobDetail, cronTrigger);
+    }
     /**
      * 同时启动两个定时任务
      *
@@ -163,6 +182,8 @@ public class CronSchedulerJob {
         schedulerPlanJop(scheduler);
         // 总结提醒定时任务
         schedulerReviewJop(scheduler);
+        //经理人绩效异常提醒任务
+        managerAnalysisJob(scheduler);
         // 对接财务系统利润表定时任务
 //		profitStatementTransmitJob(scheduler);
         // 对接财务系统资产负债表定时任务

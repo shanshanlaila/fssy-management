@@ -3,6 +3,8 @@ package com.fssy.shareholder.management.service.system.impl.performance.manage_k
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.manage_kpi.ManagerKpiScoreOld;
 import com.fssy.shareholder.management.mapper.system.performance.manage_kpi.ManagerKpiScoreMapperOld;
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -40,6 +42,11 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
 
     @Autowired
     private ManagerKpiScoreMapperOld managerKpiScoreMapper;
+    /**
+     * 用户信息
+     */
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 通过查询条件 分页 查询列表(绩效分数）
@@ -65,7 +72,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
      */
     @Override
     public Page<Map<String, Object>> findViewManagerKpiMonthDataListPerPageByParams(Map<String, Object> params) {
-             QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
+        QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
         String yearStr = (String) params.get("year");
         Integer year = InstandTool.stringToInteger(yearStr);
         if (ObjectUtils.isEmpty(year) || year == 0) {
@@ -136,7 +143,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
         String yearValue = sheetService.getValue(yearCell);
         String yearRequest = request.getParameter("year");
         //验证年份
-        if (!yearValue.equals(yearRequest)){
+        if (!yearValue.equals(yearRequest)) {
             throw new ServiceException("导入的年份与Excel中的年份不一致，导入失败！");
         }
         // 循环总行数(不读表的标题，从第1行开始读)
@@ -167,15 +174,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             String year = cells.get(SheetService.columnToIndex("A"));
             String managerName = cells.get(SheetService.columnToIndex("B"));
             String companyName = cells.get(SheetService.columnToIndex("C"));
-            String position = cells.get(SheetService.columnToIndex("D"));
-            String generalManager = cells.get(SheetService.columnToIndex("E"));
             String month = cells.get(SheetService.columnToIndex("F"));
-            String businessScore = cells.get(SheetService.columnToIndex("G"));
-            String incentiveScore = cells.get(SheetService.columnToIndex("H"));
-            String difficultyCoefficient = cells.get(SheetService.columnToIndex("I"));
-            String generalManagerScore = cells.get(SheetService.columnToIndex("J"));
-            String scoreAdjust = cells.get(SheetService.columnToIndex("K"));
-            String scoreAuto = cells.get(SheetService.columnToIndex("L"));
             String advantageAnalyze = cells.get(SheetService.columnToIndex("M"));
             String disadvantageAnalyze = cells.get(SheetService.columnToIndex("N"));
             String riskDesc = cells.get(SheetService.columnToIndex("O"));
@@ -188,33 +187,7 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
                 cell.setCellValue("经理人姓名是空的");
                 throw new ServiceException("表中有空值");
             }
-
-            //构建实体类
-            ManagerKpiScoreOld managerKpiScoreOld = new ManagerKpiScoreOld();
-            managerKpiScoreOld.setYear(Integer.valueOf(year));
-            managerKpiScoreOld.setManagerName(managerName);
-            managerKpiScoreOld.setCompanyName(companyName);
-            managerKpiScoreOld.setPosition(position);
-            managerKpiScoreOld.setGeneralManager(generalManager);
-            managerKpiScoreOld.setMonth(Integer.valueOf(month));
-            managerKpiScoreOld.setBusinessScore(new BigDecimal(businessScore));
-            managerKpiScoreOld.setIncentiveScore(new BigDecimal(incentiveScore));
-            if (!ObjectUtils.isEmpty(difficultyCoefficient)) {
-                managerKpiScoreOld.setDifficultyCoefficient(new BigDecimal(difficultyCoefficient));
-            }
-            if (!ObjectUtils.isEmpty(generalManagerScore)) {
-                managerKpiScoreOld.setGeneralManagerScore(new BigDecimal(generalManagerScore));
-            }
-            managerKpiScoreOld.setScoreAuto(new BigDecimal(scoreAuto));
-            managerKpiScoreOld.setScoreAdjust(new BigDecimal(scoreAdjust));
-            managerKpiScoreOld.setAdvantageAnalyze(advantageAnalyze);
-            managerKpiScoreOld.setDisadvantageAnalyze(disadvantageAnalyze);
-            managerKpiScoreOld.setRiskDesc(riskDesc);
-            managerKpiScoreOld.setRespDepartment(respDepartment);
-            managerKpiScoreOld.setGroupImproveAction(groupImproveAction);
-            managerKpiScoreOld.setAnomalyType(anomalyType);
-
-            // 根据经理人姓名，年份，月份,公司名称进行判断，存在则更新，不存在则新增
+            // 根据经理人姓名，年份，月份,公司名称进行判断，存在则更新
             UpdateWrapper<ManagerKpiScoreOld> managerKpiScoreOldUpdateWrapper = new UpdateWrapper<>();
             managerKpiScoreOldUpdateWrapper.set("advantageAnalyze", advantageAnalyze)
                     .set("disadvantageAnalyze", disadvantageAnalyze).set("riskDesc", riskDesc)
@@ -226,12 +199,10 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
             cell.setCellValue("导入成功");
 
         }
-
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
+
         return result;
     }
-
-
     /**
      * 通过查询条件查询履职计划map数据，用于导出
      *
@@ -242,6 +213,59 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
     public List<Map<String, Object>> findManagerKpiScoreOldDataByParams(Map<String, Object> params) {
         QueryWrapper<ManagerKpiScoreOld> queryWrapper = getQueryWrapper(params);
         return managerKpiScoreMapper.selectMaps(queryWrapper);
+    }
+
+    /**
+     * 删除分数记录
+     */
+    @Override
+    public boolean deleteManagerKpiScoreOldDataById(Integer id) {
+        int result = managerKpiScoreMapper.deleteById(id);
+        if (result > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 修改分数信息
+     */
+    @Override
+    public boolean updateManagerKpiScoreOldData(ManagerKpiScoreOld managerKpiScoreOld) {
+        int result = managerKpiScoreMapper.updateById(managerKpiScoreOld);
+        if (result > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 异常提醒
+     *
+     * @return
+     */
+    @Override
+    public Map<Long, Map<String, Object>> findManagerKpiScoreParams() {
+        Map<Long,Map<String, Object>> map = new HashMap<>(30);
+        Map<String, Object> anomalyMap;
+        QueryWrapper<ManagerKpiScoreOld> queryWrapper = new QueryWrapper<>();
+        //筛选异常存在的数据
+        queryWrapper.ne("anomalyType","").isNotNull("anomalyType");
+        List<Map<String,Object>> kpiScore = managerKpiScoreMapper.selectMaps(queryWrapper);
+        for (Map<String,Object> anomaly:kpiScore) {
+                //出现异常则去用户表找到用户id和企业微信号
+                User user = userMapper.selectById((Serializable) anomaly.get("managerId"));
+                anomalyMap = new HashMap<>(50);
+                anomalyMap.put("userId",user.getId());
+                anomalyMap.put("userName",user.getName());
+                anomalyMap.put("weChat",user.getQyweixinUserId());
+                anomalyMap.put("anomalyType",anomaly.get("anomalyType"));
+                anomalyMap.put("year",anomaly.get("year"));
+                anomalyMap.put("month",anomaly.get("month"));
+                //写入map中以用户id为准，将他剩下的其他数据填充
+                map.put((Long) anomalyMap.get("userId"),anomalyMap);
+        }
+        return map;
     }
 
     /**
@@ -289,30 +313,4 @@ public class ManagerKpiScoreServiceImplOld extends ServiceImpl<ManagerKpiScoreMa
         }
         return queryWrapper;
     }
-
-    /**
-     * 删除分数记录
-     */
-    @Override
-    public boolean deleteManagerKpiScoreOldDataById(Integer id) {
-        int result = managerKpiScoreMapper.deleteById(id);
-        if (result > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 修改分数信息
-     */
-    @Override
-    public boolean updateManagerKpiScoreOldData(ManagerKpiScoreOld managerKpiScoreOld) {
-        int result = managerKpiScoreMapper.updateById(managerKpiScoreOld);
-        if (result > 0) {
-            return true;
-        }
-        return false;
-    }
-
-
 }

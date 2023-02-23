@@ -58,5 +58,11 @@ public interface ManagerKpiScoreServiceOld extends IService<ManagerKpiScoreOld> 
      */
     public boolean updateManagerKpiScoreOldData(ManagerKpiScoreOld managerKpiScoreOld);
 
+    /**
+     * 通过查询条件查询成绩表中的异常情况进行经理人提醒
+     * @return 数据列表
+     */
+    Map<Long,Map<String,Object>> findManagerKpiScoreParams();
+
 
 }
