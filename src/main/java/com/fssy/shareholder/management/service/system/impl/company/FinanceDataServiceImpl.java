@@ -72,7 +72,6 @@ public class FinanceDataServiceImpl extends ServiceImpl<FinanceDataMapper, Finan
 
     @Override
     public Map<String, Object> readFinanceDataDataSource(Attachment attachment) {
-        // 导入基础事件
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");

@@ -4,12 +4,11 @@
  */
 package com.fssy.shareholder.management.service.system.performance.employee;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
+
 import java.util.List;
 import java.util.Map;
-
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 
 /**
  * <p>
@@ -77,4 +76,10 @@ public interface EventsRelationRoleService extends BaseService<EventsRelationRol
 	 */
 	Map<String, Object> updatePerformanceEventsRelationRole(
 			EventsRelationRole eventsRelationRole);
+
+	/**
+	 * 判断是否存在符合导出的数据
+	 * @return 标志
+	 */
+    boolean isExistExportData();
 }

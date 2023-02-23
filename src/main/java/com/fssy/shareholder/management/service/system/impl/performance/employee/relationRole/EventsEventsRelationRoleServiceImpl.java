@@ -4,16 +4,21 @@
  */
 package com.fssy.shareholder.management.service.system.impl.performance.employee.relationRole;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 
@@ -113,6 +118,16 @@ public class EventsEventsRelationRoleServiceImpl
             EventsRelationRole eventsRelationRole) {
         eventsRelationRoleMapper.updateById(eventsRelationRole);
         return null;
+    }
+
+    @Override
+    public boolean isExistExportData() {
+        User user = GetTool.getUser();
+        LambdaQueryWrapper<EventsRelationRole> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(EventsRelationRole::getStatus, PerformanceConstant.WAIT_PLAN)
+                .eq(EventsRelationRole::getUserId, user.getId());
+        List<EventsRelationRole> selectList = eventsRelationRoleMapper.selectList(wrapper);
+        return !ObjectUtils.isEmpty(selectList);
     }
 
     @SuppressWarnings("unchecked")

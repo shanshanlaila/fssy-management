@@ -89,6 +89,7 @@ public interface EventListService extends BaseService<EventList> {
 
     /**
      * 新增单条基础事件
+     *
      * @param eventList 基础事件实体
      */
     boolean insertEventList(EventList eventList);
@@ -101,4 +102,11 @@ public interface EventListService extends BaseService<EventList> {
      * @return 结果
      */
     boolean insertEventByPlan(EventList eventList, Long id);
+
+    /**
+     * 判断是否存在符合要求导出的数据
+     *
+     * @return 标志
+     */
+    boolean isExistData();
 }

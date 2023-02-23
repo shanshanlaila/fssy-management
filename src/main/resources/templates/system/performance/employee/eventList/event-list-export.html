@@ -46,6 +46,10 @@
                                    autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="jobName" placeholder="工作职责"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="workEvents" placeholder="流程（工作事件）"
                                    autocomplete="off" class="layui-input">
                         </div>
@@ -101,12 +105,12 @@
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
-                    <script type="text/html" id="tool">
+                    <!--<script type="text/html" id="tool">
 
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
 
                         <a lay-event="delete" title="取消"><i class="layui-icon">&#x1007;</i></a>
-                    </script>
+                    </script>-->
                 </div>
             </div>
         </div>
@@ -163,6 +167,20 @@
                         cols:
                             [
                                 [
+                                    {
+                                        field: 'status',
+                                        width: 130,
+                                        title: '状态',
+                                        align: 'center',
+                                        fixed: 'left',
+                                        templet: function (d) {
+                                            if (d.status === '待导出维护岗位配比') {
+                                                return `<span class="layui-badge layui-bg">${d.status}</span>`
+                                            } else {
+                                                return `<span class="layui-badge layui-bg-green">${d.status}</span>`
+                                            }
+                                        }
+                                    },
                                     {
                                         field: 'year',
                                         title: '年份',
@@ -385,11 +403,16 @@
                 // 监听导出按钮
                 form.on('submit(importToCompleteRole)', function (data) {
                     var field = data.field;
-                    field.status = '完结';
+                    field.status = '待导出维护岗位配比';
                     // 导出本部门的
                     field.departmentName=[[${departmentName}]];
+                    // 无数据提示
+                    if([[${flag}]]===false){
+                        layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
+                        return false;
+                    }
                     // 必填项控制
-                    var year = data.field.year;
+                    var year = field.year;
                     if (!year) {
                         // year为空=false
                         layer.msg("请选择编制年份后点击导出", {icon: 5, time: 4000});

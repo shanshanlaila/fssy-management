@@ -25,14 +25,12 @@ import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.service.common.SheetService;
-import com.fssy.shareholder.management.service.system.performance.employee.BaseService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventListService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.common.StringTool;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -43,7 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -432,7 +429,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
             eventList.setOfficeId(viewDepartmentRoleUser.getOfficeId());
             // 不需要填报事件标准，直接完结
-            eventList.setStatus(PerformanceConstant.FINAL);
+            eventList.setStatus(PerformanceConstant.WAIT_RELATION_ROLE);
             eventListMapper.insert(eventList);
             cell.setCellValue("导入成功");
         }
@@ -541,5 +538,15 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         // 更新plan
         entryCasPlanDetailMapper.updateById(planDetail);
         return result > 0;
+    }
+
+    @Override
+    public boolean isExistData() {
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        LambdaQueryWrapper<EventList> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(EventList::getStatus, PerformanceConstant.WAIT_RELATION_ROLE)
+                .eq(EventList::getDepartmentId, departmentRoleByUser.getDepartmentId());
+        List<EventList> selectList = eventListMapper.selectList(wrapper);
+        return !ObjectUtils.isEmpty(selectList);
     }
 }

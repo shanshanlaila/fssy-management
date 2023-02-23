@@ -58,7 +58,6 @@ public class InvestInvestConditionServiceImpl extends ServiceImpl<InvestConditio
 
     @Override
     public Map<String, Object> readConditionDataSource(Attachment attachment,HttpServletRequest request) {
-        // 导入基础事件
         // 返回消息
         Map<String, Object> result = new HashMap<>();
         result.put("content", "");

@@ -4,20 +4,31 @@
  */
 package com.fssy.shareholder.management.service.system.impl.performance.employee.relationRole;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.Map.Entry;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
 import com.fssy.shareholder.management.mapper.manage.department.ViewDepartmentRoleUserMapper;
+import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
+import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
+import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
+import com.fssy.shareholder.management.pojo.manage.role.Role;
+import com.fssy.shareholder.management.pojo.manage.user.User;
+import com.fssy.shareholder.management.pojo.system.config.Attachment;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
+import com.fssy.shareholder.management.service.common.SheetService;
+import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleAttachmentService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
-import com.fssy.shareholder.management.tools.common.GetTool;
+import com.fssy.shareholder.management.tools.common.DateTool;
+import com.fssy.shareholder.management.tools.common.InstandTool;
+import com.fssy.shareholder.management.tools.common.StringTool;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
+import com.fssy.shareholder.management.tools.exception.ServiceException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -27,26 +38,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper;
-import com.fssy.shareholder.management.mapper.manage.role.RoleMapper;
-import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
-import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
-import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
-import com.fssy.shareholder.management.pojo.manage.department.Department;
-import com.fssy.shareholder.management.pojo.manage.role.Role;
-import com.fssy.shareholder.management.pojo.manage.user.User;
-import com.fssy.shareholder.management.pojo.system.config.Attachment;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
-import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
-import com.fssy.shareholder.management.service.common.SheetService;
-import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleAttachmentService;
-import com.fssy.shareholder.management.tools.common.DateTool;
-import com.fssy.shareholder.management.tools.common.InstandTool;
-import com.fssy.shareholder.management.tools.common.StringTool;
-import com.fssy.shareholder.management.tools.constant.CommonConstant;
-import com.fssy.shareholder.management.tools.exception.ServiceException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author Solomon
@@ -178,7 +179,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             Cell cell = row.createCell(SheetService.columnToIndex("Q"));// 每一行的结果信息上传到O列
 
             // region 导入数据校验
-            Long eventsId = null;
+            Long eventsId;
             try {
                 eventsId = InstandTool.stringToLong(temp.get(SheetService.columnToIndex("A")));
             } catch (Exception e) {
@@ -377,6 +378,9 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventsRelationRole.setUpdatedAt(LocalDateTime.now());
             eventsRelationRole.setStatus(PerformanceConstant.WAIT_PLAN);
             // endregion
+            // 将基础事件的状态设置为‘完结’
+            eventList.setStatus(PerformanceConstant.FINAL);
+            eventListMapper.updateById(eventList);
             // 存入集合，用于读取循环数据完毕后批量写入数据库
             relationRoleList.add(eventsRelationRole);
             updatedEventsIds.add(eventList.getId());
