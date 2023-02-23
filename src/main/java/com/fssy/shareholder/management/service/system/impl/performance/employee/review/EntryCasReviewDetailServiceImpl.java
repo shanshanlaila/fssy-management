@@ -1065,7 +1065,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
     @Override
     public Map<Long, Map<String, Object>> findWeChatNoticeMap() {
         Map<Long, Map<String, Object>> map = new HashMap<>(30);
-        Map<String, Object> childMap = new HashMap<>(50);
+        Map<String, Object> childMap;
 
         QueryWrapper<EntryCasPlanDetail> wrapper = new QueryWrapper<>();
         // 查找未填报总结的用户
@@ -1081,6 +1081,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         for (Map<String, Object> eventsRelationRole : planUserList) {
             User user = userMapper.selectById((Serializable) eventsRelationRole.get("userId"));
+            childMap=new HashMap<>(50);
             // 用户id
             childMap.put("userId", user.getId());
             // 用户名
@@ -1107,8 +1108,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
             }
             // 用户需要被通知填报总结的计划数
             childMap.put("num", num);
+            map.put((Long) childMap.get("userId"), childMap);
         }
-        map.put((Long) childMap.get("userId"), childMap);
         return map;
     }
 
