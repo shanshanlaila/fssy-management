@@ -96,7 +96,7 @@ public class EntryCasPlanDetailController {
             return result;
         }
         Map<String, Object> params = GetTool.getParams(request);
-        GetTool.getPageDataRes(result,params,request,entryCasPlanDetailService);
+        GetTool.getPageDataRes(result, params, request, entryCasPlanDetailService);
         return result;
     }
 
@@ -438,6 +438,10 @@ public class EntryCasPlanDetailController {
     @RequiredLog("计划导出")
     public String planExport(Model model) {
         GetTool.getSelectorData(model);
+        User user = GetTool.getUser();
+        model.addAttribute("uerId", user.getId());
+        boolean flag = entryCasPlanDetailService.isExistExportData(user);
+        model.addAttribute("flag",flag);
         return "system/performance/employee/plan/plan-export-list";
     }
 

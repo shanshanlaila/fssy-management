@@ -227,6 +227,8 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             }
             queryWrapper.in("listCreateUser", names);
         }
+        // 科室
+        queryWrapper.in(params.containsKey("officeIds"), "officeId", params.get("officeIds"));
         return queryWrapper;
     }
 
@@ -359,13 +361,13 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
                 cell.setCellValue("部门名称是空的");
                 continue;
             }
-            // 有的部门没有科室，允许科室为空
+            // 科室
             String office = cells.get(SheetService.columnToIndex("K"));
-            /*if (ObjectUtils.isEmpty(office)) {
-                setFailedContent(result, String.format("第%s行的科室是空的", j + 1));
-                cell.setCellValue("科室是空的");
+            if (ObjectUtils.isEmpty(office)) {
+                setFailedContent(result, String.format("第%s行的科室名称是空的", j + 1));
+                cell.setCellValue("科室名称是空的");
                 continue;
-            }*/
+            }
             // 数据校验
             if (!(eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION)
                     || eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION))) {
@@ -380,6 +382,19 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
                 setFailedContent(result, String.format("第%s行的部门名称填写有误", j + 1));
                 cell.setCellValue("部门名称填写有误");
                 continue;
+            }
+            // 科室和部门相对应
+            if (!office.equals(departmentName)) {
+                LambdaQueryWrapper<ViewDepartmentRoleUser> wrapper = new LambdaQueryWrapper<>();
+                wrapper.eq(ViewDepartmentRoleUser::getDepartmentName, departmentName);
+                List<ViewDepartmentRoleUser> list = viewDepartmentRoleUserMapper.selectList(wrapper);
+                if (!ObjectUtils.isEmpty(list)) {
+                    if (!office.equals(list.get(0).getTheDepartmentName())) {
+                        setFailedContent(result, String.format("第%s行的科室和部门不相互对应", j + 1));
+                        cell.setCellValue("科室和部门不相互对应");
+                        continue;
+                    }
+                }
             }
 
             //构建实体类
@@ -417,7 +432,15 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             eventList.setStandardCreateUserId(user.getId());
             eventList.setStandardCreateDate(new Date());
             eventList.setStandardAttachmentId(attachment.getId());
-            eventList.setOffice(office);
+            if (!ObjectUtils.isEmpty(office)) {
+                eventList.setOffice(office);
+                LambdaQueryWrapper<ViewDepartmentRoleUser> wrapper = new LambdaQueryWrapper<>();
+                wrapper.eq(ViewDepartmentRoleUser::getTheDepartmentName, office);
+                List<ViewDepartmentRoleUser> officeObj = viewDepartmentRoleUserMapper.selectList(wrapper);
+                if (!ObjectUtils.isEmpty(officeObj)) {
+                    eventList.setOfficeId(officeObj.get(0).getTheDepartmentId());
+                }
+            }
             LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepartmentWrapper = new LambdaQueryWrapper<>();
             viewDepartmentWrapper.eq(ViewDepartmentRoleUser::getDepartmentName, departmentName);
             List<ViewDepartmentRoleUser> viewDepartmentRoleUsers = viewDepartmentRoleUserMapper.selectList(viewDepartmentWrapper);
@@ -426,9 +449,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
                 cell.setCellValue(String.format("行数为【%s】的部门名称未查到，不能导入", j + 1));
                 continue;
             }
-            ViewDepartmentRoleUser viewDepartmentRoleUser = viewDepartmentRoleUsers.get(0);
-            eventList.setOfficeId(viewDepartmentRoleUser.getOfficeId());
-            // 不需要填报事件标准，直接完结
+            // 将状态设置为待导出维护岗位配比
             eventList.setStatus(PerformanceConstant.WAIT_RELATION_ROLE);
             eventListMapper.insert(eventList);
             cell.setCellValue("导入成功");
@@ -478,7 +499,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         departmentLambdaQueryWrapper.eq(Department::getDepartmentId, eventList.getDepartmentId());
         List<Department> departments1 = departmentMapper.selectList(departmentLambdaQueryWrapper);
         if (ObjectUtils.isEmpty(departments1)) {
-            throw new ServiceException("不存在科室");
+            throw new ServiceException("不存在部门");
         }
         Department department = departmentMapper.selectById(departments1.get(0).getDepartmentId());
         eventList.setDepartmentName(department.getDepartmentName());
@@ -545,7 +566,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
         LambdaQueryWrapper<EventList> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(EventList::getStatus, PerformanceConstant.WAIT_RELATION_ROLE)
-                .eq(EventList::getDepartmentId, departmentRoleByUser.getDepartmentId());
+                .eq(EventList::getOfficeId, departmentRoleByUser.getTheDepartmentId());
         List<EventList> selectList = eventListMapper.selectList(wrapper);
         return !ObjectUtils.isEmpty(selectList);
     }

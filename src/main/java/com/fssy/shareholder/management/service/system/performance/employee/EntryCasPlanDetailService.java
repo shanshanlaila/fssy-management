@@ -5,6 +5,7 @@
 package com.fssy.shareholder.management.service.system.performance.employee;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
 
@@ -87,4 +88,10 @@ public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetai
      * @return map
      */
     Map<Long, Map<String, Object>> findWeChatNoticeMap();
+
+    /**
+     * 是否存在导出的数据
+     * @return 标志
+     */
+    boolean isExistExportData(User user);
 }

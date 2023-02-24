@@ -5,9 +5,12 @@
 package com.fssy.shareholder.management.controller.system.performance.employee.queryCenter;
 
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
 import com.fssy.shareholder.management.service.manage.user.UserService;
+import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
+import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleService;
 import com.fssy.shareholder.management.tools.common.GetTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,6 +42,12 @@ public class QueryCenterController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EventsRelationRoleService eventsRelationRoleService;
+
+    @Autowired
+    private EntryCasPlanDetailService entryCasPlanDetailService;
+
     /**
      * 查询中心-plan
      */
@@ -46,6 +55,10 @@ public class QueryCenterController {
     @RequiredLog("履职计划查询页面")
     public String viewByPlan(Model model) {
         GetTool.getSelectorData(model);
+        User user = GetTool.getUser();
+        boolean flag = entryCasPlanDetailService.isExistExportData(user);
+        model.addAttribute("uerId", user.getId());
+        model.addAttribute("flag", flag);
         return "system/performance/employee/queryCenter/performance-plan-query";
     }
 
@@ -56,6 +69,9 @@ public class QueryCenterController {
     @GetMapping("eventRoleIndex")
     public String eventRoleIndex(Model model) {
         GetTool.getSelectorData(model);
+        // 查出当前登录用户是否存在符合打出的数据
+        boolean flag = eventsRelationRoleService.isExistExportData();
+        model.addAttribute("isExistExportData", flag);
         return "system/performance/employee/queryCenter/performance-event-relation-role-query";
     }
 

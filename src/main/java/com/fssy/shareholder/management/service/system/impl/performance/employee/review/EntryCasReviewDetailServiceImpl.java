@@ -1106,6 +1106,9 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                     num++;
                 }
             }
+            if (num==0){
+                return null;
+            }
             // 用户需要被通知填报总结的计划数
             childMap.put("num", num);
             map.put((Long) childMap.get("userId"), childMap);
