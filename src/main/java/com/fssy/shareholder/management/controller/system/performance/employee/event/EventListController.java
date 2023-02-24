@@ -87,14 +87,21 @@ public class EventListController {
     @RequiresPermissions("performance:employee:event:without:standard:index")
     public String index(Model model) {
         // 部门
-        Map<String, Object> departmentParams = new HashMap<>(20);
+        Map<String, Object> departmentParams = new HashMap<>(10);
+        departmentParams.put("departmentType", 1);
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         // 基础事件创建人
-        Map<String, Object> userParams = new HashMap<>(50);
-        List<String> selectedUserIds = new ArrayList<>(50);
+        Map<String, Object> userParams = new HashMap<>(1);
+        List<String> selectedUserIds = new ArrayList<>(1);
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
+
+        // 科室下拉框
+        Map<String, Object> officeParams = new HashMap<>(10);
+        officeParams.put("departmentType", 2);
+        List<Map<String, Object>> officeNameList = departmentService.findDepartmentsSelectedDataListByParams(officeParams, new ArrayList<>());
+        model.addAttribute("officeNameList", officeNameList);
         return "system/performance/employee/eventList/event-list";
     }
 
@@ -107,17 +114,26 @@ public class EventListController {
     public String indexExport(Model model) {
         // 部门
         Map<String, Object> departmentParams = new HashMap<>(20);
+        departmentParams.put("departmentType", 1);
         List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
         model.addAttribute("departmentNameList", departmentNameList);
         // 基础事件创建人
-        Map<String, Object> userParams = new HashMap<>(50);
-        List<String> selectedUserIds = new ArrayList<>(50);
+        Map<String, Object> userParams = new HashMap<>(1);
+        List<String> selectedUserIds = new ArrayList<>(1);
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
+        // 登陆人科室id
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentName", departmentRoleByUser.getDepartmentName());
+        model.addAttribute("officeId", departmentRoleByUser.getOfficeId());
+        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
+        // 判断是否具有需要导出的数据
         boolean flag = eventListService.isExistData();
         model.addAttribute("flag", flag);
+        // 科室下拉框
+        Map<String, Object> officeParams = new HashMap<>(10);
+        officeParams.put("departmentType", 2);
+        List<Map<String, Object>> officeNameList = departmentService.findDepartmentsSelectedDataListByParams(officeParams, new ArrayList<>());
+        model.addAttribute("officeNameList", officeNameList);
         return "system/performance/employee/eventList/event-list-export";
     }
 

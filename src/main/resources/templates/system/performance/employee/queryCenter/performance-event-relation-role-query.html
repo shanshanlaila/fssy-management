@@ -148,6 +148,20 @@
             cols: [
                 [
                     {
+                        field: 'status',
+                        width: 120,
+                        title: '状态',
+                        align: 'center',
+                        fixed: 'left',
+                        templet:function (d) {
+                            if (d.status==='待导出填报计划'){
+                                return `<span class="layui-badge layui-bg">${d.status}</span>`
+                            }else{
+                                return `<span class="layui-badge layui-bg-green">${d.status}</span>`
+                            }
+                        }
+                    },
+                    {
                         field: 'departmentName',
                         title: '部门名称',
                         width: 90,
@@ -256,12 +270,21 @@
         // 监听导出按钮
         form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
-            // 导出参数设置-只导出完结状态下的数据-status=“完结”
-            data.field.status = '完结';
-            var userIds = data.field.userIds;
+            field.status = '待导出填报计划';
+            // 只能导出本人的数据
+            field.userIds = [[${userId}]]
+            /*var userIds = data.field.userIds;
             // 必填项控制，必须选择用户名进行导出
             if (!userIds) {
                 layer.msg("请点击职员名称选择后导出", {icon: 5, time: 4000});
+                return false;
+            }*/
+            if ([[${isExistExportData}]]===false){
+                layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
+                return false;
+            }
+            if (field.userIds !== [[${userId}]]) {
+                layer.msg("只能导出本人的数据", {icon: 5, time: 4000});
                 return false;
             }
             field.url = "/system/performance/employee/events-relation-role/downloadForCharge";

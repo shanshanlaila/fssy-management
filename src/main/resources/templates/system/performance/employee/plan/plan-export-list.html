@@ -422,10 +422,15 @@
         // 导出
         form.on('submit(export)', function (data) {
             var field = data.field;
-            data.field.status = '待填报总结'// 只能导出‘待填报总结’
-            //data.field.userName=[[${userName}]];// 只能导出本人的
+            field.status = '待填报总结'// 只能导出‘待填报总结’
+            field.userIds=[[${uerId}]];// 只能导出本人的
+            if ([[${flag}]]===false){
+                layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
+                return false;
+            }
             // 必填项控制
-            var userIds = data.field.userIds;
+            var userIds = field.userIds;
+            console.log(userIds)
             if (!userIds) {
                 layer.msg("请选择职员名称进行导出", {icon: 5, time: 4000});
                 return false;

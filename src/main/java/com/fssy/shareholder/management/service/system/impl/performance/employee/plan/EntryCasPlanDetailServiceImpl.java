@@ -318,13 +318,16 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setMergeId(entryCasMerge.getId());
             //设置事件岗位清单状态为完结
             EventsRelationRole relationRole = eventsRelationRoleMapper.selectById(eventsRoleId);
-            relationRole.setStatus(PerformanceConstant.FINAL);
-            eventsRelationRoleMapper.updateById(relationRole);
+            if (!ObjectUtils.isEmpty(relationRole)) {
+                relationRole.setStatus(PerformanceConstant.FINAL);
+                eventsRelationRoleMapper.updateById(relationRole);
+            }
             // 写入计划
             entryCasPlanDetailMapper.insert(entryCasPlanDetail);
-            cell.setCellValue("导入成功");// 写在upload目录下的excel表格
+            cell.setCellValue("导入成功");
         }
-        sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
+        // 写入excel表
+        sheetService.write(attachment.getPath(), attachment.getFilename());
         return result;
     }
 
@@ -722,12 +725,12 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 .groupBy(EventsRelationRole::getUserId);
 
         List<Map<String, Object>> eventsRelationRoles = eventsRelationRoleMapper.selectMaps(wrapper);
-        if (ObjectUtils.isEmpty(eventsRelationRoles)){
+        if (ObjectUtils.isEmpty(eventsRelationRoles)) {
             return null;
         }
         for (Map<String, Object> eventsRelationRole : eventsRelationRoles) {
             User user = userMapper.selectById((Serializable) eventsRelationRole.get("userId"));
-            childMap=new HashMap<>(50);
+            childMap = new HashMap<>(50);
             childMap.put("userId", user.getId());
             childMap.put("userName", user.getName());
             childMap.put("weChat", user.getQyweixinUserId());
@@ -735,6 +738,15 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             map.put((Long) childMap.get("userId"), childMap);
         }
         return map;
+    }
+
+    @Override
+    public boolean isExistExportData(User user) {
+        LambdaQueryWrapper<EntryCasPlanDetail> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(EntryCasPlanDetail::getUserId, user.getId())
+                .eq(EntryCasPlanDetail::getStatus, PerformanceConstant.WAIT_WRITE_REVIEW);
+        List<EntryCasPlanDetail> selectList = entryCasPlanDetailMapper.selectList(wrapper);
+        return !ObjectUtils.isEmpty(selectList);
     }
 
 

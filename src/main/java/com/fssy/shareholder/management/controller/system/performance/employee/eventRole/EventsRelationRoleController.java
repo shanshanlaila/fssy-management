@@ -149,7 +149,7 @@ public class EventsRelationRoleController {
     @RequiredLog("展示新增单条履职计划页面")
     public String showCreateCasPlan(@PathVariable String id, Model model) {
         EventsRelationRole eventsRelationRole = eventsRelationRoleService.getById(id);
-        model.addAttribute("eventsRelationRole", eventsRelationRole);//传数据到前端去
+        model.addAttribute("eventsRelationRole", eventsRelationRole);
         return "system/performance/employee/events-relation-role-creatCasPlan";
     }
 }

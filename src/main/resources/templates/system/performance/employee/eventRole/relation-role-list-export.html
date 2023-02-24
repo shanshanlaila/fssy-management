@@ -308,14 +308,15 @@
                 layer.msg("请点击职员名称选择后导出", {icon: 5, time: 4000});
                 return false;
             }*/
-            if (field.userIds !== [[${userId}]]) {
-                layer.msg("只能导出本人的数据", {icon: 5, time: 4000});
-                return false;
-            }
             if ([[${isExistExportData}]]===false){
                 layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
                 return false;
             }
+            if (field.userIds !== [[${userId}]]) {
+                layer.msg("只能导出本人的数据", {icon: 5, time: 4000});
+                return false;
+            }
+
             field.url = "/system/performance/employee/events-relation-role/downloadForCharge";
             var url = createUrl(field);
             layer.msg("正在导出事件列表，请稍候");

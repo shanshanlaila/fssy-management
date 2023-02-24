@@ -17,7 +17,7 @@
 		</a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                              style="line-height: 30px"></i></a>
+                                                                style="line-height: 30px"></i></a>
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
@@ -28,6 +28,10 @@
                         <!--部门-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
+                        </div>
+                        <!--科室-->
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="officeSelector"></div>
                         </div>
                         <!--基础事件创建人-->
                         <div class="layui-inline layui-show-xs-block">
@@ -90,7 +94,7 @@
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <!--<a class="layui-btn" lay-submit th:href="@{/export/eventList.xlsx}">
+                            <!--<a class="layui-btn" lay-submit th:href="@{/export/基础事件清单.xlsx}">
                                 <i class="layui-icon">&#xe601</i>下载填写基础事件清单模板
                             </a>
                             <button shiro:hasPermission="system:performance:employee:event:attachment:withoutStandardImport"
@@ -105,12 +109,20 @@
                 </form>
                 <div class="layui-card-body ">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+
                     <!--<script type="text/html" id="tool">
 
                         <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
 
                         <a lay-event="delete" title="取消"><i class="layui-icon">&#x1007;</i></a>
                     </script>-->
+                    <script type="text/html" id="toolbar">
+                        <form class="layui-form layui-col-space5">
+                            <div class="layui-inline layui-show-xs-block">
+                                <span style="font-size: xx-small;color: grey">选择编制年份、本部门或本科室进行导出</span>
+                            </div>
+                        </form>
+                    </script>
                 </div>
             </div>
         </div>
@@ -346,6 +358,25 @@
                     name: 'departmentIds',// 传到后端选择的departmentId集合字符串
                 });
 
+                // 科室查询下拉列表
+                let officeSelector = xmSelect.render({
+                    el: '#officeSelector',
+                    language: 'zn',
+                    data: [[${officeNameList}]],
+                    filterable: true,
+                    radio: true,// 开启单选
+                    tips: '科室查询',
+                    toolbar: {
+                        show: true
+                    },
+                    paging: true, // 分页
+                    pageSize: 20,
+                    style: {
+                        width: '160px', 'min-height': '28px', 'line-height': '28px',
+                    },
+                    name: 'officeIds',
+                });
+
                 // 职员名称查询下拉列表
                 let userSelect = xmSelect.render({
                     el: '#userSelect', // 绑定
@@ -402,26 +433,37 @@
 
                 // 监听导出按钮
                 form.on('submit(importToCompleteRole)', function (data) {
-                    var field = data.field;
-                    field.status = '待导出维护岗位配比';
-                    // 导出本部门的
-                    field.departmentName=[[${departmentName}]];
                     // 无数据提示
                     if([[${flag}]]===false){
                         layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
                         return false;
                     }
-                    // 必填项控制
-                    var year = field.year;
-                    if (!year) {
-                        // year为空=false
-                        layer.msg("请选择编制年份后点击导出", {icon: 5, time: 4000});
+                    var field = data.field;
+                    field.status = '待导出维护岗位配比';
+                    // 必选项控制
+                    if (!field.year) {
+                        layer.msg("请选择编制年份导出", {icon: 5, time: 4000});
                         return false;
                     }
-                    if (!field.departmentIds) {
-                        layer.msg("部门为必选项，请选择部门", {icon: 5, time: 4000});
+                    if (!field.officeIds && !field.departmentIds) {
+                        layer.msg("请选择您的科室或部门", {icon: 5, time: 4000});
                         return false;
                     }
+                    // 导出本科室或部门的
+                    if (field.officeIds) {
+                        if (parseInt(field.officeIds) !== [[${officeId}]]) {
+                            layer.msg("请选择您自己的科室导出", {icon: 5, time: 4000});
+                            return false;
+                        }
+                    }
+
+                    if (field.departmentIds) {
+                        if (parseInt(field.departmentIds) !== [[${departmentId}]]) {
+                            layer.msg("请选择您自己的部门导出", {icon: 5, time: 4000});
+                            return false;
+                        }
+                    }
+
                     field.url = "/system/performance/employee/eventsList/downloadToCompleteRole";
                     var url = createUrl(field);
                     layer.msg("正在导出事件列表，请稍候");

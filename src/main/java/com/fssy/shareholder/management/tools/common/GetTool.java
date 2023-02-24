@@ -21,7 +21,6 @@ import com.fssy.shareholder.management.service.manage.user.UserService;
 import com.fssy.shareholder.management.service.system.performance.employee.BaseService;
 import com.fssy.shareholder.management.tools.constant.PerformanceConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -78,6 +77,9 @@ public class GetTool {
 
     static UserService userServices;
 
+    /**
+     * 方法上加该注解会在项目启动的时候执行该方法，也可以理解为在spring容器初始化的时候执行该方法。
+     */
     @PostConstruct
     public void init() {
         viewDepartmentRoleUserMappers = viewDepartmentRoleUserMapper;

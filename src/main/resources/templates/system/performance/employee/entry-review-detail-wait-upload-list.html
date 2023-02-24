@@ -142,6 +142,18 @@
             cols: [
                 [
                     {
+                        field: 'status',
+                        title: '状态',
+                        width: 130,
+                        templet: function (d) {
+                            if(d.status==='待提交评优材料'){
+                                return '<span class="layui-badge layui-bg">待提交评优材料</span>';
+                            } else return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
+                        },
+                        align: 'center',
+                        fixed: 'left'
+                    },
+                    {
                         field: 'departmentName',
                         title: '部门名称',
                         width: 90,
@@ -161,18 +173,6 @@
                         width: 60,
                         fixed: 'left',
                         align: "center"
-                    },
-                    {
-                        field: 'status',
-                        title: '状态',
-                        width: 120,
-                        templet: function (d) {
-                             if(d.status==='待提交评优材料'){
-                                return '<span class="layui-badge layui-bg">待提交评优材料</span>';
-                            } else return `<span class="layui-badge layui-bg-green">${d.status}</span>`;
-                        },
-                        align: 'center',
-                        fixed: 'left'
                     },
                     {
                         field: 'planningWork',

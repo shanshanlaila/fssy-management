@@ -148,18 +148,11 @@
             cols: [
                 [
                     {
-                        type: 'checkbox',
-                        fixed: 'left',
-                        align: 'center',
-                        width: 80,
-                        rowspan: 2
-                    },
-                    {
                         field: 'status',
                         fixed: 'left',
                         align: 'center',
                         title: '状态',
-                        width: 100,
+                        width: 120,
                         rowspan: 2,
                         templet: function (d) {
                             return `<span class="layui-badge layui-bg-green">${d.status}</span>`
