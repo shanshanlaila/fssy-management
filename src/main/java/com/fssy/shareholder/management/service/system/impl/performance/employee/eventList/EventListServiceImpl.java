@@ -376,7 +376,7 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
                 continue;
             }
             LambdaQueryWrapper<Department> departmentWrapper = new LambdaQueryWrapper<>();
-            departmentWrapper.eq(Department::getDepartmentName, departmentName);
+            departmentWrapper.eq(Department::getName, departmentName);
             List<Department> departmentList = departmentMapper.selectList(departmentWrapper);
             if (ObjectUtils.isEmpty(departmentList)) {
                 setFailedContent(result, String.format("第%s行的部门名称填写有误", j + 1));
@@ -385,11 +385,11 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             }
             // 科室和部门相对应
             if (!office.equals(departmentName)) {
-                LambdaQueryWrapper<ViewDepartmentRoleUser> wrapper = new LambdaQueryWrapper<>();
-                wrapper.eq(ViewDepartmentRoleUser::getDepartmentName, departmentName);
-                List<ViewDepartmentRoleUser> list = viewDepartmentRoleUserMapper.selectList(wrapper);
-                if (!ObjectUtils.isEmpty(list)) {
-                    if (!office.equals(list.get(0).getTheDepartmentName())) {
+                LambdaQueryWrapper<Department> officeWrapper = new LambdaQueryWrapper<>();
+                officeWrapper.eq(Department::getName, office);
+                List<Department> officeList = departmentMapper.selectList(officeWrapper);
+                if (!ObjectUtils.isEmpty(officeList)) {
+                    if (!departmentList.get(0).getDepartmentId().equals(officeList.get(0).getDepartmentId())) {
                         setFailedContent(result, String.format("第%s行的科室和部门不相互对应", j + 1));
                         cell.setCellValue("科室和部门不相互对应");
                         continue;
