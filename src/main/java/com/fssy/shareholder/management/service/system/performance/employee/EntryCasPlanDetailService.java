@@ -31,7 +31,7 @@ public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetai
      * @param attachment 履职管控计划表附件
      * @return 履职管控计划表附件map集合
      */
-    Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment);
+    Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment,HttpServletRequest request);
 
     /**
      * 通过查询条件查询履职计划map数据，用于导出

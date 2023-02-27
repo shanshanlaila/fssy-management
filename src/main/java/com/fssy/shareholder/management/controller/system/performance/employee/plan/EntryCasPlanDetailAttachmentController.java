@@ -87,8 +87,7 @@ public class EntryCasPlanDetailAttachmentController {
     @PostMapping("uploadFile")
     @RequiredLog("履职管控附件上传导入")
     @ResponseBody
-    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment,
-                                HttpServletRequest request) {
+    public SysResult uploadFile(@RequestParam("file") MultipartFile file, Attachment attachment, HttpServletRequest request) {
         // 保存附件
         Calendar calendar = Calendar.getInstance();
         attachment.setImportDate(calendar.getTime());// 设置时间
@@ -99,10 +98,9 @@ public class EntryCasPlanDetailAttachmentController {
                     String.format("序号为【%s】的导入场景未维护，不允许导入", attachment.getModule()));
         }
         Attachment result = fileAttachmentTool.storeFileToModule(file, module, attachment);
-
         try {
             // 读取附件并保存数据
-            Map<String, Object> resultMap = entryCasPlanDetailService.readEntryCasPlanDetailDataSource(result);
+            Map<String, Object> resultMap = entryCasPlanDetailService.readEntryCasPlanDetailDataSource(result,request);
             if (Boolean.parseBoolean(resultMap.get("failed").toString())) {// "failed" : true
                 attachmentService.changeImportStatus(CommonConstant.IMPORT_RESULT_SUCCESS,
                         result.getId().toString(), String.valueOf(resultMap.get("content")));

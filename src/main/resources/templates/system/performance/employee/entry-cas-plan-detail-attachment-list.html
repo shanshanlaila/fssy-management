@@ -57,12 +57,22 @@
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="importDate" id="importDate" placeholder="导入日期" autocomplete="off"
-                                       class="layui-input laydate">
+                                <input type="text" name="importDate" id="importDate" placeholder="导入日期"
+                                       autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" id="yearAndMonth" name="yearAndMonth"
+                                       class="layui-input"
+                                       placeholder="申报的年度和月度"
+                                       autocomplete="off"
+                                >
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button type="button" class="layui-btn layui-btn-sm" id="chooseFile">选择文件</button>
-                                <button class="layui-btn layui-btn-sm" lay-submit id="importAccountStatement" lay-filter="importAccountStatement">导入</button>
+                                <button class="layui-btn layui-btn-sm" lay-submit id="importAccountStatement"
+                                        lay-filter="importAccountStatement">导入
+                                </button>
                             </div>
                         </form>
                     </script>
@@ -73,8 +83,9 @@
 </div>
 
 <script th:inline="javascript">
-    layui.use(['table', 'form', 'layer', 'laydate', 'upload','element'
-    ], function () {
+
+
+    layui.use(['table', 'form', 'layer', 'laydate', 'upload', 'element'], function () {
         var $ = layui.$,
             table = layui.table,
             form = layui.form,
@@ -171,158 +182,133 @@
             ]
         });
 
-        // 重新重置日期控件
-        laydate.render(
-            {
-                elem: '#importDateStart',
-                trigger: 'click',
-                type: 'date',
-                value: new Date()
-            });
-        laydate.render(
-            {
-                elem: '#importDateEnd',
-                trigger: 'click',
-                type: 'date'
-            });
-
-     		// 重新重置日期控件
-        laydate.render(
-            {
-                elem: '#importDate',
-                trigger: 'click',
-                type: 'date',
-                value: moment().format("YYYY-MM-DD")
-            });
-
-        // 监听搜索按钮
-        form.on('submit(search)', function (data) {
-            // 重新加载表格
-            table.reload('dataTable',
-                {
-                    where: data.field,
-                    page:
-                        {
-                            curr: 1
-                        }
-                });
-            // 重新重置日期控件
-            laydate.render(
-                {
-                    elem: '#importDate',
-                    trigger: 'click',
-                    type: 'date',
-                    value: moment().format("YYYY-MM-DD")
-                });
-
-            // 导入
-            upload.render({
-	              elem : '#chooseFile',
-	              url : "/system/entry-cas-plan-detail/attachment/uploadFile",
-	              auto : false,
-	              accept : 'file' //允许上传所有文件
-	              ,
-	              exts : 'xlxs|xls|xlsm|xlsx',
-	              bindAction : '#importAccountStatement',
-	              data : {
-	                  '_token' : "{{csrf_token()}}"
-	              },
-	              before : function(obj) {
-	                  layer.load();
-	                  this.data.importDate = $('input[name=  ]').val();
-	                  this.data.module = [[${module}]];
-	              },
-	              done : function(result) {
-	                  layer.closeAll();
-	                  if (result.status === 200) {
-	                      layer.msg(result.msg, {
-	                          icon : 6,
-	                          time : 2000
-	                      });
-	                      setTimeout(function () {
-		                      	parent.layui.table.reload('dataTable');
-		        								var index = parent.layer.getFrameIndex(window.name);
-		        								parent.layer.close(index);
-	                          // 重新重置日期控件
-	                          laydate.render(
-	                              {
-	                                  elem: '#importDate',
-	                                  trigger: 'click',
-	                                  type: 'date',
-	                                  value: moment().format("YYYY-MM-DD")
-	                              });
-	                      }, 2000)
-	                  } else {
-	                      layer.msg(result.msg, {
-	                          icon : 5,
-	                          time : 4000
-	                      });
-	                      table.reload('dataTable');
-	                  }
-	              }
-          	});
-            return false;
+        // 导入日期起止
+        laydate.render({
+            elem: '#importDateStart',
+            trigger: 'click',
+            type: 'date',
+            value: new Date()
+        });
+        laydate.render({
+            elem: '#importDateEnd',
+            trigger: 'click',
+            type: 'date'
         });
 
-        // 重新重置日期控件
+        initDate(laydate);
+
+        // 搜索按钮
+        form.on('submit(search)', function (data) {
+            // 重新加载表格
+            table.reload('dataTable', {
+                where: data.field,
+                page: {curr: 1}
+            });
+            // 重新重置日期控件
+            initDate(laydate)
+            // 在点击导入按钮之前，需要选择公司和年月
+            initChoose()
+            // 选择文件按钮
+            upload.render({
+                elem: '#chooseFile',
+                url: "/system/entry-cas-plan-detail/attachment/uploadFile",
+                auto: false,
+                accept: 'file' //允许上传所有文件
+                ,
+                exts: 'xlxs|xls|xlsm|xlsx',
+                bindAction: '#importAccountStatement',
+                data: {
+                    '_token': "{{csrf_token()}}"
+                },
+                before: function (obj) {
+                    layer.load();
+                    // 导入日期
+                    this.data.importDate = $('input[name=importDate]').val();
+                    // 导入场景
+                    this.data.module = [[${module}]];
+                    // 申报年度、月度
+                    let yearAndMonth = document.querySelector('#yearAndMonth');
+                    this.data.yearAndMonth = yearAndMonth.value;// 年月
+                },
+                done: function (result) {
+                    layer.closeAll();
+                    if (result.status === 200) {
+                        // 操作成功
+                        layer.msg(result.msg, {
+                            icon: 6,
+                            time: 2000
+                        });
+                        setTimeout(function () {
+                            // 重新加载父窗口数据列表
+                            parent.layui.table.reload('dataTable');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            // 重新重置日期控件
+                            initDate(laydate);
+                        }, 2000)
+                    } else {
+                        // 操作失败
+                        layer.msg(result.msg, {
+                            icon: 5,
+                            time: 4000
+                        });
+                        table.reload('dataTable');
+                    }
+                }
+            });
+            return false;
+        });
+        // 在点击导入按钮之前，需要选择公司和年月
+        initChoose()
         upload.render({
-            elem : '#chooseFile',
-            url : "/system/entry-cas-plan-detail/attachment/uploadFile",
-            auto : false,
-            accept : 'file' //允许上传所有文件
+            elem: '#chooseFile',
+            url: "/system/entry-cas-plan-detail/attachment/uploadFile",
+            auto: false,
+            accept: 'file' //允许上传所有文件
             ,
-            exts : 'xlxs|xls|xlsm|xlsx',
-            bindAction : '#importAccountStatement',
-            data : {
-                '_token' : "{{csrf_token()}}"
+            exts: 'xlxs|xls|xlsm|xlsx',
+            bindAction: '#importAccountStatement',
+            data: {
+                '_token': "{{csrf_token()}}"
             },
-            before : function(obj) {
+            before: function (obj) {
                 layer.load();
+                // 导入日期
                 this.data.importDate = $('input[name=importDate]').val();
+                // 导入场景
                 this.data.module = [[${module}]];
+                // 申报年度、月度
+                let yearAndMonth = document.querySelector('#yearAndMonth');
+                this.data.yearAndMonth = yearAndMonth.value;// 年月
             },
-            done : function(result) {
+            done: function (result) {
                 layer.closeAll();
                 if (result.status === 200) {
+                    // 操作成功
                     layer.msg(result.msg, {
-                        icon : 6,
-                        time : 2000
+                        icon: 6,
+                        time: 2000
                     });
                     setTimeout(function () {
-	                    	parent.layui.table.reload('dataTable');
-	      								var index = parent.layer.getFrameIndex(window.name);
-	      								parent.layer.close(index);
+                        // 重新加载父窗口数据列表
+                        parent.layui.table.reload('dataTable');
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
                         // 重新重置日期控件
-                        laydate.render(
-                            {
-                                elem: '#importDate',
-                                trigger: 'click',
-                                type: 'date',
-                                value: moment().format("YYYY-MM-DD")
-                            });
+                        initDate(laydate);
                     }, 2000)
                 } else {
+                    // 操作失败
                     layer.msg(result.msg, {
-                        icon : 5,
-                        time : 4000
+                        icon: 5,
+                        time: 4000
                     });
                     table.reload('dataTable');
                 }
             }
         });
 
-        // 每个标签加一个class，名为laydate
-        $(".laydate").each(function() {
-            laydate.render({
-                elem : this,
-                //更换触发方式
-                trigger : 'click',
-                type : 'date',
-                value: new Date()
-            });
-        });
-
-        form.on('submit(importAccountStatement)', function(data) {
+        form.on('submit(importAccountStatement)', function (data) {
             // 上传文件已经做了提交，这里不需要再进行表单提交
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
@@ -351,13 +337,7 @@
                                         setTimeout(function () {
                                             table.reload('dataTable');
                                             // 重新重置日期控件
-                                            laydate.render(
-                                                {
-                                                    elem: '#importDate',
-                                                    trigger: 'click',
-                                                    type: 'date',
-                                                    value: moment().format("YYYY-MM-DD")
-                                                });
+                                            initDate(laydate)
                                         }, 2000)
                                     }
                                 }
@@ -369,7 +349,42 @@
             }
         });
 
+        /**
+         * 初始化附件导入日期控件
+         */
+        function initDate(laydate) {
+            // 导入日期
+            laydate.render({
+                elem: '#importDate',
+                trigger: 'click',
+                type: 'date',
+                value: moment().format("YYYY-MM-DD")
+            });
+            // 申报年度月度
+            laydate.render({
+                elem: '#yearAndMonth',
+                type: 'month',
+                trigger: 'click',
+            })
+        }
+
+        // 点击导入按钮之前选择校验
+        function initChoose() {
+            let importBtn = document.querySelector('#importAccountStatement');
+            importBtn.addEventListener('click', function () {
+                // 公司和年月是必选的
+                let yearAndMonth = document.querySelector('#yearAndMonth');
+                if (yearAndMonth.value === null || yearAndMonth.value === undefined || yearAndMonth.value === '') {
+                    layer.msg('请选择申报的年月', {
+                        icon: 5,
+                        time: 2000
+                    })
+                    return false;
+                }
+            })
+        }
     });
+
 
 </script>
 </body>

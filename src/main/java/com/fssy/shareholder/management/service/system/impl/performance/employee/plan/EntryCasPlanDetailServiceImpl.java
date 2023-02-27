@@ -13,6 +13,7 @@ import com.fssy.shareholder.management.mapper.manage.department.DepartmentMapper
 import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasMergeMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
+import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
 import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
@@ -20,8 +21,8 @@ import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasMerge;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasPlanDetail;
+import com.fssy.shareholder.management.pojo.system.performance.employee.EventList;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
-import com.fssy.shareholder.management.service.common.EnterpriseWeChatService;
 import com.fssy.shareholder.management.service.common.SheetService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
 import com.fssy.shareholder.management.tools.common.GetTool;
@@ -77,7 +78,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
     private EntryCasMergeMapper entryCasMergeMapper;
 
     @Autowired
-    private EnterpriseWeChatService enterpriseWeChatService;
+    private EventListMapper eventListMapper;
 
     @Autowired
     private EventsRelationRoleMapper eventsRelationRoleMapper;
@@ -108,7 +109,11 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment) {
+    public Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment,HttpServletRequest request) {
+        String yearAndMonth = request.getParameter("yearAndMonth");
+        if (ObjectUtils.isEmpty(yearAndMonth)){
+            throw new ServiceException("未选择申报年月，导入失败");
+        }
         // 导入月度履职计划
         // 返回消息
         Map<String, Object> result = new HashMap<>();
@@ -239,6 +244,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             // 数据库不能为null的字段设置值
             if (!ObjectUtils.isEmpty(eventsId)) {
                 entryCasPlanDetail.setEventsId(Long.valueOf(eventsId));
+            }else{
+                throw new ServiceException("不存在对应的基础事件");
             }
             entryCasPlanDetail.setDepartmentName(departmentName);
             LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -249,6 +256,8 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 cell.setCellValue("表中部门名称未维护");
                 continue;
             }
+            EventList eventList = eventListMapper.selectById(eventsId);
+            entryCasPlanDetail.setWorkOutput(eventList.getWorkOutput());
             entryCasPlanDetail.setDepartmentId(departments.get(0).getId());
             entryCasPlanDetail.setRoleName(departmentRoleByUser.getRoleName());
             entryCasPlanDetail.setRoleId(departmentRoleByUser.getRoleId());
@@ -261,8 +270,10 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             }
             entryCasPlanDetail.setUserId(users.get(0).getId());
             entryCasPlanDetail.setApplyDate(LocalDate.now());
-            entryCasPlanDetail.setYear(LocalDate.now().getYear());
-            entryCasPlanDetail.setMonth(LocalDate.now().getMonthValue());
+
+            String[] date = yearAndMonth.split("-");
+            entryCasPlanDetail.setYear(Integer.valueOf(date[0]));
+            entryCasPlanDetail.setMonth(Integer.valueOf(date[1]));
             entryCasPlanDetail.setCreatedAt(LocalDateTime.now());
             entryCasPlanDetail.setCreateId(user.getId());
             entryCasPlanDetail.setCreateDate(LocalDate.now());

@@ -13,7 +13,7 @@
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
 		<span class="layui-breadcrumb"> <<a href="">首页</a> <a href="">总部员工绩效</a> <a href="">基础事件管理</a>
-			<a> <cite>事件清单岗位关系管理</cite></a>
+			<a> <cite>事件清单岗位关系导出</cite></a>
 		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
                    onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
                                                                 style="line-height: 30px"></i>
@@ -300,20 +300,17 @@
         form.on('submit(downloadForCharge)', function (data) {
             var field = data.field;
             field.status = '待导出填报计划';
-            // 只能导出本人的数据
-            field.userIds = [[${userId}]]
-            /*var userIds = data.field.userIds;
-            // 必填项控制，必须选择用户名进行导出
-            if (!userIds) {
-                layer.msg("请点击职员名称选择后导出", {icon: 5, time: 4000});
-                return false;
-            }*/
-            if ([[${isExistExportData}]]===false){
-                layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
+            if ([[${isExistExportData}]] === false) {
+                layer.msg("暂时没有您的数据", {icon: 5, time: 4000});
                 return false;
             }
-            if (field.userIds !== [[${userId}]]) {
-                layer.msg("只能导出本人的数据", {icon: 5, time: 4000});
+            if (!field.userIds){
+                layer.msg("请选择您的姓名", {icon: 5, time: 4000});
+                return false;
+            }
+            // 选择了导出名字，但是不是本人的
+            if (field.userIds && parseInt(field.userIds) !== [[${userId}]]) {
+                layer.msg("只能导出本人的数据，请重新选择姓名", {icon: 5, time: 4000});
                 return false;
             }
 
