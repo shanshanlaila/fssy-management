@@ -13,10 +13,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -53,7 +50,10 @@ public class PositionDepartmentCompanyController {
     @RequiredLog("基础-员工-职位-部门-公司表")
     @RequiresPermissions("system:company:position-department-company:index")
     public String showCompany(Model model) {
-
+        //1、查询公司列表，用于companyName xm-select插件
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
         return "system/company/position-department-company-list";
     }
 
@@ -78,6 +78,7 @@ public class PositionDepartmentCompanyController {
      * @return 展示页面
      */
     @GetMapping("create")
+    @RequiresPermissions("system:company:position-department-company:create")
     public String createFinanceData(HttpServletRequest request, Model model) {
         //1、查询公司列表，用于customerName xm-select插件
         Map<String, Object> companyParams = new HashMap<>();
@@ -102,5 +103,55 @@ public class PositionDepartmentCompanyController {
         if (result) {
             return SysResult.ok();
         } return SysResult.build(500, "新增失败");
+    }
+
+    /**
+     * 展示修改页面
+     *
+     * @param id    positionDepartmentCompany id
+     * @param model 数据模型
+     * @return 修改页面
+     */
+    @GetMapping("edit/{id}")
+    @RequiresPermissions("system:company:position-department-company:edit")
+    public String showEditPage(@PathVariable String id, Model model) {
+        PositionDepartmentCompany positionDepartmentCompany = positionDepartmentCompanyService.getById(id);
+        model.addAttribute("positionDepartmentCompany", positionDepartmentCompany);//positionDepartmentCompany传到前端
+        return "system/company/position-department-company-edit";
+    }
+
+    /**
+     * 更新
+     *
+     * @param positionDepartmentCompany 实体类
+     * @return 结果
+     */
+    @PostMapping("update")
+    @ResponseBody
+    public SysResult update(PositionDepartmentCompany positionDepartmentCompany) {
+        boolean result = positionDepartmentCompanyService.updateById(positionDepartmentCompany);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "更新失败");
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @DeleteMapping("delete/{id}")
+    @RequiredLog("删除")
+    @ResponseBody
+    @RequiresPermissions("system:company:position-department-company:delete")
+    public SysResult delete( @PathVariable String id) {
+        PositionDepartmentCompany ppp =
+                positionDepartmentCompanyService.getById(id);
+        boolean p = positionDepartmentCompanyService.removeById(ppp);
+        if (p){
+            return SysResult.ok();
+        }
+        return SysResult.build(500,"删除失败");
     }
 }

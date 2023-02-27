@@ -37,6 +37,7 @@ public class CompanyProfileController {
     private CompanyService companyService;
     @Autowired
     private UserService userService;
+
     /**
      * 企业简介
      *
@@ -46,8 +47,12 @@ public class CompanyProfileController {
     @GetMapping("index")
     @RequiredLog("企业简介")
     @RequiresPermissions("system:operate:company:company-profile:index")
-    public String showCompany(Model model) {
-
+    public String showCompany(Model model,HttpServletRequest request) {
+        //1、查询公司列表，用于companyName xm-select插件
+        Map<String, Object> companyParams = new HashMap<>();
+        List<Map<String, Object>> companyNameList = companyService.findCompanySelectedDataListByParams(companyParams, new ArrayList<>());
+        model.addAttribute("companyNameList", companyNameList);
+        GetTool.getSelectorData(model);
         return "system/company/profile/company-profile-list";
     }
 
@@ -65,32 +70,37 @@ public class CompanyProfileController {
         GetTool.getPageDataRes(result, params, request, companyProfileService);
         return result;
     }
+
     /**
      * 展示企业简介详细页面
      *
-     * @param id   企业简介id
+     * @param id    企业简介id
      * @param model 数据模型
      * @return 展示页面
      */
     @GetMapping("details/{id}")
+    @RequiresPermissions("system:operate:company:company-profile:details")
     public String showDetailsPage(@PathVariable String id, Model model) {
         CompanyProfile companyProfile = companyProfileService.getById(id);
         model.addAttribute("companyProfile", companyProfile);//companyProfile传到前端
         return "system/company/profile/company-profile-details";
     }
+
     /**
      * 展示修改页面
      *
-     * @param id   企业简介id
+     * @param id    企业简介表id
      * @param model 数据模型
      * @return 修改页面
      */
     @GetMapping("edit/{id}")
+    @RequiresPermissions("system:operate:company:company-profile:edit")
     public String showEditPage(@PathVariable String id, Model model) {
         CompanyProfile companyProfile = companyProfileService.getById(id);
         model.addAttribute("companyProfile", companyProfile);//companyProfile传到前端
         return "system/company/profile/company-profile-edit";
     }
+
     /**
      * 更新公司简介
      *
@@ -99,6 +109,7 @@ public class CompanyProfileController {
      */
     @PostMapping("update")
     @ResponseBody
+    @RequiresPermissions("system:operate:company:company-profile:edit")
     public SysResult update(CompanyProfile companyProfile) {
         boolean result = companyProfileService.updateById(companyProfile);
         if (result) {
@@ -106,6 +117,7 @@ public class CompanyProfileController {
         }
         return SysResult.build(500, "公司简介更新失败");
     }
+
     /**
      * 返回新增页面
      *
@@ -113,6 +125,7 @@ public class CompanyProfileController {
      * @return 展示页面
      */
     @GetMapping("create")
+    @RequiresPermissions("system:operate:company:company-profile:create")
     public String createFinanceData(HttpServletRequest request, Model model) {
         //1、查询公司列表，用于customerName xm-select插件
         Map<String, Object> companyParams = new HashMap<>();
@@ -121,6 +134,7 @@ public class CompanyProfileController {
         GetTool.getSelectorData(model);
         return "system/company/profile/company-profile-create";
     }
+
     /**
      * 保存companyProfile表
      *
@@ -128,12 +142,31 @@ public class CompanyProfileController {
      * @return
      */
     @PostMapping("store")
-    @RequiredLog("新增单条企业财务基础数据")
+    @RequiredLog("新增公司简介")
     @ResponseBody
     public SysResult Store(CompanyProfile companyProfile, HttpServletRequest request) {
-       boolean result = companyProfileService.insertCompanyProfile(companyProfile,request);
+        boolean result = companyProfileService.insertCompanyProfile(companyProfile, request);
         if (result) {
             return SysResult.ok();
-        } return SysResult.build(500, "公司简介新增失败");
+        }
+        return SysResult.build(500, "公司简介新增失败");
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @DeleteMapping("delete/{id}")
+    @RequiredLog("删除")
+    @ResponseBody
+    @RequiresPermissions("system:operate:company:company-profile:delete")
+    public SysResult delete( @PathVariable String id) {
+        CompanyProfile profile = companyProfileService.getById(id);
+        boolean b = companyProfileService.removeById(profile);
+        if (b){
+            return SysResult.ok();
+        }
+        return SysResult.build(500,"删除失败");
     }
 }

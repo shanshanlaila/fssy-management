@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -49,12 +51,16 @@ public class PositionDepartmentCompany extends BaseModel {
     /**
      * 任职起日期
      */
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     @TableField("startDate")
     private LocalDate startDate;
 
     /**
      * 任职止日期
      */
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="Asia/Shanghai")
     @TableField("endDate")
     private LocalDate endDate;
 
