@@ -161,7 +161,7 @@
                     <td style="text-align: right">表单输出内容</td>
                     <td colspan="5">
                         <div class="layui-input-inline" style="width: 100%">
-                            <span>[[${entryCasPlanDetail.workOutput}]]</span>
+                            <span>[[${entryCasPlanDetail.planOutput}]]</span>
                         </div>
                     </td>
                 </tr>
@@ -258,7 +258,7 @@
                         layer.msg(result.msg, {icon: 6, time: 1000});
                         setTimeout(function () {
                             parent.layui.table.reload('dataTable');
-                            var index = parent.layer.getFrameIndex(window.name);
+                            const index = parent.layer.getFrameIndex(window.name);
                             parent.layer.close(index);
                         }, 1000)
                     } else {

@@ -293,7 +293,7 @@ public class EntryCasReviewDetailController {
     @PostMapping("save")
     @ResponseBody
     @RequiredLog("创建单条履职回顾")
-    public SysResult create(EntryCasReviewDetail entryCasReviewDetail, HttpServletRequest request) {
+    public SysResult create(EntryCasReviewDetail entryCasReviewDetail) {
         boolean result = reviewService.saveOneReviewDetail(entryCasReviewDetail);
         if (result) {
             return SysResult.ok();

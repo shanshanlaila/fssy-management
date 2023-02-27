@@ -196,6 +196,11 @@
                 </form>
                 <div class="layui-card-body">
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
+                    <script type="text/html" id="tool">
+                        {{# if(d.status == '待填报总结') {}}
+                        <a lay-event="createReview" title="填报单条履职总结"><i class="layui-icon">&#xe608;</i></a>
+                        {{# } }}
+                    </script>
                 </div>
             </div>
         </div>
@@ -408,13 +413,13 @@
                         },
                         align: "center"
                     },
-                    /*{
+                    {
                         fixed: 'right',
                         title: '操作',
-                        width: 100,
+                        width: 70,
                         align: 'center',
                         toolbar: '#tool'
-                    }*/
+                    }
                 ]
             ]
         });
@@ -423,8 +428,8 @@
         form.on('submit(export)', function (data) {
             var field = data.field;
             field.status = '待填报总结'// 只能导出‘待填报总结’
-            field.userIds=[[${uerId}]];// 只能导出本人的
-            if ([[${flag}]]===false){
+            field.userIds = [[${uerId}]];// 只能导出本人的
+            if ([[${flag}]] === false) {
                 layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
                 return false;
             }
@@ -440,6 +445,25 @@
             layer.msg("正在导出事件列表，请稍候");
             window.open(url, true);
             return false;
+        });
+
+        // 监听行工具事件
+        table.on('tool(dataTable)', function (obj) {
+            const data = obj.data;
+            if (obj.event === 'createReview') { // 填写履职回顾
+                layer.open({
+                    type: 2,
+                    title: '序号为' + data.id + '的履职回顾填写',
+                    area:
+                        [
+                            $(window).width() * 0.9 + 'px',
+                            $(window).height() - 50 + 'px'
+                        ],
+                    content: '/system/entry-cas-plan-detail/createReview/' + data.id,
+                    maxmin: true,
+                    scrollbar: true
+                });
+            }
         });
 
     });

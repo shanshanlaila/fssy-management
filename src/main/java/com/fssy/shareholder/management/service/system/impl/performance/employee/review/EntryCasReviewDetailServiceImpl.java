@@ -913,6 +913,13 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (ObjectUtils.isEmpty(planDetail)) {
             throw new ServiceException(String.format("序号为【%s】的计划不存在,创建失败", entryCasReviewDetail.getCasPlanId()));
         }
+        EventList eventList = null;
+        if (!Objects.equals(planDetail.getEventsFirstType(), PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
+            eventList = eventListMapper.selectById(planDetail.getEventsId());
+            if (ObjectUtils.isEmpty(eventList)) {
+                throw new ServiceException("该计划不存在对应的基础事件");
+            }
+        }
         // 判断是否重复创建总结
         LambdaQueryWrapper<EntryCasReviewDetail> reviewQueryWrapper = new LambdaQueryWrapper<>();
         reviewQueryWrapper.eq(EntryCasReviewDetail::getCasPlanId, entryCasReviewDetail.getCasPlanId());
@@ -943,6 +950,8 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         entryCasReviewDetail.setCreateName(user.getName());
         entryCasReviewDetail.setCreateDate(LocalDate.now());
         entryCasReviewDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
+        entryCasReviewDetail.setPlanOutput(planDetail.getPlanOutput());
+        entryCasReviewDetail.setWorkOutput(eventList==null?null:eventList.getWorkOutput());
         planDetail.setStatus(PerformanceConstant.FINAL);
         entryCasPlanDetailMapper.updateById(planDetail);
         entryCasReviewDetailMapper.insert(entryCasReviewDetail);
@@ -1081,7 +1090,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         }
         for (Map<String, Object> eventsRelationRole : planUserList) {
             User user = userMapper.selectById((Serializable) eventsRelationRole.get("userId"));
-            childMap=new HashMap<>(50);
+            childMap = new HashMap<>(50);
             // 用户id
             childMap.put("userId", user.getId());
             // 用户名
@@ -1106,7 +1115,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
                     num++;
                 }
             }
-            if (num==0){
+            if (num == 0) {
                 return null;
             }
             // 用户需要被通知填报总结的计划数

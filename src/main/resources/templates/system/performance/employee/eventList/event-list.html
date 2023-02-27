@@ -24,14 +24,14 @@
     </a>
     <button id="queryBtn" class="layui-upload-button"
             style="float: right;line-height: 1.6em; margin:1px 5px;">
-        隐藏搜索栏
+        高级检索
     </button>
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <form class="layui-form layui-col-space5" id="form">
+                <form class="layui-form layui-col-space5">
                     <div class="layui-card-body ">
                         <!--部门-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
@@ -49,60 +49,63 @@
                             <input type="text" id="year" name="year" placeholder="编制年份"
                                    autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="strategyFunctions" placeholder="战略职能"
-                                   autocomplete="off" class="layui-input">
+                        <!--高级检索部分-->
+                        <div id="hideSpace" class="layui-inline layui-show-xs-block" style="display: none">
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="strategyFunctions" placeholder="战略职能"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="supportFunctions" placeholder="支持职能"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="jobName" placeholder="工作职责"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="workEvents" placeholder="流程（工作事件）"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="workOutput" placeholder="表单（输出内容）"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block" style="width: 150px">
+                                <select name="eventsFirstType" id="eventsFirstType">
+                                    <option value="" selected>请选择事件类型</option>
+                                    <option value="事务类">事务类</option>
+                                    <option value="非事务类">非事务类</option>
+                                </select>
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
+                                <input type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
+                                       autocomplete="off" class="layui-input   search-laydate">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="createDateEnd" placeholder="编制日期止" id="createDateEnd"
+                                       autocomplete="off" class="layui-input laydate search-laydate">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <label class="layui-form-label"
+                                       style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0;">生效日期</label>
+                                <input
+                                        type="text" name="activeDateStart" placeholder="生效日期起" id="activeDateStart"
+                                        autocomplete="off" class="layui-input laydate search-laydate">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
+                                       autocomplete="off" class="layui-input laydate search-laydate">
+                            </div>
                         </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="supportFunctions" placeholder="支持职能"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="jobName" placeholder="工作职责"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="workEvents" placeholder="流程（工作事件）"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="workOutput" placeholder="表单（输出内容）"
-                                   autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block" style="width: 150px">
-                            <select name="eventsFirstType" id="eventsFirstType">
-                                <option value="" selected>请选择事件类型</option>
-                                <option value="事务类">事务类</option>
-                                <option value="非事务类">非事务类</option>
-                            </select>
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <label class="layui-form-label"
-                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
-                            <input
-                                    type="text" name="createDateStart" placeholder="编制日期起" id="createDateStart"
-                                    autocomplete="off" class="layui-input laydate search-laydate">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="createDateEnd" placeholder="编制日期止" id="createDateEnd"
-                                   autocomplete="off" class="layui-input laydate search-laydate">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <label class="layui-form-label"
-                                   style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0;">生效日期</label>
-                            <input
-                                    type="text" name="activeDateStart" placeholder="生效日期起" id="activeDateStart"
-                                    autocomplete="off" class="layui-input laydate search-laydate">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
-                                   autocomplete="off" class="layui-input laydate search-laydate">
-                        </div>
+
                         <div class="layui-inline layui-show-xs-block">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <a class="layui-btn" lay-submit th:href="@{/export/基础事件清单.xlsx}">
+                            <a class="layui-btn" lay-submit th:href="@{/export/eventList.xlsx}">
                                 <i class="layui-icon">&#xe601</i>下载填写基础事件清单模板
                             </a>
                             <button shiro:hasPermission="system:performance:employee:event:attachment:withoutStandardImport"
@@ -159,14 +162,14 @@
                 let queryBtn = document.querySelector("#queryBtn");
                 let showFlag = true;
                 queryBtn.addEventListener('click', function () {
-                    let form = document.querySelector("#form");
+                    let hideSpace = document.querySelector("#hideSpace");
                     if (showFlag) {
-                        form.setAttribute('style', 'display:none')
-                        queryBtn.innerHTML = "显示搜索栏";
+                        // 显示
+                        hideSpace.removeAttribute('style')
                         showFlag = false
                     } else {
-                        form.removeAttribute('style')
-                        queryBtn.innerHTML = "隐藏搜索栏"
+                        // 隐藏
+                        hideSpace.setAttribute('style', 'display:none')
                         showFlag = true
                     }
                 })

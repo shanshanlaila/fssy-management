@@ -283,8 +283,11 @@ public class EntryCasPlanDetailController {
     @GetMapping("createReview/{id}")
     public String showCreateReview(@PathVariable String id, Model model) {
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
+        if (ObjectUtils.isEmpty(entryCasPlanDetail)){
+            throw new ServiceException("不存在该计划");
+        }
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
-        return "system/performance/employee/entry-cas-plan-detail-createReview";
+        return "system/performance/employee/plan/entry-cas-plan-detail-createReview";
     }
 
     @GetMapping("SelectIndex")

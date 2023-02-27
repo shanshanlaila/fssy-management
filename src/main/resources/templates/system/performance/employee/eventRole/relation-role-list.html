@@ -76,7 +76,8 @@
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 120px;">
-                            <input type="text" name="workEvents" id="workEvents" placeholder="工作事件查询" autocomplete="off"
+                            <input type="text" name="workEvents" id="workEvents" placeholder="工作事件查询"
+                                   autocomplete="off"
                                    class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 140px;">
@@ -170,18 +171,14 @@
             cols: [
                 [
                     {
-                      field: 'status',
-                      width: 120,
-                      title: '状态',
-                      align: 'center',
-                      fixed: 'left',
-                      templet:function (d) {
-                          if (d.status==='待导出填报计划'){
-                              return `<span class="layui-badge layui-bg">${d.status}</span>`
-                          }else{
-                              return `<span class="layui-badge layui-bg-green">${d.status}</span>`
-                          }
-                      }
+                        field: 'status',
+                        width: 120,
+                        title: '状态',
+                        align: 'center',
+                        fixed: 'left',
+                        templet: function (d) {
+                            return `<span class="layui-badge layui-bg-green">${d.status}</span>`
+                        }
                     },
                     {
                         field: 'departmentName',
@@ -236,7 +233,7 @@
                         align: "center",
                         templet: function (d) {
                             let number = d.proportion * d.standardValue;
-                            number=number.toFixed(2)
+                            number = number.toFixed(2)
                             return `<span class="layui-badge layui-bg-blue">${number}</span>`
                         }
                     },

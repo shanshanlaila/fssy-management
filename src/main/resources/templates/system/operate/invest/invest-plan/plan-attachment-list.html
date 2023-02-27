@@ -259,6 +259,7 @@
                     this.data.importDate = $('input[name=importDate]').val();// 导入日期
                     this.data.module = [[${module}]];// 导入场景
                     this.data.companyId = companyId;// 公司id
+                    let months = document.querySelector('#month');
                     this.data.month = months.value;// 年月
                 },
                 done: function (result) {
