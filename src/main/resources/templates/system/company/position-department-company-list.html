@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <title>基础-员工-职位-部门-公司表管理</title>
@@ -30,16 +30,42 @@
               <input type="text" name="id" placeholder="序号查询"
                      autocomplete="off" class="layui-input">
             </div>
+            <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+              <div id="companySelect"></div>
+            </div>
+            <div class="layui-inline layui-show-xs-block" style="width: 150px">
+              <select name="internalUser" id="internalUser">
+                <option value="" selected>请选择人员</option>
+                <option value="集团内部">集团内部</option>
+                <option value="集团外部">集团外部</option>
+              </select>
+            </div>
+            <div class="layui-inline layui-show-xs-block" style="width: 150px">
+              <select name="internalCompany" id="internalCompany">
+                <option value="" selected>请选择</option>
+                <option value="集团内公司">集团内公司</option>
+                <option value="集团外公司">集团外公司</option>
+              </select>
+            </div>
+            <div class="layui-inline layui-show-xs-block">
+              <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
+                <i class="layui-icon">&#xe615;</i>
+              </button>
+            </div>
           </div>
         </form>
         <div class="layui-card-body ">
           <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
           <script type="text/html" id="toolbar">
               <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" lay-event="create">新增</button>
+                <button shiro:hasPermission="system:company:position-department-company:create"  class="layui-btn layui-btn-sm" lay-event="create">新增</button>
               </div>
           </script>
           <script type="text/html" id="tool">
+
+            <a  shiro:hasPermission="system:company:position-department-company:edit" lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+
+            <a  shiro:hasPermission="system:company:position-department-company:delete" lay-event="delete" title="删除"><i class="layui-icon">&#xe640;</i></a>
           </script>
         </div>
       </div>
@@ -300,13 +326,13 @@
                         layer.open(
                                 {
                                   type: 2,
-                                  title: data.id + ':年度投资项目信息修改',
+                                  title: data.id + ':修改',
                                   area:
                                           [
                                             $(window).width() * 0.9 + 'px',
                                             $(window).height() - 50 + 'px'
                                           ],
-                                  content: '/system/operate/company/FinanceData/edit/' + data.id,
+                                  content: '/system/company/position-department-company/edit/' + data.id,
                                   maxmin: true
                                 });
                       } else if (obj.event === 'delete') { // 删除/取消
@@ -314,7 +340,7 @@
                           $.ajax(
                                   {
                                     type: 'DELETE',
-                                    url: '/system/operate/company/FinanceData/cancel/' + data.id,
+                                    url: '/system/company/position-department-company/delete/' + data.id,
                                     success: function (result) {
                                       layer.msg(result.msg);
                                       if (result.status === 200) {
@@ -337,6 +363,24 @@
                                   maxmin: true
                                 });
                       }
+                    });
+                    // 公司选择获得器
+                    xmSelect.render({
+                      el: '#companySelect',
+                      language: 'zn',
+                      data: [[${companyNameList}]],
+                      filterable: true,
+                      radio: true,
+                      tips: '请选择公司',
+                      toolbar: {
+                        show: true
+                      },
+                      paging: true, // 分页
+                      pageSize: 20,
+                      style: {
+                        width: '160px', 'min-height': '28px', 'line-height': '28px',
+                      },
+                      name: 'companyId',// 传到后端选择的companyId集合字符串
                     });
                   });
 </script>

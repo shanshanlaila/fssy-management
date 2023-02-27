@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>企业简介管理</title>
@@ -30,6 +30,13 @@
                             <input type="text" name="id" placeholder="序号查询"
                                    autocomplete="off" class="layui-input">
                         </div>
+                        <div class="layui-inline layui-show-xs-block" style="width: 160px;">
+                            <div id="companySelect"></div>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="legalPerson" placeholder="法定代表人查询"
+                                   autocomplete="off" class="layui-input">
+                        </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
@@ -41,13 +48,15 @@
                     <table class="layui-table layui-form" id="dataTable" lay-filter="dataTable"></table>
                         <script type="text/html" id="toolbar">
                             <div class="layui-btn-container">
-                                <button class="layui-btn layui-btn-sm" lay-event="create">新增公司简介</button>
+                                <button shiro:hasPermission="system:operate:company:company-profile:create" class="layui-btn layui-btn-sm" lay-event="create">新增公司简介</button>
                             </div>
                     </script>
                     <script type="text/html" id="tool">
-                        <a lay-event="details" title="详细"><i class="layui-icon">&#xe60a;</i></a>
+                        <a shiro:hasPermission="system:operate:company:company-profile:details" lay-event="details" title="详细"><i class="layui-icon">&#xe60a;</i></a>
 
-                        <a lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+                        <a  shiro:hasPermission="system:operate:company:company-profile:edit" lay-event="edit" title="修改"><i class="layui-icon">&#xe642;</i></a>
+
+                        <a  shiro:hasPermission="system:operate:company:company-profile:delete" lay-event="delete" title="删除"><i class="layui-icon">&#xe640;</i></a>
                     </script>
                 </div>
             </div>
@@ -247,7 +256,7 @@
                             $.ajax(
                                 {
                                     type: 'DELETE',
-                                    url: '/system/operate/company/FinanceData/cancel/' + data.id,
+                                    url: '/system/operate/company/company-profile/delete/' + data.id,
                                     success: function (result) {
                                         layer.msg(result.msg);
                                         if (result.status === 200) {
@@ -271,6 +280,25 @@
                             });
                     }
                 });
+                // 公司选择获得器
+                xmSelect.render({
+                    el: '#companySelect',
+                    language: 'zn',
+                    data: [[${companyNameList}]],
+                    filterable: true,
+                    radio: true,
+                    tips: '请选择公司',
+                    toolbar: {
+                        show: true
+                    },
+                    paging: true, // 分页
+                    pageSize: 20,
+                    style: {
+                        width: '160px', 'min-height': '28px', 'line-height': '28px',
+                    },
+                    name: 'companyId',// 传到后端选择的companyId集合字符串
+                });
+
             });
 </script>
 </body>

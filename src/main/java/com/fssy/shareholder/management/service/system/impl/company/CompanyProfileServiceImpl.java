@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fssy.shareholder.management.mapper.manage.company.CompanyMapper;
+import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.mapper.system.operate.company.CompanyProfileMapper;
 import com.fssy.shareholder.management.pojo.manage.company.Company;
 import com.fssy.shareholder.management.pojo.system.company.CompanyProfile;
@@ -31,6 +32,9 @@ public class CompanyProfileServiceImpl extends ServiceImpl<CompanyProfileMapper,
     private CompanyProfileMapper companyProfileMapper;
     @Autowired
     private CompanyMapper companyMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 获取组织结构列表用于xm-select插件
@@ -98,6 +102,72 @@ public class CompanyProfileServiceImpl extends ServiceImpl<CompanyProfileMapper,
         if (params.containsKey("companyShortName")) {
             queryWrapper.like("companyShortName", params.get("companyShortName"));
         }
+        if (params.containsKey("type")) {
+            queryWrapper.eq("type", params.get("type"));
+        }
+        if (params.containsKey("legalPerson")) {
+
+            queryWrapper.like("legalPerson",params.get("legalPerson"));
+        }
+        if (params.containsKey("registeredCapital")) {
+            queryWrapper.eq("registeredCapital", params.get("registeredCapital"));
+        }
+        if (params.containsKey("contributedCapital")) {
+            queryWrapper.eq("contributedCapital", params.get("contributedCapital"));
+        }
+        if (params.containsKey("dateOfEstablishment")) {
+            queryWrapper.eq("dateOfEstablishment", params.get("dateOfEstablishment"));
+        }
+        if (params.containsKey("dateOfApproval")) {
+            queryWrapper.eq("dateOfApproval", params.get("dateOfApproval"));
+        }
+        if (params.containsKey("businessTerm")) {
+            queryWrapper.eq("businessTerm", params.get("businessTerm"));
+        }
+        if (params.containsKey("registrationAuthority")) {
+            queryWrapper.like("registrationAuthority", params.get("registrationAuthority"));
+        }
+        if (params.containsKey("administrationPartition")) {
+            queryWrapper.like("administrationPartition", params.get("administrationPartition"));
+        }
+        if (params.containsKey("businessRegistrationNumber")) {
+            queryWrapper.like("businessRegistrationNumber", params.get("businessRegistrationNumber"));
+        }
+        if (params.containsKey("officialWebsite")) {
+            queryWrapper.eq("officialWebsite", params.get("officialWebsite"));
+        }
+        if (params.containsKey("postCode")) {
+            queryWrapper.eq("postCode", params.get("postCode"));
+
+        }
+        if (params.containsKey("address")) {
+            queryWrapper.eq("address", params.get("address"));
+        }
+        if (params.containsKey("managementFroms")) {
+            queryWrapper.eq("managementFroms", params.get("managementFroms"));
+        }
+        if (params.containsKey("taxpayerID")) {
+            queryWrapper.like("taxpayerID", params.get("taxpayerID"));
+        }
+        if (params.containsKey("industryInvolved")) {
+            queryWrapper.eq("industryInvolved", params.get("industryInvolved"));
+        }
+        if (params.containsKey("taxpayerCapital")) {
+            queryWrapper.like("taxpayerCapital", params.get("taxpayerCapital"));
+        }
+        if (params.containsKey("contributors")) {
+            queryWrapper.eq("contributors", params.get("contributors"));
+        }
+        if (params.containsKey("formerName")) {
+            queryWrapper.eq("formerName", params.get("formerName"));
+        }
+        if (params.containsKey("brief")) {
+            queryWrapper.like("brief", params.get("brief"));
+        }
+        if (params.containsKey("operatingRange")) {
+            queryWrapper.like("operatingRange", params.get("operatingRange"));
+        }
+
         return queryWrapper;
     }
 }
