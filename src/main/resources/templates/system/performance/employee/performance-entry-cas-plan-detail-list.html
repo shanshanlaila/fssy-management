@@ -199,7 +199,7 @@
                     <script type="text/html" id="toolbar">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="confirm">提交审核
+                                <button shiro:hasPermission="system:performance:entryCasPlanDetail:changeStatus" class="layui-btn layui-btn-sm" lay-submit="" lay-filter="confirm">提交审核
                                 </button>
                             </div>
                             <div class="layui-inline layui-show-xs-block">
@@ -274,8 +274,8 @@
             toolbar: '#toolbar',
             where: {
                 status: '待提交审核',
-                //userName:[[${userName}]],//登录用户
-                //departmentName: [[${departmentName}]],// 登录用户本部门
+                userName:[[${userName}]],//登录用户
+                departmentName: [[${departmentName}]],// 登录用户本部门
             },
             cols: [
                 [
@@ -464,7 +464,7 @@
                 // 携带数据发送异步请求后端处理逻辑
                 $.ajax({
                     type: 'POST',
-                    url: '/system/entry-cas-plan-detail/indexStatus',
+                    url: '/system/entry-cas-plan-detail/changeStatus',
                     data: {"planDetailIds": planDetailIds},
                     success: function (result) {
                         layer.msg(result.msg);

@@ -69,7 +69,7 @@ public class EventsRelationRoleController {
         GetTool.getSelectorData(model);
         User user = GetTool.getUser();
         model.addAttribute("userId", user.getId());
-        // 查出当前登录用户是否存在符合打出的数据
+        // 查出当前登录用户是否存在符合导出的数据
         boolean flag = eventsRelationRoleService.isExistExportData();
         model.addAttribute("isExistExportData",flag);
         return "system/performance/employee/eventRole/relation-role-list-export";

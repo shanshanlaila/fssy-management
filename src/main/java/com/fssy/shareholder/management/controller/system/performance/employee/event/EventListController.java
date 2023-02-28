@@ -195,7 +195,7 @@ public class EventListController {
                         "jobName," +
                         "workEvents," +
                         "eventsFirstType," +
-                        "standardValue,departmentName");
+                        "standardValue,departmentName,office");
         List<Map<String, Object>> eventLists = eventListService
                 .findEventListMapDataByParams(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
@@ -206,11 +206,12 @@ public class EventListController {
         fieldMap.put("eventsFirstType", "事务类型");// D
         fieldMap.put("standardValue", "事件标准价值");// E
         fieldMap.put("departmentName", "部门名称");// 跨部门 F
-        fieldMap.put("proportion", "*占比");// 多主担 G
-        fieldMap.put("roleName", "*岗位名称");// 跨岗位 H
-        fieldMap.put("isMainOrNext", "*主担/次担"); // I
-        fieldMap.put("userName", "*职员名称");// J
-        fieldMap.put("activeDate", "*生效日期");// K
+        fieldMap.put("office", "科室");// 跨部门 G
+        fieldMap.put("proportion", "*占比");// 多主担 H
+        fieldMap.put("roleName", "*岗位名称");// 跨岗位I
+        fieldMap.put("isMainOrNext", "*主担/次担"); // J
+        fieldMap.put("userName", "*职员名称");// K
+        fieldMap.put("activeDate", "*生效日期");// L
         // 标识字符串的列
         List<Integer> strList = Arrays.asList(1, 2, 3, 4, 6, 7);
         SheetOutputService sheetOutputService = new SheetOutputService();
