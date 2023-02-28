@@ -149,9 +149,9 @@ public class EntryCasReviewDetailController {
      * 总结审核-科长
      *
      */
-    @GetMapping("index1")
+    @GetMapping("SectionChiefIndex")
     @RequiredLog("总结审核-科长页面")
-    @RequiresPermissions("system:performance:entryCasPlanDetail:index1")
+    @RequiresPermissions("system:performance:entryCasReviewDetail:SectionChiefIndex")
     public String showEntryCasPlanDetailListBySectionChief(Model model) {
         GetTool.getSelectorData(model);
         return "system/performance/employee/performance-entry-cas-review-detail-section-chief-list";

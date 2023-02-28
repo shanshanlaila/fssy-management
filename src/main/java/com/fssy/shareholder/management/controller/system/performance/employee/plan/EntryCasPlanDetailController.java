@@ -210,17 +210,16 @@ public class EntryCasPlanDetailController {
         }
         return SysResult.build(500, "取消失败");
     }
-
     /**
      * 筛选状态-提交审核
      *
      * @return 结果
      */
     @RequiredLog("提交审核")
-    //@RequiresPermissions("system:performance:entryCasPlanDetail:indexStatus")
-    @PostMapping("indexStatus")
+    @RequiresPermissions("system:performance:entryCasPlanDetail:changeStatus")
+    @PostMapping("changeStatus")
     @ResponseBody
-    public SysResult indexStatus(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds) {
+    public SysResult changeStatus(@RequestParam(value = "planDetailIds[]") List<String> planDetailIds) {
         boolean result = entryCasPlanDetailService.submitAuditForPlan(planDetailIds);
         if (result) {
             return SysResult.ok();
@@ -266,9 +265,9 @@ public class EntryCasPlanDetailController {
         return SysResult.build(500, "提交失败请检查数据后重试");
     }
 
-    @GetMapping("index1")
+    @GetMapping("SectionChiefIndex")
     @RequiredLog("履职计划科长审核")
-    @RequiresPermissions("system:performance:entryCasPlanDetail")
+    @RequiresPermissions("system:performance:entryCasPlanDetail:SectionChiefIndex")
     public String showEntryCasPlanDetailListBySectionChief(Model model) {
         GetTool.getSelectorData(model);
         return "system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
@@ -431,6 +430,10 @@ public class EntryCasPlanDetailController {
     @RequiredLog("计划导入")
     public String planImport(Model model) {
         GetTool.getSelectorData(model);
+        ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("departmentName", viewDepartmentRoleUser.getDepartmentName());
+        User user = GetTool.getUser();
+        model.addAttribute("userName", user.getName());
         return "system/performance/employee/plan/plan-import-list";
     }
 
