@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -117,6 +117,18 @@ public class EntryExcellentStateMerge extends BaseModel {
      */
     @TableField("serial")
     private Integer serial;
+
+    /**
+     * 科室
+     */
+    @TableField("office")
+    private String office;
+
+    /**
+     * 科室id
+     */
+    @TableField("officeId")
+    private Long officeId;
 
 
 }

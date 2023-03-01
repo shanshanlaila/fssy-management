@@ -4,19 +4,18 @@
  */
 package com.fssy.shareholder.management.pojo.system.performance.employee;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -215,4 +214,16 @@ public class EventsRelationRole extends BaseModel {
 
     @TableField("status")
     private String status;
+
+    /**
+     * 科室
+     */
+    @TableField("office")
+    private String office;
+
+    /**
+     * 科室id
+     */
+    @TableField("officeId")
+    private Long officeId;
 }

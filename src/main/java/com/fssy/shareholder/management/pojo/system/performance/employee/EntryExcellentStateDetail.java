@@ -274,5 +274,17 @@ public class EntryExcellentStateDetail extends BaseModel {
     @TableField("planningWork")
     private String planningWork;
 
+    /**
+     * 科室
+     */
+    @TableField("office")
+    private String office;
+
+    /**
+     * 科室id
+     */
+    @TableField("officeId")
+    private Long officeId;
+
 
 }

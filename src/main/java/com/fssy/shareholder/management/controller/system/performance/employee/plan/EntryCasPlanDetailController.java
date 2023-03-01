@@ -124,7 +124,7 @@ public class EntryCasPlanDetailController {
                         "departmentName," +
                         "roleName," +
                         "userName," +
-                        "applyDate,standardValue"
+                        "applyDate,standardValue,office"
         );
         List<Map<String, Object>> eventLists = entryCasPlanDetailService.findEntryCasPlanDetailMapDataByParams(params);
 
@@ -133,6 +133,7 @@ public class EntryCasPlanDetailController {
         fieldMap.put("id", "履职计划序号");
         fieldMap.put("eventsRoleId", "事件岗位序号");
         fieldMap.put("departmentName", "部门名称");
+        fieldMap.put("office", "科室名称");
         fieldMap.put("roleName", "岗位名称");
         fieldMap.put("userName", "职员名称");
         fieldMap.put("eventsFirstType", "事件类型");
@@ -210,6 +211,7 @@ public class EntryCasPlanDetailController {
         }
         return SysResult.build(500, "取消失败");
     }
+
     /**
      * 筛选状态-提交审核
      *
@@ -282,7 +284,7 @@ public class EntryCasPlanDetailController {
     @GetMapping("createReview/{id}")
     public String showCreateReview(@PathVariable String id, Model model) {
         EntryCasPlanDetail entryCasPlanDetail = entryCasPlanDetailService.getById(id);
-        if (ObjectUtils.isEmpty(entryCasPlanDetail)){
+        if (ObjectUtils.isEmpty(entryCasPlanDetail)) {
             throw new ServiceException("不存在该计划");
         }
         model.addAttribute("entryCasPlanDetail", entryCasPlanDetail);
@@ -447,8 +449,29 @@ public class EntryCasPlanDetailController {
         User user = GetTool.getUser();
         model.addAttribute("uerId", user.getId());
         boolean flag = entryCasPlanDetailService.isExistExportData(user);
-        model.addAttribute("flag",flag);
+        model.addAttribute("flag", flag);
         return "system/performance/employee/plan/plan-export-list";
+    }
+
+    /**
+     * 转发到新增工作流表单
+     *
+     * @return 路径
+     */
+    @GetMapping("createNewEve")
+    @RequiredLog("点击创建新增工作流按钮")
+    public String createNewEve(Model model) {
+        return "system/performance/employee/plan/plan-new-event";
+    }
+
+    @PostMapping("saveNewEve")
+    @ResponseBody
+    public SysResult saveNewEve(EntryCasPlanDetail planDetail) {
+        boolean result = entryCasPlanDetailService.saveNewEve(planDetail);
+        if (result) {
+            return SysResult.ok();
+        }
+        return SysResult.build(500, "新增计划失败");
     }
 
 }

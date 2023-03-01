@@ -31,7 +31,7 @@ public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetai
      * @param attachment 履职管控计划表附件
      * @return 履职管控计划表附件map集合
      */
-    Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment,HttpServletRequest request);
+    Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment, HttpServletRequest request);
 
     /**
      * 通过查询条件查询履职计划map数据，用于导出
@@ -62,7 +62,7 @@ public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetai
      * 审核
      *
      * @param planDetailIds 计划ids
-     * @param event 审核结果
+     * @param event         审核结果
      * @return 通过/拒绝
      */
     boolean affirmStore(List<String> planDetailIds, String event, List<String> auditNotes);
@@ -85,13 +85,23 @@ public interface EntryCasPlanDetailService extends BaseService<EntryCasPlanDetai
 
     /**
      * 需要通知计划到期的时间
+     *
      * @return map
      */
     Map<Long, Map<String, Object>> findWeChatNoticeMap();
 
     /**
      * 是否存在导出的数据
+     *
      * @return 标志
      */
     boolean isExistExportData(User user);
+
+    /**
+     * 创建新增工作流
+     *
+     * @param planDetail 新增工作
+     * @return 结果
+     */
+    boolean saveNewEve(EntryCasPlanDetail planDetail);
 }

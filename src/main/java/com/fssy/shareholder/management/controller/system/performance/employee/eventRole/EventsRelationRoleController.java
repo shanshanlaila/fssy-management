@@ -108,7 +108,9 @@ public class EventsRelationRoleController {
                         "departmentName," +
                         "standardValue," +
                         "eventsFirstType," +
-                        "isMainOrNext,userName,roleName"
+                        "isMainOrNext," +
+                        "userName," +
+                        "roleName,office"
         );
         List<Map<String, Object>> relationRoleLists = eventsRelationRoleService.findRelationRoleMapDataByParams(params);
 
@@ -117,6 +119,7 @@ public class EventsRelationRoleController {
         fieldMap.put("id", "事件岗位ID");// A
         fieldMap.put("eventsId", "事件清单ID");// B
         fieldMap.put("departmentName", "部门名称");// C
+        fieldMap.put("office", "科室名称");// C
         fieldMap.put("roleName", "岗位名称");// D
         fieldMap.put("userName", "职员名称");// E
         fieldMap.put("eventsFirstType", "事件类型");// F

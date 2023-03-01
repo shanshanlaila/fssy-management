@@ -15,7 +15,6 @@ import com.fssy.shareholder.management.mapper.system.performance.employee.EntryC
 import com.fssy.shareholder.management.mapper.system.performance.employee.EntryCasPlanDetailMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventListMapper;
 import com.fssy.shareholder.management.mapper.system.performance.employee.EventsRelationRoleMapper;
-import com.fssy.shareholder.management.pojo.manage.department.Department;
 import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
@@ -33,7 +32,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,7 +41,6 @@ import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -109,9 +106,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment,HttpServletRequest request) {
+    public Map<String, Object> readEntryCasPlanDetailDataSource(Attachment attachment, HttpServletRequest request) {
         String yearAndMonth = request.getParameter("yearAndMonth");
-        if (ObjectUtils.isEmpty(yearAndMonth)){
+        if (ObjectUtils.isEmpty(yearAndMonth)) {
             throw new ServiceException("未选择申报年月，导入失败");
         }
         // 导入月度履职计划
@@ -161,34 +158,35 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             }
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("Z"));// 每一行的结果信息上传到S列
-            // 检查必填项
             String eventsRoleId = cells.get(SheetService.columnToIndex("A"));// 事件岗位ID
-            String eventsId = cells.get(SheetService.columnToIndex("B"));// 事件清单序号
-            String departmentName = cells.get(SheetService.columnToIndex("C"));//部门
+            String eventsId = cells.get(SheetService.columnToIndex("B"));// 事件清单ID
+            /*String departmentName = cells.get(SheetService.columnToIndex("C"));// 部门
             String userName = cells.get(SheetService.columnToIndex("E"));// 岗位人员姓名
             String eventsFirstType = cells.get(SheetService.columnToIndex("F"));// 事件类型
-            String jobName = cells.get(SheetService.columnToIndex("G"));//工作职责
-            String workEvents = cells.get(SheetService.columnToIndex("H"));//流程（工作事件）
+            String jobName = cells.get(SheetService.columnToIndex("G"));// 工作职责
+            String workEvents = cells.get(SheetService.columnToIndex("H"));// 流程（工作事件）
             String standardValue = cells.get(SheetService.columnToIndex("I"));// 事件价值标准分
-            String mainOrNext = cells.get(SheetService.columnToIndex("J"));// 主/次担
+            String mainOrNext = cells.get(SheetService.columnToIndex("J"));// 主/次担*/
             // 填写的数据
-            String planningWork = cells.get(SheetService.columnToIndex("K"));// 对应工作事件的计划内容
-            String times = cells.get(SheetService.columnToIndex("L"));// 频次
-            String planOutput = cells.get(SheetService.columnToIndex("M"));// 表单（输出内容）
-            String planStartDateStr = cells.get(SheetService.columnToIndex("N"));// 计划开始时间
-            String planEndDateStr = cells.get(SheetService.columnToIndex("O"));// 计划完成时间
+            String planningWork = cells.get(SheetService.columnToIndex("L"));// 计划内容
+            String times = cells.get(SheetService.columnToIndex("M"));// 频次
+            String planOutput = cells.get(SheetService.columnToIndex("N"));// 表单（输出内容）
+            String planStartDateStr = cells.get(SheetService.columnToIndex("O"));// 计划开始时间
+            String planEndDateStr = cells.get(SheetService.columnToIndex("P"));// 计划完成时间
 
             // 检查必填项
-            if (StringUtils.isEmpty(departmentName)) {
-                setFailedContent(result, String.format("第%s行的部门名称为空", j + 1));
-                cell.setCellValue("部门名称不能为空");
-                continue;
+            if (StringUtils.isEmpty(eventsRoleId)) {
+                setFailedContent(result, String.format("第%s事件岗位Id为空", j + 1));
+                cell.setCellValue(String.format("第%s事件岗位Id为空", j + 1));
+                throw new ServiceException(String.format("第%s事件岗位Id为空", j + 1));
             }
-            if (StringUtils.isEmpty(userName)) {
-                setFailedContent(result, String.format("第%s行的员工名称为空", j + 1));
-                cell.setCellValue("员工名称不能为空");
-                continue;
+
+            if (StringUtils.isEmpty(eventsId)) {
+                setFailedContent(result, String.format("第%s基础事件Id为空", j + 1));
+                cell.setCellValue("基础事件Id为空");
+                throw new ServiceException(String.format("第%s基础事件Id为空", j + 1));
             }
+
             if (StringUtils.isEmpty(planStartDateStr)) {
                 setFailedContent(result, String.format("第%s行的计划开始时间为空", j + 1));
                 cell.setCellValue("计划开始时间不能为空");
@@ -200,92 +198,63 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 cell.setCellValue("计划完成时间不能为空");
                 continue;
             }
+            // 查询部门-角色-姓名视图
+            ViewDepartmentRoleUser depRoleUser = GetTool.getDepartmentRoleByUser();
+            // 查询事件岗位
+            EventsRelationRole eventsRelationRole = eventsRelationRoleMapper.selectById(eventsRoleId);
+            // 校验是否当前登陆人操作数据
+            if (!depRoleUser.getUserId().equals(eventsRelationRole.getUserId())) {
+                setFailedContent(result, String.format("第%s行的数据不为您本人的，导入失败", j + 1));
+                cell.setCellValue("导入失败，请导入本人的数据");
+                throw new ServiceException("导入失败，请导入本人的数据");
+            }
             String planEndDate = planEndDateStr.trim().substring(0, 10);
-            // 新增工作流不能填有价值分
-            if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT) && !ObjectUtils.isEmpty(standardValue)) {
-                throw new ServiceException(String.format("第【%s】行的价值分不能填写值，因为它的事件类型为【新增工作流】", j + 1));
-            }
-            // 数据校验
-            if (!(eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION) || eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION) || eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT))) {
-                setFailedContent(result, String.format("第%s行的事件类型填写错误", j + 1));
-                cell.setCellValue("事件类型填写错误");
-                continue;
-            }
             // 构建实体类
             EntryCasPlanDetail entryCasPlanDetail = new EntryCasPlanDetail();
-            // 查询当前登录用户
-            User user = (User) SecurityUtils.getSubject().getPrincipal();
-            // 查询视图
-            ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser(userName);
-            // 新增工作流不用设置set eventsRoleId
-            if (!ObjectUtils.isEmpty(eventsRoleId)) {
-                entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
-            }
-            // 如果事件类型为新增工作流，设置字段isNewEvent为是
-            if (eventsFirstType.equals(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT)) {
-                entryCasPlanDetail.setIsNewEvent(PerformanceConstant.YES);
-            } else {
-                entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
-            }
-            entryCasPlanDetail.setEventsFirstType(eventsFirstType);
-            entryCasPlanDetail.setJobName(jobName);
-            entryCasPlanDetail.setWorkEvents(workEvents);
-            entryCasPlanDetail.setMainOrNext(mainOrNext);
+            entryCasPlanDetail.setEventsRoleId(Long.valueOf(eventsRoleId));
+            entryCasPlanDetail.setIsNewEvent(PerformanceConstant.NO);
+            entryCasPlanDetail.setEventsFirstType(eventsRelationRole.getEventsFirstType());
+            entryCasPlanDetail.setJobName(eventsRelationRole.getJobName());
+            entryCasPlanDetail.setWorkEvents(eventsRelationRole.getWorkEvents());
+            entryCasPlanDetail.setMainOrNext(eventsRelationRole.getIsMainOrNext());
             entryCasPlanDetail.setPlanningWork(planningWork);
             entryCasPlanDetail.setTimes(times);
             entryCasPlanDetail.setPlanOutput(planOutput);
             entryCasPlanDetail.setPlanStartDate(LocalDate.parse(planStartDate));
             entryCasPlanDetail.setPlanEndDate(LocalDate.parse(planEndDate));
             entryCasPlanDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
-            if (!ObjectUtils.isEmpty(standardValue)) {
-                entryCasPlanDetail.setStandardValue(new BigDecimal(standardValue));
-            }
+            entryCasPlanDetail.setStandardValue(eventsRelationRole.getStandardValue());
             entryCasPlanDetail.setAttachmentId(attachment.getId());
             // 数据库不能为null的字段设置值
-            if (!ObjectUtils.isEmpty(eventsId)) {
-                entryCasPlanDetail.setEventsId(Long.valueOf(eventsId));
-            }else{
-                throw new ServiceException("不存在对应的基础事件");
-            }
-            entryCasPlanDetail.setDepartmentName(departmentName);
-            LambdaQueryWrapper<Department> departmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            departmentLambdaQueryWrapper.eq(Department::getDepartmentName, departmentName);
-            List<Department> departments = departmentMapper.selectList(departmentLambdaQueryWrapper);
-            if (ObjectUtils.isEmpty(departments)) {
-                setFailedContent(result, String.format("第%s行的部门未维护", j + 1));
-                cell.setCellValue("表中部门名称未维护");
-                continue;
-            }
+            entryCasPlanDetail.setEventsId(Long.valueOf(eventsId));
+            entryCasPlanDetail.setDepartmentName(eventsRelationRole.getDepartmentName());
+
             EventList eventList = eventListMapper.selectById(eventsId);
             entryCasPlanDetail.setWorkOutput(eventList.getWorkOutput());
-            entryCasPlanDetail.setDepartmentId(departments.get(0).getId());
-            entryCasPlanDetail.setRoleName(departmentRoleByUser.getRoleName());
-            entryCasPlanDetail.setRoleId(departmentRoleByUser.getRoleId());
-            entryCasPlanDetail.setUserName(userName);
-            List<User> users = userMapper.selectList(new LambdaQueryWrapper<User>().eq(User::getName, userName));
-            if (ObjectUtils.isEmpty(users)) {
-                setFailedContent(result, String.format("第%s行的员工名称未维护", j + 1));
-                cell.setCellValue("表中员工名称未维护");
-                continue;
-            }
-            entryCasPlanDetail.setUserId(users.get(0).getId());
+            entryCasPlanDetail.setDepartmentId(eventsRelationRole.getDepartmentId());
+            entryCasPlanDetail.setRoleName(eventsRelationRole.getRoleName());
+            entryCasPlanDetail.setRoleId(eventsRelationRole.getRoleId());
+            entryCasPlanDetail.setUserName(depRoleUser.getUserName());
+            entryCasPlanDetail.setOffice(eventsRelationRole.getOffice());
+            entryCasPlanDetail.setOfficeId(eventsRelationRole.getOfficeId());
+            entryCasPlanDetail.setUserId(depRoleUser.getUserId());
             entryCasPlanDetail.setApplyDate(LocalDate.now());
 
             String[] date = yearAndMonth.split("-");
             entryCasPlanDetail.setYear(Integer.valueOf(date[0]));
             entryCasPlanDetail.setMonth(Integer.valueOf(date[1]));
             entryCasPlanDetail.setCreatedAt(LocalDateTime.now());
-            entryCasPlanDetail.setCreateId(user.getId());
+            entryCasPlanDetail.setCreateId(depRoleUser.getUserId());
             entryCasPlanDetail.setCreateDate(LocalDate.now());
-            entryCasPlanDetail.setCreateName(user.getName());
+            entryCasPlanDetail.setCreateName(depRoleUser.getUserName());
             // 根据条件查询或生成bs_performance_employee_entry_cas_merge表数据
             LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
             entryCasMergeLambdaQueryWrapper
-                    .eq(EntryCasMerge::getDepartmentId, departments.get(0).getId())
+                    .eq(EntryCasMerge::getDepartmentId, depRoleUser.getDepartmentId())
                     .eq(EntryCasMerge::getYear, LocalDate.now().getYear())
                     .eq(EntryCasMerge::getMonth, LocalDate.now().getMonthValue());
 
-            String key = departments.get(0).getId() + ":" + LocalDate.now().getYear() + ":" + LocalDate.now().getMonthValue();
+            String key = depRoleUser.getDepartmentId() + ":" + LocalDate.now().getYear() + ":" + LocalDate.now().getMonthValue();
             EntryCasMerge entryCasMerge;
             if (mergeMap.containsKey(key)) // 缓存存在则获取
             {
@@ -301,17 +270,19 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                     entryCasMerge = new EntryCasMerge();
                     entryCasMerge.setCreateDate(LocalDate.now());
                     entryCasMerge.setCreatedAt(LocalDateTime.now());
-                    entryCasMerge.setCreateId(user.getId());
-                    entryCasMerge.setCreateName(user.getName());
-                    entryCasMerge.setDepartmentName(departmentName);
-                    entryCasMerge.setDepartmentId(departments.get(0).getDepartmentId());
+                    entryCasMerge.setCreateId(depRoleUser.getUserId());
+                    entryCasMerge.setCreateName(depRoleUser.getUserName());
+                    entryCasMerge.setDepartmentName(depRoleUser.getDepartmentName());
+                    entryCasMerge.setDepartmentId(depRoleUser.getDepartmentId());
                     entryCasMerge.setAuditName(null);
                     entryCasMerge.setAuditId(null);
                     entryCasMerge.setAuditDate(null);
-                    entryCasMerge.setRoleId(departmentRoleByUser.getRoleId());
-                    entryCasMerge.setRoleName(departmentRoleByUser.getRoleName());
-                    entryCasMerge.setUserId(user.getId());
-                    entryCasMerge.setUserName(user.getName());
+                    entryCasMerge.setRoleId(depRoleUser.getRoleId());
+                    entryCasMerge.setRoleName(depRoleUser.getRoleName());
+                    entryCasMerge.setUserId(depRoleUser.getUserId());
+                    entryCasMerge.setUserName(depRoleUser.getUserName());
+                    entryCasMerge.setOffice(eventsRelationRole.getOffice());
+                    entryCasMerge.setOfficeId(eventsRelationRole.getOfficeId());
                     // mergeNo
                     entryCasMerge.setApplyDate(LocalDate.now());
                     entryCasMerge.setYear(LocalDate.now().getYear());
@@ -328,10 +299,9 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
             entryCasPlanDetail.setMergeNo(entryCasMerge.getMergeNo());
             entryCasPlanDetail.setMergeId(entryCasMerge.getId());
             //设置事件岗位清单状态为完结
-            EventsRelationRole relationRole = eventsRelationRoleMapper.selectById(eventsRoleId);
-            if (!ObjectUtils.isEmpty(relationRole)) {
-                relationRole.setStatus(PerformanceConstant.FINAL);
-                eventsRelationRoleMapper.updateById(relationRole);
+            if (!ObjectUtils.isEmpty(eventsRelationRole)) {
+                eventsRelationRole.setStatus(PerformanceConstant.FINAL);
+                eventsRelationRoleMapper.updateById(eventsRelationRole);
             }
             // 写入计划
             entryCasPlanDetailMapper.insert(entryCasPlanDetail);
@@ -758,6 +728,72 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
                 .eq(EntryCasPlanDetail::getStatus, PerformanceConstant.WAIT_WRITE_REVIEW);
         List<EntryCasPlanDetail> selectList = entryCasPlanDetailMapper.selectList(wrapper);
         return !ObjectUtils.isEmpty(selectList);
+    }
+
+    @Override
+    public boolean saveNewEve(EntryCasPlanDetail planDetail) {
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        planDetail.setCreatedAt(LocalDateTime.now());
+        planDetail.setCreateId(departmentRoleByUser.getUserId());
+        planDetail.setCreatedId(departmentRoleByUser.getUserId());
+        planDetail.setCreateName(departmentRoleByUser.getUserName());
+        planDetail.setCreatedName(departmentRoleByUser.getUserName());
+        planDetail.setDepartmentId(departmentRoleByUser.getDepartmentId());
+        planDetail.setDepartmentName(departmentRoleByUser.getDepartmentName());
+        planDetail.setRoleId(departmentRoleByUser.getRoleId());
+        planDetail.setRoleName(departmentRoleByUser.getRoleName());
+        planDetail.setUserId(departmentRoleByUser.getUserId());
+        planDetail.setUserName(departmentRoleByUser.getUserName());
+        planDetail.setYear(planDetail.getApplyDate().getYear());
+        planDetail.setMonth(planDetail.getApplyDate().getMonthValue());
+        planDetail.setCreateDate(LocalDate.now());
+        planDetail.setStatus(PerformanceConstant.WAIT_SUBMIT_AUDIT);
+        planDetail.setEventsFirstType(PerformanceConstant.EVENT_FIRST_TYPE_NEW_EVENT);
+        planDetail.setIsNewEvent(PerformanceConstant.YES);
+        planDetail.setOffice(ObjectUtils.isEmpty(departmentRoleByUser.getOfficeName()) ? departmentRoleByUser.getDepartmentName() : departmentRoleByUser.getOfficeName());
+        planDetail.setOfficeId(departmentRoleByUser.getTheDepartmentId());
+        LambdaQueryWrapper<EntryCasMerge> entryCasMergeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        entryCasMergeLambdaQueryWrapper
+                .eq(EntryCasMerge::getDepartmentId, planDetail.getDepartmentId())
+                .eq(EntryCasMerge::getYear, LocalDate.now().getYear())
+                .eq(EntryCasMerge::getMonth, LocalDate.now().getMonthValue())
+        ;
+
+        EntryCasMerge entryCasMerge;
+        List<EntryCasMerge> entryCasMerges = entryCasMergeMapper.selectList(entryCasMergeLambdaQueryWrapper);
+        // 只查到一条数据
+        if (entryCasMerges.size() >= 1) {
+            entryCasMerge = entryCasMerges.get(0);
+        } else
+        // 查不到数据
+        {
+            entryCasMerge = new EntryCasMerge();
+            entryCasMerge.setCreateDate(LocalDate.now());
+            entryCasMerge.setCreatedAt(LocalDateTime.now());
+            entryCasMerge.setCreateId(departmentRoleByUser.getUserId());
+            entryCasMerge.setCreateName(departmentRoleByUser.getUserName());
+            entryCasMerge.setDepartmentName(departmentRoleByUser.getDepartmentName());
+            entryCasMerge.setDepartmentId(departmentRoleByUser.getDepartmentId());
+            entryCasMerge.setAuditName(null);
+            entryCasMerge.setAuditId(null);
+            entryCasMerge.setAuditDate(null);
+            entryCasMerge.setRoleId(departmentRoleByUser.getRoleId());
+            entryCasMerge.setRoleName(departmentRoleByUser.getRoleName());
+            entryCasMerge.setUserId(departmentRoleByUser.getUserId());
+            entryCasMerge.setUserName(departmentRoleByUser.getUserName());
+            // mergeNo
+            entryCasMerge.setApplyDate(LocalDate.now());
+            entryCasMerge.setYear(LocalDate.now().getYear());
+            entryCasMerge.setMonth(LocalDate.now().getMonthValue());
+            entryCasMerge.setStatus(PerformanceConstant.WAIT_WRITE_REVIEW);
+            // serial
+            entryCasMerge = storeNoticeMerge(LocalDate.now(), new HashMap<>(), entryCasMerge);
+        }
+
+        // 添加计划表编号和序号
+        planDetail.setMergeNo(entryCasMerge.getMergeNo());
+        planDetail.setMergeId(entryCasMerge.getId());
+        return baseMapper.insert(planDetail) > 0;
     }
 
 
