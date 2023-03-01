@@ -198,19 +198,25 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 cell.setCellValue("部门名称不能为空");
                 continue;
             }
-            String roleName = temp.get(SheetService.columnToIndex("H"));
+            String office = temp.get(SheetService.columnToIndex("G"));
+            if (ObjectUtils.isEmpty(office)) {
+                StringTool.setMsg(sb, String.format("第【%s】行岗科室名称不能为空", j + 1));
+                cell.setCellValue("科室名称不能为空");
+                continue;
+            }
+            String roleName = temp.get(SheetService.columnToIndex("I"));
             if (ObjectUtils.isEmpty(roleName)) {
                 StringTool.setMsg(sb, String.format("第【%s】行岗位名称不能为空", j + 1));
                 cell.setCellValue("岗位名称不能为空");
                 continue;
             }
-            String isMainOrNext = temp.get(SheetService.columnToIndex("I"));
+            String isMainOrNext = temp.get(SheetService.columnToIndex("J"));
             if (ObjectUtils.isEmpty(isMainOrNext)) {
                 StringTool.setMsg(sb, String.format("第【%s】行是否主担不能为空", j + 1));
                 cell.setCellValue("是否主担不能为空");
                 continue;
             }
-            String userName = temp.get(SheetService.columnToIndex("J"));
+            String userName = temp.get(SheetService.columnToIndex("K"));
             if (ObjectUtils.isEmpty(userName)) {
                 StringTool.setMsg(sb, String.format("第【%s】行职员名称不能为空", j + 1));
                 cell.setCellValue("职员名称不能为空");
@@ -218,7 +224,8 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             }
             BigDecimal proportion;
             try {
-                proportion = new BigDecimal(temp.get(SheetService.columnToIndex("G")));
+                // 占比
+                proportion = new BigDecimal(temp.get(SheetService.columnToIndex("H")));
             } catch (Exception e) {
                 StringTool.setMsg(sb, String.format("第【%s】行占比格式不正确，必须为【百分比】", j + 1));
                 cell.setCellValue("占比格式不正确，必须为【百分比】");
@@ -243,7 +250,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 continue;
             }
 
-            String activeDateStr = temp.get(SheetService.columnToIndex("K"));
+            String activeDateStr = temp.get(SheetService.columnToIndex("L"));
             LocalDate activeDate;
             try {
                 activeDate = LocalDate.parse(activeDateStr);
@@ -376,6 +383,13 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventsRelationRole.setUpdatedName(user.getName());
             eventsRelationRole.setCreatedAt(LocalDateTime.now());
             eventsRelationRole.setUpdatedAt(LocalDateTime.now());
+            LambdaQueryWrapper<ViewDepartmentRoleUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(ViewDepartmentRoleUser::getOfficeName, office);
+            List<ViewDepartmentRoleUser> roleUsers = viewDepartmentRoleUserMapper.selectList(wrapper);
+            if (!ObjectUtils.isEmpty(roleUsers)) {
+                eventsRelationRole.setOfficeId(roleUsers.get(0).getOfficeId());
+            }
+            eventsRelationRole.setOffice(office);
             eventsRelationRole.setStatus(PerformanceConstant.WAIT_PLAN);
             // endregion
             // 将基础事件的状态设置为‘完结’
@@ -388,6 +402,8 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             cell.setCellValue("成功");
             successNum++;
         }
+
+        sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
         // 批量写入
         eventsRelationRoleService.saveBatch(relationRoleList);
         // 如果updatedEventsIds为空则报错
@@ -414,10 +430,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                     checkEventsIds.toString()));
         }
         // endregion
-
-
-        sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
-
         if (successNum == 0) {
             throw new ServiceException("数据导入失败，请检查表格内容");
         }

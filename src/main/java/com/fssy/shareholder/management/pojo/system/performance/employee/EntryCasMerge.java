@@ -1,12 +1,8 @@
-/**   
+/**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
  */
 package com.fssy.shareholder.management.pojo.system.performance.employee;
-
-import java.time.LocalDate;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -14,11 +10,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fssy.shareholder.management.pojo.common.BaseModel;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -167,6 +165,18 @@ public class EntryCasMerge extends BaseModel {
      */
     @TableField("note")
     private String note;
+
+    /**
+     * 科室
+     */
+    @TableField("office")
+    private String office;
+
+    /**
+     * 科室id
+     */
+    @TableField("officeId")
+    private Long officeId;
 
 
 }

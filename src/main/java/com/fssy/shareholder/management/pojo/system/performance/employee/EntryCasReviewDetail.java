@@ -383,4 +383,16 @@ public class EntryCasReviewDetail extends BaseModel {
     @TableField("isNewEvent")
     private String isNewEvent;
 
+    /**
+     * 科室
+     */
+    @TableField("office")
+    private String office;
+
+    /**
+     * 科室id
+     */
+    @TableField("officeId")
+    private Long officeId;
+
 }

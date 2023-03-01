@@ -89,6 +89,8 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         if (params.containsKey("select")) {
             queryWrapper.select(InstandTool.objectToString(params.get("select")));
         }
+        // 根据事务类型进行导出排序
+        queryWrapper.orderByAsc(params.containsKey("sort"), "sort");
         if (params.containsKey("id")) {
             queryWrapper.eq("id", params.get("id"));
         }
@@ -277,7 +279,6 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
         //获取列表数据
         Row row;
         //实体类集合，用于后面的批量写入数据库
-        // 2022-06-01 从决策系统导出数据，存在最后几行为空白数据，导致报数据越界问题，这里的长度由表头长度控制
         short maxSize = sheet.getRow(0).getLastCellNum();//列数(表头长度)
         // 循环总行数(不读表的标题，从第2行开始读)
         for (int j = 1; j <= sheet.getLastRowNum(); j++) {
@@ -406,7 +407,15 @@ public class EventListServiceImpl extends ServiceImpl<EventListMapper, EventList
             eventList.setWorkEvents(workEvents);
             eventList.setWorkOutput(workOutput);
             eventList.setEventsFirstType(eventsFirstType);
-
+            // 如果是事务类sort=1,非事务类sort=2
+            switch (eventsFirstType) {
+                case PerformanceConstant.EVENT_FIRST_TYPE_TRANSACTION:
+                    eventList.setSort(1);
+                    break;
+                case PerformanceConstant.EVENT_FIRST_TYPE_NOT_TRANSACTION:
+                    eventList.setSort(2);
+                    break;
+            }
             Date date = new Date();
             String format = new SimpleDateFormat("yyyy-MM-dd").format(date);
             String year = Arrays.asList(format.split("-")).get(0);

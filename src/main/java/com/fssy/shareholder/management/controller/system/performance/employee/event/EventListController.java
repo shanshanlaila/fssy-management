@@ -196,6 +196,7 @@ public class EventListController {
                         "workEvents," +
                         "eventsFirstType," +
                         "standardValue,departmentName,office");
+        params.put("sort",null);
         List<Map<String, Object>> eventLists = eventListService
                 .findEventListMapDataByParams(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
@@ -206,10 +207,10 @@ public class EventListController {
         fieldMap.put("eventsFirstType", "事务类型");// D
         fieldMap.put("standardValue", "事件标准价值");// E
         fieldMap.put("departmentName", "部门名称");// 跨部门 F
-        fieldMap.put("office", "科室");// 跨部门 G
+        fieldMap.put("office", "科室名称");// G
         fieldMap.put("proportion", "*占比");// 多主担 H
         fieldMap.put("roleName", "*岗位名称");// 跨岗位I
-        fieldMap.put("isMainOrNext", "*主担/次担"); // J
+        fieldMap.put("isMainOrNext", "*主/次担"); // J
         fieldMap.put("userName", "*职员名称");// K
         fieldMap.put("activeDate", "*生效日期");// L
         // 标识字符串的列
