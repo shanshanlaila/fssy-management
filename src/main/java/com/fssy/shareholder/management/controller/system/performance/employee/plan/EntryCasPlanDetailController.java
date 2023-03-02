@@ -448,7 +448,7 @@ public class EntryCasPlanDetailController {
     }
 
     /**
-     * 转发到计划导入页面
+     * 转发到计划导出页面
      */
     @GetMapping("planExport")
     @RequiredLog("计划导出")
@@ -472,6 +472,11 @@ public class EntryCasPlanDetailController {
         return "system/performance/employee/plan/plan-new-event";
     }
 
+    /**
+     * 保存新增工作流
+     * @param planDetail
+     * @return
+     */
     @PostMapping("saveNewEve")
     @ResponseBody
     public SysResult saveNewEve(EntryCasPlanDetail planDetail) {
