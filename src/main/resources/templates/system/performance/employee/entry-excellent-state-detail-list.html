@@ -135,7 +135,8 @@
             limits: [50, 100, 200, 500],
             toolbar: '#toolbar',
             where: {
-                status: '待提交审核'
+                status: '待提交审核',
+                userId:[[${userId}]],//初始化只显示当前登录人数据
             },
             cols: [
                 [

@@ -5,6 +5,7 @@
 package com.fssy.shareholder.management.controller.system.performance.employee.eventRole;
 
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
 import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EventsRelationRole;
 import com.fssy.shareholder.management.service.common.SheetOutputService;
@@ -54,6 +55,12 @@ public class EventsRelationRoleController {
     @GetMapping("index")
     public String index(Model model) {
         GetTool.getSelectorData(model);
+        // 登陆人科室id
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("officeId", departmentRoleByUser.getOfficeId());
+        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
+        User user = GetTool.getUser();
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/eventRole/relation-role-list";
     }
 

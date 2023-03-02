@@ -288,7 +288,8 @@
                 // 向controller传入额外参数
                 eventsFirstType: '事务类',
                 status: '待科长审核',
-                groupByUserName: true
+                groupByUserName: true,
+                officeId:[[${officeId}]],
             },
             cols: [
                 [
@@ -334,7 +335,8 @@
             where: {
                 // 向controller传入额外参数
                 eventsFirstType: '事务类',
-                status: '待科长审核'
+                status: '待科长审核',
+                officeId:[[${officeId}]],
             },
             cols: [
                 [

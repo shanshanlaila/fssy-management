@@ -509,6 +509,7 @@ public class EntryCasPlanDetailServiceImpl extends ServiceImpl<EntryCasPlanDetai
         if (params.containsKey("applyDateEnd")) {
             queryWrapper.le("applyDate", params.get("applyDateEnd"));
         }
+        queryWrapper.eq(params.containsKey("officeId"),"officeId",params.get("officeId"));
         return queryWrapper;
     }
 

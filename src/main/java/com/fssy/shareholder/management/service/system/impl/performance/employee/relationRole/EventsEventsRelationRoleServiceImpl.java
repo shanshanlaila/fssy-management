@@ -245,6 +245,8 @@ public class EventsEventsRelationRoleServiceImpl
         }
         // 状态
         queryWrapper.eq(params.containsKey("status"), "status", params.get("status"));
+        queryWrapper.eq(params.containsKey("officeId"), "officeId", params.get("officeId"));
+
 
 
         return queryWrapper;

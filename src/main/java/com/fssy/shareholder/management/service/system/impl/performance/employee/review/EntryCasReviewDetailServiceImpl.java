@@ -335,6 +335,7 @@ public class EntryCasReviewDetailServiceImpl extends ServiceImpl<EntryCasReviewD
         if (params.containsKey("actualCompleteDateEnd")) {
             queryWrapper.le("actualCompleteDate", params.get("actualCompleteDateEnd"));
         }
+        queryWrapper.eq(params.containsKey("officeId"),"officeId",params.get("officeId"));
         return queryWrapper;
     }
 

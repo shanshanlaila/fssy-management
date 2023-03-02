@@ -4,6 +4,8 @@ package com.fssy.shareholder.management.controller.system.performance.employee.r
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.performance.employee.EntryCasReviewDetail;
 import com.fssy.shareholder.management.service.manage.department.DepartmentService;
 import com.fssy.shareholder.management.service.manage.role.RoleService;
@@ -45,13 +47,15 @@ public class EntryCasReviewDetailController {
     private UserService userService;
 
     /**
-     * 履职总结index
+     * 履职总结index/履职总结提交审核页面
      */
     @GetMapping("index")
     @RequiredLog("员工履职总结明细")
     @RequiresPermissions("system:performance:entryCasReviewDetail")
     public String showEntryCasReviewDetail(Model model) {
         GetTool.getSelectorData(model);
+        User user = GetTool.getUser();
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/performance-entry-cas-review-detail-list";
     }
 
@@ -142,6 +146,9 @@ public class EntryCasReviewDetailController {
     @RequiresPermissions("system:performance:entryCasReviewDetail:MinisterIndex")
     public String showEntryCasReviewDetailByMinster(Model model) {
         GetTool.getSelectorData(model);
+        // 登陆人部门id
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
         return "system/performance/employee/performance-entry-cas-review-detail-minister-list";
     }
 
@@ -154,6 +161,12 @@ public class EntryCasReviewDetailController {
     @RequiresPermissions("system:performance:entryCasReviewDetail:SectionChiefIndex")
     public String showEntryCasPlanDetailListBySectionChief(Model model) {
         GetTool.getSelectorData(model);
+        // 登陆人科室id
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("officeId", departmentRoleByUser.getOfficeId());
+        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
+        User user = GetTool.getUser();
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/performance-entry-cas-review-detail-section-chief-list";
     }
 
@@ -366,9 +379,16 @@ public class EntryCasReviewDetailController {
         return result;
     }
 
+    /**
+     * 履职总结的导入
+     * @param model
+     * @return
+     */
     @GetMapping("reviewImport")
     public String reviewImport (Model model){
         GetTool.getSelectorData(model);
+        User user = GetTool.getUser();
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/review/review-import-list";
     }
 }

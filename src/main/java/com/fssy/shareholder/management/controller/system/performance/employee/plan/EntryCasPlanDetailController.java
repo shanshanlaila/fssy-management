@@ -72,9 +72,9 @@ public class EntryCasPlanDetailController {
     public String showEntryCasPlanDetailList(Model model) {
         GetTool.getSelectorData(model);
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentName", viewDepartmentRoleUser.getDepartmentName());
+        model.addAttribute("departmentId", viewDepartmentRoleUser.getDepartmentId());
         User user = GetTool.getUser();
-        model.addAttribute("userName", user.getName());
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/performance-entry-cas-plan-detail-list";
     }
 
@@ -267,11 +267,18 @@ public class EntryCasPlanDetailController {
         return SysResult.build(500, "提交失败请检查数据后重试");
     }
 
+
     @GetMapping("SectionChiefIndex")
     @RequiredLog("履职计划科长审核")
     @RequiresPermissions("system:performance:entryCasPlanDetail:SectionChiefIndex")
     public String showEntryCasPlanDetailListBySectionChief(Model model) {
         GetTool.getSelectorData(model);
+        // 登陆人科室id
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("officeId", departmentRoleByUser.getOfficeId());
+        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
+        User user = GetTool.getUser();
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
     }
 
@@ -433,9 +440,10 @@ public class EntryCasPlanDetailController {
     public String planImport(Model model) {
         GetTool.getSelectorData(model);
         ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentName", viewDepartmentRoleUser.getDepartmentName());
+        model.addAttribute("departmentId", viewDepartmentRoleUser.getDepartmentId());
+        model.addAttribute("officeId", viewDepartmentRoleUser.getOfficeId());
         User user = GetTool.getUser();
-        model.addAttribute("userName", user.getName());
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/plan/plan-import-list";
     }
 
@@ -447,7 +455,7 @@ public class EntryCasPlanDetailController {
     public String planExport(Model model) {
         GetTool.getSelectorData(model);
         User user = GetTool.getUser();
-        model.addAttribute("uerId", user.getId());
+        model.addAttribute("userId", user.getId());
         boolean flag = entryCasPlanDetailService.isExistExportData(user);
         model.addAttribute("flag", flag);
         return "system/performance/employee/plan/plan-export-list";
