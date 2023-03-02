@@ -289,7 +289,10 @@
             toolbar: '#toolbar',
             where: {
                 /*statusCancel: true*/
-                status: '待提交审核'
+                status: '待提交审核',
+                userId:[[${userId}]],//初始化只显示当前登录人数据
+                officeId:[[${officeId}]],//初始化只显示当前登录人所在科室的数据
+                departmentId:[[${departmentId}]],//初始化只显示当前登录人所在部门的数据
             },
             cols: [
                 [

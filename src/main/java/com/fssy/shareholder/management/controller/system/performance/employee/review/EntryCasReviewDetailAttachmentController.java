@@ -6,12 +6,15 @@ package com.fssy.shareholder.management.controller.system.performance.employee.r
 
 import com.fssy.shareholder.management.annotation.RequiredLog;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.manage.department.ViewDepartmentRoleUser;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasReviewDetailService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
@@ -74,6 +77,12 @@ public class EntryCasReviewDetailAttachmentController {
             throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", "履职计划总结"));
         }
         model.addAttribute("module", importModules.get(0).getId());
+        // 登陆人科室id
+        ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
+        model.addAttribute("officeId", departmentRoleByUser.getOfficeId());
+        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
+        User user = GetTool.getUser();
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/entry-cas-plan-review-detail-attachment-list";
     }
 

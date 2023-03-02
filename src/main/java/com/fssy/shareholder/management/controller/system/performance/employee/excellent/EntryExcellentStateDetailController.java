@@ -73,6 +73,11 @@ public class EntryExcellentStateDetailController {
     @Autowired
     private ImportModuleService importModuleService;
 
+    /**
+     * 履职评优材料提交审核
+     * @param model
+     * @return
+     */
     @GetMapping("index")
     @RequiresPermissions("system:performance:entryExcellentStateDetail:index")
     public String showEntryExcellentStateDetail(Model model) {
@@ -86,6 +91,8 @@ public class EntryExcellentStateDetailController {
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
+        User user = GetTool.getUser();
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/entry-excellent-state-detail-list";
     }
 
@@ -388,6 +395,8 @@ public class EntryExcellentStateDetailController {
         List<String> selectedUserIds = new ArrayList<>();
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
+        User user = GetTool.getUser();
+        model.addAttribute("userId", user.getId());
         return "system/performance/employee/entry-review-detail-wait-upload-list";
     }
 

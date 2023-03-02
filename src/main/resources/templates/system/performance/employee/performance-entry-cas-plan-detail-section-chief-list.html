@@ -137,7 +137,8 @@
             where: {
                 // 向controller传入额外参数
                 status: '待科长审核',
-                groupByUserName: true // 左侧表格按名字分组
+                officeId:[[${officeId}]],
+                groupByUserName: true, // 左侧表格按名字分组
             },
             cols: [
                 [
@@ -181,7 +182,8 @@
             where: {
                 // 向controller传入额外参数
                 // eventsFirstType: '事务类',
-                status: '待科长审核'
+                officeId:[[${officeId}]],
+                status: '待科长审核',
             },
             cols: [
                 [
@@ -413,7 +415,7 @@
         language: 'zn',
         data: [[${departmentNameList}]],// model过来的
         filterable: true,
-        // radio: true,// 是否是单选
+        radio: true,// 是否是单选
         tips: '部门查询',
         toolbar: {
             show: true

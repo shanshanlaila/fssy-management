@@ -256,8 +256,9 @@
             toolbar: '#toolbar',
             where: {
                 status: '待填报总结',
-                //userName:[[${userName}]],//登录用户
-                //departmentName: [[${departmentName}]],// 登录用户本部门
+                userId:[[${userId}]],//初始化只显示当前登录人数据
+                // officeId:[[${officeId}]],//初始化只显示当前登录人所在科室的数据
+                // departmentId:[[${departmentId}]],//初始化只显示当前登录人所在部门的数据
             },
             cols: [
                 [
@@ -434,7 +435,7 @@
         form.on('submit(export)', function (data) {
             var field = data.field;
             field.status = '待填报总结'// 只能导出‘待填报总结’
-            field.userIds = [[${uerId}]];// 只能导出本人的
+            field.userIds = [[${userId}]];// 只能导出本人的
             if ([[${flag}]] === false) {
                 layer.msg("暂时没有您需要导出的数据", {icon: 5, time: 4000});
                 return false;
