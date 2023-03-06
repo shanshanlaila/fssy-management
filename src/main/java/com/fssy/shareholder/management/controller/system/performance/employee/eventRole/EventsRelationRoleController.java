@@ -57,10 +57,7 @@ public class EventsRelationRoleController {
         GetTool.getSelectorData(model);
         // 登陆人科室id
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("officeId", departmentRoleByUser.getOfficeId());
-        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
-        User user = GetTool.getUser();
-        model.addAttribute("userId", user.getId());
+        model.addAttribute("officeId", departmentRoleByUser.getTheDepartmentId());
         return "system/performance/employee/eventRole/relation-role-list";
     }
 

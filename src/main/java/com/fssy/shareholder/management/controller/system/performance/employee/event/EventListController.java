@@ -96,7 +96,6 @@ public class EventListController {
         List<String> selectedUserIds = new ArrayList<>(1);
         List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
         model.addAttribute("userList", userList);
-
         // 科室下拉框
         Map<String, Object> officeParams = new HashMap<>(10);
         officeParams.put("departmentType", 2);
@@ -124,8 +123,7 @@ public class EventListController {
         model.addAttribute("userList", userList);
         // 登陆人科室id
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("officeId", departmentRoleByUser.getOfficeId());
-        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
+        model.addAttribute("officeId", departmentRoleByUser.getTheDepartmentId());
         // 判断是否具有需要导出的数据
         boolean flag = eventListService.isExistData();
         model.addAttribute("flag", flag);
@@ -196,7 +194,7 @@ public class EventListController {
                         "workEvents," +
                         "eventsFirstType," +
                         "standardValue,departmentName,office");
-        params.put("sort",null);
+        params.put("sort", null);
         List<Map<String, Object>> eventLists = eventListService
                 .findEventListMapDataByParams(params);
         LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
