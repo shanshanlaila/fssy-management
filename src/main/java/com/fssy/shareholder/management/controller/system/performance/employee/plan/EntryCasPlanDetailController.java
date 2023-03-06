@@ -71,8 +71,6 @@ public class EntryCasPlanDetailController {
     @RequiresPermissions("system:performance:entryCasPlanDetail")
     public String showEntryCasPlanDetailList(Model model) {
         GetTool.getSelectorData(model);
-        ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentId", viewDepartmentRoleUser.getDepartmentId());
         User user = GetTool.getUser();
         model.addAttribute("userId", user.getId());
         return "system/performance/employee/performance-entry-cas-plan-detail-list";
@@ -275,10 +273,7 @@ public class EntryCasPlanDetailController {
         GetTool.getSelectorData(model);
         // 登陆人科室id
         ViewDepartmentRoleUser departmentRoleByUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("officeId", departmentRoleByUser.getOfficeId());
-        model.addAttribute("departmentId", departmentRoleByUser.getDepartmentId());
-        User user = GetTool.getUser();
-        model.addAttribute("userId", user.getId());
+        model.addAttribute("officeId", departmentRoleByUser.getTheDepartmentId());
         return "system/performance/employee/performance-entry-cas-plan-detail-section-chief-list";
     }
 
@@ -439,9 +434,6 @@ public class EntryCasPlanDetailController {
     @RequiredLog("计划导入")
     public String planImport(Model model) {
         GetTool.getSelectorData(model);
-        ViewDepartmentRoleUser viewDepartmentRoleUser = GetTool.getDepartmentRoleByUser();
-        model.addAttribute("departmentId", viewDepartmentRoleUser.getDepartmentId());
-        model.addAttribute("officeId", viewDepartmentRoleUser.getOfficeId());
         User user = GetTool.getUser();
         model.addAttribute("userId", user.getId());
         return "system/performance/employee/plan/plan-import-list";

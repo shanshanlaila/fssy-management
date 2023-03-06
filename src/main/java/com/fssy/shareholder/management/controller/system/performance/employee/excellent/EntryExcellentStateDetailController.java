@@ -75,22 +75,14 @@ public class EntryExcellentStateDetailController {
 
     /**
      * 履职评优材料提交审核
+     *
      * @param model
      * @return
      */
     @GetMapping("index")
     @RequiresPermissions("system:performance:entryExcellentStateDetail:index")
     public String showEntryExcellentStateDetail(Model model) {
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+        GetTool.getSelectorData(model);
         User user = GetTool.getUser();
         model.addAttribute("userId", user.getId());
         return "system/performance/employee/entry-excellent-state-detail-list";
@@ -101,7 +93,7 @@ public class EntryExcellentStateDetailController {
     public Map<String, Object> getObject(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>(20);
         Map<String, Object> params = GetTool.getParams(request);
-        GetTool.getPageDataRes(result,params,request,excellentService);
+        GetTool.getPageDataRes(result, params, request, excellentService);
         return result;
     }
 
@@ -384,17 +376,7 @@ public class EntryExcellentStateDetailController {
     @GetMapping("waitUploadList")
     @RequiredLog("菜单跳转待评优的履职总结")
     public String waitUploadList(Model model) {
-        // 部门下拉选择
-        Map<String, Object> departmentParams = new HashMap<>();
-        List<Map<String, Object>> departmentNameList = departmentService.findDepartmentsSelectedDataListByParams(departmentParams, new ArrayList<>());
-        model.addAttribute("departmentNameList", departmentNameList);
-        Map<String, Object> roleParams = new HashMap<>();
-        List<Map<String, Object>> roleNameList = roleService.findRoleSelectedDataListByParams(roleParams, new ArrayList<>());
-        model.addAttribute("roleNameList", roleNameList);
-        Map<String, Object> userParams = new HashMap<>();
-        List<String> selectedUserIds = new ArrayList<>();
-        List<Map<String, Object>> userList = userService.findUserSelectedDataListByParams(userParams, selectedUserIds);
-        model.addAttribute("userList", userList);
+        GetTool.getSelectorData(model);
         User user = GetTool.getUser();
         model.addAttribute("userId", user.getId());
         return "system/performance/employee/entry-review-detail-wait-upload-list";
