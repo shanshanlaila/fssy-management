@@ -12,12 +12,21 @@
 <!-- 引入xadmin -->
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <a href="">首页</a> <a href="">总部员工绩效</a> <a href="">基础事件管理</a><a>
+		<span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">总部员工绩效</a>
+            <a href="">基础事件管理</a><a>
 				<cite>基础事件清单导出</cite>
 		</a>
-		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
-                   onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                                style="line-height: 30px"></i></a>
+		</span>
+    <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+       onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+                                                    style="line-height: 30px"></i>
+    </a>
+    <button id="queryBtn" class="layui-upload-button"
+            style="float: right;line-height: 1.6em; margin:1px 5px;">
+        高级检索
+    </button>
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
@@ -33,14 +42,16 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="officeSelector"></div>
                         </div>
-                        <!--基础事件创建人-->
-                        <div class="layui-inline layui-show-xs-block">
-                            <div id="userSelect"></div>
-                        </div>
                         <div class="layui-inline layui-show-xs-block" style="width: 100px">
                             <input type="text" id="year" name="year" placeholder="编制年份"
                                    autocomplete="off" class="layui-input">
                         </div>
+                        <!--高级检索部分-->
+                        <div id="hideSpace" class="layui-inline layui-show-xs-block" style="display: none">
+                            <!--基础事件创建人-->
+                            <div class="layui-inline layui-show-xs-block">
+                                <div id="userSelect"></div>
+                            </div>
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="strategyFunctions" placeholder="战略职能"
                                    autocomplete="off" class="layui-input">
@@ -96,6 +107,7 @@
                         <div class="layui-inline layui-show-xs-block">
                             <input type="text" name="activeDateEnd" placeholder="生效日期止" id="activeDateEnd"
                                    autocomplete="off" class="layui-input laydate search-laydate">
+                        </div>
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button id="searchTree" class="layui-btn" lay-submit lay-filter="search">
@@ -156,6 +168,22 @@
                 });
                 // 添加动画效果
                 animation()
+
+                // 点击查询按钮显示查询区
+                let queryBtn = document.querySelector("#queryBtn");
+                let showFlag = true;
+                queryBtn.addEventListener('click', function () {
+                    let hideSpace = document.querySelector("#hideSpace");
+                    if (showFlag) {
+                        // 显示
+                        hideSpace.removeAttribute('style')
+                        showFlag = false
+                    } else {
+                        // 隐藏
+                        hideSpace.setAttribute('style', 'display:none')
+                        showFlag = true
+                    }
+                })
 
                 //年选择器
                 laydate.render({
