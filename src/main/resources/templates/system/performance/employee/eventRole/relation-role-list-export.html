@@ -12,12 +12,20 @@
 <!-- 引入xadmin -->
 <div th:replace="~{common/xadmin :: xadmin}"></div>
 <div class="x-nav">
-		<span class="layui-breadcrumb"> <<a href="">首页</a> <a href="">总部员工绩效</a> <a href="">基础事件管理</a>
+		<span class="layui-breadcrumb">
+            <<a href="">首页</a>
+            <a href="">总部员工绩效</a>
+            <a href="">基础事件管理</a>
 			<a> <cite>事件清单岗位关系导出</cite></a>
-		</span> <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
-                   onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
-                                                                style="line-height: 30px"></i>
-</a>
+		</span>
+    <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+       onclick="location.reload()" title="刷新"> <i class="layui-icon layui-icon-refresh"
+                                                    style="line-height: 30px"></i>
+    </a>
+    <button id="queryBtn" class="layui-upload-button"
+            style="float: right;line-height: 1.6em; margin:1px 5px;">
+        高级检索
+    </button>
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
@@ -37,6 +45,8 @@
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="userSelect"></div>
                         </div>
+                        <!--高级检索部分-->
+                        <div id="hideSpace" class="layui-inline layui-show-xs-block" style="display: none">
                         <div class="layui-inline layui-show-xs-block">
                             <label class="layui-form-label"
                                    style="width: 60px; line-height: 1.1; padding: 9px 10px 9px 0px;">编制日期</label>
@@ -94,7 +104,7 @@
                                 <option value="非事务类">非事务类</option>
                             </select>
                         </div>
-
+                        </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
@@ -136,8 +146,28 @@
                     curr: 1
                 }
             });
+            // 添加动画效果
+            animation();
             return false
         });
+        // 添加动画效果
+        animation()
+
+        // 点击查询按钮显示查询区
+        let queryBtn = document.querySelector("#queryBtn");
+        let showFlag = true;
+        queryBtn.addEventListener('click', function () {
+            let hideSpace = document.querySelector("#hideSpace");
+            if (showFlag) {
+                // 显示
+                hideSpace.removeAttribute('style')
+                showFlag = false
+            } else {
+                // 隐藏
+                hideSpace.setAttribute('style', 'display:none')
+                showFlag = true
+            }
+        })
         //年选择器
         laydate.render({
             elem: '#year'
@@ -402,6 +432,15 @@
             name: 'userIds',// 传到后端选择的userId集合字符串
         });
     });
+    // 添加动画效果
+    function animation() {
+        for (const btn of document.querySelectorAll('button')) {
+            btn.addEventListener('click', function () {
+                btn.setAttribute('class', 'layui-btn layui-anim layui-anim-scale');
+            })
+            btn.setAttribute('class', 'layui-btn');
+        }
+    }
 </script>
 </body>
 </html>

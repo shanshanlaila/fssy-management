@@ -20,6 +20,10 @@
        onclick="location.reload()" title="刷新">
         <i class="layui-icon layui-icon-refresh" style="line-height: 30px"></i>
     </a>
+    <button id="queryBtn" class="layui-upload-button"
+            style="float: right;line-height: 1.6em; margin:1px 5px;">
+        高级检索
+    </button>
 </div>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
@@ -27,6 +31,8 @@
             <div class="layui-card">
                 <form class="layui-form layui-col-space5">
                     <div class="layui-card-body">
+                        <!--高级检索部分-->
+                        <div id="hideSpace" class="layui-inline layui-show-xs-block" style="display: none">
                         <!--部门下拉框-->
                         <div class="layui-inline layui-show-xs-block" style="width: 160px;">
                             <div id="departmentSelect"></div>
@@ -179,12 +185,6 @@
                             <button class="layui-btn" lay-submit lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i>
                             </button>
-                            <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="export"
-                                        title="请选择查询条件进行导出状态为‘待填报总结’履职计划">
-                                    导出履职计划填报月底总结
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </form>
@@ -212,6 +212,24 @@
                     type: 'date',
                 });
         });
+        //添加动画效果
+        animation()
+
+        // 点击查询按钮显示查询区
+        let queryBtn = document.querySelector("#queryBtn");
+        let showFlag = true;
+        queryBtn.addEventListener('click', function () {
+            let hideSpace = document.querySelector("#hideSpace");
+            if (showFlag) {
+                // 显示
+                hideSpace.removeAttribute('style')
+                showFlag = false
+            } else {
+                // 隐藏
+                hideSpace.setAttribute('style', 'display:none')
+                showFlag = true
+            }
+        })
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
@@ -223,6 +241,8 @@
                     curr: 1
                 }
             });
+            //添加动画效果
+            animation();
             return false
         });
         //年选择器
@@ -504,6 +524,15 @@
         },
         name: 'userIds',// 传到后端选择的userId集合字符串
     });
+    // 添加动画效果
+    function animation() {
+        for (const btn of document.querySelectorAll('button')) {
+            btn.addEventListener('click', function () {
+                btn.setAttribute('class', 'layui-btn layui-anim layui-anim-scale');
+            })
+            btn.setAttribute('class', 'layui-btn');
+        }
+    }
 </script>
 </body>
 </html>
