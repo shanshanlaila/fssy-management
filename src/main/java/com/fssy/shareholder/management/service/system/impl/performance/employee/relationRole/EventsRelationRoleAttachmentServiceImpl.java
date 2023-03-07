@@ -1,6 +1,7 @@
 /**
  * ------------------------修改日志---------------------------------
  * 修改人			修改日期			修改内容
+ * 兰宇铧			2023-03-07		修改岗位配比导入时的生效日期判断逻辑，需要保证一个时间段内只有一个清单的配比是生效的
  */
 package com.fssy.shareholder.management.service.system.impl.performance.employee.relationRole;
 
@@ -44,6 +45,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,6 +159,13 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
         Map<Long, LocalDate> eventIdWithActivityMap = new HashMap<>();
         // 存放relationRole的集合
         List<EventsRelationRole> relationRoleList = new ArrayList<>();
+        // 导入数据总数
+        int totalNum = 0;
+        // 添加数量
+        int addNum = 0;
+        // 修改数量
+        int updateNum = 0;
+        
         // 循环总行数(不读表头，从第2行开始读，索引从0开始，所以j=1)
         for (int j = 1; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> temp = new ArrayList<>();
@@ -175,6 +184,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 temp.add(res);// 将单元格的值写入行
             }
             temps.add(temp);
+            totalNum++;
             // 导入结果写入列
             Cell cell = row.createCell(SheetService.columnToIndex("Q"));// 每一行的结果信息上传到O列
 
@@ -274,8 +284,8 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventIdWithActivityMap.put(eventsId, activeDate);
             if (ObjectUtils.isEmpty(eventList)) {
                 StringTool.setMsg(sb,
-                        String.format("第【%s】行序号为【%s】的事件清单不存在，必须为【数值】", j + 1, eventsId));
-                cell.setCellValue(String.format("序号为【%s】的事件清单不存在，必须为【数值】", eventsId));
+                        String.format("第【%s】行序号为【%s】的事件清单不存在", j + 1, eventsId));
+                cell.setCellValue(String.format("序号为【%s】的事件清单不存在", eventsId));
                 continue;
             }
             // 填报的部门，有多个工作项得话，必须有一个项的部门与基础事件的部门保持一致
@@ -285,22 +295,54 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 cell.setCellValue(String.format("序号为【%s】的事件清单对应部门与填报部门不一致，不能导入", eventsId));
                 continue;
             }
+			QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+			userQueryWrapper.eq("name", userName);
+			List<User> userList = userMapper.selectList(userQueryWrapper);
+			if (ObjectUtils.isEmpty(userList))
+			{
+				StringTool.setMsg(sb, String.format("第【%s】行名称为【%s】的用户未维护", j + 1, userName));
+				cell.setCellValue(String.format("名称为【%s】的用户未维护", userName));
+				continue;
+			}
+			User signUser = userList.get(0);
+            // 2023-03-07 修改问题，真实使用过程中，允许修改相同生效日期的情况,前提为状态不能是完结状态（已经填 报履职计划）
             // 清单序号，生效日期相同不能再次导入
-            boolean activeFlag = true;
             // 查询岗位关联数据
-            QueryWrapper<EventsRelationRole> relationRoleCheckQueryWrapper = new QueryWrapper<>();
-            relationRoleCheckQueryWrapper.eq("eventsId", eventList.getId()).select("activeDate,id,eventsId");
-            List<EventsRelationRole> checkDataList = eventsRelationRoleMapper.selectList(relationRoleCheckQueryWrapper);
-            for (EventsRelationRole eventsRelationRole : checkDataList) {
-                if (activeDate.isEqual(eventsRelationRole.getActiveDate())) {
-                    // 如果要导入数的生效日期在数据库中被查出来的话则不能导入
-                    activeFlag = false;
-                    break;
-                }
-            }
-            if (!activeFlag) {
-                throw new ServiceException(String.format("第【%s】行序号为【%s】的事件清单，生效日期为【%s】已经导入，不能重复导入", j + 1, eventsId, activeDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
-            }
+			QueryWrapper<EventsRelationRole> relationRoleCheckQueryWrapper = new QueryWrapper<>();
+			relationRoleCheckQueryWrapper.eq("eventsId", eventList.getId())
+					.eq("activeDate", activeDate).eq("userId", signUser.getId())
+					.select("activeDate,id,eventsId,status");
+			List<EventsRelationRole> checkList = eventsRelationRoleMapper.selectList(relationRoleCheckQueryWrapper);
+			boolean checkOriRoleFlag = true;
+			if (!ObjectUtils.isEmpty(checkList))
+			{
+				for (EventsRelationRole checkRole : checkList)
+				{
+					if (PerformanceConstant.FINAL.equals(checkRole.getStatus()))
+					{
+						checkOriRoleFlag = false;
+						StringTool.setMsg(sb,
+								String.format(
+										"第【%s】行事件清单序号为【%s】生效日期为【%s】承担用户为【%s】的岗位配比已经填报计划，不能再次导入更新",
+										j + 1, eventList.getId(), activeDate, signUser.getName()));
+						cell.setCellValue(String.format(
+								"第【%s】行事件清单序号为【%s】生效日期为【%s】承担用户为【%s】的岗位配比已经填报计划，不能再次导入更新", j + 1,
+								eventList.getId(), activeDate, signUser.getName()));
+						continue;
+					}
+				}
+				if (!checkOriRoleFlag)
+				{
+					continue;
+				}
+				// 如果要导入数的生效日期在数据库中被查出来的话则不能导入
+				updateNum++;
+				eventsRelationRoleMapper.delete(relationRoleCheckQueryWrapper);
+			}
+			else
+			{
+				addNum++;
+			}
             // endregion
 
             // region 查询部门，角色（岗位），用户信息
@@ -322,15 +364,6 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 continue;
             }
             Role role = roleList.get(0);
-            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-            userQueryWrapper.eq("name", userName);
-            List<User> userList = userMapper.selectList(userQueryWrapper);
-            if (ObjectUtils.isEmpty(userList)) {
-                StringTool.setMsg(sb, String.format("第【%s】行名称为【%s】的用户未维护", j + 1, userName));
-                cell.setCellValue(String.format("名称为【%s】的用户未维护", userName));
-                throw new ServiceException(String.format("第%s行的职员名称【%s】未在系统中维护", j + 1, userName));
-            }
-            User signUser = userList.get(0);
             // 校验部门、岗位、员工是否维护
             LambdaQueryWrapper<ViewDepartmentRoleUser> viewDepRoleUser = new LambdaQueryWrapper<>();
             viewDepRoleUser.eq(ViewDepartmentRoleUser::getDepartmentName, departmentName)
@@ -340,7 +373,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             if (ObjectUtils.isEmpty(viewDepartmentRoleUsers)) {
                 StringTool.setMsg(sb, String.format("第【%s】行部门为【%s】、岗位为【%s】、职员名称为【%s】未维护", j + 1, departmentName, roleName, userName));
                 cell.setCellValue(String.format("部门为【%s】、岗位为【%s】、职员名称为【%s】未维护", departmentName, roleName, userName));
-                throw new ServiceException(String.format("第【%s】行部门为【%s】、岗位为【%s】、职员名称为【%s】未维护，请检查信息准确性", j + 1, departmentName, roleName, userName));
+                continue;
             }
             // endregion
 
@@ -352,6 +385,9 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             } else {
                 checkProportionMap.put(key, proportion);
             }
+            // endregion
+            
+            // region 构建实体类
             EventsRelationRole eventsRelationRole = new EventsRelationRole();
             eventsRelationRole.setEventsId(eventsId);
             eventsRelationRole.setRoleName(role.getName());
@@ -392,9 +428,13 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
             eventsRelationRole.setOffice(office);
             eventsRelationRole.setStatus(PerformanceConstant.WAIT_PLAN);
             // endregion
-            // 将基础事件的状态设置为‘完结’
-            eventList.setStatus(PerformanceConstant.FINAL);
-            eventListMapper.updateById(eventList);
+
+			// 将基础事件的状态设置为‘完结’
+			UpdateWrapper<EventList> listUpdateWrapper = new UpdateWrapper<>();
+			listUpdateWrapper.eq("id", eventList.getId()).set("status", PerformanceConstant.FINAL)
+					.set("updatedId", user.getId()).set("updatedName", user.getName())
+					.set("updatedAt", LocalDateTime.now());
+			eventListMapper.update(null, listUpdateWrapper);
             // 存入集合，用于读取循环数据完毕后批量写入数据库
             relationRoleList.add(eventsRelationRole);
             updatedEventsIds.add(eventList.getId());
@@ -404,8 +444,77 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
         }
 
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
+        
+        // 2023-03-07 修改岗位配比导入时的生效日期判断逻辑，需要保证一个时间段内只有一个清单的配比是生效的
+        // region 设置满足条件的岗位配比取消
+        Map<String, Boolean> groupByMap = new HashMap<>();
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		List<String> statusList = Arrays.asList(PerformanceConstant.FINAL,
+				PerformanceConstant.WAIT_PLAN);
+		for (EventsRelationRole tempRoleData : relationRoleList)
+		{
+			// 根据事件清单id和生效日期为主键，处理过放进来
+			String key = tempRoleData.getEventsId() + "_"
+					+ tempRoleData.getActiveDate().format(dtf);
+			if (!groupByMap.containsKey(key))
+			{
+				// 1、新的配比生效日期大于当前日期，不用设置
+				if (tempRoleData.getActiveDate().isAfter(LocalDate.now()))
+				{
+					continue;
+				}
+				else
+				{
+					// 2、新的配比生效日期小于当前日期
+					// 查询事件最新的配比
+					QueryWrapper<EventsRelationRole> roleQueryWrapper = new QueryWrapper<>();
+					roleQueryWrapper.eq("eventsId", tempRoleData.getEventsId()).in("status",
+							statusList);
+					roleQueryWrapper.select("eventsId, MAX(activeDate) as activeDate")
+							.groupBy("eventsId");
+					List<EventsRelationRole> oriRoleList = eventsRelationRoleMapper
+							.selectList(roleQueryWrapper);
+					
+					if (ObjectUtils.isEmpty(oriRoleList))
+					{
+						continue;
+					}
+					else
+					{
+						EventsRelationRole oriRelationRole = oriRoleList.get(0);
+						// 2.1、新的配比生效日期小于已经生效日期，不用设置
+						if (tempRoleData.getActiveDate().isBefore(oriRelationRole.getActiveDate()))
+						{
+							continue;
+						}
+						else
+						{
+							// 2.2、新的配比生效日期大于等于已经生效日期，需要原来最大的生效日期设置
+							UpdateWrapper<EventsRelationRole> roleUpdateWrapper = new UpdateWrapper<>();
+							roleUpdateWrapper.eq("eventsId", tempRoleData.getEventsId())
+									.eq("activeDate", oriRelationRole.getActiveDate())
+									.in("status", statusList)
+									.set("status", PerformanceConstant.EVENT_ROLE_STATUS_CANCEL)
+									.set("updatedId", user.getId())
+									.set("updatedName", user.getName())
+									.set("updatedAt", LocalDateTime.now());
+							eventsRelationRoleMapper.update(null, roleUpdateWrapper);
+
+						}
+					}
+				}
+				groupByMap.put(key, true);
+			}
+			else
+			{
+				continue;
+			}
+		}
+		// endregion
+        
         // 批量写入
         eventsRelationRoleService.saveBatch(relationRoleList);
+        
         // 如果updatedEventsIds为空则报错
         if (ObjectUtils.isEmpty(updatedEventsIds)) {
             setFailedContent(result, "导入的生效日期都存在，请更改后重新导入");

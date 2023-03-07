@@ -40,4 +40,6 @@ public interface PerformanceConstant {
     String WAIT_EXCELLENT = "待评优材料审核完成";
     String WAIT_PLAN = "待导出填报计划";
     String WAIT_RELATION_ROLE = "待导出维护岗位配比";
+    /** 岗位配比状态：取消 */
+    String EVENT_ROLE_STATUS_CANCEL = "取消";
 }

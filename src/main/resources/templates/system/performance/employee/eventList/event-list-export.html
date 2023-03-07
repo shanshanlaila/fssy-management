@@ -475,7 +475,7 @@
                         return false;
                     }
                     var field = data.field;
-                    field.status = '待导出维护岗位配比';
+                    field.status != '取消';
                     // 必选项控制
                     if (!field.year) {
                         layer.msg("请选择编制年份导出", {icon: 5, time: 4000});
