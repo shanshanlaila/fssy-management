@@ -4,36 +4,33 @@
  */
 package com.fssy.shareholder.management.controller.system.performance.employee.eventRole;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.fssy.shareholder.management.annotation.RequiredLog;
+import com.fssy.shareholder.management.mapper.manage.user.UserMapper;
 import com.fssy.shareholder.management.pojo.common.SysResult;
+import com.fssy.shareholder.management.pojo.manage.user.User;
 import com.fssy.shareholder.management.pojo.system.config.Attachment;
 import com.fssy.shareholder.management.pojo.system.config.ImportModule;
 import com.fssy.shareholder.management.service.system.config.AttachmentService;
 import com.fssy.shareholder.management.service.system.config.ImportModuleService;
 import com.fssy.shareholder.management.service.system.performance.employee.EventsRelationRoleAttachmentService;
 import com.fssy.shareholder.management.tools.common.FileAttachmentTool;
+import com.fssy.shareholder.management.tools.common.GetTool;
 import com.fssy.shareholder.management.tools.common.InstandTool;
 import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import com.fssy.shareholder.management.tools.exception.ServiceException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Title: EventsRelationRoleAttachmentController.java
@@ -56,6 +53,8 @@ public class EventsRelationRoleAttachmentController
 
 	@Autowired
 	private FileAttachmentTool fileAttachmentTool;
+	@Autowired
+	private UserMapper userMapper;
 
 	/**
 	 * 事件清单岗位关系附件功能业务实现类
@@ -85,6 +84,8 @@ public class EventsRelationRoleAttachmentController
 			throw new ServiceException(String.format("描述为【%s】的导入场景未维护，不允许查询", desc));
 		}
 		model.addAttribute("module", importModules.get(0).getId());
+		User user = GetTool.getUser();
+		model.addAttribute("userId", user.getId());
 		return "system/performance/employee/event-relation-role-attachment-show";
 	}
 

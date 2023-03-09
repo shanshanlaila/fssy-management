@@ -58,7 +58,7 @@ public class EntryCasReviewDetailAttachmentController {
      *
      * @return 履职计划总结附件列表html路径
      */
-    @RequiredLog("履职计划附件列表")
+    @RequiredLog("履职总结附件列表")
     @GetMapping("import")
     @RequiresPermissions("system:performance:entryCasReviewDetail:import")
     public String showImportPage(Model model) {
