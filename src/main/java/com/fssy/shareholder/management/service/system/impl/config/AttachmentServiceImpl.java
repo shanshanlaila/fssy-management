@@ -171,6 +171,7 @@ public class AttachmentServiceImpl implements AttachmentService
 		if (params.containsKey("importDateByNow")) {
 			queryWrapper.in("importDate", params.get("importDateByNow"));
 		}
+		queryWrapper.eq(params.containsKey("createdId"),"createdId",params.get("createdId"));
 		return queryWrapper;
 	}
 
