@@ -4,8 +4,12 @@
  */
 package com.fssy.shareholder.management.schedule.job.system.manage.employee;
 
+import com.fssy.shareholder.management.pojo.manage.log.ScheduleAuditLog;
 import com.fssy.shareholder.management.service.common.EnterpriseWeChatService;
+import com.fssy.shareholder.management.service.manage.log.ScheduleAuditLogService;
 import com.fssy.shareholder.management.service.system.performance.employee.EntryCasPlanDetailService;
+import com.fssy.shareholder.management.tools.common.StringTool;
+import com.fssy.shareholder.management.tools.constant.CommonConstant;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -31,6 +35,9 @@ public class EmployeePlanJob implements Job {
     @Autowired
     private EntryCasPlanDetailService entryCasPlanDetailService;
 
+    @Autowired
+    private ScheduleAuditLogService scheduleAuditLogService;
+
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -38,6 +45,8 @@ public class EmployeePlanJob implements Job {
         if (ObjectUtils.isEmpty(userInfoMap)) {
             return;
         }
+        StringBuffer successStringBuilder = new StringBuffer();
+        StringBuffer failStringBuilder = new StringBuffer();
         for (Map<String, Object> chiMap : userInfoMap.values()) {
             List<String> wetChatId = Collections.singletonList(chiMap.get("weChat").toString());
             List<String> userName = Collections.singletonList(chiMap.get("userName").toString());
@@ -51,10 +60,22 @@ public class EmployeePlanJob implements Job {
             );
             try {
                 enterpriseWeChatService.push(content, wetChatId, null, null);
+                StringTool.setMsg(successStringBuilder, userName.toString());
             } catch (Exception e) {
+                StringTool.setMsg(failStringBuilder, userName.toString());
                 e.printStackTrace();
             }
         }
+        ScheduleAuditLog scheduleAuditLog = new ScheduleAuditLog();
+        scheduleAuditLog.setName("回顾填报定时任务");
+        scheduleAuditLog.setNote("时间：" + new Date() + "通知成功的人：" + successStringBuilder.toString());
+        scheduleAuditLog.setStatus(CommonConstant.COMMON_STATUS_STRING_SUCCESS);
+        scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
+        ScheduleAuditLog scheduleAuditLogs = new ScheduleAuditLog();
+        scheduleAuditLogs.setName("回顾填报定时任务");
+        scheduleAuditLogs.setNote("时间：" + new Date() + "通知失败的人：" + failStringBuilder.toString());
+        scheduleAuditLogs.setStatus(CommonConstant.COMMON_STATUS_STRING_ERROR);
+        scheduleAuditLogService.saveScheduleAuditLogWithoutTransaction(scheduleAuditLog);
 
     }
 }

@@ -131,7 +131,6 @@
             var elem = data.elem;
             $(elem).addClass('layui-btn-disabled'); // 设置不可用状态样式，避免重复提交
             $(elem).attr('disabled', 'disabled'); // 设置不可用状态，避免重复提交
-            console.log(data.field)
             $.ajax({
                 url: '/system/entry-excellent-state-detail/update',
                 type: 'POST',

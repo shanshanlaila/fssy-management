@@ -254,7 +254,6 @@
 
         // 监听搜索按钮
         form.on('submit(search)', function (data) {
-            console.log(data.field)
             // 重新加载表格
             table.reload('dataTable', {
                 where: data.field,
@@ -472,7 +471,6 @@
             }
             // 必填项控制
             var userIds = field.userIds;
-            console.log(userIds)
             if (!userIds) {
                 layer.msg("请选择职员名称进行导出", {icon: 5, time: 4000});
                 return false;

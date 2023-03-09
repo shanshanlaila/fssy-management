@@ -165,7 +165,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
         int addNum = 0;
         // 修改数量
         int updateNum = 0;
-        
+
         // 循环总行数(不读表头，从第2行开始读，索引从0开始，所以j=1)
         for (int j = 1; j <= sheet.getLastRowNum(); j++) {// getPhysicalNumberOfRows()此方法不会将空白行计入行数
             List<String> temp = new ArrayList<>();
@@ -386,7 +386,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
                 checkProportionMap.put(key, proportion);
             }
             // endregion
-            
+
             // region 构建实体类
             EventsRelationRole eventsRelationRole = new EventsRelationRole();
             eventsRelationRole.setEventsId(eventsId);
@@ -444,7 +444,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
         }
 
         sheetService.write(attachment.getPath(), attachment.getFilename());// 写入excel表
-        
+
         // 2023-03-07 修改岗位配比导入时的生效日期判断逻辑，需要保证一个时间段内只有一个清单的配比是生效的
         // region 设置满足条件的岗位配比取消
         Map<String, Boolean> groupByMap = new HashMap<>();
@@ -474,7 +474,7 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 							.groupBy("eventsId");
 					List<EventsRelationRole> oriRoleList = eventsRelationRoleMapper
 							.selectList(roleQueryWrapper);
-					
+
 					if (ObjectUtils.isEmpty(oriRoleList))
 					{
 						continue;
@@ -511,10 +511,10 @@ public class EventsRelationRoleAttachmentServiceImpl implements EventsRelationRo
 			}
 		}
 		// endregion
-        
+
         // 批量写入
         eventsRelationRoleService.saveBatch(relationRoleList);
-        
+
         // 如果updatedEventsIds为空则报错
         if (ObjectUtils.isEmpty(updatedEventsIds)) {
             setFailedContent(result, "导入的生效日期都存在，请更改后重新导入");
